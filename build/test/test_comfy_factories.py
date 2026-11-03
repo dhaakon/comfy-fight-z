@@ -123,6 +123,24 @@ class CloudFactoryTests(unittest.TestCase):
             self.assertEqual(mode["options"], ["Upload reference", "Invent fictional reference"])
         self.assertNotIn("control_after_generate", factory.CFZProjectSettings.INPUT_TYPES()["required"]["seed"][1])
 
+    def test_shared_logo_and_icon_do_not_inherit_scene_style_or_image_inputs(self):
+        marker = "STYLE_SENTINEL: two fighters in a crowded street tournament scene"
+        project = {**self.project, "ui_style": marker}
+        output = factory.CFZSharedArtFactory.execute(project, ["new_stage", 0])
+        calls = [node["inputs"] for node in output.expand.values() if node["class_type"] == "GeminiNanoBanana2V2"]
+        self.assertEqual(len(calls), 6)
+        isolated = [node for node in calls if node["prompt"].startswith("ASSET TYPE: one isolated")]
+        self.assertEqual(len(isolated), 2)
+        for call in isolated:
+            self.assertNotIn(marker, call["prompt"])
+            self.assertNotIn("model.images.image_1", call)
+            self.assertIn("No people, faces, bodies, fighters, scenery", call["prompt"])
+        venue_art = [call for call in calls if "model.images.image_1" in call]
+        self.assertEqual(len(venue_art), 2)
+        for call in venue_art:
+            self.assertIn(marker, call["prompt"])
+            self.assertEqual(call["model.images.image_1"], ["new_stage", 0])
+
     def test_audio_bridge_shares_project_directory_and_title_and_validates_config(self):
         config = {"title": "Stale audio title", "subtitle": "Stale subtitle", "root_directory": str(self.base / "stale"),
                   "fighters": [{"id": "fighter0", "name": "Fighter Zero"}], "stages": [{"id": "yard", "name": "The Yard"}],

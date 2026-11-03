@@ -1,0 +1,145 @@
+{
+  "schema": "comfy-fighter-explainer/v1",
+  "title": "Comfy Fighter Z",
+  "subtitle": "Higgsfield Open Source Saga",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "durationMode": "fixed",
+  "outputStem": "comfy-fighter-z-phone-photo-demo",
+  "targetDurationSeconds": 120,
+  "narrationWordsPerMinute": 140,
+  "repositoryURL": "https://github.com/dhaakon/comfy-fight-z",
+  "demoURL": "https://comfy-fight-z.dhaakon.com/phone-photo-demo/",
+  "sourceRun": "output/phone-photo-demo/20261103-phone-cast",
+  "sourceGame": "output/phone-photo-demo/20261103-phone-cast/export/game",
+  "footageDisclosure": "All phone-style photographs are newly AI-generated fictional adults and a fictional environment. No real-person photographs, earlier session inputs, old game art or old audio are used. Actual generation footage is condensed and labeled. The new game contains six fighters, The Yard, and 22 generated audio clips.",
+  "voice": {
+    "preset": "Brian (male, american)",
+    "model": "eleven_v4",
+    "stability": 0.55,
+    "similarityBoost": 0.75,
+    "languageCode": "en",
+    "deliveryTag": "[clear, confident, conversational narration]",
+    "outputFormat": "mp3_44100_192",
+    "saveFormat": "flac",
+    "seed": 2026110312
+  },
+  "scenes": [
+    {
+      "id": "01-result",
+      "title": "Phone photos to playable fighters",
+      "targetSeconds": 10,
+      "narration": "These fictional phone photos become Comfy Fighter Z: six anime fighters, one backyard arena, and a complete playable game. Here is the workflow.",
+      "audio": "audio/01-result.flac",
+      "visual": "cards/01-result.webm",
+      "onScreen": [
+        "Phone-style reference → anime fighter → playable game"
+      ]
+    },
+    {
+      "id": "02-setup",
+      "title": "Open the factory",
+      "targetSeconds": 14,
+      "narration": "Clone the repository, run npm ci, and install its custom nodes in your active ComfyUI instance. Restart ComfyUI and open the upload workflow. Cloud models need no local checkpoint downloads.",
+      "audio": "audio/02-setup.flac",
+      "visual": "cards/02-setup.webm",
+      "onScreen": [
+        "npm ci",
+        "npm run nodes:install -- --comfy-root <ComfyUI folder>",
+        "node comfyui/tools/prepare-phone-photo-demo.cjs --out output/phone-photo-demo/my-run",
+        "Open output/phone-photo-demo/my-run/phase1-ui.json, then phase2-ui.json"
+      ]
+    },
+    {
+      "id": "03-references",
+      "title": "Invent the reference photos",
+      "targetSeconds": 12,
+      "narration": "ComfyUI creates seven fresh phone-style references from text: six invented adults and a backyard. This demo uses no real photographs or identities.",
+      "audio": "audio/03-references.flac",
+      "visual": "captures/03-references.webm",
+      "onScreen": [
+        "AI-generated fictional adults and environment • No real people"
+      ]
+    },
+    {
+      "id": "04-upload",
+      "title": "Upload the fictional references",
+      "targetSeconds": 11,
+      "narration": "Choose Upload reference and attach each new photo to its fighter. Add the backyard to The Yard, leaving the other two environments disabled.",
+      "audio": "audio/04-upload.flac",
+      "visual": "captures/04-upload.webm",
+      "onScreen": [
+        "6 character slots • The Yard enabled • 2 environments disabled"
+      ]
+    },
+    {
+      "id": "05-design",
+      "title": "Describe the game",
+      "targetSeconds": 13,
+      "narration": "Describe each fighter, special move, and introduction line. Set one new output folder to keep generated art, sprites, voices, and music together. Keep character IDs stable throughout the whole build.",
+      "audio": "audio/05-design.flac",
+      "visual": "captures/05-design.webm",
+      "onScreen": [
+        "One root directory • Character description • Special move • Intro tagline"
+      ]
+    },
+    {
+      "id": "06-generate",
+      "title": "Generate the complete bundle",
+      "targetSeconds": 12,
+      "narration": "Run the cloud factory. This condensed recording shows actual generation: forty-nine new game images and twenty-two audio clips written to the shared folder.",
+      "audio": "audio/06-generate.flac",
+      "visual": "captures/06-generate.webm",
+      "onScreen": [
+        "Condensed actual generation • 49 game images + 22 audio clips"
+      ]
+    },
+    {
+      "id": "07-review",
+      "title": "Review identity and poses",
+      "targetSeconds": 12,
+      "narration": "Compare each photo with its anime identity. Inspect every sheet for consistent outfits, complete hands and feet, and exactly one figure per pose.",
+      "audio": "audio/07-review.flac",
+      "visual": "cards/07-review.webm",
+      "onScreen": [
+        "Phone reference → anime identity → 3 × 3 sprite sheet",
+        "5 outputs repaired after visual review"
+      ]
+    },
+    {
+      "id": "08-builder",
+      "title": "Build with your own assets",
+      "targetSeconds": 12,
+      "narration": "Load the folder in the browser builder. Assets dot JSON and audio dot JSON map everything. Customize names and accents; keep placeholders disabled.",
+      "audio": "audio/08-builder.flac",
+      "visual": "captures/08-builder.webm",
+      "onScreen": [
+        "assets.json + audio.json + raw/ • Strict build"
+      ]
+    },
+    {
+      "id": "09-export",
+      "title": "Export the complete game",
+      "targetSeconds": 12,
+      "narration": "Export a ZIP or directory: six fighters, one arena, one hundred sixty-two poses, and twenty-two audio clips. Start the included server.",
+      "audio": "audio/09-export.flac",
+      "visual": "captures/09-export.webm",
+      "onScreen": [
+        "6 fighters • 1 arena • 162 poses • 22 audio clips"
+      ]
+    },
+    {
+      "id": "10-play",
+      "title": "Your next challenger",
+      "targetSeconds": 12,
+      "narration": "Arrows move. A, S, D, and F attack. Play online, or build your own.",
+      "audio": "audio/10-play.flac",
+      "visual": "captures/10-play.webm",
+      "onScreen": [
+        "comfy-fight-z.dhaakon.com/phone-photo-demo/ | github.com/dhaakon/comfy-fight-z"
+      ],
+      "backgroundAudio": "audio/yard-music.wav"
+    }
+  ]
+}

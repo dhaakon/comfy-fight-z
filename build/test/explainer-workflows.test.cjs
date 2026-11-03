@@ -62,6 +62,19 @@ test('caption text excludes delivery tags and mappings cannot escape the run', (
   assert.throws(() => validateConfig(missingScene), /twelve/);
 });
 
+test('phone-photo explainer keeps ten chapters, a 120-second timeline and a concise stock-voice script', () => {
+  const short = require('../../comfyui/config/phone-photo-explainer.json');
+  assert.equal(validateConfig(short), 232);
+  assert.equal(short.scenes.reduce((sum, scene) => sum + scene.targetSeconds, 0), 120);
+  const { prompt, clips } = makeNarrationWorkflow(short, 'comfy-fighter-z/explainer/phone-test');
+  assert.equal(clips.length, 10);
+  assert.equal(clips.reduce((sum, clip) => sum + clip.billedCharacters, 0), 1920);
+  assert.equal(Object.values(prompt).filter(node => node.class_type === 'ElevenLabsTextToSpeech').length, 10);
+  assert.equal(Object.values(prompt).filter(node => node.class_type === 'SaveAudioAdvanced').length, 10);
+  const changed = structuredClone(short); changed.scenes[0].targetSeconds += 1;
+  assert.throws(() => validateConfig(changed), /exactly 120/);
+});
+
 test('prepared narration is preserved while a directory containing only captures can be used', t => {
   const root = fixture(t), directory = path.join(root, 'run');
   fs.mkdirSync(path.join(directory, 'captures'), { recursive: true });

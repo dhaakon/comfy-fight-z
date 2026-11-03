@@ -4,7 +4,23 @@ Create an anime fighting game with your own fictional cast. ComfyUI generates th
 
 The default game has six fighters, one backyard arena called **The Yard**, and one human player versus the CPU. Each fighter has 27 poses, selection art, an introduction and a special move.
 
-**[Play the public demo at comfy-fight-z.dhaakon.com](https://comfy-fight-z.dhaakon.com/)** — no installation required. Use arrow keys and ASDF on a keyboard, or the on-screen controls on mobile. The game's **GITHUB** link opens this repository.
+**[Play the original included demo at comfy-fight-z.dhaakon.com](https://comfy-fight-z.dhaakon.com/)** — no installation required. Use arrow keys and ASDF on a keyboard, or the on-screen controls on mobile. The game's **GITHUB** link opens this repository.
+
+## Phone snapshots to a new game — 2:00 walkthrough
+
+> **Verified new demo:** six fictional fighters, The Yard, 162 poses and 22 game-audio clips. The artwork passed visual review, the game passed strict export and control checks, and the public deployment was checked on desktop and mobile.
+
+[![Watch seven fictional phone snapshots become Comfy Fighter Z](comfyui/docs/images/15-phone-photo-explainer.jpg)](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)
+
+**[Watch the 2:00 walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)** · **[Play the new photo-to-game demo](https://comfy-fight-z.dhaakon.com/phone-photo-demo/)** · **[Download its game ZIP](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-game.zip)**
+
+ComfyUI invents six adults and a backyard as realistic phone snapshots, then uses those seven uploaded images to create **six anime fighters, The Yard, 162 poses and 22 game-audio clips**. No real-person photos or earlier game artwork are inputs. The narrated walkthrough shows generation, visual review, the builder and gameplay.
+
+[Follow the photo-to-game guide](example/phone-photos/README.md) for the seven source PNGs, workflows and upload controls. The game ZIP (about **198.6 MiB**) includes a reusable `sources/` folder: extract the game, run `npm start`, or select `sources/` in this repository's builder to customize it. [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.srt).
+
+This new demo stays separate from the included `example/bundle/`, the original public game and `npm run example` below. Its reviewed generation used **61 image calls, 22 game-audio clips and 10 narration clips**, including five image repairs; the recorded estimate is **$4.30**, not a provider billing statement.
+
+## Included example
 
 > **Included example:** six fictional fighters, The Yard, 162 poses and 22 music, effects and voice clips. The reviewed assets are included in [`example/`](example/README.md), so building this game requires no ComfyUI server, cloud account or generation credits. Regenerating the assets is optional.
 
@@ -12,13 +28,13 @@ The default game has six fighters, one backyard arena called **The Yard**, and o
 
 *The included example, built from the fictional artwork in `example/bundle/`.*
 
-## Watch the walkthrough
+### Earlier walkthrough — 2:53
 
 [![Play the Comfy Fighter Z workflow walkthrough](comfyui/docs/images/14-explainer-poster.jpg)](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.mp4)
 
 **[Watch or download the video — 2:53, 1080p](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.mp4)** · [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.srt)
 
-See the ComfyUI factories, fictional character generation, asset review and game export, with narration and captions. The video shows the earlier two-fighter walkthrough; the current six-fighter example and its build commands are below.
+This earlier video shows the two-fighter prototype and its workflow. It predates both the included six-fighter bundle and the new phone-photo demonstration above; use the current build commands below.
 
 ## 1. Build the included example
 

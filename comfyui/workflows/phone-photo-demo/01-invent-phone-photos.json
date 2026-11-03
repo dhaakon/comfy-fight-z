@@ -1,0 +1,786 @@
+{
+  "id": "ebd63264-b66f-4dde-a0e2-8f737add9dd5",
+  "revision": 0,
+  "last_node_id": 15,
+  "last_link_id": 7,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Invent phone snapshot | Griddle",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented Afro-Caribbean barbecue dad, age 48, short and broad with a natural soft belly and sturdy arms. Deep warm-brown skin, round cheeks, dark brown eyes, short tight black curls with gray at the temples, and a neatly cropped salt-and-pepper beard. A plain brick-red cotton barbecue apron ending above the knees over a cream short-sleeve T-shirt, dark navy work trousers, orange terrycloth wristbands and dark brown lace-up ankle boots. No hat, jewelry, utensils or printed writing. Warm easy grin and a grounded, friendly heavyweight presence.\nLOCATION AND MOMENT: an ordinary invented backyard side gate with a pale fence and out-of-focus terracotta paving; a friend took the picture after a cookout. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "2K",
+        "MINIMAL",
+        20261103,
+        "fixed",
+        "IMAGE",
+        "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented Afro-Caribbean barbecue dad, age 48, short and broad with a natural soft belly and sturdy arms. Deep warm-brown skin, round cheeks, dark brown eyes, short tight black curls with gray at the temples, and a neatly cropped salt-and-pepper beard. A plain brick-red cotton barbecue apron ending above the knees over a cream short-sleeve T-shirt, dark navy work trousers, orange terrycloth wristbands and dark brown lace-up ankle boots. No hat, jewelry, utensils or printed writing. Warm easy grin and a grounded, friendly heavyweight presence.\nLOCATION AND MOMENT: an ordinary invented backyard side gate with a pale fence and out-of-focus terracotta paving; a friend took the picture after a cookout. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 20261103,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        "temperature": 1,
+        "top_p": 0.95
+      }
+    },
+    {
+      "id": 2,
+      "type": "SaveImage",
+      "title": "Save NEW photo for upload | griddle",
+      "pos": [
+        490,
+        0
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-griddle"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-griddle"
+      }
+    },
+    {
+      "id": 3,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Invent phone snapshot | Rivet",
+      "pos": [
+        970,
+        0
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented South Asian workshop dad, age 46, tall with a lean muscular build, medium-brown skin, a long face, deep-set dark eyes, a broad nose, wavy black hair brushed back and a short black beard flecked with gray. Plain indigo mechanic coveralls with sleeves rolled to the elbows, a simple copper-brown leather belt and subtle copper-brown wrist straps, with scuffed steel-gray work boots. No tools, goggles, hat, logos or hanging equipment. Calm half-smile and straight relaxed posture.\nLOCATION AND MOMENT: outside an invented modest garage with an unmarked cream roller door, a plain concrete driveway and a little everyday clutter well behind him. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "2K",
+        "MINIMAL",
+        20261104,
+        "fixed",
+        "IMAGE",
+        "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented South Asian workshop dad, age 46, tall with a lean muscular build, medium-brown skin, a long face, deep-set dark eyes, a broad nose, wavy black hair brushed back and a short black beard flecked with gray. Plain indigo mechanic coveralls with sleeves rolled to the elbows, a simple copper-brown leather belt and subtle copper-brown wrist straps, with scuffed steel-gray work boots. No tools, goggles, hat, logos or hanging equipment. Calm half-smile and straight relaxed posture.\nLOCATION AND MOMENT: outside an invented modest garage with an unmarked cream roller door, a plain concrete driveway and a little everyday clutter well behind him. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 20261104,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        "temperature": 1,
+        "top_p": 0.95
+      }
+    },
+    {
+      "id": 4,
+      "type": "SaveImage",
+      "title": "Save NEW photo for upload | rivet",
+      "pos": [
+        1460,
+        0
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-rivet"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-rivet"
+      }
+    },
+    {
+      "id": 5,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Invent phone snapshot | Tempo",
+      "pos": [
+        1940,
+        0
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented East Asian music-teacher mother, age 38, compact athletic build, light warm-olive skin, a heart-shaped face, dark brown eyes and a short asymmetric auburn-red bob tucked behind one ear. A plain magenta zip track jacket worn open over an ivory T-shirt, slim midnight-blue trousers, cream high-top sneakers, simple violet fabric wristbands and small unbranded rounded headphones resting at her collar without a hanging cable. No instrument, makeup glamour, printed words or logos. An amused confident smile and light, lively posture.\nLOCATION AND MOMENT: an invented quiet community-center courtyard with pale brick, a navy bench and a soft overcast sky; a friend casually photographed her between classes. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "2K",
+        "MINIMAL",
+        20261105,
+        "fixed",
+        "IMAGE",
+        "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented East Asian music-teacher mother, age 38, compact athletic build, light warm-olive skin, a heart-shaped face, dark brown eyes and a short asymmetric auburn-red bob tucked behind one ear. A plain magenta zip track jacket worn open over an ivory T-shirt, slim midnight-blue trousers, cream high-top sneakers, simple violet fabric wristbands and small unbranded rounded headphones resting at her collar without a hanging cable. No instrument, makeup glamour, printed words or logos. An amused confident smile and light, lively posture.\nLOCATION AND MOMENT: an invented quiet community-center courtyard with pale brick, a navy bench and a soft overcast sky; a friend casually photographed her between classes. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 20261105,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        "temperature": 1,
+        "top_p": 0.95
+      }
+    },
+    {
+      "id": 6,
+      "type": "SaveImage",
+      "title": "Save NEW photo for upload | tempo",
+      "pos": [
+        2430,
+        0
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-tempo"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-tempo"
+      }
+    },
+    {
+      "id": 7,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Invent phone snapshot | Nimbus",
+      "pos": [
+        0,
+        720
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented mixed Black and Latina community-garden mother, age 44, medium height with a sturdy curvy build, golden-brown skin, a square kind face, hazel eyes and thick dark-brown braids gathered into a practical compact bun. Plain plum-purple short-sleeve work coveralls with pale blue sleeve cuffs, a broad lavender fabric belt with its ends tucked in, and dark violet rubber rain boots. Empty hands; no plants carried on her clothing, gardening tools, hat, logos or green apparel. Calm determined smile and a balanced natural stance.\nLOCATION AND MOMENT: an invented residential side patio beside a low white wall and ordinary clay planters, with a soft cloudy afternoon light and the garden behind her. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "2K",
+        "MINIMAL",
+        20261106,
+        "fixed",
+        "IMAGE",
+        "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented mixed Black and Latina community-garden mother, age 44, medium height with a sturdy curvy build, golden-brown skin, a square kind face, hazel eyes and thick dark-brown braids gathered into a practical compact bun. Plain plum-purple short-sleeve work coveralls with pale blue sleeve cuffs, a broad lavender fabric belt with its ends tucked in, and dark violet rubber rain boots. Empty hands; no plants carried on her clothing, gardening tools, hat, logos or green apparel. Calm determined smile and a balanced natural stance.\nLOCATION AND MOMENT: an invented residential side patio beside a low white wall and ordinary clay planters, with a soft cloudy afternoon light and the garden behind her. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 20261106,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        "temperature": 1,
+        "top_p": 0.95
+      }
+    },
+    {
+      "id": 8,
+      "type": "SaveImage",
+      "title": "Save NEW photo for upload | nimbus",
+      "pos": [
+        490,
+        720
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-nimbus"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-nimbus"
+      }
+    },
+    {
+      "id": 9,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Invent phone snapshot | Switchback",
+      "pos": [
+        970,
+        720
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented Southeast Asian bicycle-courier father, age 41, tall and lean with dark tan skin, a narrow face, dark eyes, clean-shaven cheeks and short straight black hair just visible below a simple matte amber bicycle helmet. Plain bright-yellow lightweight windbreaker, tapered maroon riding trousers, navy fingerless cycling gloves and navy-and-yellow low-top trainers. Helmet face opening is unobstructed. No bicycle, backpack, loose straps, sunglasses, labels or logos. A slightly crooked playful smile and a casual springy posture.\nLOCATION AND MOMENT: an invented empty neighborhood paved footpath beside a plain beige wall, with a few distant shrubs and no address signs or recognizable landmarks. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "2K",
+        "MINIMAL",
+        20261107,
+        "fixed",
+        "IMAGE",
+        "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented Southeast Asian bicycle-courier father, age 41, tall and lean with dark tan skin, a narrow face, dark eyes, clean-shaven cheeks and short straight black hair just visible below a simple matte amber bicycle helmet. Plain bright-yellow lightweight windbreaker, tapered maroon riding trousers, navy fingerless cycling gloves and navy-and-yellow low-top trainers. Helmet face opening is unobstructed. No bicycle, backpack, loose straps, sunglasses, labels or logos. A slightly crooked playful smile and a casual springy posture.\nLOCATION AND MOMENT: an invented empty neighborhood paved footpath beside a plain beige wall, with a few distant shrubs and no address signs or recognizable landmarks. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 20261107,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        "temperature": 1,
+        "top_p": 0.95
+      }
+    },
+    {
+      "id": 10,
+      "type": "SaveImage",
+      "title": "Save NEW photo for upload | switchback",
+      "pos": [
+        1460,
+        720
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-switchback"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-switchback"
+      }
+    },
+    {
+      "id": 11,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Invent phone snapshot | Brick",
+      "pos": [
+        1940,
+        720
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented white neighborhood caretaker grandfather, age 63, very tall and broad with a natural square heavyweight build, pale freckled skin, a broad rectangular face, blue-gray eyes, closely cropped silver hair and a thick silver moustache. A plain faded rose-red quilted work vest over a charcoal crewneck long-sleeve shirt, sand-colored work trousers, simple dark-red fabric wrist wraps and chunky charcoal work boots. No tools, hat, badges, logos or writing. A warm stubborn grin, weathered hands and a relaxed wide stance.\nLOCATION AND MOMENT: an invented small garden work shed exterior with an unmarked wooden door, pale paving and a blurred red wheelbarrow far behind him. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "2K",
+        "MINIMAL",
+        20261108,
+        "fixed",
+        "IMAGE",
+        "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented white neighborhood caretaker grandfather, age 63, very tall and broad with a natural square heavyweight build, pale freckled skin, a broad rectangular face, blue-gray eyes, closely cropped silver hair and a thick silver moustache. A plain faded rose-red quilted work vest over a charcoal crewneck long-sleeve shirt, sand-colored work trousers, simple dark-red fabric wrist wraps and chunky charcoal work boots. No tools, hat, badges, logos or writing. A warm stubborn grin, weathered hands and a relaxed wide stance.\nLOCATION AND MOMENT: an invented small garden work shed exterior with an unmarked wooden door, pale paving and a blurred red wheelbarrow far behind him. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 20261108,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        "temperature": 1,
+        "top_p": 0.95
+      }
+    },
+    {
+      "id": 12,
+      "type": "SaveImage",
+      "title": "Save NEW photo for upload | brick",
+      "pos": [
+        2430,
+        720
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-brick"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-brick"
+      }
+    },
+    {
+      "id": 13,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Invent phone snapshot | The Yard",
+      "pos": [
+        0,
+        1440
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create one photorealistic casual iPhone-style landscape snapshot of a wholly invented backyard. TEXT ONLY: no photograph, earlier image, real venue or recognizable landmark is supplied. An entirely invented ordinary suburban backyard with a broad flat faded terracotta patio across the foreground, a low cream picket fence, a small weathered red timber garden shed at the rear right, simple overhead string lights, shrubs and rounded distant hills. A small unbranded barbecue and two folded chairs stay far behind the empty fighting area. Warm late-afternoon light and realistic slightly imperfect paving make it feel like an everyday phone photograph. No people, identifiable house numbers, recognizable real venue, lettering, brands, floor emblems or added speed-line borders. Keep the playable floor flat and clear. A friend stands at normal eye level along the side of the patio, framing a wide 16:9 view with a large unobstructed flat floor across the lower half and the rear fence running horizontally. Clear fighting space in the foreground; all furniture and garden props stay near the rear fence. Natural warm ambient late-afternoon daylight, mild phone HDR with realistic shadows, small paving imperfections, ordinary domestic textures and slight handheld framing imperfection while keeping the horizon almost level. It should look like a quick, believable smartphone photograph, not a property advert, cinema shot or game painting. No people or animals, no staged action, no green screen, no anime or illustration, no dramatic energy, no foreground obstacles, no real house numbers, brands, readable signs, logos, watermarks, decorative borders, speed lines, radial rays, vignette or phone UI.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "MINIMAL",
+        20261109,
+        "fixed",
+        "IMAGE",
+        "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create one photorealistic casual iPhone-style landscape snapshot of a wholly invented backyard. TEXT ONLY: no photograph, earlier image, real venue or recognizable landmark is supplied. An entirely invented ordinary suburban backyard with a broad flat faded terracotta patio across the foreground, a low cream picket fence, a small weathered red timber garden shed at the rear right, simple overhead string lights, shrubs and rounded distant hills. A small unbranded barbecue and two folded chairs stay far behind the empty fighting area. Warm late-afternoon light and realistic slightly imperfect paving make it feel like an everyday phone photograph. No people, identifiable house numbers, recognizable real venue, lettering, brands, floor emblems or added speed-line borders. Keep the playable floor flat and clear. A friend stands at normal eye level along the side of the patio, framing a wide 16:9 view with a large unobstructed flat floor across the lower half and the rear fence running horizontally. Clear fighting space in the foreground; all furniture and garden props stay near the rear fence. Natural warm ambient late-afternoon daylight, mild phone HDR with realistic shadows, small paving imperfections, ordinary domestic textures and slight handheld framing imperfection while keeping the horizon almost level. It should look like a quick, believable smartphone photograph, not a property advert, cinema shot or game painting. No people or animals, no staged action, no green screen, no anime or illustration, no dramatic energy, no foreground obstacles, no real house numbers, brands, readable signs, logos, watermarks, decorative borders, speed lines, radial rays, vignette or phone UI.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 20261109,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create exactly one photorealistic casual smartphone snapshot from this text alone. Every person is a newly invented fictional adult and every place is invented. No source images, real-person likeness, existing character or recognizable real venue are supplied or requested. Natural phone-camera realism, not illustration. No text, watermark, logos or phone-interface overlays.",
+        "temperature": 1,
+        "top_p": 0.95
+      }
+    },
+    {
+      "id": 14,
+      "type": "SaveImage",
+      "title": "Save NEW photo for upload | yard",
+      "pos": [
+        490,
+        1440
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-yard"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/phone-photo-demo/NEW_RUN/cfz-phone-NEW_RUN-yard"
+      }
+    },
+    {
+      "id": 15,
+      "type": "MarkdownNote",
+      "title": "Phase 1: entirely fictional phone photos",
+      "pos": [
+        0,
+        -370
+      ],
+      "size": [
+        2850,
+        300
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# MUTED REVIEW TEMPLATE\n\nPrepare a new run with node comfyui/tools/prepare-phone-photo-demo.cjs --out output/phone-photo-demo/<fresh-run>. Open the prepared phase1/phase2 UI files; this review template cannot queue model calls.\n\n# Phase 1: invent seven phone photographs\n\nSix newly invented adults plus one invented Yard. Seven native 2K cloud requests, estimated $0.504504. Every request is text-only: no Load Image nodes, no photo inputs and no earlier-session references. Casual phone snapshots are deliberately realistic; the subjects are fictional.\n\nReview the seven outputs, download each to the plan.json references/<id>.png path, then upload these NEW files through Comfy MCP with their exact uploadFilename. Only after that upload gate should phase2-ui.json / phase2-api.json be validated and queued. Preparing these recipes makes no model calls."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      9,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      13,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.4,
+      "offset": [
+        80,
+        430
+      ]
+    }
+  },
+  "version": 0.4
+}

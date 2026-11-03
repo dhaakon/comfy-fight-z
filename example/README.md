@@ -27,6 +27,8 @@ The example contains:
 
 All character and environment sources are invented from text. No real-person photos, earlier private media, or opening film are included. The generation template has three environment slots; the other two remain disabled.
 
+For a separate demonstration that first invents realistic phone snapshots and then uses them as uploaded game references, see [Phone snapshots → Comfy Fighter Z](phone-photos/README.md). That new demonstration is under review; it does not replace this included example or change `npm run example`.
+
 ## Find your game and customize it
 
 Each build creates a fresh folder under `output/example/` containing:

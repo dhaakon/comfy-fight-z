@@ -1,0 +1,181 @@
+{
+  "factorySchema": "comfy-fighter-factory/v1",
+  "demoSource": "fictional-phone-photos-from-text",
+  "title": "Comfy Fighter Z",
+  "subtitle": "Higgsfield Open Source Saga",
+  "assetRoot": "__PHONE_PHOTO_DEMO_BUNDLE_ROOT__",
+  "model": "Gemini Nano Banana 2.1",
+  "style": "Original 1990s shonen battle-anime fighting-game artwork adapted from the supplied newly generated fictional phone photograph. Preserve that invented adult's visible face shape, skin tone, age, body build, hairstyle and everyday outfit colors while drawing bold economical black ink, angular expressive eyes, clear two-tone cel shading and energetic readable poses. These phone photographs were invented from text: no real-person or previous-session photo is an input. Maintain distinct silhouettes and complete hands and shoes. Do not substitute an earlier character design, copy a franchise costume, add a brand or make every person muscular. No green clothing, extra fingers, duplicate bodies, text or watermark.",
+  "uiStyle": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+  "stageStyle": "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+  "fighters": [
+    {
+      "id": "griddle",
+      "name": "Griddle",
+      "color": "#ff8b3d",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A newly invented Afro-Caribbean barbecue dad, age 48, short and broad with a natural soft belly and sturdy arms. Deep warm-brown skin, round cheeks, dark brown eyes, short tight black curls with gray at the temples, and a neatly cropped salt-and-pepper beard. A plain brick-red cotton barbecue apron ending above the knees over a cream short-sleeve T-shirt, dark navy work trousers, orange terrycloth wristbands and dark brown lace-up ankle boots. No hat, jewelry, utensils or printed writing. Warm easy grin and a grounded, friendly heavyweight presence.",
+      "specialMove": {
+        "name": "Sizzle Burst",
+        "description": "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell."
+      },
+      "introTagline": "The grill is hot. Your winning streak is toast.",
+      "introVoice": "Brian (male, american)",
+      "sourceMode": "Upload reference",
+      "photoPrompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented Afro-Caribbean barbecue dad, age 48, short and broad with a natural soft belly and sturdy arms. Deep warm-brown skin, round cheeks, dark brown eyes, short tight black curls with gray at the temples, and a neatly cropped salt-and-pepper beard. A plain brick-red cotton barbecue apron ending above the knees over a cream short-sleeve T-shirt, dark navy work trousers, orange terrycloth wristbands and dark brown lace-up ankle boots. No hat, jewelry, utensils or printed writing. Warm easy grin and a grounded, friendly heavyweight presence.\nLOCATION AND MOMENT: an ordinary invented backyard side gate with a pale fence and out-of-focus terracotta paving; a friend took the picture after a cookout. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes."
+    },
+    {
+      "id": "rivet",
+      "name": "Rivet",
+      "color": "#58c7ff",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A newly invented South Asian workshop dad, age 46, tall with a lean muscular build, medium-brown skin, a long face, deep-set dark eyes, a broad nose, wavy black hair brushed back and a short black beard flecked with gray. Plain indigo mechanic coveralls with sleeves rolled to the elbows, a simple copper-brown leather belt and subtle copper-brown wrist straps, with scuffed steel-gray work boots. No tools, goggles, hat, logos or hanging equipment. Calm half-smile and straight relaxed posture.",
+      "specialMove": {
+        "name": "Magnet Crash",
+        "description": "Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms."
+      },
+      "introTagline": "I fix everything. Your stance is next.",
+      "introVoice": "Adam (male, american)",
+      "sourceMode": "Upload reference",
+      "photoPrompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented South Asian workshop dad, age 46, tall with a lean muscular build, medium-brown skin, a long face, deep-set dark eyes, a broad nose, wavy black hair brushed back and a short black beard flecked with gray. Plain indigo mechanic coveralls with sleeves rolled to the elbows, a simple copper-brown leather belt and subtle copper-brown wrist straps, with scuffed steel-gray work boots. No tools, goggles, hat, logos or hanging equipment. Calm half-smile and straight relaxed posture.\nLOCATION AND MOMENT: outside an invented modest garage with an unmarked cream roller door, a plain concrete driveway and a little everyday clutter well behind him. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes."
+    },
+    {
+      "id": "tempo",
+      "name": "Tempo",
+      "color": "#f46bc4",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A newly invented East Asian music-teacher mother, age 38, compact athletic build, light warm-olive skin, a heart-shaped face, dark brown eyes and a short asymmetric auburn-red bob tucked behind one ear. A plain magenta zip track jacket worn open over an ivory T-shirt, slim midnight-blue trousers, cream high-top sneakers, simple violet fabric wristbands and small unbranded rounded headphones resting at her collar without a hanging cable. No instrument, makeup glamour, printed words or logos. An amused confident smile and light, lively posture.",
+      "specialMove": {
+        "name": "Beat Drop",
+        "description": "Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering."
+      },
+      "introTagline": "Keep up with the beat, or take a seat.",
+      "introVoice": "River (neutral, american)",
+      "sourceMode": "Upload reference",
+      "photoPrompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented East Asian music-teacher mother, age 38, compact athletic build, light warm-olive skin, a heart-shaped face, dark brown eyes and a short asymmetric auburn-red bob tucked behind one ear. A plain magenta zip track jacket worn open over an ivory T-shirt, slim midnight-blue trousers, cream high-top sneakers, simple violet fabric wristbands and small unbranded rounded headphones resting at her collar without a hanging cable. No instrument, makeup glamour, printed words or logos. An amused confident smile and light, lively posture.\nLOCATION AND MOMENT: an invented quiet community-center courtyard with pale brick, a navy bench and a soft overcast sky; a friend casually photographed her between classes. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes."
+    },
+    {
+      "id": "nimbus",
+      "name": "Nimbus",
+      "color": "#b99cff",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A newly invented mixed Black and Latina community-garden mother, age 44, medium height with a sturdy curvy build, golden-brown skin, a square kind face, hazel eyes and thick dark-brown braids gathered into a practical compact bun. Plain plum-purple short-sleeve work coveralls with pale blue sleeve cuffs, a broad lavender fabric belt with its ends tucked in, and dark violet rubber rain boots. Empty hands; no plants carried on her clothing, gardening tools, hat, logos or green apparel. Calm determined smile and a balanced natural stance.",
+      "specialMove": {
+        "name": "Cloudburst Palm",
+        "description": "Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot."
+      },
+      "introTagline": "I raised a garden. I can handle a little thunder.",
+      "introVoice": "Jessica (female, american)",
+      "sourceMode": "Upload reference",
+      "photoPrompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented mixed Black and Latina community-garden mother, age 44, medium height with a sturdy curvy build, golden-brown skin, a square kind face, hazel eyes and thick dark-brown braids gathered into a practical compact bun. Plain plum-purple short-sleeve work coveralls with pale blue sleeve cuffs, a broad lavender fabric belt with its ends tucked in, and dark violet rubber rain boots. Empty hands; no plants carried on her clothing, gardening tools, hat, logos or green apparel. Calm determined smile and a balanced natural stance.\nLOCATION AND MOMENT: an invented residential side patio beside a low white wall and ordinary clay planters, with a soft cloudy afternoon light and the garden behind her. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes."
+    },
+    {
+      "id": "switchback",
+      "name": "Switchback",
+      "color": "#ffd44d",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A newly invented Southeast Asian bicycle-courier father, age 41, tall and lean with dark tan skin, a narrow face, dark eyes, clean-shaven cheeks and short straight black hair just visible below a simple matte amber bicycle helmet. Plain bright-yellow lightweight windbreaker, tapered maroon riding trousers, navy fingerless cycling gloves and navy-and-yellow low-top trainers. Helmet face opening is unobstructed. No bicycle, backpack, loose straps, sunglasses, labels or logos. A slightly crooked playful smile and a casual springy posture.",
+      "specialMove": {
+        "name": "Express Pulse",
+        "description": "Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell."
+      },
+      "introTagline": "School run complete. Express knockout incoming.",
+      "introVoice": "Charlie (male, australian)",
+      "sourceMode": "Upload reference",
+      "photoPrompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented Southeast Asian bicycle-courier father, age 41, tall and lean with dark tan skin, a narrow face, dark eyes, clean-shaven cheeks and short straight black hair just visible below a simple matte amber bicycle helmet. Plain bright-yellow lightweight windbreaker, tapered maroon riding trousers, navy fingerless cycling gloves and navy-and-yellow low-top trainers. Helmet face opening is unobstructed. No bicycle, backpack, loose straps, sunglasses, labels or logos. A slightly crooked playful smile and a casual springy posture.\nLOCATION AND MOMENT: an invented empty neighborhood paved footpath beside a plain beige wall, with a few distant shrubs and no address signs or recognizable landmarks. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes."
+    },
+    {
+      "id": "brick",
+      "name": "Brick",
+      "color": "#ff6677",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A newly invented white neighborhood caretaker grandfather, age 63, very tall and broad with a natural square heavyweight build, pale freckled skin, a broad rectangular face, blue-gray eyes, closely cropped silver hair and a thick silver moustache. A plain faded rose-red quilted work vest over a charcoal crewneck long-sleeve shirt, sand-colored work trousers, simple dark-red fabric wrist wraps and chunky charcoal work boots. No tools, hat, badges, logos or writing. A warm stubborn grin, weathered hands and a relaxed wide stance.",
+      "specialMove": {
+        "name": "Foundation Break",
+        "description": "Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell."
+      },
+      "introTagline": "I built this block. Now hold your ground.",
+      "introVoice": "Daniel (male, british)",
+      "sourceMode": "Upload reference",
+      "photoPrompt": "Create one casual, believable iPhone-style snapshot from TEXT ONLY. This is a newly invented fictional adult, not a depiction or imitation of any actual person, celebrity or earlier character. No source photograph or other image is supplied. Photorealistic everyday phone-camera rendering: natural skin texture and pores, small age lines, realistic hair, ordinary fabric creases, soft ambient daylight, mild computational HDR and phone sharpening, a little natural lens distortion and slightly imperfect handheld framing. A friend is standing several metres away using a normal 1x phone camera at chest height, not taking a selfie. Full body from top of head to complete shoes, at least 10 percent space above the head and below the feet, with both hands fully visible and naturally held slightly away from the torso; separate feet, fingers relaxed, one person only. Mostly front-facing with a small natural three-quarter turn, looking near the camera. Keep realistic age and body proportions, ordinary unretouched appearance, not a fashion campaign. Include the complete everyday background. No green-screen or chroma backdrop, no studio backdrop, no anime, illustration, cel shading, superhero costume, muscle exaggeration, fighting effects, collage, grid, borders, readable text, brands, watermarks or phone interface. No green clothing or green accessories.\n\nPERSON AND CLOTHES: A newly invented white neighborhood caretaker grandfather, age 63, very tall and broad with a natural square heavyweight build, pale freckled skin, a broad rectangular face, blue-gray eyes, closely cropped silver hair and a thick silver moustache. A plain faded rose-red quilted work vest over a charcoal crewneck long-sleeve shirt, sand-colored work trousers, simple dark-red fabric wrist wraps and chunky charcoal work boots. No tools, hat, badges, logos or writing. A warm stubborn grin, weathered hands and a relaxed wide stance.\nLOCATION AND MOMENT: an invented small garden work shed exterior with an unmarked wooden door, pale paving and a blurred red wheelbarrow far behind him. The entire location is also invented and does not reproduce a real venue. Avoid foreground objects covering the hands or shoes."
+    }
+  ],
+  "stages": [
+    {
+      "id": "yard",
+      "name": "The Yard",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "An entirely invented ordinary suburban backyard with a broad flat faded terracotta patio across the foreground, a low cream picket fence, a small weathered red timber garden shed at the rear right, simple overhead string lights, shrubs and rounded distant hills. A small unbranded barbecue and two folded chairs stay far behind the empty fighting area. Warm late-afternoon light and realistic slightly imperfect paving make it feel like an everyday phone photograph. No people, identifiable house numbers, recognizable real venue, lettering, brands, floor emblems or added speed-line borders. Keep the playable floor flat and clear.",
+      "sourceMode": "Upload reference",
+      "photoPrompt": "Create one photorealistic casual iPhone-style landscape snapshot of a wholly invented backyard. TEXT ONLY: no photograph, earlier image, real venue or recognizable landmark is supplied. An entirely invented ordinary suburban backyard with a broad flat faded terracotta patio across the foreground, a low cream picket fence, a small weathered red timber garden shed at the rear right, simple overhead string lights, shrubs and rounded distant hills. A small unbranded barbecue and two folded chairs stay far behind the empty fighting area. Warm late-afternoon light and realistic slightly imperfect paving make it feel like an everyday phone photograph. No people, identifiable house numbers, recognizable real venue, lettering, brands, floor emblems or added speed-line borders. Keep the playable floor flat and clear. A friend stands at normal eye level along the side of the patio, framing a wide 16:9 view with a large unobstructed flat floor across the lower half and the rear fence running horizontally. Clear fighting space in the foreground; all furniture and garden props stay near the rear fence. Natural warm ambient late-afternoon daylight, mild phone HDR with realistic shadows, small paving imperfections, ordinary domestic textures and slight handheld framing imperfection while keeping the horizon almost level. It should look like a quick, believable smartphone photograph, not a property advert, cinema shot or game painting. No people or animals, no staged action, no green screen, no anime or illustration, no dramatic energy, no foreground obstacles, no real house numbers, brands, readable signs, logos, watermarks, decorative borders, speed lines, radial rays, vignette or phone UI."
+    },
+    {
+      "id": "rooftop",
+      "name": "Sunset Rooftop",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": false,
+      "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
+      "sourceMode": "Upload reference"
+    },
+    {
+      "id": "arcade",
+      "name": "Midnight Arcade",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": false,
+      "description": "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.",
+      "sourceMode": "Upload reference"
+    }
+  ],
+  "sheets": {
+    "sheet": [
+      "idle",
+      "walk",
+      "punch",
+      "kick",
+      "block",
+      "hit",
+      "special",
+      "down",
+      "win"
+    ],
+    "sheetB": [
+      "stance2",
+      "crouch",
+      "sweep",
+      "launcher",
+      "jump",
+      "airkick",
+      "hpunch",
+      "dash",
+      "tumble"
+    ],
+    "sheetC": [
+      "walk2",
+      "lkick",
+      "cjab",
+      "airpunch",
+      "throw",
+      "taunt",
+      "getup",
+      "powerup",
+      "entrance"
+    ]
+  },
+  "phonePhotoSchema": "comfy-fighter-phone-photo-demo/v1"
+}

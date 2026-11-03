@@ -51,7 +51,9 @@ function validateCatalog(schemas, config) {
 
 function validateConfig(config) {
   if (config.schema !== 'comfy-fighter-explainer/v1' || config.width !== 1920 || config.height !== 1080 || config.fps !== 30) throw new Error('Expected a 1920x1080, 30fps Comfy Fighter Z explainer.');
-  if (!Array.isArray(config.scenes) || config.scenes.length !== 12) throw new Error('The explainer requires twelve separately narrated scenes.');
+  const fixedShort = config.durationMode === 'fixed' && config.targetDurationSeconds === 120;
+  if (!Array.isArray(config.scenes) || config.scenes.length !== (fixedShort ? 10 : 12)) throw new Error(fixedShort ? 'The short explainer requires ten separately narrated scenes.' : 'The explainer requires twelve separately narrated scenes.');
+  if (fixedShort && config.scenes.reduce((sum, scene) => sum + scene.targetSeconds, 0) !== 120) throw new Error('The short explainer scene timings must total exactly 120 seconds.');
   if (config.voice.model !== 'eleven_v4' || config.voice.saveFormat !== 'flac') throw new Error('This estimate and workflow require Eleven v4 with FLAC saves.');
   const ids = new Set();
   for (const [index, scene] of config.scenes.entries()) {
@@ -62,7 +64,8 @@ function validateConfig(config) {
     if (requestText(config, scene).length > 10000) throw new Error(`Scene ${scene.id} exceeds the provider text limit.`);
   }
   const count = config.scenes.reduce((sum, scene) => sum + words(scene.narration), 0);
-  if (count < 350 || count > 420) throw new Error(`Expected 350–420 spoken words; found ${count}.`);
+  const minimum = fixedShort ? 230 : 350, maximum = fixedShort ? 250 : 420;
+  if (count < minimum || count > maximum) throw new Error(`Expected ${minimum}–${maximum} spoken words; found ${count}.`);
   return count;
 }
 
@@ -104,8 +107,8 @@ function makeNarrationWorkflow(config, filenameRoot) {
       localAudio: scene.audio, visual: scene.visual, targetSeconds: scene.targetSeconds });
   });
   const characters = clips.reduce((sum, clip) => sum + clip.billedCharacters, 0), estimate = characters * RATE / 1000;
-  nodes.push({ id: nextNode++, type: 'MarkdownNote', title: 'Twelve separately saved narration scenes', pos: [-510, -390], size: [1490, 350], flags: {}, order: nodes.length, mode: 0, inputs: [], outputs: [], properties: {},
-    widgets_values: [`# Comfy Fighter Z: 1080p explainer narration\n\n12 paid Eleven v4 calls using the stock Brian voice. ${characters} input characters including delivery tags and punctuation; estimated $${estimate.toFixed(6)} at $${RATE}/1,000 characters. No music, voice cloning, input audio or image generation. No automatic paid retries.\n\nEach Save Audio node writes one FLAC beneath ComfyUI's configured output/${filenameRoot}/ directory. Fetch the twelve outputs, then place each scene at the audio/<scene-id>.flac path in the storyboard. Measure actual clip durations when editing; storyboard timings are estimates.\n\nPreparing or validating this graph spends nothing. Submit only after explicit approval of this narration batch.`] });
+  nodes.push({ id: nextNode++, type: 'MarkdownNote', title: `${config.scenes.length} separately saved narration scenes`, pos: [-510, -390], size: [1490, 350], flags: {}, order: nodes.length, mode: 0, inputs: [], outputs: [], properties: {},
+    widgets_values: [`# Comfy Fighter Z: 1080p explainer narration\n\n${config.scenes.length} paid Eleven v4 calls using the stock Brian voice. ${characters} input characters including delivery tags and punctuation; estimated $${estimate.toFixed(6)} at $${RATE}/1,000 characters. No music, voice cloning, input audio or image generation. No automatic paid retries.\n\nEach Save Audio node writes one FLAC beneath ComfyUI's configured output/${filenameRoot}/ directory. Fetch the ${config.scenes.length} outputs, then place each scene at the audio/<scene-id>.flac path in the storyboard. Measure actual clip durations when editing; storyboard timings are estimates.\n\nPreparing or validating this graph spends nothing. Submit only after explicit approval of this narration batch.`] });
   const digest = createHash('sha256').update(`comfy-fighter-explainer-${filenameRoot}`).digest('hex');
   const workflow = { id: `${digest.slice(0,8)}-${digest.slice(8,12)}-4${digest.slice(13,16)}-a${digest.slice(17,20)}-${digest.slice(20,32)}`, revision: 0,
     last_node_id: nextNode - 1, last_link_id: nextLink - 1, nodes, links, groups: [], config: {}, extra: { ds: { scale: 0.42, offset: [570, 430] } }, version: 0.4 };

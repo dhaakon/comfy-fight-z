@@ -46,8 +46,14 @@ function makeApiPrompt(workflow) {
   return prompt;
 }
 
-function buildExample(input, bundleRoot, { seed = 20261103, preparedAt = new Date().toISOString() } = {}) {
+function buildExample(input, bundleRoot, options = {}) {
   validateConfig(input);
+  return buildCombinedGame(input, bundleRoot, options);
+}
+
+// Composition is reusable after a caller validates its own reference policy.
+// The public example wrapper above continues to require text-only sources.
+function buildCombinedGame(input, bundleRoot, { seed = 20261103, preparedAt = new Date().toISOString() } = {}) {
   if (!Number.isSafeInteger(seed) || seed < 0) throw new Error('Seed must be a nonnegative safe integer.');
   const config = structuredClone(input);
   config.assetRoot = bundleRoot;
@@ -211,4 +217,4 @@ if (require.main === module) {
   }
   prepare(options).then(plan => console.log(JSON.stringify({ directory: plan.directory, bundle: plan.bundle, ...plan.total, priceStatus: plan.priceStatus, generationSubmitted: false }, null, 2))).catch(error => { console.error(error.message); process.exitCode = 1; });
 }
-module.exports = { PLACEHOLDER, RATES, validateConfig, makeApiPrompt, buildExample, makeTemplate, checkPrices, freshDirectory, prepare };
+module.exports = { PLACEHOLDER, RATES, validateConfig, makeApiPrompt, buildExample, buildCombinedGame, makeTemplate, checkPrices, freshDirectory, prepare };

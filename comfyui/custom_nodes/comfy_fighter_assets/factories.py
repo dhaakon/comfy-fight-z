@@ -344,12 +344,15 @@ class CFZSharedArtFactory(io.ComfyNode):
         jobs = [
             ("title", "16:9", "Dramatic game-title background based on the venue, animated energy and speed lines. No people or readable text; leave center space for the title overlay."),
             ("select", "16:9", "Character-selection backdrop based on the venue, subdued tournament lighting. No portraits, text, boxes or controls; leave central space for six fighter cards."),
-            ("logo", "3:2", f"Original arcade logo reading exactly {project['title']}. Bold clear lettering and energetic emblem, no people or other lettering. " + KEY.replace("no text, ", "")),
+            ("logo", "3:2", f"ASSET TYPE: one isolated typographic logo, not a scene or game screenshot. Render only the exact words {project['title']} as one centered arcade wordmark. Electric gold and white italic beveled lettering, thick black ink outline, restrained cyan and magenta edge accents, oversized final Z. Keep every letter complete with at least 12 percent empty padding. The entire background is perfectly uniform chroma green RGB(0,255,0). No people, faces, bodies, fighters, scenery, buildings, floors, health bars, interface mockups, subtitle, other words, numbers, frames or watermark."),
             ("hud", "16:9", "Thin cyan left and magenta right top-edge accents with yellow trim. All interior and fighting areas are empty flat chroma green. No text, numbers, character portraits or fake health bars. " + KEY.replace("borders or ", "")),
-            ("icons", "1:1", "One compact original energy crest for the fighting-game meter: three linked workflow nodes with a lightning bolt. Clean yellow, white, cyan and magenta shape, no words or numbers. " + KEY),
+            ("icons", "1:1", "ASSET TYPE: one isolated geometric interface icon, not a scene or game screenshot. Render only a compact centered energy crest made of exactly three small linked rectangular workflow nodes and one central lightning bolt. Clean gold, white, cyan and magenta shapes with crisp black ink outlines and simple cel shading. Keep the complete emblem inside the central 70 percent of the canvas. The entire background is perfectly uniform chroma green RGB(0,255,0). No people, faces, bodies, fighters, scenery, buildings, floors, weapons, clothing, health bars, interface mockups, words, numbers, frames or watermark."),
         ]
         for index, (identity, aspect, prompt) in enumerate(jobs):
-            generated = _cloud(graph, project, project["ui_style"] + "\n" + prompt, stage_reference if identity in {"title", "select"} else None, aspect, offset=40 + index)
+            # Scene-oriented UI styles can turn a logo or icon into a game illustration.
+            # These two isolated assets carry their complete visual style in their own prompt.
+            full_prompt = prompt if identity in {"logo", "icons"} else project["ui_style"] + "\n" + prompt
+            generated = _cloud(graph, project, full_prompt, stage_reference if identity in {"title", "select"} else None, aspect, offset=40 + index)
             assets.append(_save(graph, project, generated.out(0), {"id": identity, "kind": "ui", "key": identity in {"logo", "hud", "icons"}}, members))
         prompt = (project["style"] + "\nSquare 3x3 sheet of nine separate fighting-game effects in exact row-major order: " + ", ".join(EFFECTS) + ". "
                   "Each effect stays completely inside its cell with clear empty padding, no people or body parts. Compact impact bursts, shields and energy shapes. " + KEY)

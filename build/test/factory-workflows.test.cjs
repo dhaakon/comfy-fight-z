@@ -98,18 +98,29 @@ test('browser downloads match canonical workflows exactly and advanced native gr
   assert.equal(advanced.nodes.filter(n=>n.type==='CFZSaveAsset').length,56);
 });
 
-test('every shipped demo workflow starts without external image files', () => {
+test('shipped demos are text-only except the explicitly muted new-photo upload template', () => {
   const files = directory => fs.readdirSync(path.join(ROOT,directory),{withFileTypes:true}).flatMap(entry =>
     entry.isDirectory() ? files(path.join(directory,entry.name)) : [path.join(directory,entry.name)]);
   const recipes = [...files('comfyui/workflows'),...files('build/public/builder/templates'),
     'comfyui/workflows/comfy-hackathon.json','comfyui/workflows/comfy-audio.json','comfyui/workflows/comfy-opening.json','comfyui/workflows/simple-image-generation.json'];
   for (const file of recipes.filter(file=>file.endsWith('.json'))) {
-    for (const node of read(file).nodes || []) {
+    const workflow=read(file);
+    const phoneUpload=file.replaceAll('\\','/')==='comfyui/workflows/phone-photo-demo/02-photos-to-game.json';
+    if(phoneUpload) {
+      assert.equal(workflow.extra.cfzPhonePhotoDemo.phase,2);
+      assert.ok(functional(workflow).every(node=>node.mode===2),`${file} upload template must remain muted`);
+    }
+    for (const node of workflow.nodes || []) {
       assert.notEqual(node.type,'LoadImage',`${file} must not load a previous session image`);
-      assert.ok(!node.widgets_values_named?.image,`${file} must not preselect an external image`);
+      if(phoneUpload && node.widgets_values_named?.image) {
+        assert.ok(['CFZCharacterFactory','CFZEnvironmentFactory'].includes(node.type));
+        assert.equal(node.widgets_values_named.source_mode,'Upload reference');
+        assert.match(node.widgets_values_named.image,/^cfz-phone-NEW_RUN-(griddle|rivet|tempo|nimbus|switchback|brick|yard)\.png$/);
+      } else assert.ok(!node.widgets_values_named?.image,`${file} must not preselect an external image`);
       if (['CFZProjectSettings','CFZAssetRoot'].includes(node.type)) {
         const outputRoot=node.widgets_values_named?.root_directory || node.widgets_values[0];
-        assert.ok(path.resolve(outputRoot).startsWith(path.join(ROOT,'output')+path.sep),`${file} must write generated assets under output/`);
+        if(phoneUpload) assert.equal(outputRoot,'__PHONE_PHOTO_DEMO_BUNDLE_ROOT__');
+        else assert.ok(path.resolve(outputRoot).startsWith(path.join(ROOT,'output')+path.sep),`${file} must write generated assets under output/`);
       }
     }
   }

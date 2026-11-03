@@ -5,6 +5,21 @@ const path=require('node:path');
 const {makeGraph,makeJobs,makeBundleGraph}=require('../../comfyui/tools/prepare-workflows.cjs');
 const read=p=>JSON.parse(fs.readFileSync(path.join(__dirname,'../..',p),'utf8'));
 const config=read('comfyui/config/game.json'), template=read('comfyui/workflows/templates/cloud-image.json');
+test('standalone logo and icon cannot inherit scene-directed style or image inputs',()=>{
+  const sceneStyle='STYLE_SENTINEL: two fighters in a crowded street tournament scene';
+  const jobs=makeJobs({...config,uiStyle:sceneStyle});
+  for(const id of ['logo','icons']) {
+    const job=jobs.find(j=>j.id===id);
+    assert.equal(job.reference,undefined);
+    assert.ok(!job.prompt.includes(sceneStyle));
+    assert.match(job.prompt,/ASSET TYPE: one isolated/);
+    assert.match(job.prompt,/No people, faces, bodies, fighters, scenery/);
+    const graph=makeGraph([job],config,template);
+    assert.equal(graph.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,1);
+    assert.ok(graph.nodes.find(n=>n.type==='GeminiNanoBanana2V2').inputs.every(i=>i.link===null));
+  }
+  for(const id of ['title','select','hud']) assert.ok(jobs.find(j=>j.id===id).prompt.includes(sceneStyle));
+});
 test('every plan asset has an importable name and right-facing 27-pose fighter contract',()=>{
   const jobs=makeJobs(config);
   assert.equal(new Set(jobs.map(j=>j.id)).size,jobs.length);
