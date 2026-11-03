@@ -37,22 +37,22 @@
         "Node name for S&R": "CFZProjectSettings"
       },
       "widgets_values": [
-        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory\\character-allyson",
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory\\character-griddle",
         "Comfy Fighter Z",
         "Higgsfield Open Source Saga",
-        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
-        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
-        "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+        "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
         "Gemini Nano Banana 2.1",
         42
       ],
       "widgets_values_named": {
-        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory\\character-allyson",
+        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory\\character-griddle",
         "title": "Comfy Fighter Z",
         "subtitle": "Higgsfield Open Source Saga",
-        "style": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
-        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
-        "stage_style": "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+        "stage_style": "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
         "model": "Gemini Nano Banana 2.1",
         "seed": 42
       }
@@ -110,26 +110,28 @@
         "Node name for S&R": "CFZCharacterFactory"
       },
       "widgets_values": [
-        "allyson.jpeg",
-        "Allyson",
-        "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "Node Burst",
-        "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
-        "Every node is connected. Your defeat is next.",
-        "#f4ef35",
-        "allyson",
-        false
+        "",
+        "Griddle",
+        "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+        "Sizzle Burst",
+        "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.",
+        "The grill is hot. Your winning streak is toast.",
+        "#ff8b3d",
+        "griddle",
+        false,
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
-        "image": "allyson.jpeg",
-        "name": "Allyson",
-        "description": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "special_name": "Node Burst",
-        "special_description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
-        "intro_tagline": "Every node is connected. Your defeat is next.",
-        "color": "#f4ef35",
-        "character_id": "allyson",
-        "include_sprite_sheets": false
+        "image": "",
+        "name": "Griddle",
+        "description": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+        "special_name": "Sizzle Burst",
+        "special_description": "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.",
+        "intro_tagline": "The grill is hot. Your winning streak is toast.",
+        "color": "#ff8b3d",
+        "character_id": "griddle",
+        "include_sprite_sheets": false,
+        "source_mode": "Invent fictional reference"
       }
     },
     {
@@ -373,7 +375,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# One complete character pack\n\nUpload the source photo and edit this fighter. The character factory generates identity, portrait, hero and cut-in; its internal sheets are OFF. The three visible sheet nodes reuse that identity. Seven paid images (~$0.408) + one local source save. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle."
+        "# One complete character pack\n\nInvent mode creates a fresh fictional source from text, then identity, portrait, hero and cut-in. Its internal sheets are OFF: the three visible sheet nodes reuse that identity. Eight paid images in Invent mode; seven when explicitly uploading a new reference. No previous photos are selected. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle."
       ]
     }
   ],

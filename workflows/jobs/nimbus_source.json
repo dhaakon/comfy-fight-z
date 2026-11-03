@@ -1,0 +1,161 @@
+{
+  "id": "2d4066d5-c29c-4e0d-ad8b-433d404f67b2",
+  "revision": 0,
+  "last_node_id": 3,
+  "last_link_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        220
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Generate one wholly fictional adult anime fighting-game character from text, with no photo input and no real-person likeness. Nimbus is a community-garden mom in her mid forties: medium-height sturdy build, golden-brown skin, square kind face, thick cream-colored braid tucked into a short loop at the back of the head and a determined smile. Plum-purple short-sleeve work coveralls, broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No hat, plants, watering can, loose trailing fabric or writing. Full-body three-quarter side view facing RIGHT, calm balanced open-hand martial-arts guard, both arms separated from torso and both complete boots visible. Original hand-drawn 1990s shonen anime model art, bold ink and clear two-tone cel shadows. Exactly one centered figure with ample padding on a flat uniform chroma green RGB(0,255,0) background. No green on the character, ground shadows, text, logos, grids, panels or watermark.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Generate one wholly fictional adult anime fighting-game character from text, with no photo input and no real-person likeness. Nimbus is a community-garden mom in her mid forties: medium-height sturdy build, golden-brown skin, square kind face, thick cream-colored braid tucked into a short loop at the back of the head and a determined smile. Plum-purple short-sleeve work coveralls, broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No hat, plants, watering can, loose trailing fabric or writing. Full-body three-quarter side view facing RIGHT, calm balanced open-hand martial-arts guard, both arms separated from torso and both complete boots visible. Original hand-drawn 1990s shonen anime model art, bold ink and clear two-tone cel shadows. Exactly one centered figure with ample padding on a flat uniform chroma green RGB(0,255,0) background. No green on the character, ground shadows, text, logos, grids, panels or watermark.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "nimbus_source | source image"
+    },
+    {
+      "id": 2,
+      "type": "SaveImage",
+      "title": "Save nimbus_source",
+      "pos": [
+        950,
+        220
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/nimbus_source"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "MarkdownNote",
+      "pos": [
+        40,
+        -100
+      ],
+      "size": [
+        780,
+        260
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# nimbus_source\n\nCLOUD ONLY. This graph contains 1 paid image-generation node(s). Running those nodes consumes Comfy credits. Save nodes only process local files. No generation is triggered by creating or building these files.\n\nAll references are invented from text in this graph. No photographs or files from previous sessions are loaded.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7,
+      "offset": [
+        30,
+        140
+      ]
+    }
+  },
+  "version": 0.4
+}

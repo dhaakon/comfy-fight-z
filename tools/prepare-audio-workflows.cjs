@@ -6,14 +6,15 @@ const { createHash } = require('node:crypto');
 const ROOT = path.resolve(__dirname, '..');
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8'));
 const write = (file, value) => { fs.mkdirSync(path.dirname(path.join(ROOT, file)), { recursive: true }); fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value, null, 2) + '\n'); };
-// Fictional performances using stock voices, never recordings of the photo subjects.
+// Fictional performances using stock voices, never recordings of real people.
 const INTRO_VOICES = ['River (neutral, american)', 'Daniel (male, british)', 'Jessica (female, american)', 'Charlie (male, australian)', 'Brian (male, american)', 'Adam (male, american)'];
 
 function makeAudioJobs(config) {
   const announcer = '[excited, powerful arcade announcer, crisp and energetic] ';
+  const stage = config.stages?.[0] || {name:'The Yard',description:'An original neighborhood tournament arena.'};
   return [
     { id: 'menu_music', category: 'music', duration: 45, loop: true, prompt: 'Original instrumental anime arcade fighting-game character selection music. Bright electric guitar riffs, punchy bass, energetic drums, heroic synth brass, playful competitive energy, 148 BPM. Confident memorable original melody, no vocals, no speech, no existing game or anime melody. Steady groove, clean loop-friendly ending without a long fade. For Comfy Fighter Z.' },
-    { id: 'yard_music', category: 'music', duration: 60, loop: true, prompt: 'Original instrumental 1990s battle-anime fighting-game theme for The Yard: an indoor coworking venue transformed into a lively hackathon tournament arena. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.' },
+    { id: 'yard_music', category: 'music', duration: 60, loop: true, prompt: `Original instrumental 1990s battle-anime fighting-game theme for ${stage.name}: ${stage.description || 'An original tournament arena.'} Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.` },
     { id: 'ann_select', category: 'voice', prompt: announcer + 'Choose your fighter!' },
     { id: 'ann_fight', category: 'voice', prompt: announcer + 'Ready? FIGHT!' },
     { id: 'ann_ko', category: 'voice', prompt: announcer + 'K! O!' },
@@ -85,7 +86,7 @@ function makeAudioGraph(jobs, config, templates, { rootDirectory, title = 'Comfy
     exporter.inputs.push({ name: `assets.audio_${index}`, type: 'DFZ_AUDIO_ASSET', link: null }); connect(save, exporter, exporter.inputs.length - 1, 'DFZ_AUDIO_ASSET');
   });
   const note = node('MarkdownNote', title, [-550, -250], [], [], [
-    `# ${title}\n\n${jobs.length} paid cloud audio jobs. Music: Sonilo. Effects: ElevenLabs SFX. Announcer, move names and fighter intro taglines: Eleven v4. Each intro uses a distinct stock preset voice for a fictional performance; it does not imitate the photographed person. No local model weights and no voice cloning.\n\nSet Asset Root to the SAME folder as the image graph. Audio saves are PCM WAVs under raw/. The exporter writes audio.json only after every track finishes; assets.json remains unchanged. Load the full folder in the builder to include both maps.\n\nMusic is requested as loop-friendly; audition the joins before release. Preparing this workflow spends nothing. Running it requires cloud credits and spending authorization.`
+    `# ${title}\n\n${jobs.length} paid cloud audio jobs. Music: Sonilo. Effects: ElevenLabs SFX. Announcer, move names and fighter intro taglines: Eleven v4. Each intro uses a distinct stock preset voice for a fictional performance; it does not imitate any real person. No local model weights and no voice cloning.\n\nSet Asset Root to the SAME folder as the image graph. Audio saves are PCM WAVs under raw/. The exporter writes audio.json only after every track finishes; assets.json remains unchanged. Load the full folder in the builder to include both maps.\n\nMusic is requested as loop-friendly; audition the joins before release. Preparing this workflow spends nothing. Running it requires cloud credits and spending authorization.`
   ]); note.size = [1000, 330];
   nodes.forEach((item, index) => item.order = index);
   const digest = createHash('sha256').update(title).digest('hex');

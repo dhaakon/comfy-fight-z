@@ -55,8 +55,8 @@
         "Node name for S&R": "DFZAssetRoot"
       },
       "widgets_values": [
-        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-z",
-        "{\n  \"title\": \"Comfy Fighter Z\",\n  \"assetRoot\": \"assets/generated/comfy-fighter-z\",\n  \"style\": \"Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\",\n  \"model\": \"Gemini Nano Banana 2.1\",\n  \"fighters\": [\n    {\n      \"id\": \"allyson\",\n      \"name\": \"Allyson\",\n      \"color\": \"#f4ef35\",\n      \"sourceImage\": \"ref/characters/allyson.jpeg\",\n      \"sourceInput\": \"allyson.jpeg\",\n      \"description\": \"The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Node Burst\",\n        \"description\": \"Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.\"\n      },\n      \"introTagline\": \"Every node is connected. Your defeat is next.\",\n      \"introVoice\": \"River (neutral, american)\"\n    },\n    {\n      \"id\": \"deep\",\n      \"name\": \"Deep\",\n      \"color\": \"#41d7ff\",\n      \"sourceImage\": \"ref/characters/deep.jpeg\",\n      \"sourceInput\": \"deep.jpeg\",\n      \"description\": \"The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Queue Breaker\",\n        \"description\": \"Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\"\n      },\n      \"introTagline\": \"You are in my queue now.\",\n      \"introVoice\": \"Daniel (male, british)\"\n    },\n    {\n      \"id\": \"georgia\",\n      \"name\": \"Georgia\",\n      \"color\": \"#ff6ccf\",\n      \"sourceImage\": \"ref/characters/georgia.jpeg\",\n      \"sourceInput\": \"georgia.jpeg\",\n      \"description\": \"The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Golden Cascade\",\n        \"description\": \"Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell.\"\n      },\n      \"introTagline\": \"Catch the light. Feel the impact.\",\n      \"introVoice\": \"Jessica (female, american)\"\n    },\n    {\n      \"id\": \"matt\",\n      \"name\": \"Matt\",\n      \"color\": \"#ff9248\",\n      \"sourceImage\": \"ref/characters/matt.jpeg\",\n      \"sourceInput\": \"matt.jpeg\",\n      \"description\": \"The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Latent Rush\",\n        \"description\": \"Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs.\"\n      },\n      \"introTagline\": \"Less waiting. More fighting.\",\n      \"introVoice\": \"Charlie (male, australian)\"\n    },\n    {\n      \"id\": \"photographer\",\n      \"name\": \"The Photographer\",\n      \"color\": \"#b397ff\",\n      \"sourceImage\": \"ref/characters/photographer.jpeg\",\n      \"sourceInput\": \"photographer.jpeg\",\n      \"description\": \"The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Flash Frame\",\n        \"description\": \"The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering.\"\n      },\n      \"introTagline\": \"Hold still. This knockout needs a close-up.\",\n      \"introVoice\": \"Brian (male, american)\"\n    },\n    {\n      \"id\": \"rob\",\n      \"name\": \"Rob\",\n      \"color\": \"#6de9c9\",\n      \"sourceImage\": \"ref/characters/rob.jpeg\",\n      \"sourceInput\": \"rob.jpeg\",\n      \"description\": \"The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Compile Crash\",\n        \"description\": \"Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell.\"\n      },\n      \"introTagline\": \"Build passed. You are going down.\",\n      \"introVoice\": \"Adam (male, american)\"\n    }\n  ],\n  \"stages\": [\n    {\n      \"id\": \"yard\",\n      \"name\": \"The Yard\",\n      \"sourceImage\": \"ref/levels/level-theyard.jpeg\",\n      \"sourceInput\": \"level-theyard.jpeg\",\n      \"description\": \"The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard.\"\n    }\n  ],\n  \"sheets\": {\n    \"sheet\": [\n      \"idle\",\n      \"walk\",\n      \"punch\",\n      \"kick\",\n      \"block\",\n      \"hit\",\n      \"special\",\n      \"down\",\n      \"win\"\n    ],\n    \"sheetB\": [\n      \"stance2\",\n      \"crouch\",\n      \"sweep\",\n      \"launcher\",\n      \"jump\",\n      \"airkick\",\n      \"hpunch\",\n      \"dash\",\n      \"tumble\"\n    ],\n    \"sheetC\": [\n      \"walk2\",\n      \"lkick\",\n      \"cjab\",\n      \"airpunch\",\n      \"throw\",\n      \"taunt\",\n      \"getup\",\n      \"powerup\",\n      \"entrance\"\n    ]\n  },\n  \"uiStyle\": \"Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\",\n  \"subtitle\": \"Higgsfield Open Source Saga\",\n  \"stageStyle\": \"Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.\",\n  \"expectedAudio\": [\n    \"menu_music\",\n    \"yard_music\",\n    \"ann_select\",\n    \"ann_fight\",\n    \"ann_ko\",\n    \"ann_victory\",\n    \"sfx_punch\",\n    \"sfx_kick\",\n    \"sfx_block\",\n    \"sfx_special\",\n    \"fighter_allyson_special\",\n    \"fighter_deep_special\",\n    \"fighter_georgia_special\",\n    \"fighter_matt_special\",\n    \"fighter_photographer_special\",\n    \"fighter_rob_special\",\n    \"fighter_allyson_intro\",\n    \"fighter_deep_intro\",\n    \"fighter_georgia_intro\",\n    \"fighter_matt_intro\",\n    \"fighter_photographer_intro\",\n    \"fighter_rob_intro\"\n  ]\n}"
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-fictional-demo",
+        "{\n  \"factorySchema\": \"comfy-fighter-factory/v1\",\n  \"demoSource\": \"fictional-text-only\",\n  \"title\": \"Comfy Fighter Z\",\n  \"subtitle\": \"Higgsfield Open Source Saga\",\n  \"assetRoot\": \"assets/generated/comfy-fighter-fictional-demo\",\n  \"model\": \"Gemini Nano Banana 2.1\",\n  \"style\": \"Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\",\n  \"uiStyle\": \"Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\",\n  \"stageStyle\": \"Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.\",\n  \"fighters\": [\n    {\n      \"id\": \"griddle\",\n      \"name\": \"Griddle\",\n      \"color\": \"#ff8b3d\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Sizzle Burst\",\n        \"description\": \"Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\"\n      },\n      \"introTagline\": \"The grill is hot. Your winning streak is toast.\",\n      \"introVoice\": \"Brian (male, american)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighting-game character, with no image inputs and no resemblance to a real person or existing character. Griddle is a cheerful barbecue dad in his late forties: short broad powerful build, round face, warm brown skin, bald head, compact triangular auburn beard. Brick-red sleeveless utility apron ending above the knees over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs, dark brown ankle boots. No hat or handheld props. Full-body three-quarter side view facing RIGHT, relaxed boxing guard, visible friendly face, separated arms and legs, complete hands and shoes. Original 1990s shonen anime model art, bold ink and clean two-tone cel shading. One figure only, centered with generous padding, flat uniform chroma green RGB(0,255,0) background; no green on the character, shadows, lettering, labels, logos, grid, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"ref/demo/characters/griddle.png\",\n      \"sampleSourceInput\": \"cfz-demo-griddle.png\"\n    },\n    {\n      \"id\": \"rivet\",\n      \"name\": \"Rivet\",\n      \"color\": \"#58c7ff\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.\",\n      \"specialMove\": {\n        \"name\": \"Magnet Crash\",\n        \"description\": \"Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms.\"\n      },\n      \"introTagline\": \"I fix everything. Your stance is next.\",\n      \"introVoice\": \"Adam (male, american)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighting-game character entirely from text, with no real-person or franchise reference. Rivet is a workshop dad in his early fifties: tall muscular build, deep umber skin, long angular face, short tightly curled silver hair and an assertive half-smile. Indigo mechanic jumpsuit with sleeves rolled to elbows, wide copper belt, compact copper forearm bracers and steel-gray work boots. No hanging tools, goggles, hat or writing. Full-body three-quarter side view facing RIGHT, grounded open-hand fighting guard, clear separated limbs, complete visible hands and both shoes. Original 1990s shonen anime model art with bold black ink and clean two-tone cel shading. Exactly one figure centered with generous padding on flat uniform chroma green RGB(0,255,0); no green clothing, floor shadows, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"ref/demo/characters/rivet.png\",\n      \"sampleSourceInput\": \"cfz-demo-rivet.png\"\n    },\n    {\n      \"id\": \"tempo\",\n      \"name\": \"Tempo\",\n      \"color\": \"#f46bc4\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.\",\n      \"specialMove\": {\n        \"name\": \"Beat Drop\",\n        \"description\": \"Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering.\"\n      },\n      \"introTagline\": \"Keep up with the beat, or take a seat.\",\n      \"introVoice\": \"River (neutral, american)\",\n      \"referencePrompt\": \"Create one entirely fictional adult anime fighter from text only; do not use or resemble a real person or existing character. Tempo is a music-teacher parent in their late thirties with a compact athletic build, light olive skin, a heart-shaped face, short swept coral-red pixie hair and expressive dark eyebrows. Cropped magenta track jacket, plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers, simple violet padded wristbands and small rounded headphones resting snugly at the collar with no cable. Full-body three-quarter side view facing RIGHT in an upright kickboxing guard. Show exactly one complete figure with separated limbs, both hands and both shoes, generous outer padding and a clear silhouette. Original 1990s battle-anime model art, strong economical black ink and two-tone cel shading. Flat uniform chroma green RGB(0,255,0) background; no green costume details, ground shadow, instruments, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"ref/demo/characters/tempo.png\",\n      \"sampleSourceInput\": \"cfz-demo-tempo.png\"\n    },\n    {\n      \"id\": \"nimbus\",\n      \"name\": \"Nimbus\",\n      \"color\": \"#b99cff\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.\",\n      \"specialMove\": {\n        \"name\": \"Cloudburst Palm\",\n        \"description\": \"Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot.\"\n      },\n      \"introTagline\": \"I raised a garden. I can handle a little thunder.\",\n      \"introVoice\": \"Jessica (female, american)\",\n      \"referencePrompt\": \"Generate one wholly fictional adult anime fighting-game character from text, with no photo input and no real-person likeness. Nimbus is a community-garden mom in her mid forties: medium-height sturdy build, golden-brown skin, square kind face, thick cream-colored braid tucked into a short loop at the back of the head and a determined smile. Plum-purple short-sleeve work coveralls, broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No hat, plants, watering can, loose trailing fabric or writing. Full-body three-quarter side view facing RIGHT, calm balanced open-hand martial-arts guard, both arms separated from torso and both complete boots visible. Original hand-drawn 1990s shonen anime model art, bold ink and clear two-tone cel shadows. Exactly one centered figure with ample padding on a flat uniform chroma green RGB(0,255,0) background. No green on the character, ground shadows, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"ref/demo/characters/nimbus.png\",\n      \"sampleSourceInput\": \"cfz-demo-nimbus.png\"\n    },\n    {\n      \"id\": \"switchback\",\n      \"name\": \"Switchback\",\n      \"color\": \"#ffd44d\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Express Pulse\",\n        \"description\": \"Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.\"\n      },\n      \"introTagline\": \"School run complete. Express knockout incoming.\",\n      \"introVoice\": \"Charlie (male, australian)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighter from text alone, unrelated to any real person or franchise character. Switchback is a bicycle-courier dad in his early forties: tall lean build, cool dark-brown skin, narrow expressive face, shaved head and a thin silver eyebrow notch. Smooth amber bicycle helmet with fully open face and no visor, bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bike, bag, loose straps, glasses or logos. Full-body three-quarter side view facing RIGHT, springy forward-leaning boxing guard, clear separated limbs and complete visible shoes and fingers. Original 1990s shonen anime model art with bold black ink, clean two-tone shading and a simple readable silhouette. Exactly one centered figure, generous padding, flat uniform chroma green RGB(0,255,0) background. No green costume pieces, shadows, text, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"ref/demo/characters/switchback.png\",\n      \"sampleSourceInput\": \"cfz-demo-switchback.png\"\n    },\n    {\n      \"id\": \"brick\",\n      \"name\": \"Brick\",\n      \"color\": \"#ff6677\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Foundation Break\",\n        \"description\": \"Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell.\"\n      },\n      \"introTagline\": \"I built this block. Now hold your ground.\",\n      \"introVoice\": \"Daniel (male, british)\",\n      \"referencePrompt\": \"Create one wholly invented adult anime fighting-game character from text only, without any real-person photo, likeness or existing franchise design. Brick is a neighborhood caretaker granddad in his early sixties: very tall square heavyweight build, pale freckled skin, broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Sleeveless rose-red quilted work vest over a fitted charcoal shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or writing. Full-body three-quarter side view facing RIGHT in a wide upright wrestling guard; warm stubborn grin, clear separated hands and legs, complete visible boots. Original 1990s shonen battle-anime model art with bold black ink and strong two-tone cel shading. Exactly one centered figure with generous padding on flat uniform chroma green RGB(0,255,0). No green clothing, floor shadow, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"ref/demo/characters/brick.png\",\n      \"sampleSourceInput\": \"cfz-demo-brick.png\"\n    }\n  ],\n  \"stages\": [\n    {\n      \"id\": \"yard\",\n      \"name\": \"The Yard\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.\",\n      \"referencePrompt\": \"Create an entirely fictional environment from text only: The Yard, a cheerful neighborhood backyard tournament arena at golden hour. Wide 16:9 side-on fighting-game camera, broad warm terracotta patio across the foreground with an unobstructed horizontal fighting line at 82 percent image height. Behind the fight plane: low cream picket fence, red garden shed, soft rounded distant hills, a tiny barbecue well away from the arena and simple overhead string lights. Original 1990s hand-painted anime background, clean architectural ink and rich warm cel-shaded light. This is an invented location, not a recreation of a real venue. No people, portraits, readable signs, brands, logos, floor markings or emblems. Natural scenery fills all four edges without decorative borders, speed lines, vignette, panels or letterboxing.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"ref/demo/levels/yard.png\",\n      \"sampleSourceInput\": \"cfz-demo-yard.png\"\n    }\n  ],\n  \"sheets\": {\n    \"sheet\": [\n      \"idle\",\n      \"walk\",\n      \"punch\",\n      \"kick\",\n      \"block\",\n      \"hit\",\n      \"special\",\n      \"down\",\n      \"win\"\n    ],\n    \"sheetB\": [\n      \"stance2\",\n      \"crouch\",\n      \"sweep\",\n      \"launcher\",\n      \"jump\",\n      \"airkick\",\n      \"hpunch\",\n      \"dash\",\n      \"tumble\"\n    ],\n    \"sheetC\": [\n      \"walk2\",\n      \"lkick\",\n      \"cjab\",\n      \"airpunch\",\n      \"throw\",\n      \"taunt\",\n      \"getup\",\n      \"powerup\",\n      \"entrance\"\n    ]\n  },\n  \"expectedAudio\": [\n    \"menu_music\",\n    \"yard_music\",\n    \"ann_select\",\n    \"ann_fight\",\n    \"ann_ko\",\n    \"ann_victory\",\n    \"sfx_punch\",\n    \"sfx_kick\",\n    \"sfx_block\",\n    \"sfx_special\",\n    \"fighter_griddle_special\",\n    \"fighter_rivet_special\",\n    \"fighter_tempo_special\",\n    \"fighter_nimbus_special\",\n    \"fighter_switchback_special\",\n    \"fighter_brick_special\",\n    \"fighter_griddle_intro\",\n    \"fighter_rivet_intro\",\n    \"fighter_tempo_intro\",\n    \"fighter_nimbus_intro\",\n    \"fighter_switchback_intro\",\n    \"fighter_brick_intro\"\n  ]\n}"
       ]
     },
     {
@@ -321,7 +321,7 @@
         "Node name for S&R": "SoniloTextToMusic"
       },
       "widgets_values": [
-        "Original instrumental 1990s battle-anime fighting-game theme for The Yard: an indoor coworking venue transformed into a lively hackathon tournament arena. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+        "Original instrumental 1990s battle-anime fighting-game theme for The Yard: A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
         60,
         42,
         "fixed"
@@ -330,7 +330,7 @@
       "bgcolor": "#653",
       "title": "yard_music | cloud audio",
       "widgets_values_named": {
-        "prompt": "Original instrumental 1990s battle-anime fighting-game theme for The Yard: an indoor coworking venue transformed into a lively hackathon tournament arena. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+        "prompt": "Original instrumental 1990s battle-anime fighting-game theme for The Yard: A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
         "duration": 60,
         "seed": 42,
         "control_after_generate": "fixed"
@@ -1245,7 +1245,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[excited, powerful arcade announcer, crisp and energetic] Node Burst!",
+        "[excited, powerful arcade announcer, crisp and energetic] Sizzle Burst!",
         0.45,
         "auto",
         "eleven_v4",
@@ -1256,7 +1256,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[excited, powerful arcade announcer, crisp and energetic] Node Burst!",
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Sizzle Burst!",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -1268,12 +1268,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_allyson_special | cloud audio"
+      "title": "fighter_griddle_special | cloud audio"
     },
     {
       "id": 25,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_allyson_special",
+      "title": "Save + map fighter_griddle_special",
       "pos": [
         640,
         4180
@@ -1310,7 +1310,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_allyson_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"allyson\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_griddle_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"griddle\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -1349,7 +1349,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[excited, powerful arcade announcer, crisp and energetic] Queue Breaker!",
+        "[excited, powerful arcade announcer, crisp and energetic] Magnet Crash!",
         0.45,
         "auto",
         "eleven_v4",
@@ -1360,7 +1360,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[excited, powerful arcade announcer, crisp and energetic] Queue Breaker!",
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Magnet Crash!",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -1372,12 +1372,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_deep_special | cloud audio"
+      "title": "fighter_rivet_special | cloud audio"
     },
     {
       "id": 27,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_deep_special",
+      "title": "Save + map fighter_rivet_special",
       "pos": [
         640,
         4580
@@ -1414,7 +1414,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_deep_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"deep\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_rivet_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"rivet\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -1453,7 +1453,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[excited, powerful arcade announcer, crisp and energetic] Golden Cascade!",
+        "[excited, powerful arcade announcer, crisp and energetic] Beat Drop!",
         0.45,
         "auto",
         "eleven_v4",
@@ -1464,7 +1464,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[excited, powerful arcade announcer, crisp and energetic] Golden Cascade!",
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Beat Drop!",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -1476,12 +1476,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_georgia_special | cloud audio"
+      "title": "fighter_tempo_special | cloud audio"
     },
     {
       "id": 29,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_georgia_special",
+      "title": "Save + map fighter_tempo_special",
       "pos": [
         640,
         4980
@@ -1518,7 +1518,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_georgia_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"georgia\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_tempo_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"tempo\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -1557,7 +1557,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[excited, powerful arcade announcer, crisp and energetic] Latent Rush!",
+        "[excited, powerful arcade announcer, crisp and energetic] Cloudburst Palm!",
         0.45,
         "auto",
         "eleven_v4",
@@ -1568,7 +1568,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[excited, powerful arcade announcer, crisp and energetic] Latent Rush!",
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Cloudburst Palm!",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -1580,12 +1580,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_matt_special | cloud audio"
+      "title": "fighter_nimbus_special | cloud audio"
     },
     {
       "id": 31,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_matt_special",
+      "title": "Save + map fighter_nimbus_special",
       "pos": [
         640,
         5380
@@ -1622,7 +1622,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_matt_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"matt\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_nimbus_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"nimbus\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -1661,7 +1661,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[excited, powerful arcade announcer, crisp and energetic] Flash Frame!",
+        "[excited, powerful arcade announcer, crisp and energetic] Express Pulse!",
         0.45,
         "auto",
         "eleven_v4",
@@ -1672,7 +1672,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[excited, powerful arcade announcer, crisp and energetic] Flash Frame!",
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Express Pulse!",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -1684,12 +1684,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_photographer_special | cloud audio"
+      "title": "fighter_switchback_special | cloud audio"
     },
     {
       "id": 33,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_photographer_special",
+      "title": "Save + map fighter_switchback_special",
       "pos": [
         640,
         5780
@@ -1726,7 +1726,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_photographer_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"photographer\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_switchback_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"switchback\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -1765,7 +1765,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[excited, powerful arcade announcer, crisp and energetic] Compile Crash!",
+        "[excited, powerful arcade announcer, crisp and energetic] Foundation Break!",
         0.45,
         "auto",
         "eleven_v4",
@@ -1776,7 +1776,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[excited, powerful arcade announcer, crisp and energetic] Compile Crash!",
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Foundation Break!",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -1788,12 +1788,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_rob_special | cloud audio"
+      "title": "fighter_brick_special | cloud audio"
     },
     {
       "id": 35,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_rob_special",
+      "title": "Save + map fighter_brick_special",
       "pos": [
         640,
         6180
@@ -1830,7 +1830,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_rob_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"rob\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_brick_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"brick\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -1863,12 +1863,12 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "River (neutral, american)"
+        "Brian (male, american)"
       ],
       "widgets_values_named": {
-        "voice": "River (neutral, american)"
+        "voice": "Brian (male, american)"
       },
-      "title": "Fictional performance: River (neutral, american) (preset; no cloning)"
+      "title": "Fictional performance: Brian (male, american) (preset; no cloning)"
     },
     {
       "id": 36,
@@ -1906,7 +1906,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[confident, energetic anime tournament fighter, crisp delivery] Every node is connected. Your defeat is next.",
+        "[confident, energetic anime tournament fighter, crisp delivery] The grill is hot. Your winning streak is toast.",
         0.45,
         "auto",
         "eleven_v4",
@@ -1917,7 +1917,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[confident, energetic anime tournament fighter, crisp delivery] Every node is connected. Your defeat is next.",
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] The grill is hot. Your winning streak is toast.",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -1929,12 +1929,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_allyson_intro | cloud audio"
+      "title": "fighter_griddle_intro | cloud audio"
     },
     {
       "id": 38,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_allyson_intro",
+      "title": "Save + map fighter_griddle_intro",
       "pos": [
         640,
         6580
@@ -1971,7 +1971,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_allyson_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"allyson\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_griddle_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"griddle\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -2004,12 +2004,12 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "Daniel (male, british)"
+        "Adam (male, american)"
       ],
       "widgets_values_named": {
-        "voice": "Daniel (male, british)"
+        "voice": "Adam (male, american)"
       },
-      "title": "Fictional performance: Daniel (male, british) (preset; no cloning)"
+      "title": "Fictional performance: Adam (male, american) (preset; no cloning)"
     },
     {
       "id": 39,
@@ -2047,7 +2047,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[confident, energetic anime tournament fighter, crisp delivery] You are in my queue now.",
+        "[confident, energetic anime tournament fighter, crisp delivery] I fix everything. Your stance is next.",
         0.45,
         "auto",
         "eleven_v4",
@@ -2058,7 +2058,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[confident, energetic anime tournament fighter, crisp delivery] You are in my queue now.",
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] I fix everything. Your stance is next.",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -2070,12 +2070,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_deep_intro | cloud audio"
+      "title": "fighter_rivet_intro | cloud audio"
     },
     {
       "id": 41,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_deep_intro",
+      "title": "Save + map fighter_rivet_intro",
       "pos": [
         640,
         6980
@@ -2112,7 +2112,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_deep_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"deep\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_rivet_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"rivet\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -2145,12 +2145,12 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "Jessica (female, american)"
+        "River (neutral, american)"
       ],
       "widgets_values_named": {
-        "voice": "Jessica (female, american)"
+        "voice": "River (neutral, american)"
       },
-      "title": "Fictional performance: Jessica (female, american) (preset; no cloning)"
+      "title": "Fictional performance: River (neutral, american) (preset; no cloning)"
     },
     {
       "id": 42,
@@ -2188,7 +2188,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[confident, energetic anime tournament fighter, crisp delivery] Catch the light. Feel the impact.",
+        "[confident, energetic anime tournament fighter, crisp delivery] Keep up with the beat, or take a seat.",
         0.45,
         "auto",
         "eleven_v4",
@@ -2199,7 +2199,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[confident, energetic anime tournament fighter, crisp delivery] Catch the light. Feel the impact.",
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] Keep up with the beat, or take a seat.",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -2211,12 +2211,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_georgia_intro | cloud audio"
+      "title": "fighter_tempo_intro | cloud audio"
     },
     {
       "id": 44,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_georgia_intro",
+      "title": "Save + map fighter_tempo_intro",
       "pos": [
         640,
         7380
@@ -2253,7 +2253,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_georgia_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"georgia\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_tempo_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"tempo\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -2286,12 +2286,12 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "Charlie (male, australian)"
+        "Jessica (female, american)"
       ],
       "widgets_values_named": {
-        "voice": "Charlie (male, australian)"
+        "voice": "Jessica (female, american)"
       },
-      "title": "Fictional performance: Charlie (male, australian) (preset; no cloning)"
+      "title": "Fictional performance: Jessica (female, american) (preset; no cloning)"
     },
     {
       "id": 45,
@@ -2329,7 +2329,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[confident, energetic anime tournament fighter, crisp delivery] Less waiting. More fighting.",
+        "[confident, energetic anime tournament fighter, crisp delivery] I raised a garden. I can handle a little thunder.",
         0.45,
         "auto",
         "eleven_v4",
@@ -2340,7 +2340,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[confident, energetic anime tournament fighter, crisp delivery] Less waiting. More fighting.",
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] I raised a garden. I can handle a little thunder.",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -2352,12 +2352,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_matt_intro | cloud audio"
+      "title": "fighter_nimbus_intro | cloud audio"
     },
     {
       "id": 47,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_matt_intro",
+      "title": "Save + map fighter_nimbus_intro",
       "pos": [
         640,
         7780
@@ -2394,7 +2394,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_matt_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"matt\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_nimbus_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"nimbus\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -2427,12 +2427,12 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "Brian (male, american)"
+        "Charlie (male, australian)"
       ],
       "widgets_values_named": {
-        "voice": "Brian (male, american)"
+        "voice": "Charlie (male, australian)"
       },
-      "title": "Fictional performance: Brian (male, american) (preset; no cloning)"
+      "title": "Fictional performance: Charlie (male, australian) (preset; no cloning)"
     },
     {
       "id": 48,
@@ -2470,7 +2470,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[confident, energetic anime tournament fighter, crisp delivery] Hold still. This knockout needs a close-up.",
+        "[confident, energetic anime tournament fighter, crisp delivery] School run complete. Express knockout incoming.",
         0.45,
         "auto",
         "eleven_v4",
@@ -2481,7 +2481,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[confident, energetic anime tournament fighter, crisp delivery] Hold still. This knockout needs a close-up.",
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] School run complete. Express knockout incoming.",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -2493,12 +2493,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_photographer_intro | cloud audio"
+      "title": "fighter_switchback_intro | cloud audio"
     },
     {
       "id": 50,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_photographer_intro",
+      "title": "Save + map fighter_switchback_intro",
       "pos": [
         640,
         8180
@@ -2535,7 +2535,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_photographer_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"photographer\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_switchback_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"switchback\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -2568,12 +2568,12 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "Adam (male, american)"
+        "Daniel (male, british)"
       ],
       "widgets_values_named": {
-        "voice": "Adam (male, american)"
+        "voice": "Daniel (male, british)"
       },
-      "title": "Fictional performance: Adam (male, american) (preset; no cloning)"
+      "title": "Fictional performance: Daniel (male, british) (preset; no cloning)"
     },
     {
       "id": 51,
@@ -2611,7 +2611,7 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "[confident, energetic anime tournament fighter, crisp delivery] Build passed. You are going down.",
+        "[confident, energetic anime tournament fighter, crisp delivery] I built this block. Now hold your ground.",
         0.45,
         "auto",
         "eleven_v4",
@@ -2622,7 +2622,7 @@
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "[confident, energetic anime tournament fighter, crisp delivery] Build passed. You are going down.",
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] I built this block. Now hold your ground.",
         "stability": 0.45,
         "apply_text_normalization": "auto",
         "model": "eleven_v4",
@@ -2634,12 +2634,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "fighter_rob_intro | cloud audio"
+      "title": "fighter_brick_intro | cloud audio"
     },
     {
       "id": 53,
       "type": "DFZSaveAudio",
-      "title": "Save + map fighter_rob_intro",
+      "title": "Save + map fighter_brick_intro",
       "pos": [
         640,
         8580
@@ -2676,7 +2676,7 @@
         "Node name for S&R": "DFZSaveAudio"
       },
       "widgets_values": [
-        "{\n  \"id\": \"fighter_rob_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"rob\",\n  \"loop\": false\n}"
+        "{\n  \"id\": \"fighter_brick_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"brick\",\n  \"loop\": false\n}"
       ]
     },
     {
@@ -2700,7 +2700,7 @@
         "Node name for S&R": "MarkdownNote"
       },
       "widgets_values": [
-        "# Comfy Fighter Z: complete audio bundle\n\n22 paid cloud audio jobs. Music: Sonilo. Effects: ElevenLabs SFX. Announcer, move names and fighter intro taglines: Eleven v4. Each intro uses a distinct stock preset voice for a fictional performance; it does not imitate the photographed person. No local model weights and no voice cloning.\n\nSet Asset Root to the SAME folder as the image graph. Audio saves are PCM WAVs under raw/. The exporter writes audio.json only after every track finishes; assets.json remains unchanged. Load the full folder in the builder to include both maps.\n\nMusic is requested as loop-friendly; audition the joins before release. Preparing this workflow spends nothing. Running it requires cloud credits and spending authorization."
+        "# Comfy Fighter Z: complete audio bundle\n\n22 paid cloud audio jobs. Music: Sonilo. Effects: ElevenLabs SFX. Announcer, move names and fighter intro taglines: Eleven v4. Each intro uses a distinct stock preset voice for a fictional performance; it does not imitate any real person. No local model weights and no voice cloning.\n\nSet Asset Root to the SAME folder as the image graph. Audio saves are PCM WAVs under raw/. The exporter writes audio.json only after every track finishes; assets.json remains unchanged. Load the full folder in the builder to include both maps.\n\nMusic is requested as loop-friendly; audition the joins before release. Preparing this workflow spends nothing. Running it requires cloud credits and spending authorization."
       ]
     }
   ],

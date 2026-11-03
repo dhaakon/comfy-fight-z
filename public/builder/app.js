@@ -10,15 +10,17 @@ async function loadFactoryTemplate() {
     const factory = await response.json();
     if (!Array.isArray(factory.characters) || !Array.isArray(factory.environments)) throw new Error('Factory template needs character and environment slots');
     const referenceFor = slot => slot.reference || slot.sourceInput || slot.sourceImage;
-    const activeEnvironments = factory.environments.filter(slot => slot.enabled !== false && referenceFor(slot)).length;
-    $('factory-summary').textContent = `${factory.characters.length} character upload slots and ${factory.environments.length} environment upload slots. ${activeEnvironments} environment reference${activeEnvironments === 1 ? ' is' : 's are'} configured; optional slots stay off until you supply their reference images in ComfyUI.`;
+    const invented = slot => slot.sourceMode === 'Invent fictional reference';
+    const ready = slot => invented(slot) || Boolean(referenceFor(slot));
+    const activeEnvironments = factory.environments.filter(slot => slot.enabled !== false && ready(slot)).length;
+    $('factory-summary').textContent = `${factory.characters.length} character factories and ${factory.environments.length} environment slots. ${activeEnvironments} environment${activeEnvironments === 1 ? ' is' : 's are'} enabled. ${factory.fictional ? 'The demo invents its references from text; no previous photos or sheets are loaded.' : 'Configure references in ComfyUI before generating.'}`;
     for (const [id, slots, label] of [['factory-characters', factory.characters, 'CHARACTER'], ['factory-environments', factory.environments, 'ENVIRONMENT']]) {
       const list = $(id); list.replaceChildren();
       slots.forEach((slot, index) => {
-        const configured = Boolean(referenceFor(slot)), enabled = slot.enabled !== false && configured;
+        const configured = ready(slot), enabled = slot.enabled !== false && configured;
         const card = make('article', `factory-slot${enabled ? '' : ' awaiting-reference'}`);
         card.dataset.factorySlot = slot.id; card.dataset.enabled = String(enabled);
-        card.append(make('span', 'factory-slot-number', `${label} ${String(index + 1).padStart(2, '0')}`), make('strong', '', slot.name || slot.id), make('small', '', enabled ? 'REFERENCE CONFIGURED' : configured ? 'OPTIONAL · TURNED OFF' : 'OPTIONAL · UPLOAD A REFERENCE'));
+        card.append(make('span', 'factory-slot-number', `${label} ${String(index + 1).padStart(2, '0')}`), make('strong', '', slot.name || slot.id), make('small', '', enabled ? invented(slot) ? 'TEXT DESIGN READY' : 'REFERENCE CONFIGURED' : configured ? 'OPTIONAL · TURNED OFF' : 'OPTIONAL · UPLOAD A REFERENCE'));
         list.append(card);
       });
     }
@@ -26,7 +28,7 @@ async function loadFactoryTemplate() {
     if (workflow.origin !== location.origin) throw new Error('Factory workflow must be served with this builder');
     $('download-workflow').href = workflow.href; $('download-workflow').hidden = false;
     $('factory-slots').hidden = false;
-  } catch (_) { $('factory-summary').textContent = 'Open the main ComfyUI factory workflow, supply your character and environment references, then return here with its generated assets.json and source folder.'; }
+  } catch (_) { $('factory-summary').textContent = 'Open the main ComfyUI factory, configure your character and environment designs, then return here with its generated assets.json and source folder.'; }
 }
 
 function message(text, type = '') { $('status').textContent = text; $('status').className = `status-message ${type}`; }

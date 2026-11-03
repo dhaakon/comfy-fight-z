@@ -9,5 +9,6 @@ build/
 assets/generated/
 exports/
 test-runs/
+private-archive/
 __pycache__/
 *.pyc

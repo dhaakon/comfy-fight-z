@@ -1,15 +1,15 @@
 # Compact ComfyUI asset factory
 
-Open `comfy-hackathon.json` for the main template. Its twelve functional nodes are Project Settings, six Character Factories, three Environment Factories, Shared Art and Export Game Assets. Each character/environment node has its own image upload control. The graph expands into the native cloud generation and mapped save nodes when run; there are no local model checkpoints.
+Enable Nodes 2.0 in the ComfyUI editor and open `comfy-hackathon.json`. Its twelve functional nodes are encapsulated custom nodes: Project Settings, six Character Factories, three Environment Factories, Shared Art and Export Game Assets. They expand into native cloud generation and mapped saves when run; there are no local model checkpoints.
 
-The shipped game remains six fighters and one playable Yard stage. The separate `config/factory.json` describes the reusable factory's six character slots and three environment slots. The Yard is enabled initially. Environments 2 and 3 are empty and disabled until you supply their own reference images and descriptions; they do not reuse the Yard photo or produce substitute art.
+The example describes six fictional fighters and one fictional Yard stage. Its artwork is currently pending generation; the earlier photo-derived media has been retired. `config/factory.json` contains six character definitions and three environment definitions. The Yard is enabled, while environments 2 and 3 remain disabled. Every image selector is empty. The default **Invent fictional reference** mode generates a fresh design from text and never loads, hashes or validates a selected image, even if a stale selection exists in an older editor tab.
 
 ## Use the main template
 
 1. Install `custom_nodes/dad_fighter_assets` into ComfyUI's custom nodes directory, then restart ComfyUI. From this repository you can run `npm run nodes:install -- --comfy-root "C:\path\to\ComfyUI"`.
 2. Open `comfy-hackathon.json`. Set an absolute output folder in **Project Settings**, then edit the game title, subtitle and shared styles as needed.
-3. Upload a reference in each of the six **Character Factory** nodes. Set the displayed name, description, special-move name/description, intro tagline and accent color. Stable asset IDs are available as advanced fields.
-4. Set **Environment 1** as the primary arena reference. Its generated stage feeds the title and selection backgrounds. To add a second or third environment, upload that environment's own image, fill in its name/description, and enable its node.
+3. Keep **Invent fictional reference** selected in each Character Factory. Edit the name, description, special move, intro tagline and accent color. The node creates the source design, identity, sheets and character art internally. To reuse a newly accepted fictional reference, deliberately select **Upload reference** and supply that file.
+4. Keep Environment 1 enabled; its generated stage feeds the title and selection backgrounds. To add a second or third environment, describe its setting and enable the node. Each active environment invents its own reference in text-only mode.
 5. Validate the workflow against the running ComfyUI. Review the paid request count and obtain spending authorization before running it.
 6. Review the generated artwork, then open `/builder/` and load the complete output folder containing `assets.json` and `raw/` to customize and export a game.
 
@@ -23,10 +23,12 @@ The compact canvas hides implementation details, not paid calls. Factories expan
 
 | Enabled factory inputs | Paid image calls | Source saves | Mapped records |
 | --- | --- | --- | --- |
-| Six characters + the Yard | 49 | 7 | 56 |
-| Six characters + three environments | 51 | 9 | 60 |
+| Text-only: six characters + the Yard | 56 | 7 | 56 |
+| Text-only: six characters + three environments | 60 | 9 | 60 |
+| Uploaded references: six characters + the Yard | 49 | 7 | 56 |
+| Uploaded references: six characters + three environments | 51 | 9 | 60 |
 
-At the installed native rates checked on November 2, 2026, a 1K request is approximately $0.048048 and a 2K request $0.072072. The default image factory estimates $2.835; enabling both additional environments estimates $2.979. Actual billing may vary. Each additional environment adds one paid 2K image request and one local source save. These counts exclude audio and video; their workflows remain separate. No paid retry is authorized automatically.
+At the installed native rates checked on November 2, 2026, a 1K request is approximately $0.048048 and a 2K request $0.072072. The default text-only image factory estimates $3.195; enabling all three environments estimates $3.483. With uploaded references, estimates are $2.835 and $2.979. Source saves do not add charges beyond the listed generation calls. Actual billing may vary. Audio and video remain separate workflows; no paid retry is authorized automatically.
 
 The exported folder uses the existing `dad-fighter-assets/v1` contract. The game metadata contains the actual enabled environments; disabled slots are absent from the final roster of stages. A source map containing three environments is a new custom bundle, not a change to the installed one-Yard release. Keep it in a separate root and use the builder to export it.
 
@@ -35,13 +37,13 @@ The exported folder uses the existing `dad-fighter-assets/v1` contract. The game
 | Template | Use |
 | --- | --- |
 | `workflows/factory/character-factory.json` | One complete character pack, with an identity/art factory feeding three visible Sprite Sheet nodes |
-| `workflows/factory/sprite-sheet.json` | One sheet from an uploaded accepted identity reference and editable character definition |
-| `workflows/factory/environment-factory.json` | One source-referenced environment |
+| `workflows/factory/sprite-sheet.json` | A custom Fictional Reference node feeding one custom Sprite Sheet node; two paid images |
+| `workflows/factory/environment-factory.json` | One invented environment, with reference and stage generated internally |
 | `workflows/advanced/full-image-graph.json` | The expanded native-node factory for advanced inspection and tuning |
 
 Focused templates write **partial** manifests into separate output roots. Merge accepted replacements by an existing asset ID into a complete bundle before a strict game export. New character IDs or additional venues belong in a newly generated complete main bundle; patch merging replaces existing IDs only. A single sheet or one-character pack is not a complete game. The character pack disables its internal sheet generation because its three visible Sprite Sheet nodes handle those jobs; enabling both paths would duplicate work.
 
-The standalone sheet template needs an accepted generated identity image uploaded to ComfyUI. Select the desired `sheet`, `sheetB` or `sheetC` layout. Keep the same reference and character description across all three sheets to retain identity and clothing. See [the pose contract](asset-contract.md) for cell order and visual checks, and [incremental refresh](incremental-refresh.md) for merging accepted patches.
+The standalone sheet template creates its reference inside `CFZFictionalReference` and the nine poses inside `CFZSpriteSheet`; it has no file-loading node. Select `sheet`, `sheetB` or `sheetC`. For repairs against a complete accepted bundle, the repair generator can instead wire an explicitly supplied new identity image for one paid sheet call. See [the pose contract](asset-contract.md) for cell order and visual checks, and [incremental refresh](incremental-refresh.md) for merging accepted patches.
 
 ## Regenerate and distribute templates
 

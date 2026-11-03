@@ -33,6 +33,16 @@ test('factory optional text can be empty while partial bundles require merging',
   input.game.stages[0].description = 123;
   assert.throws(() => validateManifest(input), /description must be/);
 });
+test('fictional factory plans allow blank references but still reject unsafe supplied paths', async () => {
+  const { validateManifest } = await api;
+  const example = JSON.parse(fs.readFileSync(path.join(__dirname, '../public/builder/example-assets.json'), 'utf8'));
+  assert.ok(example.game.fighters.every(fighter => fighter.sourceImage === ''));
+  assert.deepEqual(validateManifest(example), example);
+  for (const sourceImage of ['../private/photo.png', 'https://example.com/photo.png', null, 123]) {
+    const input = structuredClone(example); input.game.fighters[0].sourceImage = sourceImage;
+    assert.throws(() => validateManifest(input), /Unsafe asset path/);
+  }
+});
 test('bundle validator rejects traversal, network paths, duplicates and false pose mappings', async () => {
   const { validateManifest } = await api;
   for (const src of ['../secret.png', 'raw/../../secret.png', 'https://example.com/p.png', 'raw\\dad.png', '/raw/dad.png', 'raw/%2e%2e/file.png', 'raw/CON.png']) {

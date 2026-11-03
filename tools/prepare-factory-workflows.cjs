@@ -13,9 +13,12 @@ const WIDGET_TYPES = new Set(['STRING', 'BOOLEAN', 'COMBO', 'INT', 'FLOAT']);
 
 function factoryCounts(config, allEnvironments = false) {
   const fighters = config.fighters.length;
-  const stages = allEnvironments ? config.stages.length : config.stages.filter(s => s.enabled).length;
-  const oneK = fighters * 4 + 5, twoK = fighters * 3 + stages + 1;
-  return { paidImages: oneK + twoK, sourceSaves: fighters + stages, mappedAssets: oneK + twoK + fighters + stages,
+  const environments = allEnvironments ? config.stages : config.stages.filter(s => s.enabled);
+  const stages = environments.length;
+  const inventedCharacters=config.fighters.filter(item=>item.sourceMode==='Invent fictional reference').length;
+  const inventedEnvironments=environments.filter(item=>item.sourceMode==='Invent fictional reference').length;
+  const oneK = fighters * 4 + 5 + inventedCharacters, twoK = fighters * 3 + stages + 1 + inventedEnvironments;
+  return { paidImages: oneK + twoK, sourceSaves: fighters + stages, mappedAssets: fighters * 8 + stages * 2 + 6,
     oneK, twoK, estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072).toFixed(6)) };
 }
 
@@ -73,7 +76,11 @@ function graphBuilder(title) {
       properties: {'Node name for S&R': 'LoadImage'}, widgets_values: [filename, 'image'], widgets_values_named: { image: filename } };
     graph.nodes.push(item); return item;
   }
-  return { graph, node, connect, note, group, loadImage };
+  function fictionalReference(fighter,config,pos) {
+    return node('CFZFictionalReference','Invent a fresh fictional reference | no image inputs',{
+      prompt:fighter.referencePrompt||`${config.style}\nInvent this adult fictional fighter from text only: ${fighter.description}. Full-body right-facing neutral guard, complete hands and shoes, green chroma background, no external image or real person.`,aspect:'2:3',resolution:'1K'},pos,[440,470]);
+  }
+  return { graph, node, connect, note, group, loadImage, fictionalReference };
 }
 
 function projectValues(config, suffix = '') {
@@ -81,12 +88,14 @@ function projectValues(config, suffix = '') {
     style: config.style, ui_style: config.uiStyle, stage_style: config.stageStyle, model: config.model, seed: 42 };
 }
 function characterValues(fighter, includeSheets = true) {
-  return { image: fighter.sourceInput || '', name: fighter.name, description: fighter.description,
+  const source_mode=fighter.sourceMode||'Upload reference';
+  return { image: source_mode==='Invent fictional reference'?'':fighter.sourceInput || '', source_mode, name: fighter.name, description: fighter.description,
     special_name: fighter.specialMove.name, special_description: fighter.specialMove.description,
     intro_tagline: fighter.introTagline || '', color: fighter.color, character_id: fighter.id, include_sprite_sheets: includeSheets };
 }
 function environmentValues(stage) {
-  return { image: stage.sourceInput || '', enabled: !!stage.enabled, name: stage.name, description: stage.description, stage_id: stage.id };
+  const source_mode=stage.sourceMode||'Upload reference';
+  return { image: source_mode==='Invent fictional reference'?'':stage.sourceInput || '', source_mode, enabled: !!stage.enabled, name: stage.name, description: stage.description, stage_id: stage.id };
 }
 function attachExporter(builder, project, bundles, pos, complete) {
   const exporter = builder.node(complete ? 'CFZExportGameAssets' : 'CFZExportAssetPatch', complete ? 'Export complete assets.json' : 'Export PARTIAL assets.json', {}, pos, [440, 340], bundles.length);
@@ -107,7 +116,7 @@ function makeFactoryGraph(config) {
     b.connect(project, 0, character, 'project'); bundles.push(character);
   });
   const environments = config.stages.map((stage, i) => {
-    const environment = b.node('CFZEnvironmentFactory', `Environment ${i + 1} | ${stage.enabled ? stage.name : 'upload to enable'}`,
+    const environment = b.node('CFZEnvironmentFactory', `Environment ${i + 1} | ${stage.enabled ? stage.name : 'disabled'}`,
       environmentValues(stage), [i * 490, 1780], [440, 540]);
     environment.color = stage.enabled ? '#29463d' : '#3a3e46'; environment.bgcolor = '#1b2927';
     b.connect(project, 0, environment, 'project'); bundles.push(environment); return environment;
@@ -116,10 +125,10 @@ function makeFactoryGraph(config) {
   b.connect(project, 0, shared, 'project'); b.connect(environments[0], 1, shared, 'stage_reference'); bundles.push(shared);
   attachExporter(b, project, bundles, [1510, 970], true);
   const count = factoryCounts(config), full = factoryCounts(config, true);
-  b.note(`# ${config.title}\n## Upload photos. Describe fighters. Build your game.\n\nSix character cards generate references, three pose sheets, portraits, heroes and cut-ins. Environment 1 supplies the title/select venue; slots 2 and 3 stay empty until uploaded and enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default ${count.paidImages} images + ${count.sourceSaves} source saves = ${count.mappedAssets} mapped assets (~$${count.estimatedUSD.toFixed(3)}). All three environments: ${full.paidImages} images / ${full.mappedAssets} records (~$${full.estimatedUSD.toFixed(3)}). Review current native prices before running. Audio/video are separate workflows. Opening this graph spends nothing.`, [-510, -260], [1940, 290]);
-  b.note('## Before you run\n\n1. Install custom_nodes/dad_fighter_assets and restart ComfyUI.\n2. Upload each reference on its card; edit descriptions, specials and taglines.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse workflows/factory/ for one character, one sheet or one environment. The full native graph is preserved under workflows/advanced/.', [1510, 1470], [440, 440]);
-  b.group('Six character upload slots', [-25, 45, 1470, 1620], '#4b6387');
-  b.group('Up to three environment upload slots', [-25, 1705, 1470, 675], '#4b7f6d');
+  b.note(`# ${config.title}\n## Invent fictional fighters. Build your game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Environment 1 supplies the title/select venue; slots 2 and 3 stay disabled until enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default ${count.paidImages} image calls / ${count.mappedAssets} mapped assets (~$${count.estimatedUSD.toFixed(3)}). All three environments: ${full.paidImages} calls / ${full.mappedAssets} records (~$${full.estimatedUSD.toFixed(3)}). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing.`, [-510, -260], [1940, 290]);
+  b.note('## Before you run\n\n1. Install custom_nodes/dad_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse workflows/factory/ for one character, one sheet or one environment. The full native graph is under workflows/advanced/.', [1510, 1470], [440, 440]);
+  b.group('Six character factories', [-25, 45, 1470, 1620], '#4b6387');
+  b.group('Up to three environment factories', [-25, 1705, 1470, 675], '#4b7f6d');
   b.group('Shared artwork + mapped export', [1485, 545, 490, 830], '#826947');
   return b.graph;
 }
@@ -135,7 +144,7 @@ function makeCharacterTemplate(config) {
     b.connect(project, 0, node, 'project'); b.connect(character, 2, node, 'character'); b.connect(character, 1, node, 'reference'); bundles.push(node);
   });
   attachExporter(b, project, bundles, [1060, 250], false);
-  b.note('# One complete character pack\n\nUpload the source photo and edit this fighter. The character factory generates identity, portrait, hero and cut-in; its internal sheets are OFF. The three visible sheet nodes reuse that identity. Seven paid images (~$0.408) + one local source save. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle.', [-510, -230], [1940, 220]);
+  b.note('# One complete character pack\n\nInvent mode creates a fresh fictional source from text, then identity, portrait, hero and cut-in. Its internal sheets are OFF: the three visible sheet nodes reuse that identity. Eight paid images in Invent mode; seven when explicitly uploading a new reference. No previous photos are selected. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle.', [-510, -230], [1940, 220]);
   b.graph.extra.ds = { scale: 0.65, offset: [570, 290] }; return b.graph;
 }
 
@@ -143,11 +152,12 @@ function makeSheetTemplate(config) {
   const fighter = config.fighters[0], b = graphBuilder(`${config.title}: one accepted-reference sprite sheet`);
   const project = b.node('CFZProjectSettings', 'Separate sheet patch folder', projectValues(config, `sheet-${fighter.id}`), [-510, 100], [440, 470]);
   const definition = b.node('CFZCharacterDefinition', 'Describe the accepted fighter', characterValues(fighter), [0, 100], [440, 450]);
-  const reference = b.loadImage(fighter.acceptedReferenceInput || `${fighter.id}_reference.png`, [0, 640]);
+  const reference = fighter.acceptedReferenceInput ? b.loadImage(fighter.acceptedReferenceInput, [0, 640]) : b.fictionalReference(fighter,config,[0,640]);
+  if(reference.type==='CFZFictionalReference')b.connect(project,0,reference,'project');
   const sheet = b.node('CFZSpriteSheet', 'Choose sheet A, B or C', { sheet: 'sheet' }, [540, 330], [420, 190]);
   b.connect(project, 0, sheet, 'project'); b.connect(definition, 0, sheet, 'character'); b.connect(reference, 0, sheet, 'reference');
   attachExporter(b, project, [sheet], [1060, 330], false);
-  b.note('# One sprite sheet from an accepted identity\n\nUpload the accepted ANIME identity image, retain its exact outfit/description and choose sheet, sheetB or sheetC. One paid 2K image (~$0.072). Exports only the selected sheet in a PARTIAL assets.json, into its own root. Review nine complete right-facing poses, clear green cell margins and complete feet, then merge by asset ID into the complete source bundle.', [-510, -230], [1940, 220]);
+  b.note(fighter.acceptedReferenceInput ? '# One sprite sheet from an accepted fictional identity\n\nUpload the explicitly named, newly generated identity; no old photo is selected. Choose sheet, sheetB or sheetC. One paid 2K image (~$0.072). Writes a PARTIAL assets.json into its own root for review and merge.' : '# One fictional sprite sheet\n\nThe custom Fictional Reference node invents a fresh character reference from text, then the custom Sprite Sheet node generates the selected nine-pose sheet. Two paid image calls (~$0.120); no Load Image node or previous-session file is used. Exports a PARTIAL assets.json into its own root. For consistent full-character production use the complete character pack, whose three sheets share one identity.', [-510, -230], [1940, 220]);
   b.graph.extra.ds = { scale: 0.6, offset: [570, 290] }; return b.graph;
 }
 
@@ -156,15 +166,15 @@ function makeEnvironmentTemplate(config) {
   const project = b.node('CFZProjectSettings', 'Separate environment patch folder', projectValues(config, `environment-${stage.id}`), [-510, 100], [440, 470]);
   const environment = b.node('CFZEnvironmentFactory', 'Upload venue | clean playable arena', environmentValues({...stage, enabled: true}), [0, 100], [440, 570]);
   b.connect(project, 0, environment, 'project'); attachExporter(b, project, [environment], [540, 250], false);
-  b.note('# One environment\n\nUpload a venue, describe its architecture and keep the floor clear. One paid 2K stage (~$0.072) plus a local source save. Full-bleed artwork without speed-line borders. This is a PARTIAL replacement patch: keep a stage ID already present in the complete base bundle, then merge its accepted stage/source records. To introduce additional venues, enable their slots in the complete main factory.', [-510, -230], [1490, 220]);
+  b.note('# One fictional environment\n\nInvent mode creates a fresh fictional source from text then one playable stage: two paid 2K calls (~$0.144). Upload mode uses only the new reference you explicitly select and costs one stage call (~$0.072). Full-bleed artwork without speed-line borders. This is a PARTIAL replacement patch: keep a stage ID already in the complete base bundle. To add venues, enable their slots in the complete main factory.', [-510, -230], [1490, 220]);
   b.graph.extra.ds = { scale: 0.75, offset: [570, 290] }; return b.graph;
 }
 
 function builderMetadata(config) {
   const slots = items => items.map(item => ({ id: item.id, name: item.name, enabled: item.enabled !== false,
-    reference: item.sourceInput || '', sourceInput: item.sourceInput || '' }));
+    sourceMode:item.sourceMode||'Upload reference', reference: item.sourceMode==='Invent fictional reference'?'':item.sourceInput || '', sourceInput:item.sourceMode==='Invent fictional reference'?'':item.sourceInput || '' }));
   return { title: config.title, subtitle: config.subtitle, workflowURL: '/builder/templates/comfy-hackathon.json',
-    characters: slots(config.fighters), environments: slots(config.stages),
+    fictional:true,characters: slots(config.fighters), environments: slots(config.stages),
     templates: [{id:'character',label:'One complete character pack',url:'/builder/templates/character-factory.json'},
       {id:'sheet',label:'One sprite sheet',url:'/builder/templates/sprite-sheet.json'},
       {id:'environment',label:'One environment',url:'/builder/templates/environment-factory.json'}],

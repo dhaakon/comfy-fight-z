@@ -45,6 +45,10 @@ async function skipOptionalOpening(page) {
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     await page.goto(url); await page.waitForFunction(() => document.querySelector('#fighter-one').options.length >= 2);
     await skipOptionalOpening(page);
+    if (config.demoSource === 'fictional-text-only') {
+      assert.equal(await page.locator('#opening-replay').isVisible(), false, 'Fictional demo must not expose the old real-person opening');
+      assert.equal(await page.locator('#opening-screen').isVisible(), false, 'Fictional demo opens directly on its title');
+    }
     assert.equal(await page.title(), config.title);
     assert.equal(await page.locator('#fighter-one option').count(), config.fighters.length);
     assert.equal(await page.evaluate(() => window.FighterDebug.presentation().screen), 'title');
@@ -97,6 +101,15 @@ async function skipOptionalOpening(page) {
     fs.mkdirSync(path.join(root, 'build'), { recursive: true });
     await page.screenshot({ path: path.join(root, 'build/browser-smoke.png'), fullPage: true });
     assert.deepEqual(errors, []);
+    // A missing asset bundle must fall back to fictional names without opening old media.
+    const fallbackPage = await browser.newPage(); fallbackPage.on('pageerror', error => errors.push(error.message));
+    await fallbackPage.route('**/assets/manifest.json', route => route.fulfill({ status: 404, body: 'Fixture: no asset bundle' }));
+    await fallbackPage.goto(url);
+    await skipOptionalOpening(fallbackPage);
+    const demo = JSON.parse(fs.readFileSync(path.join(root, 'config/fictional-demo.json'), 'utf8'));
+    assert.deepEqual(await fallbackPage.locator('#fighter-one option').allTextContents(), demo.fighters.map(f => f.name));
+    assert.equal(await fallbackPage.locator('#opening-replay').isVisible(), false);
+    await fallbackPage.close();
     // Serve fake art in-memory to verify every asset category is actually loaded by the UI.
     const fixture = createCanvas(120, 180), c = fixture.getContext('2d'); c.fillStyle = '#f49653'; c.fillRect(10, 10, 100, 160); c.fillStyle = '#82d6c5'; c.fillRect(30, 35, 60, 30);
     const png = fixture.toBuffer('image/png'), synthetic = syntheticManifest();
@@ -190,8 +203,9 @@ async function skipOptionalOpening(page) {
     assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Mobile layout must fit the viewport');
     await mobile.click('#title-start');
     assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Mobile selection must fit the viewport');
-    await mobile.locator('.fighter-tile[data-fighter="photographer"]').click();
-    assert.equal(await mobile.locator('#fighter-one').inputValue(), String(config.fighters.findIndex(fighter => fighter.id === 'photographer')), 'Mobile hero cards must not intercept roster taps');
+    const mobileFighterIndex = Math.min(4, config.fighters.length - 1);
+    await mobile.locator(`.fighter-tile[data-fighter="${config.fighters[mobileFighterIndex].id}"]`).click();
+    assert.equal(await mobile.locator('#fighter-one').inputValue(), String(mobileFighterIndex), 'Mobile hero cards must not intercept roster taps');
     await mobile.click('#start-button'); await mobile.click('#intro-skip');
     await mobile.waitForFunction(() => window.FighterDebug.snapshot()?.phase === 'fight');
     assert.equal(await mobile.locator('.touch-controls').isVisible(), true);

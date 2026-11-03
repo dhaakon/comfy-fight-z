@@ -5,7 +5,7 @@
   const fallback = {
     title: 'Comfy Fighter Z',
     subtitle: 'Higgsfield Open Source Saga',
-    fighters: ['allyson', 'deep', 'georgia', 'matt', 'photographer', 'rob'].map((id, i) => ({ id, name: id[0].toUpperCase() + id.slice(1), color: ['#ffd23f','#2edbc8','#ff3b6b','#9c7aff','#ff9457','#67aaff'][i], poses: {} })),
+    fighters: ['griddle', 'rivet', 'tempo', 'nimbus', 'switchback', 'brick'].map((id, i) => ({ id, name: id[0].toUpperCase() + id.slice(1), color: ['#ff8b3d','#58c7ff','#f46bc4','#b99cff','#ffd44d','#ff6677'][i], poses: {} })),
     stages: [{ id: 'yard', name: 'The Yard' }], ui: {}, effects: {}, audio: {}
   };
   let manifest = fallback, state = null, paused = false, last = performance.now(), accumulator = 0;
@@ -16,8 +16,8 @@
   const fighterRenderer = window.FighterAnim?.createRenderer();
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const fallbackTaglines = {
-    allyson: 'Every node leads to your defeat.', deep: 'Your queue ends here.', georgia: 'Watch the whole arena turn gold.',
-    matt: 'No limits. Just latent power.', photographer: 'Smile. This is your last frame.', rob: 'Build complete. You are finished.'
+    griddle: 'The grill is hot. Your winning streak is toast.', rivet: 'I fix everything. Your stance is next.', tempo: 'Keep up with the beat, or take a seat.',
+    nimbus: 'I raised a garden. I can handle a little thunder.', switchback: 'School run complete. Express knockout incoming.', brick: 'I built this block. Now hold your ground.'
   };
   const activeSounds = new Set();
   const keys = new Set(), pendingKeys = new Set(), touch = {};
@@ -209,7 +209,7 @@
     $('stage-label').textContent = stage.name.toUpperCase(); $('stage-name').textContent = stage.name.toUpperCase();
     $('fight-stage-label').textContent = `${manifest.title} / ${stage.name}`.toUpperCase();
     $('result-stage-label').textContent = `${stage.name} HAS A CHAMPION`.toUpperCase();
-    $('title-stage-label').textContent = manifest.stages.length > 1 ? `${manifest.stages.length} ENVIRONMENTS / CHOOSE YOUR ARENA` : stage.id === 'yard' && stage.name === 'The Yard' ? 'THE YARD / NEW YORK CITY' : stage.name.toUpperCase();
+    $('title-stage-label').textContent = manifest.stages.length > 1 ? `${manifest.stages.length} ENVIRONMENTS / CHOOSE YOUR ARENA` : stage.name.toUpperCase();
     const numberWord = count => ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'][count] || String(count);
     const arenaCount = `${numberWord(manifest.stages.length)} ${manifest.stages.length === 1 ? 'ARENA' : 'ARENAS'}`;
     const stageSummary = manifest.stages.length === 1 && stage.id === 'yard' && stage.name === 'The Yard' ? 'ONE YARD' : arenaCount;
@@ -219,7 +219,7 @@
     if (background) $('stage-thumb').style.backgroundImage = 'url("' + background.src + '")';
     const complete = selected.every(i => Object.values(manifest.fighters[i].poses || {}).filter(pose => art(pose.src)).length >= 27) && art(stage.src);
     $('placeholder-label').hidden = !!complete;
-    $('placeholder-label').textContent = 'SPRITE ART PENDING / PROTOTYPE FIGHTERS';
+    $('placeholder-label').textContent = manifest.generationPending ? 'FICTIONAL ART AWAITING GENERATION / PROTOTYPE FIGHTERS' : 'SPRITE ART PENDING / PROTOTYPE FIGHTERS';
     const count = manifest.fighters.reduce((total, f) => total + Object.values(f.poses || {}).filter(p => art(p.src)).length, 0);
     $('selection-art-status').textContent = count ? count + ' generated fighter poses loaded. Select your matchup and enter ' + stage.name + '.' : 'Reference preview: source artwork is loaded. Generated art and audio are pending; combat uses visible prototype fighters.';
   }
@@ -465,7 +465,7 @@
       $('title-fighters').append(image);
     });
     refreshCards(); renderGallery(); setMusic('menu_music');
-    $('title-start').disabled = false; $('title-load-status').textContent = 'PRESS ENTER OR TAP TO START';
+    $('title-start').disabled = false; $('title-load-status').textContent = manifest.generationPending ? 'FICTIONAL ART AWAITING GENERATION · PLAY THE PROTOTYPE' : 'PRESS ENTER OR TAP TO START';
     $('opening-replay').hidden = !assetSource(manifest.openingVideo);
     $('opening-skip').addEventListener('click', finishOpening); $('opening-continue').addEventListener('click', finishOpening);
     $('opening-play').addEventListener('click', () => playOpening(true)); $('opening-replay').addEventListener('click', () => playOpening(audioEnabled));

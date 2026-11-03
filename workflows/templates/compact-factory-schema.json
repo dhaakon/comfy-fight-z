@@ -207,6 +207,111 @@
     "essentials_category": null,
     "has_intermediate_output": false
   },
+  "CFZFictionalReference": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "prompt": [
+          "STRING",
+          {
+            "default": "One original adult anime parent hero, complete full body facing right, simple workwear, clean cel shading, flat chroma green background. No real-person likeness, existing character, text or logos.",
+            "multiline": true
+          }
+        ],
+        "aspect": [
+          "COMBO",
+          {
+            "default": "2:3",
+            "multiselect": false,
+            "options": [
+              "auto",
+              "1:1",
+              "2:3",
+              "3:2",
+              "3:4",
+              "4:3",
+              "4:5",
+              "5:4",
+              "9:16",
+              "16:9",
+              "21:9",
+              "1:4",
+              "4:1",
+              "8:1",
+              "1:8"
+            ]
+          }
+        ],
+        "resolution": [
+          "COMBO",
+          {
+            "default": "1K",
+            "multiselect": false,
+            "options": [
+              "1K",
+              "2K",
+              "4K"
+            ]
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "prompt",
+        "aspect",
+        "resolution"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "reference"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZFictionalReference",
+    "display_name": "CFZ Invent Fictional Reference",
+    "description": "PAID cloud generation: exactly one new reference image from text. No image input or previous-session file is read. Native cloud generation stays inside this custom node.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
   "CFZCharacterFactory": {
     "input": {
       "required": {
@@ -217,7 +322,7 @@
         "image": [
           "COMBO",
           {
-            "tooltip": "Upload a reference photo. Disabled environment slots may remain empty.",
+            "tooltip": "Used only in Upload reference mode. Invent fictional reference ignores this field completely. Disabled environment slots may remain empty.",
             "default": "",
             "multiselect": false,
             "options": [
@@ -287,6 +392,20 @@
           }
         ]
       },
+      "optional": {
+        "source_mode": [
+          "COMBO",
+          {
+            "tooltip": "Invent fictional reference creates a new source from text and never loads any selected/uploaded image. It adds one paid cloud image call.",
+            "default": "Upload reference",
+            "multiselect": false,
+            "options": [
+              "Upload reference",
+              "Invent fictional reference"
+            ]
+          }
+        ]
+      },
       "hidden": {
         "auth_token_comfy_org": [
           "AUTH_TOKEN_COMFY_ORG"
@@ -311,6 +430,9 @@
         "color",
         "character_id",
         "include_sprite_sheets"
+      ],
+      "optional": [
+        "source_mode"
       ],
       "hidden": [
         "auth_token_comfy_org",
@@ -342,7 +464,7 @@
     "output_matchtypes": null,
     "name": "CFZCharacterFactory",
     "display_name": "CFZ Character Factory",
-    "description": "PAID cloud generation: 7 images (identity, three 2K sprite sheets, portrait, hero, cut-in). With sheets disabled: 4 images. Source photo is saved locally. Uses native Comfy cloud authentication.",
+    "description": "PAID cloud generation: Upload reference uses 7 images (4 without sheets); Invent fictional reference uses 8 images (5 without sheets). Invent creates its source from text and never reads the image field or earlier session files. Uses native Comfy cloud authentication.",
     "python_module": null,
     "category": "Comfy Fighter Z",
     "output_node": false,
@@ -453,7 +575,7 @@
         "image": [
           "COMBO",
           {
-            "tooltip": "Upload a reference photo. Disabled environment slots may remain empty.",
+            "tooltip": "Used only in Upload reference mode. Invent fictional reference ignores this field completely. Disabled environment slots may remain empty.",
             "default": "",
             "multiselect": false,
             "options": [
@@ -492,6 +614,20 @@
           }
         ]
       },
+      "optional": {
+        "source_mode": [
+          "COMBO",
+          {
+            "tooltip": "Invent fictional reference creates a new source from text and never loads any selected/uploaded image. It adds one paid cloud image call.",
+            "default": "Upload reference",
+            "multiselect": false,
+            "options": [
+              "Upload reference",
+              "Invent fictional reference"
+            ]
+          }
+        ]
+      },
       "hidden": {
         "auth_token_comfy_org": [
           "AUTH_TOKEN_COMFY_ORG"
@@ -512,6 +648,9 @@
         "name",
         "description",
         "stage_id"
+      ],
+      "optional": [
+        "source_mode"
       ],
       "hidden": [
         "auth_token_comfy_org",
@@ -539,7 +678,7 @@
     "output_matchtypes": null,
     "name": "CFZEnvironmentFactory",
     "display_name": "CFZ Environment Factory",
-    "description": "PAID when enabled: one reference-driven stage image. Saves the source photo locally. Disabled slots stay empty and make zero cloud calls.",
+    "description": "PAID when enabled: Upload reference uses 1 stage image; Invent fictional reference uses 2 images (a new text-only source plus the playable stage). Invent never reads the image field or earlier session files. Disabled slots make zero cloud calls.",
     "python_module": null,
     "category": "Comfy Fighter Z",
     "output_node": false,
@@ -627,7 +766,12 @@
         ],
         "image": [
           "IMAGE",
-          {}
+          {
+            "options": [
+              ""
+            ],
+            "default": ""
+          }
         ],
         "asset_json": [
           "STRING",

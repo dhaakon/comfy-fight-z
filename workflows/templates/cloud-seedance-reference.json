@@ -1,19 +1,20 @@
 {
   "id": "7a06a6de-067d-4d41-b7bf-7d6add20ec8c",
   "revision": 0,
-  "last_node_id": 24,
-  "last_link_id": 19,
+  "last_node_id": 4,
+  "last_link_id": 3,
   "nodes": [
     {
-      "id": 12,
-      "type": "LoadImage",
+      "id": 1,
+      "type": "CFZProjectSettings",
+      "title": "Fictional film references | cloud settings",
       "pos": [
-        -330,
-        7930
+        0,
+        0
       ],
       "size": [
-        289.984375,
-        349.984375
+        440,
+        470
       ],
       "flags": {},
       "order": 0,
@@ -21,83 +22,95 @@
       "inputs": [],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
+          "name": "project",
+          "type": "CFZ_PROJECT",
           "links": [
-            18
+            1
           ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
         }
       ],
       "properties": {
-        "Node name for S&R": "LoadImage"
+        "Node name for S&R": "CFZProjectSettings"
       },
       "widgets_values": [
-        "medusa_poster.png",
-        "image"
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-fictional-demo\\environment-yard",
+        "Comfy Fighter Z",
+        "Higgsfield Open Source Saga",
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+        "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+        "Gemini Nano Banana 2.1",
+        42
       ],
       "widgets_values_named": {
-        "image": "medusa_poster.png",
-        "upload": "image"
+        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-fictional-demo\\environment-yard",
+        "title": "Comfy Fighter Z",
+        "subtitle": "Higgsfield Open Source Saga",
+        "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+        "stage_style": "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+        "model": "Gemini Nano Banana 2.1",
+        "seed": 42
       }
     },
     {
-      "id": 16,
-      "type": "SaveVideo",
+      "id": 2,
+      "type": "CFZFictionalReference",
+      "title": "Invent reference 1: Griddle",
       "pos": [
-        450,
-        7930
+        460,
+        0
       ],
       "size": [
-        689.984375,
-        125.9375
+        400,
+        300
       ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "inputs": [
         {
-          "name": "video",
-          "type": "VIDEO",
-          "link": 19
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 1
         }
       ],
       "outputs": [
         {
-          "name": "video",
-          "type": "VIDEO",
-          "links": null
+          "name": "reference",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
         }
       ],
-      "properties": {},
-      "widgets_values": [
-        "video/Seedance2.5_r2v",
-        "auto",
-        "auto"
-      ],
+      "properties": {
+        "Node name for S&R": "CFZFictionalReference"
+      },
       "widgets_values_named": {
-        "filename_prefix": "video/Seedance2.5_r2v",
-        "format": "auto",
-        "codec": "auto"
-      }
+        "prompt": "Create one original fictional adult anime fighting-game character, with no image inputs and no resemblance to a real person or existing character. Griddle is a cheerful barbecue dad in his late forties: short broad powerful build, round face, warm brown skin, bald head, compact triangular auburn beard. Brick-red sleeveless utility apron ending above the knees over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs, dark brown ankle boots. No hat or handheld props. Full-body three-quarter side view facing RIGHT, relaxed boxing guard, visible friendly face, separated arms and legs, complete hands and shoes. Original 1990s shonen anime model art, bold ink and clean two-tone cel shading. One figure only, centered with generous padding, flat uniform chroma green RGB(0,255,0) background; no green on the character, shadows, lettering, labels, logos, grid, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.",
+        "aspect": "2:3",
+        "resolution": "1K"
+      },
+      "widgets_values": [
+        "Create one original fictional adult anime fighting-game character, with no image inputs and no resemblance to a real person or existing character. Griddle is a cheerful barbecue dad in his late forties: short broad powerful build, round face, warm brown skin, bald head, compact triangular auburn beard. Brick-red sleeveless utility apron ending above the knees over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs, dark brown ankle boots. No hat or handheld props. Full-body three-quarter side view facing RIGHT, relaxed boxing guard, visible friendly face, separated arms and legs, complete hands and shoes. Original 1990s shonen anime model art, bold ink and clean two-tone cel shading. One figure only, centered with generous padding, flat uniform chroma green RGB(0,255,0) background; no green on the character, shadows, lettering, labels, logos, grid, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.",
+        "2:3",
+        "1K"
+      ]
     },
     {
-      "id": 24,
+      "id": 3,
       "type": "ByteDance2ReferenceNodeV2",
       "pos": [
-        0,
-        7930
+        1000,
+        0
       ],
       "size": [
         399.984375,
         462.859375
       ],
       "flags": {},
-      "order": 1,
+      "order": 2,
       "mode": 0,
       "inputs": [
         {
@@ -105,7 +118,7 @@
           "name": "model.reference_images.image_1",
           "shape": 7,
           "type": "IMAGE",
-          "link": 18
+          "link": 2
         },
         {
           "label": "image_2",
@@ -141,7 +154,7 @@
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
-            19
+            3
           ]
         }
       ],
@@ -150,7 +163,7 @@
       },
       "widgets_values": [
         "Seedance 2.5",
-        "The crimson marble Medusa statue comes alive, opening her eyes and looking at the camera while the red typography in the background simultaneously dissolves away letter by letter into drifting red particles. The snakes in her hair rise and sway. Both the statue and the background text animate together, poster layout otherwise unchanged, cinematic, no black frames.",
+        "A completely fictional adult anime parent hero in a fictional backyard channels a golden energy aura, smiles with determination, and strikes a dynamic fighting stance. Cel-shaded shonen animation, smooth camera move, no real people or real venues, no captions or logos.",
         "720p",
         "adaptive",
         5,
@@ -165,7 +178,7 @@
       ],
       "widgets_values_named": {
         "model": "Seedance 2.5",
-        "model.prompt": "The crimson marble Medusa statue comes alive, opening her eyes and looking at the camera while the red typography in the background simultaneously dissolves away letter by letter into drifting red particles. The snakes in her hair rise and sway. Both the statue and the background text animate together, poster layout otherwise unchanged, cinematic, no black frames.",
+        "model.prompt": "A completely fictional adult anime parent hero in a fictional backyard channels a golden energy aura, smiles with determination, and strikes a dynamic fighting stance. Cel-shaded shonen animation, smooth camera move, no real people or real venues, no captions or logos.",
         "model.resolution": "720p",
         "model.ratio": "adaptive",
         "model.duration": 5,
@@ -180,22 +193,70 @@
       },
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 4,
+      "type": "SaveVideo",
+      "pos": [
+        1460,
+        0
+      ],
+      "size": [
+        689.984375,
+        125.9375
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "video/fictional-reference-example",
+        "auto",
+        "auto"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "video/fictional-reference-example",
+        "format": "auto",
+        "codec": "auto"
+      }
     }
   ],
   "links": [
     [
-      18,
-      12,
+      1,
+      1,
       0,
-      24,
+      2,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
       0,
       "IMAGE"
     ],
     [
-      19,
-      24,
+      3,
+      3,
       0,
-      16,
+      4,
       0,
       "VIDEO"
     ]
@@ -204,10 +265,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.3231953747758902,
+      "scale": 0.6,
       "offset": [
-        372.77739355499335,
-        -7631.4589700095585
+        60,
+        120
       ]
     },
     "frontendVersion": "1.49.6"

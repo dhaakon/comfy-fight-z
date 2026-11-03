@@ -109,7 +109,7 @@ class CloudFactoryTests(unittest.TestCase):
         return MockCloudGraph(graph)
 
     def test_real_schema_marks_paid_factories_and_has_empty_upload_slots(self):
-        for cls in [factory.CFZCharacterFactory, factory.CFZEnvironmentFactory, factory.CFZSpriteSheet, factory.CFZSharedArtFactory]:
+        for cls in [factory.CFZFictionalReference, factory.CFZCharacterFactory, factory.CFZEnvironmentFactory, factory.CFZSpriteSheet, factory.CFZSharedArtFactory]:
             self.assertTrue(cls.GET_NODE_INFO_V1()["api_node"])
             self.assertIn("PAID", cls.GET_NODE_INFO_V1()["description"])
         for cls in [factory.CFZProjectSettings, factory.CFZCharacterDefinition, factory.CFZExportGameAssets]:
@@ -118,6 +118,9 @@ class CloudFactoryTests(unittest.TestCase):
             upload = cls.INPUT_TYPES()["required"]["image"][1]
             self.assertEqual(upload["options"][0], "")
             self.assertTrue(upload["image_upload"])
+            mode = cls.INPUT_TYPES()["optional"]["source_mode"][1]
+            self.assertEqual(mode["default"], "Upload reference")
+            self.assertEqual(mode["options"], ["Upload reference", "Invent fictional reference"])
         self.assertNotIn("control_after_generate", factory.CFZProjectSettings.INPUT_TYPES()["required"]["seed"][1])
 
     def test_full_six_fighter_three_environment_bundle_validates_and_maps_every_image(self):
@@ -161,6 +164,43 @@ class CloudFactoryTests(unittest.TestCase):
         self.assertEqual(disabled[0]["assets"], [])
         self.assertEqual(factory.CFZEnvironmentFactory.fingerprint_inputs(image="missing.png", enabled=False), "disabled")
 
+    def test_fictional_mode_never_reads_stale_photos_and_maps_complete_new_bundle(self):
+        for enabled_stages, expected_calls in [(1, 56), (3, 60)]:
+            with self.subTest(enabled_stages=enabled_stages):
+                graph = self.full_graph(enabled_stages=enabled_stages)
+                for node in graph.graph.values():
+                    if node["class_type"] in ["CFZCharacterFactory", "CFZEnvironmentFactory"]:
+                        node["inputs"].update(source_mode="Invent fictional reference", image="previous-session-person.jpeg")
+                with patch.object(factory, "_input_image", side_effect=AssertionError("An old input image was read")), \
+                        patch.object(factory, "_image_hash", side_effect=AssertionError("An old input image was hashed")), \
+                        patch.object(comfy_nodes.LoadImage, "load_image", side_effect=AssertionError("An old input image was loaded")):
+                    destination = Path(graph.node("export")[0])
+                    graph.validate_native_graph(self)
+                    self.assertEqual(factory.CFZCharacterFactory.fingerprint_inputs(image="photo.png", source_mode="Invent fictional reference"), "fictional-text-only")
+                    self.assertEqual(factory.CFZEnvironmentFactory.fingerprint_inputs(image="photo.png", enabled=True, source_mode="Invent fictional reference"), "fictional-text-only")
+                manifest = json.loads(destination.read_text(encoding="utf-8"))
+                self.assertEqual(len(graph.native_calls), expected_calls)
+                self.assertEqual(len(manifest["assets"]), expected_calls)
+                self.assertFalse(any(node["class_type"] == "LoadImage" for node in graph.graph.values()))
+                self.assertNotIn("previous-session-person", destination.read_text(encoding="utf-8"))
+                invented = [call for call in graph.native_calls if "from this text alone" in call["inputs"]["prompt"]]
+                self.assertEqual(len(invented), 6 + enabled_stages)
+                self.assertTrue(all(not any(key.startswith("model.images") for key in call["inputs"]) for call in invented))
+                self.assertTrue(all(not call["nested"]["model"]["images"] for call in invented))
+
+    def test_fictional_mode_validates_empty_input_and_disabled_environment_does_no_work(self):
+        args = {**self.character_args(), "image": "", "source_mode": "Invent fictional reference"}
+        validation = {key: value for key, value in args.items() if key not in ["project", "include_sprite_sheets"]}
+        self.assertIs(factory.CFZCharacterFactory.validate_inputs(**validation), True)
+        self.assertEqual(len([node for node in factory.CFZCharacterFactory.execute(**args).expand.values() if node["class_type"] == "GeminiNanoBanana2V2"]), 5)
+        stage = {**self.stage_args(enabled=False), "image": "../previous-photo.jpg", "source_mode": "Invent fictional reference"}
+        output = factory.CFZEnvironmentFactory.execute(**stage)
+        self.assertIsNone(output.expand)
+        self.assertEqual(output[0]["assets"], [])
+        self.assertEqual(factory.CFZEnvironmentFactory.fingerprint_inputs(image=stage["image"], enabled=False, source_mode=stage["source_mode"]), "disabled")
+        with self.assertRaisesRegex(ValueError, "Source mode"):
+            factory.CFZCharacterFactory.execute(**{**args, "source_mode": "Use last photo"})
+
     def test_single_character_art_and_three_visible_sheet_nodes_do_not_duplicate_cloud_calls(self):
         graph = {"character": {"class_type": "CFZCharacterFactory", "inputs": self.character_args(sheets=False)}}
         for sheet in nodes.SHEETS:
@@ -182,6 +222,23 @@ class CloudFactoryTests(unittest.TestCase):
         self.assertEqual(len(graph.native_calls), 1)
         self.assertEqual(bundle["assets"][0]["poses"], nodes.SHEETS["sheetB"])
         self.assertEqual(bundle["assets"][0]["id"], "fighter0_sheetB")
+
+    def test_fictional_reference_encapsulates_one_text_only_native_cloud_call(self):
+        graph = MockCloudGraph({"reference": {"class_type": "CFZFictionalReference", "inputs": {
+            "project": self.project, "prompt": "An invented silver-haired mechanic in navy coveralls.", "aspect": "2:3", "resolution": "1K"}}})
+        with patch.object(factory, "_input_image", side_effect=AssertionError("Previous input was read")), \
+                patch.object(comfy_nodes.LoadImage, "load_image", side_effect=AssertionError("Previous input was loaded")):
+            image, = graph.node("reference")
+            graph.validate_native_graph(self)
+        self.assertEqual(image.shape, (1, 18, 18, 3))
+        self.assertEqual(len(graph.native_calls), 1)
+        self.assertEqual(len(graph.graph), 2)
+        child = graph.native_calls[0]
+        self.assertNotIn("model.images.image_1", child["inputs"])
+        self.assertEqual(child["nested"]["model"]["images"], {})
+        self.assertIn("text alone", child["inputs"]["prompt"])
+        self.assertEqual(factory.CFZFictionalReference.GET_NODE_INFO_V1()["output"], ["IMAGE"])
+        self.assertNotIn("image", factory.CFZFictionalReference.INPUT_TYPES()["required"])
 
     def test_native_execution_supplies_hidden_credentials_without_serializing_them(self):
         graph = self.full_graph(fighters=2, enabled_stages=1)

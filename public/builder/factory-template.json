@@ -2,48 +2,55 @@
   "title": "Comfy Fighter Z",
   "subtitle": "Higgsfield Open Source Saga",
   "workflowURL": "/builder/templates/comfy-hackathon.json",
+  "fictional": true,
   "characters": [
     {
-      "id": "allyson",
-      "name": "Allyson",
+      "id": "griddle",
+      "name": "Griddle",
       "enabled": true,
-      "reference": "allyson.jpeg",
-      "sourceInput": "allyson.jpeg"
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
     },
     {
-      "id": "deep",
-      "name": "Deep",
+      "id": "rivet",
+      "name": "Rivet",
       "enabled": true,
-      "reference": "deep.jpeg",
-      "sourceInput": "deep.jpeg"
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
     },
     {
-      "id": "georgia",
-      "name": "Georgia",
+      "id": "tempo",
+      "name": "Tempo",
       "enabled": true,
-      "reference": "georgia.jpeg",
-      "sourceInput": "georgia.jpeg"
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
     },
     {
-      "id": "matt",
-      "name": "Matt",
+      "id": "nimbus",
+      "name": "Nimbus",
       "enabled": true,
-      "reference": "matt.jpeg",
-      "sourceInput": "matt.jpeg"
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
     },
     {
-      "id": "photographer",
-      "name": "The Photographer",
+      "id": "switchback",
+      "name": "Switchback",
       "enabled": true,
-      "reference": "photographer.jpeg",
-      "sourceInput": "photographer.jpeg"
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
     },
     {
-      "id": "rob",
-      "name": "Rob",
+      "id": "brick",
+      "name": "Brick",
       "enabled": true,
-      "reference": "rob.jpeg",
-      "sourceInput": "rob.jpeg"
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
     }
   ],
   "environments": [
@@ -51,20 +58,23 @@
       "id": "yard",
       "name": "The Yard",
       "enabled": true,
-      "reference": "level-theyard.jpeg",
-      "sourceInput": "level-theyard.jpeg"
-    },
-    {
-      "id": "environment-2",
-      "name": "Environment 2",
-      "enabled": false,
+      "sourceMode": "Invent fictional reference",
       "reference": "",
       "sourceInput": ""
     },
     {
-      "id": "environment-3",
-      "name": "Environment 3",
+      "id": "rooftop",
+      "name": "Sunset Rooftop",
       "enabled": false,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "arcade",
+      "name": "Midnight Arcade",
+      "enabled": false,
+      "sourceMode": "Invent fictional reference",
       "reference": "",
       "sourceInput": ""
     }

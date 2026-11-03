@@ -7,20 +7,20 @@
   "characterSlots": 6,
   "environmentSlots": 3,
   "defaults": {
-    "paidImages": 49,
+    "paidImages": 56,
     "sourceSaves": 7,
     "mappedAssets": 56,
-    "oneK": 29,
-    "twoK": 20,
-    "estimatedUSD": 2.834832
+    "oneK": 35,
+    "twoK": 21,
+    "estimatedUSD": 3.195192
   },
   "allEnvironments": {
-    "paidImages": 51,
+    "paidImages": 60,
     "sourceSaves": 9,
     "mappedAssets": 60,
-    "oneK": 29,
-    "twoK": 22,
-    "estimatedUSD": 2.978976
+    "oneK": 35,
+    "twoK": 25,
+    "estimatedUSD": 3.48348
   },
   "templates": [
     "workflows/factory/character-factory.json",

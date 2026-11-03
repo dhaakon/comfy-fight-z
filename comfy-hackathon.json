@@ -46,9 +46,9 @@
         "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory",
         "Comfy Fighter Z",
         "Higgsfield Open Source Saga",
-        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
-        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
-        "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+        "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
         "Gemini Nano Banana 2.1",
         42
       ],
@@ -56,9 +56,9 @@
         "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory",
         "title": "Comfy Fighter Z",
         "subtitle": "Higgsfield Open Source Saga",
-        "style": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
-        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
-        "stage_style": "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+        "stage_style": "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
         "model": "Gemini Nano Banana 2.1",
         "seed": 42
       }
@@ -66,7 +66,7 @@
     {
       "id": 2,
       "type": "CFZCharacterFactory",
-      "title": "Character 1 | Allyson",
+      "title": "Character 1 | Griddle",
       "pos": [
         0,
         120
@@ -108,26 +108,28 @@
         "Node name for S&R": "CFZCharacterFactory"
       },
       "widgets_values": [
-        "allyson.jpeg",
-        "Allyson",
-        "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "Node Burst",
-        "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
-        "Every node is connected. Your defeat is next.",
-        "#f4ef35",
-        "allyson",
-        true
+        "",
+        "Griddle",
+        "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+        "Sizzle Burst",
+        "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.",
+        "The grill is hot. Your winning streak is toast.",
+        "#ff8b3d",
+        "griddle",
+        true,
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
-        "image": "allyson.jpeg",
-        "name": "Allyson",
-        "description": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "special_name": "Node Burst",
-        "special_description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
-        "intro_tagline": "Every node is connected. Your defeat is next.",
-        "color": "#f4ef35",
-        "character_id": "allyson",
-        "include_sprite_sheets": true
+        "image": "",
+        "name": "Griddle",
+        "description": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+        "special_name": "Sizzle Burst",
+        "special_description": "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.",
+        "intro_tagline": "The grill is hot. Your winning streak is toast.",
+        "color": "#ff8b3d",
+        "character_id": "griddle",
+        "include_sprite_sheets": true,
+        "source_mode": "Invent fictional reference"
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -135,7 +137,7 @@
     {
       "id": 3,
       "type": "CFZCharacterFactory",
-      "title": "Character 2 | Deep",
+      "title": "Character 2 | Rivet",
       "pos": [
         490,
         120
@@ -177,26 +179,28 @@
         "Node name for S&R": "CFZCharacterFactory"
       },
       "widgets_values": [
-        "deep.jpeg",
-        "Deep",
-        "The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "Queue Breaker",
-        "Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.",
-        "You are in my queue now.",
-        "#41d7ff",
-        "deep",
-        true
+        "",
+        "Rivet",
+        "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+        "Magnet Crash",
+        "Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms.",
+        "I fix everything. Your stance is next.",
+        "#58c7ff",
+        "rivet",
+        true,
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
-        "image": "deep.jpeg",
-        "name": "Deep",
-        "description": "The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "special_name": "Queue Breaker",
-        "special_description": "Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.",
-        "intro_tagline": "You are in my queue now.",
-        "color": "#41d7ff",
-        "character_id": "deep",
-        "include_sprite_sheets": true
+        "image": "",
+        "name": "Rivet",
+        "description": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+        "special_name": "Magnet Crash",
+        "special_description": "Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms.",
+        "intro_tagline": "I fix everything. Your stance is next.",
+        "color": "#58c7ff",
+        "character_id": "rivet",
+        "include_sprite_sheets": true,
+        "source_mode": "Invent fictional reference"
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -204,7 +208,7 @@
     {
       "id": 4,
       "type": "CFZCharacterFactory",
-      "title": "Character 3 | Georgia",
+      "title": "Character 3 | Tempo",
       "pos": [
         980,
         120
@@ -246,26 +250,28 @@
         "Node name for S&R": "CFZCharacterFactory"
       },
       "widgets_values": [
-        "georgia.jpeg",
-        "Georgia",
-        "The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "Golden Cascade",
-        "Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell.",
-        "Catch the light. Feel the impact.",
-        "#ff6ccf",
-        "georgia",
-        true
+        "",
+        "Tempo",
+        "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+        "Beat Drop",
+        "Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering.",
+        "Keep up with the beat, or take a seat.",
+        "#f46bc4",
+        "tempo",
+        true,
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
-        "image": "georgia.jpeg",
-        "name": "Georgia",
-        "description": "The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "special_name": "Golden Cascade",
-        "special_description": "Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell.",
-        "intro_tagline": "Catch the light. Feel the impact.",
-        "color": "#ff6ccf",
-        "character_id": "georgia",
-        "include_sprite_sheets": true
+        "image": "",
+        "name": "Tempo",
+        "description": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+        "special_name": "Beat Drop",
+        "special_description": "Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering.",
+        "intro_tagline": "Keep up with the beat, or take a seat.",
+        "color": "#f46bc4",
+        "character_id": "tempo",
+        "include_sprite_sheets": true,
+        "source_mode": "Invent fictional reference"
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -273,7 +279,7 @@
     {
       "id": 5,
       "type": "CFZCharacterFactory",
-      "title": "Character 4 | Matt",
+      "title": "Character 4 | Nimbus",
       "pos": [
         0,
         940
@@ -315,26 +321,28 @@
         "Node name for S&R": "CFZCharacterFactory"
       },
       "widgets_values": [
-        "matt.jpeg",
-        "Matt",
-        "The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "Latent Rush",
-        "Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs.",
-        "Less waiting. More fighting.",
-        "#ff9248",
-        "matt",
-        true
+        "",
+        "Nimbus",
+        "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+        "Cloudburst Palm",
+        "Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot.",
+        "I raised a garden. I can handle a little thunder.",
+        "#b99cff",
+        "nimbus",
+        true,
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
-        "image": "matt.jpeg",
-        "name": "Matt",
-        "description": "The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "special_name": "Latent Rush",
-        "special_description": "Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs.",
-        "intro_tagline": "Less waiting. More fighting.",
-        "color": "#ff9248",
-        "character_id": "matt",
-        "include_sprite_sheets": true
+        "image": "",
+        "name": "Nimbus",
+        "description": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+        "special_name": "Cloudburst Palm",
+        "special_description": "Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot.",
+        "intro_tagline": "I raised a garden. I can handle a little thunder.",
+        "color": "#b99cff",
+        "character_id": "nimbus",
+        "include_sprite_sheets": true,
+        "source_mode": "Invent fictional reference"
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -342,7 +350,7 @@
     {
       "id": 6,
       "type": "CFZCharacterFactory",
-      "title": "Character 5 | The Photographer",
+      "title": "Character 5 | Switchback",
       "pos": [
         490,
         940
@@ -384,26 +392,28 @@
         "Node name for S&R": "CFZCharacterFactory"
       },
       "widgets_values": [
-        "photographer.jpeg",
-        "The Photographer",
-        "The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "Flash Frame",
-        "The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering.",
-        "Hold still. This knockout needs a close-up.",
-        "#b397ff",
-        "photographer",
-        true
+        "",
+        "Switchback",
+        "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+        "Express Pulse",
+        "Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.",
+        "School run complete. Express knockout incoming.",
+        "#ffd44d",
+        "switchback",
+        true,
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
-        "image": "photographer.jpeg",
-        "name": "The Photographer",
-        "description": "The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "special_name": "Flash Frame",
-        "special_description": "The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering.",
-        "intro_tagline": "Hold still. This knockout needs a close-up.",
-        "color": "#b397ff",
-        "character_id": "photographer",
-        "include_sprite_sheets": true
+        "image": "",
+        "name": "Switchback",
+        "description": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+        "special_name": "Express Pulse",
+        "special_description": "Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.",
+        "intro_tagline": "School run complete. Express knockout incoming.",
+        "color": "#ffd44d",
+        "character_id": "switchback",
+        "include_sprite_sheets": true,
+        "source_mode": "Invent fictional reference"
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -411,7 +421,7 @@
     {
       "id": 7,
       "type": "CFZCharacterFactory",
-      "title": "Character 6 | Rob",
+      "title": "Character 6 | Brick",
       "pos": [
         980,
         940
@@ -453,26 +463,28 @@
         "Node name for S&R": "CFZCharacterFactory"
       },
       "widgets_values": [
-        "rob.jpeg",
-        "Rob",
-        "The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "Compile Crash",
-        "Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell.",
-        "Build passed. You are going down.",
-        "#6de9c9",
-        "rob",
-        true
+        "",
+        "Brick",
+        "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+        "Foundation Break",
+        "Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell.",
+        "I built this block. Now hold your ground.",
+        "#ff6677",
+        "brick",
+        true,
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
-        "image": "rob.jpeg",
-        "name": "Rob",
-        "description": "The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
-        "special_name": "Compile Crash",
-        "special_description": "Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell.",
-        "intro_tagline": "Build passed. You are going down.",
-        "color": "#6de9c9",
-        "character_id": "rob",
-        "include_sprite_sheets": true
+        "image": "",
+        "name": "Brick",
+        "description": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+        "special_name": "Foundation Break",
+        "special_description": "Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell.",
+        "intro_tagline": "I built this block. Now hold your ground.",
+        "color": "#ff6677",
+        "character_id": "brick",
+        "include_sprite_sheets": true,
+        "source_mode": "Invent fictional reference"
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -519,18 +531,20 @@
         "Node name for S&R": "CFZEnvironmentFactory"
       },
       "widgets_values": [
-        "level-theyard.jpeg",
+        "",
         true,
         "The Yard",
-        "The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard.",
-        "yard"
+        "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        "yard",
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
-        "image": "level-theyard.jpeg",
+        "image": "",
         "enabled": true,
         "name": "The Yard",
-        "description": "The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard.",
-        "stage_id": "yard"
+        "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        "stage_id": "yard",
+        "source_mode": "Invent fictional reference"
       },
       "color": "#29463d",
       "bgcolor": "#1b2927"
@@ -538,7 +552,7 @@
     {
       "id": 9,
       "type": "CFZEnvironmentFactory",
-      "title": "Environment 2 | upload to enable",
+      "title": "Environment 2 | disabled",
       "pos": [
         490,
         1780
@@ -577,16 +591,18 @@
       "widgets_values": [
         "",
         false,
-        "Environment 2",
-        "",
-        "environment-2"
+        "Sunset Rooftop",
+        "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
+        "rooftop",
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
         "image": "",
         "enabled": false,
-        "name": "Environment 2",
-        "description": "",
-        "stage_id": "environment-2"
+        "name": "Sunset Rooftop",
+        "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
+        "stage_id": "rooftop",
+        "source_mode": "Invent fictional reference"
       },
       "color": "#3a3e46",
       "bgcolor": "#1b2927"
@@ -594,7 +610,7 @@
     {
       "id": 10,
       "type": "CFZEnvironmentFactory",
-      "title": "Environment 3 | upload to enable",
+      "title": "Environment 3 | disabled",
       "pos": [
         980,
         1780
@@ -633,16 +649,18 @@
       "widgets_values": [
         "",
         false,
-        "Environment 3",
-        "",
-        "environment-3"
+        "Midnight Arcade",
+        "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.",
+        "arcade",
+        "Invent fictional reference"
       ],
       "widgets_values_named": {
         "image": "",
         "enabled": false,
-        "name": "Environment 3",
-        "description": "",
-        "stage_id": "environment-3"
+        "name": "Midnight Arcade",
+        "description": "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.",
+        "stage_id": "arcade",
+        "source_mode": "Invent fictional reference"
       },
       "color": "#3a3e46",
       "bgcolor": "#1b2927"
@@ -792,7 +810,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# Comfy Fighter Z\n## Upload photos. Describe fighters. Build your game.\n\nSix character cards generate references, three pose sheets, portraits, heroes and cut-ins. Environment 1 supplies the title/select venue; slots 2 and 3 stay empty until uploaded and enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 49 images + 7 source saves = 56 mapped assets (~$2.835). All three environments: 51 images / 60 records (~$2.979). Review current native prices before running. Audio/video are separate workflows. Opening this graph spends nothing."
+        "# Comfy Fighter Z\n## Invent fictional fighters. Build your game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Environment 1 supplies the title/select venue; slots 2 and 3 stay disabled until enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 56 image calls / 56 mapped assets (~$3.195). All three environments: 60 calls / 60 records (~$3.483). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing."
       ]
     },
     {
@@ -813,7 +831,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "## Before you run\n\n1. Install custom_nodes/dad_fighter_assets and restart ComfyUI.\n2. Upload each reference on its card; edit descriptions, specials and taglines.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse workflows/factory/ for one character, one sheet or one environment. The full native graph is preserved under workflows/advanced/."
+        "## Before you run\n\n1. Install custom_nodes/dad_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse workflows/factory/ for one character, one sheet or one environment. The full native graph is under workflows/advanced/."
       ]
     }
   ],
@@ -998,7 +1016,7 @@
   "groups": [
     {
       "id": 1,
-      "title": "Six character upload slots",
+      "title": "Six character factories",
       "bounding": [
         -25,
         45,
@@ -1011,7 +1029,7 @@
     },
     {
       "id": 2,
-      "title": "Up to three environment upload slots",
+      "title": "Up to three environment factories",
       "bounding": [
         -25,
         1705,

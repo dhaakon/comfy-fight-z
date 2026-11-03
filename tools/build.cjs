@@ -16,11 +16,18 @@ if(from) {
   if(imported.status!==0) process.exit(imported.status||1);
 }
 const production=path.join(root,'public/assets/production.json');
-if(from || regenerate || !fs.existsSync(production)) {
+const manifestPath=path.join(root,'public/assets/manifest.json');
+const current=fs.existsSync(manifestPath)?JSON.parse(fs.readFileSync(manifestPath,'utf8')):null;
+if(current?.generationPending && !from && !regenerate) {
+  if(strict) throw new Error('Fictional demo artwork is awaiting generation; a strict release requires an accepted complete asset bundle.');
+  if(runtimeSources(current).length) throw new Error('Pending fictional demo must not reference any previous media.');
+  if(fs.readdirSync(path.dirname(manifestPath)).some(name=>name!=='manifest.json')) throw new Error('Pending fictional demo contains unexpected asset files; move retired media outside the public folder.');
+  console.log('Fictional demo artwork is awaiting generation. Copying the media-free preview; no old assets or placeholders are generated.');
+} else if(from || regenerate || !fs.existsSync(production)) {
   const result=spawnSync(process.execPath,[path.join(__dirname,'build-assets.cjs'),...(strict?['--strict']:[])],{cwd:root,stdio:'inherit'});
   if(result.status!==0) process.exit(result.status||1);
 } else {
-  const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/assets/manifest.json'),'utf8'));
+  const manifest=current;
   const config=JSON.parse(fs.readFileSync(path.join(root,'config/game.json'),'utf8'));
   const plan=JSON.parse(fs.readFileSync(path.join(root,'assets/plan.json'),'utf8'));
   const sources=runtimeSources(manifest,{config,plan,strict});

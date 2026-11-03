@@ -1,14 +1,14 @@
 # Comfy Fighter Z — Higgsfield Open Source Saga
 
-A browser fighting game and cloud ComfyUI asset factory, extending the existing Dad Fighter Z inspired game. Six photo-referenced fighters—**Allyson, Deep, Georgia, Matt, The Photographer, and Rob**—fight in one arena: **The Yard**, the indoor venue in `ref/levels/level-theyard.jpeg`.
+A browser fighting game and cloud ComfyUI asset factory, extending the existing Dad Fighter Z inspired game. The example demo uses six entirely fictional adult fighters and a fictional Yard arena. ComfyUI generates the sample references from text; real people's photographs and real venue images are excluded from the demo.
 
-The saga adds a full-viewport anime title screen and animated pre-fight introductions with original taglines. Choose one of six fighters to face the CPU, with blocking, projectiles, rounds, pause and touch controls. Character descriptions drive the special-move artwork and announcements. The art direction uses bold ink, cel shadows and energetic 1990s battle-anime poses while preserving each person's likeness and outfit.
+The saga adds a full-viewport anime title screen and animated pre-fight introductions with original taglines. Choose one of six fighters to face the CPU, with blocking, projectiles, rounds, pause and touch controls. Character descriptions drive the special-move artwork and announcements. The art direction uses bold ink, cel shadows and energetic 1990s battle-anime poses while preserving each fictional character's design and outfit.
 
-![Comfy Fighter Z title screen with the six fighters at The Yard](docs/title-screen.png)
+The earlier photo-derived demo media has been removed. The current preview uses simple game primitives and explicitly reports that fictional artwork is awaiting generation; no previous photographs, sheets, audio or film are loaded. `npm run build:release` refuses this pending state until a complete generated bundle is accepted.
 
-The included release has 162 fighter poses and 22 audio clips, including six spoken introductions. The animation layer sequences anticipation, contact and recovery poses with breathing, walk cycles, recoil, landing compression and motion trails. Gameplay includes buffered inputs, simultaneous-hit handling, fair blocking, corner collision fixes and a short CPU reaction delay.
+Each complete fighter has 27 mapped poses, giving the six-character demo 162 poses. The audio workflow adds music, effects, announcements and spoken introductions using stock voices. The animation layer sequences anticipation, contact and recovery poses with breathing, walk cycles, recoil, landing compression and motion trails. Gameplay includes buffered inputs, simultaneous-hit handling, fair blocking, corner collision fixes and a short CPU reaction delay.
 
-The installed opening is a 25-second, 1920×1080 Seedance film with generated audio. It plays before the title; press **Space** to skip. The Yard artwork has clean edges without a speed-line border.
+The optional Seedance workflow can create a 25-second fictional opening with generated audio. An installed opening plays before the title; press **Space** to skip. The fictional demo excludes the earlier photo-derived film and starts at the title unless a new accepted movie is supplied. The Yard artwork has clean edges without a speed-line border.
 
 ## Clone and play
 
@@ -24,15 +24,15 @@ npm start
 
 Open `http://127.0.0.1:8080`. To use the hackathon preview port, set `$env:PORT='8089'` before `npm start`.
 
-Accepted, optimized WebP/MP3 media is versioned in `public/assets/`. A normal build checks those files and copies the current game into `dist/`; it preserves accepted artwork and makes no model calls. `public/assets/production.json` records the installed asset counts and conversion details. ComfyUI and cloud credentials are only needed to generate new assets.
+After an accepted generation, optimized WebP/MP3 media is versioned in `public/assets/`, with counts in `production.json`. Until then the folder contains only the fictional pending manifest. A normal build preserves that state and makes no model calls. ComfyUI and cloud credentials are only needed to generate new assets.
 
-Workflow files are recipes, not generation receipts. Consult `public/assets/production.json` for installed pose and audio counts. Text introductions remain available if an older accepted bundle lacks the six voiced intro clips; new generated media is adopted after review.
+Workflow files are recipes, not generation receipts. Text introductions remain available while artwork and voiced clips are pending; new generated media is adopted after review.
 
 ## Generate and customize assets
 
 | File | Purpose |
 | --- | --- |
-| `comfy-hackathon.json` | Compact factory: six character uploads, three environment slots, shared art and final `assets.json` |
+| `comfy-hackathon.json` | Encapsulated custom factories: six fictional characters, three environment slots, shared art and final `assets.json` |
 | `comfy-audio.json` | Complete 22-clip audio factory, final `audio.json` |
 | `comfy-opening.json` | 25-second Seedance 2.5 opening film with generated audio |
 | `config/game.json` | Title/subtitle, six fighters, descriptions, specials, intro taglines/stock voices, one stage and art style |
@@ -57,11 +57,13 @@ Install the project-owned mapping nodes into your ComfyUI installation, then res
 npm run nodes:install -- --comfy-root "C:\path\to\ComfyUI"
 ```
 
-Open `comfy-hackathon.json` through ComfyUI/MCP and set **Project Settings** to a new absolute output directory. The twelve functional nodes include six character cards and three environment cards with image upload controls. Upload photos and edit names, descriptions, specials and intro taglines directly on the cards. The Yard is populated; environment slots 2 and 3 stay empty and disabled until you supply their own references. Validate against the live node catalog before running. Source photos feed anime identities, then all 27 poses and selection art. Shared Art creates menus, logo, HUD and effects; the exporter writes their mappings and your edited metadata.
+Enable **Nodes 2.0** in the ComfyUI editor, then open `comfy-hackathon.json` and set **Project Settings** to a new absolute output directory. Its twelve functional nodes remain custom factories. The default **Invent fictional reference** mode creates each design internally from text and ignores the image selector entirely. All image selectors are empty; no previous photos or sheets are dependencies. Edit names, descriptions, specials and intro taglines on the six character cards. The Yard is enabled; the two extra environments stay disabled. Reference designs feed anime identities, all 27 poses and selection art. Shared Art creates menus, logo, HUD and effects; the exporter writes their mappings and your edited metadata. Upload mode is available only when deliberately selected with a new reference.
 
-The default factory expands into 49 paid image calls and seven source saves (56 mapped assets). Enabling all three environments produces 51 paid images and nine source saves (60 records), without changing the installed one-Yard game. Audio remains a separate workflow; set its output root to match the image bundle. See [the compact factory guide](docs/workflow-factory.md) for costs, individual-sheet workflows and browser downloads.
+The default text-only factory expands into 56 paid image calls and saves 56 mapped assets. Enabling all three environments produces 60 paid images and 60 records. With newly supplied references in upload mode, those counts are 49 and 51 paid calls respectively. Audio remains a separate workflow; set its output root to match the image bundle. See [the compact factory guide](docs/workflow-factory.md) for costs, individual-sheet workflows and browser downloads.
 
 All model inference uses cloud/API nodes: Gemini Nano Banana 2.1 images, Seedance 2.5 video, Sonilo music, and ElevenLabs effects and stock voices. No local model weights or voice clones are used. Generating costs credits and requires spending authorization; preparation, validation, file processing and game builds do not. Check live prices before submitting a batch.
+
+Demo references and exported source maps contain fictional designs. Keep personal source images and old photo-based exports outside served folders and version control. Replacing the current demo does not remove files from earlier Git commits or copies already downloaded.
 
 For a partial refresh, use [the incremental workflow guide](docs/incremental-refresh.md). It reuses the existing identities, Yard and unaffected assets, merges approved replacements by ID, and supports individual sheet repairs.
 

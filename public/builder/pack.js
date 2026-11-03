@@ -40,7 +40,7 @@ export function validateManifest(input) {
       if (item.color !== undefined && !/^#[0-9a-f]{6}$/i.test(item.color)) throw new Error(`Invalid color for ${item.id}; use #RRGGBB.`);
       if (item.description !== undefined && item.description !== '') text(item.description, `${item.id} description`, 4000);
       if (item.introTagline !== undefined && item.introTagline !== '') text(item.introTagline, `${item.id} intro tagline`, 250);
-      if (item.sourceImage !== undefined) safePath(item.sourceImage);
+      if (item.sourceImage !== undefined && item.sourceImage !== '') safePath(item.sourceImage);
       if (item.specialMove !== undefined) {
         text(item.specialMove?.name, `${item.id} special move`, 100);
         text(item.specialMove?.description, `${item.id} special description`, 4000);

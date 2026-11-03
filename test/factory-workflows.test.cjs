@@ -16,16 +16,17 @@ test('main factory has six character uploads, three environment uploads and one 
   assert.equal(characters.length, 6); assert.equal(environments.length, 3);
   characters.forEach((node, i) => {
     assert.equal(node.widgets_values_named.image, config.fighters[i].sourceInput);
+    assert.equal(node.widgets_values_named.source_mode,'Invent fictional reference');
     assert.equal(node.widgets_values_named.description, config.fighters[i].description);
     assert.equal(node.widgets_values_named.special_description, config.fighters[i].specialMove.description);
     assert.equal(node.widgets_values_named.intro_tagline, config.fighters[i].introTagline);
     assert.equal(node.widgets_values_named.include_sprite_sheets, true);
   });
-  assert.equal(environments[0].widgets_values_named.image, 'level-theyard.jpeg');
+  assert.equal(environments[0].widgets_values_named.image, config.stages[0].sourceInput);
   for (const node of environments.slice(1)) {
     assert.equal(node.widgets_values_named.enabled, false);
     assert.equal(node.widgets_values_named.image, '');
-    assert.equal(node.widgets_values_named.description, '');
+    assert.equal(node.widgets_values_named.source_mode,'Invent fictional reference');
   }
   const exporter = graph.nodes.find(n => n.type === 'CFZExportGameAssets');
   assert.equal(exporter.inputs.filter(i => i.type === 'CFZ_BUNDLE').length, 10);
@@ -35,8 +36,8 @@ test('main factory has six character uploads, three environment uploads and one 
 });
 
 test('default and full factory counts are transparent without changing released one-stage configuration', () => {
-  assert.deepEqual(factoryCounts(config), {paidImages:49,sourceSaves:7,mappedAssets:56,oneK:29,twoK:20,estimatedUSD:2.834832});
-  assert.deepEqual(factoryCounts(config, true), {paidImages:51,sourceSaves:9,mappedAssets:60,oneK:29,twoK:22,estimatedUSD:2.978976});
+  assert.deepEqual(factoryCounts(config), {paidImages:56,sourceSaves:7,mappedAssets:56,oneK:35,twoK:21,estimatedUSD:3.195192});
+  assert.deepEqual(factoryCounts(config, true), {paidImages:60,sourceSaves:9,mappedAssets:60,oneK:35,twoK:25,estimatedUSD:3.48348});
   assert.equal(read('config/game.json').stages.length, 1);
   assert.notEqual(config.assetRoot, read('config/game.json').assetRoot);
   assert.deepEqual(builderMetadata(config).environments.slice(1).map(e => [e.enabled,e.reference,e.sourceInput]), [[false,'',''],[false,'','']]);
@@ -57,11 +58,12 @@ test('focused character template reuses one identity across exactly three explic
   assert.equal(graph.nodes.filter(n => n.type === 'CFZExportAssetPatch').length, 1);
 });
 
-test('focused sheet uses an uploaded accepted reference and environment stays source-referenced', () => {
+test('focused sheet invents a reference without any stale file and environment defaults to text', () => {
   const sheet = makeSheetTemplate(config), environment = makeEnvironmentTemplate(config);
   assert.equal(functional(sheet).length, 5); assert.equal(functional(environment).length, 3);
   assert.equal(sheet.nodes.filter(n => n.type === 'CFZCharacterFactory').length, 0);
-  assert.equal(sheet.nodes.find(n => n.type === 'LoadImage').widgets_values_named.image, config.fighters[0].acceptedReferenceInput);
+  assert.equal(sheet.nodes.filter(n=>n.type==='LoadImage').length,0);
+  assert.equal(sheet.nodes.filter(n=>n.type==='CFZFictionalReference').length,1);
   assert.equal(environment.nodes.find(n => n.type === 'CFZEnvironmentFactory').widgets_values_named.enabled, true);
   for (const graph of [sheet,environment]) assert.ok(graph.nodes.some(n => n.type === 'CFZExportAssetPatch'));
 });
@@ -91,6 +93,20 @@ test('browser downloads match canonical workflows exactly and advanced native gr
   assert.deepEqual(read('public/builder/factory-template.json'),builderMetadata(config));
   const advanced = read('workflows/advanced/full-image-graph.json');
   assert.equal(functional(advanced).length, 114);
-  assert.equal(advanced.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,49);
+  assert.equal(advanced.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,56);
+  assert.equal(advanced.nodes.filter(n=>n.type==='LoadImage').length,0);
   assert.equal(advanced.nodes.filter(n=>n.type==='DFZSaveAsset').length,56);
+});
+
+test('every shipped demo workflow starts without external image files', () => {
+  const files = directory => fs.readdirSync(path.join(ROOT,directory),{withFileTypes:true}).flatMap(entry =>
+    entry.isDirectory() ? files(path.join(directory,entry.name)) : [path.join(directory,entry.name)]);
+  const recipes = [...files('workflows'),...files('public/builder/templates'),
+    'comfy-hackathon.json','comfy-audio.json','comfy-opening.json','simple-image-generation.json'];
+  for (const file of recipes.filter(file=>file.endsWith('.json'))) {
+    for (const node of read(file).nodes || []) {
+      assert.notEqual(node.type,'LoadImage',`${file} must not load a previous session image`);
+      assert.ok(!node.widgets_values_named?.image,`${file} must not preselect an external image`);
+    }
+  }
 });

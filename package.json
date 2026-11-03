@@ -7,7 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "workflows": "node tools/prepare-workflows.cjs && node tools/prepare-audio-workflows.cjs",
+    "workflows": "node tools/prepare-workflows.cjs && node tools/prepare-audio-workflows.cjs && node tools/prepare-cinematic-workflows.cjs --templates-only",
     "nodes:install": "node tools/install-comfy-nodes.cjs",
     "import:assets": "node tools/import-assets.cjs",
     "build:assets": "node tools/build-assets.cjs",
@@ -21,6 +21,7 @@
     "test:builder": "npm run build && node test/builder-browser.cjs",
     "workflows:audio": "node tools/prepare-audio-workflows.cjs",
     "workflows:factory": "node tools/prepare-factory-workflows.cjs",
+    "workflows:demo": "node tools/prepare-fictional-demo.cjs",
     "adopt:game": "node tools/adopt-game.cjs",
     "merge:assets": "node tools/merge-bundles.cjs"
   },

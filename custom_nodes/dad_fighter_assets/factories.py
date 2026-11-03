@@ -15,6 +15,7 @@ Project = io.Custom("CFZ_PROJECT")
 Character = io.Custom("CFZ_CHARACTER")
 Bundle = io.Custom("CFZ_BUNDLE")
 MODELS = ["Gemini Nano Banana 2.1", "Nano Banana 2 (Gemini 3.1 Flash Image)"]
+SOURCE_MODES = ["Upload reference", "Invent fictional reference"]
 EFFECTS = ["hit", "block", "projectile", "dust", "ko", "powerup", "dash", "launch", "spark"]
 DEFAULT_STYLE = "Original 1990s shonen battle-anime fighting-game artwork. Bold clean ink, angular expressive eyes, two-tone cel shading, dynamic clear silhouettes and vivid energy. Preserve the supplied person's visible features, clothing and accessories; no copied franchise characters or costumes."
 DEFAULT_STAGE_STYLE = "Anime fighting-game stage based closely on the uploaded venue. Wide side-on camera and clear level fighting floor; keep recognizable architecture and furniture behind the fight plane. No people, lettering, logos, floor emblems, borders or vignette."
@@ -67,7 +68,18 @@ def _image_input():
     files = [item.name for item in directory.iterdir() if item.is_file()] if directory.exists() else []
     images = folder_paths.filter_files_content_types(files, ["image"])
     return io.Combo.Input("image", options=[""] + sorted(images), default="", upload=io.UploadType.image, image_folder=io.FolderType.input,
-                          tooltip="Upload a reference photo. Disabled environment slots may remain empty.")
+                          tooltip="Used only in Upload reference mode. Invent fictional reference ignores this field completely. Disabled environment slots may remain empty.")
+
+
+def _source_mode(value):
+    if value not in SOURCE_MODES:
+        raise ValueError("Source mode must be Upload reference or Invent fictional reference")
+    return value
+
+
+def _source_mode_input():
+    return io.Combo.Input("source_mode", options=SOURCE_MODES, default=SOURCE_MODES[0], optional=True,
+                          tooltip="Invent fictional reference creates a new source from text and never loads any selected/uploaded image. It adds one paid cloud image call.")
 
 
 def _input_image(filename):
@@ -153,37 +165,63 @@ class CFZCharacterDefinition(io.ComfyNode):
         return io.NodeOutput(_character(name, description, special_name, special_description, intro_tagline, color, character_id))
 
 
+class CFZFictionalReference(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZFictionalReference", display_name="CFZ Invent Fictional Reference", category="Comfy Fighter Z",
+            description="PAID cloud generation: exactly one new reference image from text. No image input or previous-session file is read. Native cloud generation stays inside this custom node.",
+            inputs=[Project.Input("project"), io.String.Input("prompt", default="One original adult anime parent hero, complete full body facing right, simple workwear, clean cel shading, flat chroma green background. No real-person likeness, existing character, text or logos.", multiline=True),
+                    io.Combo.Input("aspect", options=["auto", "1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9", "1:4", "4:1", "8:1", "1:8"], default="2:3"),
+                    io.Combo.Input("resolution", options=["1K", "2K", "4K"], default="1K")],
+            outputs=[io.Image.Output(display_name="reference")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, prompt, aspect, resolution):
+        _project(project); graph = GraphBuilder()
+        text = "Invent a wholly fictional reference from text alone. No photograph, previous-session image, real-person likeness or recognizable real venue is supplied or requested.\n" + _text(prompt, "Fictional reference prompt")
+        generated = _cloud(graph, project, text, aspect=aspect, resolution=resolution, offset=100)
+        return io.NodeOutput(generated.out(0), expand=graph.finalize())
+
+
 class CFZCharacterFactory(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(node_id="CFZCharacterFactory", display_name="CFZ Character Factory", category="Comfy Fighter Z",
-            description="PAID cloud generation: 7 images (identity, three 2K sprite sheets, portrait, hero, cut-in). With sheets disabled: 4 images. Source photo is saved locally. Uses native Comfy cloud authentication.",
+            description="PAID cloud generation: Upload reference uses 7 images (4 without sheets); Invent fictional reference uses 8 images (5 without sheets). Invent creates its source from text and never reads the image field or earlier session files. Uses native Comfy cloud authentication.",
             inputs=[Project.Input("project"), _image_input(), *_character_inputs(),
-                    io.Boolean.Input("include_sprite_sheets", default=True, advanced=True, tooltip="Disable only when connecting the identity and character outputs to three individual CFZ Sprite Sheet nodes.")],
+                    io.Boolean.Input("include_sprite_sheets", default=True, advanced=True, tooltip="Disable only when connecting the identity and character outputs to three individual CFZ Sprite Sheet nodes."),
+                    _source_mode_input()],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="identity"), Character.Output(display_name="character")],
             enable_expand=True, is_api_node=True)
 
     @classmethod
-    def fingerprint_inputs(cls, image, **kwargs):
-        return _image_hash(image)
+    def fingerprint_inputs(cls, image, source_mode="Upload reference", **kwargs):
+        return _image_hash(image) if _source_mode(source_mode) == "Upload reference" else "fictional-text-only"
 
     @classmethod
-    def validate_inputs(cls, image, name, description, special_name, special_description, intro_tagline, color, character_id):
+    def validate_inputs(cls, image, name, description, special_name, special_description, intro_tagline, color, character_id, source_mode="Upload reference"):
         try:
-            _input_image(image)
+            if _source_mode(source_mode) == "Upload reference":
+                _input_image(image)
             _character(name, description, special_name, special_description, intro_tagline, color, character_id)
             return True
         except ValueError as error:
             return str(error)
 
     @classmethod
-    def execute(cls, project, image, name, description, special_name, special_description, intro_tagline, color, character_id, include_sprite_sheets=True):
-        _project(project); _input_image(image)
+    def execute(cls, project, image, name, description, special_name, special_description, intro_tagline, color, character_id, include_sprite_sheets=True, source_mode="Upload reference"):
+        _project(project); _source_mode(source_mode)
         character = _character(name, description, special_name, special_description, intro_tagline, color, character_id)
-        members = _members(character=character); graph = GraphBuilder(); loaded = graph.node("LoadImage", image=image)
-        source = _save(graph, project, loaded.out(0), {"id": f"{character_id}_source", "kind": "source", "fighter": character_id, "key": False}, members)
+        members = _members(character=character); graph = GraphBuilder()
         common = _description(project, character)
-        identity = _cloud(graph, project, common + "\nUse the uploaded photo as the visible appearance reference. One full-body model reference, complete head, both shoes and all accessories visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen footwear naturally. Leave generous padding. " + KEY, loaded.out(0), "2:3")
+        if source_mode == "Invent fictional reference":
+            source_image = _cloud(graph, project, common + "\nInvent an entirely fictional adult fighting-game character from this text alone. No photograph, earlier image, real-person likeness or existing franchise character is supplied or requested. Exactly one complete full-body character, three-quarter side view facing RIGHT, relaxed fighting guard, clearly separated arms and legs, complete hands and both shoes, generous padding. " + KEY,
+                                  aspect="2:3", offset=100).out(0)
+        else:
+            _input_image(image)
+            source_image = graph.node("LoadImage", image=image).out(0)
+        source = _save(graph, project, source_image, {"id": f"{character_id}_source", "kind": "source", "fighter": character_id, "key": False}, members)
+        identity = _cloud(graph, project, common + "\nUse the supplied reference design as the visible appearance reference. One full-body model reference, complete head, both shoes and all accessories visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen footwear naturally. Leave generous padding. " + KEY, source_image, "2:3")
         assets = [source, _save(graph, project, identity.out(0), {"id": f"{character_id}_reference", "kind": "reference", "fighter": character_id, "key": True}, members)]
         artwork = [("portrait", "1:1", False, "Close-up face and shoulders for character selection. Expressive confident anime fighter portrait, uncluttered dark background, no text."),
                    ("hero", "2:3", True, "One complete full-body hero fighter in their signature special-move stance, facing RIGHT. Keep the energy close to the body, and include complete shoes and hands with safe padding. " + KEY),
@@ -230,21 +268,24 @@ class CFZEnvironmentFactory(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(node_id="CFZEnvironmentFactory", display_name="CFZ Environment Factory", category="Comfy Fighter Z",
-            description="PAID when enabled: one reference-driven stage image. Saves the source photo locally. Disabled slots stay empty and make zero cloud calls.",
+            description="PAID when enabled: Upload reference uses 1 stage image; Invent fictional reference uses 2 images (a new text-only source plus the playable stage). Invent never reads the image field or earlier session files. Disabled slots make zero cloud calls.",
             inputs=[Project.Input("project"), _image_input(), io.Boolean.Input("enabled", default=True), io.String.Input("name", default="New Environment"),
-                    io.String.Input("description", default="", multiline=True), io.String.Input("stage_id", default="environment", advanced=True)],
+                    io.String.Input("description", default="", multiline=True), io.String.Input("stage_id", default="environment", advanced=True), _source_mode_input()],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="stage")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def fingerprint_inputs(cls, image, enabled, **kwargs):
-        return _image_hash(image) if enabled else "disabled"
+    def fingerprint_inputs(cls, image, enabled, source_mode="Upload reference", **kwargs):
+        if not enabled:
+            return "disabled"
+        return _image_hash(image) if _source_mode(source_mode) == "Upload reference" else "fictional-text-only"
 
     @classmethod
-    def validate_inputs(cls, image, enabled, name, description, stage_id):
+    def validate_inputs(cls, image, enabled, name, description, stage_id, source_mode="Upload reference"):
         if not enabled:
             return True
         try:
-            _input_image(image)
+            if _source_mode(source_mode) == "Upload reference":
+                _input_image(image)
             _slug(stage_id, "Stage ID")
             _text(name, "Stage name", True)
             _text(description, "Stage description")
@@ -253,15 +294,21 @@ class CFZEnvironmentFactory(io.ComfyNode):
             return str(error)
 
     @classmethod
-    def execute(cls, project, image, enabled, name, description, stage_id):
+    def execute(cls, project, image, enabled, name, description, stage_id, source_mode="Upload reference"):
         directory = _project(project)
         if not enabled:
             return io.NodeOutput({"_type": "CFZ_BUNDLE", "_root": str(directory), "fighters": [], "stages": [], "assets": []}, None)
-        _input_image(image)
+        _source_mode(source_mode)
         stage = {"id": _slug(stage_id, "Stage ID"), "name": _text(name, "Stage name", True), "description": _text(description, "Stage description")}
-        members = _members(stage=stage); graph = GraphBuilder(); loaded = graph.node("LoadImage", image=image)
-        source = _save(graph, project, loaded.out(0), {"id": f"{stage_id}_source", "kind": "source", "stage": stage_id, "key": False}, members)
-        generated = _cloud(graph, project, f"{project['stage_style']}\nVENUE: {stage['description']}\nUse the supplied environment photo as the spatial reference. Exactly one clean wide playable stage with an unobstructed horizontal playable floor at 82% image height. Full-bleed natural floor, ceiling and walls reach every edge. No text, branding, logos, emblems, borders, comic panels, speed-line borders or vignette.", loaded.out(0), "16:9", "2K", 30)
+        members = _members(stage=stage); graph = GraphBuilder()
+        if source_mode == "Invent fictional reference":
+            source_image = _cloud(graph, project, f"{project['stage_style']}\nENVIRONMENT: {stage['description']}\nInvent a wholly fictional environment from this text alone. No photograph, earlier image or recognizable real venue is supplied or requested. Wide side-on arena composition, clear central fighting floor, props behind the fight plane, full-bleed natural surfaces. No people, text, logos, borders, speed lines or vignette.",
+                                  aspect="16:9", resolution="2K", offset=130).out(0)
+        else:
+            _input_image(image)
+            source_image = graph.node("LoadImage", image=image).out(0)
+        source = _save(graph, project, source_image, {"id": f"{stage_id}_source", "kind": "source", "stage": stage_id, "key": False}, members)
+        generated = _cloud(graph, project, f"{project['stage_style']}\nVENUE: {stage['description']}\nUse the supplied environment design as the spatial reference. Exactly one clean wide playable stage with an unobstructed horizontal playable floor at 82% image height. Full-bleed natural floor, ceiling and walls reach every edge. No text, branding, logos, emblems, borders, comic panels, speed-line borders or vignette.", source_image, "16:9", "2K", 30)
         asset = _save(graph, project, generated.out(0), {"id": stage_id, "kind": "stage", "stage": stage_id, "key": False}, members)
         return io.NodeOutput(_collect(graph, project, members, [source, asset]), generated.out(0), expand=graph.finalize())
 
@@ -446,5 +493,5 @@ class CFZExportAssetPatch(io.ComfyNode):
         return _export(project, bundles, False)
 
 
-FACTORY_NODES = [CFZProjectSettings, CFZCharacterDefinition, CFZCharacterFactory, CFZSpriteSheet, CFZEnvironmentFactory,
+FACTORY_NODES = [CFZProjectSettings, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZEnvironmentFactory,
                  CFZSharedArtFactory, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]

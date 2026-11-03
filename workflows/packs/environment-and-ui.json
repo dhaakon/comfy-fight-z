@@ -6,20 +6,32 @@
   "nodes": [
     {
       "id": 1,
-      "type": "LoadImage",
-      "title": "yard_source | source image",
+      "type": "GeminiNanoBanana2V2",
       "pos": [
         420,
         220
       ],
       "size": [
-        340,
-        420
+        420,
+        480
       ],
       "flags": {},
       "order": 0,
       "mode": 0,
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
       "outputs": [
         {
           "name": "IMAGE",
@@ -30,19 +42,48 @@
           ]
         },
         {
-          "name": "MASK",
-          "type": "MASK",
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
           "links": null
         }
       ],
       "properties": {
-        "Node name for S&R": "LoadImage",
-        "sourceImage": "ref/levels/level-theyard.jpeg"
+        "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "level-theyard.jpeg",
-        "image"
-      ]
+        "Create an entirely fictional environment from text only: The Yard, a cheerful neighborhood backyard tournament arena at golden hour. Wide 16:9 side-on fighting-game camera, broad warm terracotta patio across the foreground with an unobstructed horizontal fighting line at 82 percent image height. Behind the fight plane: low cream picket fence, red garden shed, soft rounded distant hills, a tiny barbecue well away from the arena and simple overhead string lights. Original 1990s hand-painted anime background, clean architectural ink and rich warm cel-shaded light. This is an invented location, not a recreation of a real venue. No people, portraits, readable signs, brands, logos, floor markings or emblems. Natural scenery fills all four edges without decorative borders, speed lines, vignette, panels or letterboxing.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create an entirely fictional environment from text only: The Yard, a cheerful neighborhood backyard tournament arena at golden hour. Wide 16:9 side-on fighting-game camera, broad warm terracotta patio across the foreground with an unobstructed horizontal fighting line at 82 percent image height. Behind the fight plane: low cream picket fence, red garden shed, soft rounded distant hills, a tiny barbecue well away from the arena and simple overhead string lights. Original 1990s hand-painted anime background, clean architectural ink and rich warm cel-shaded light. This is an invented location, not a recreation of a real venue. No people, portraits, readable signs, brands, logos, floor markings or emblems. Natural scenery fills all four edges without decorative borders, speed lines, vignette, panels or letterboxing.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "yard_source | source image"
     },
     {
       "id": 2,
@@ -127,7 +168,7 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.\nFighting arena: The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard. Use the supplied venue photograph to preserve its distinctive architecture, surfaces and lighting. Recompose as a wide side-on anime stage background with an unobstructed horizontal playable floor at 82% image height, flat camera, clear central arena. Background props remain behind the fight plane. No fighters, people, HUD, letters or logos. Full-bleed landscape with natural floor, ceiling and walls reaching every edge. No superimposed directional lines, radial rays, speed-line border, comic frame, edge vignette or letterboxing. Keep actual architectural beams, pipes and railings.",
+        "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.\nFighting arena: A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines. Use the supplied environment design to preserve its architecture, surfaces and lighting. Recompose as a wide side-on anime stage background with an unobstructed horizontal playable floor at 82% image height, flat camera, clear central arena. Background props remain behind the fight plane. No fighters, people, HUD, letters or logos. Full-bleed landscape with natural surfaces reaching every edge. No superimposed directional lines, radial rays, speed-line border, comic frame, edge vignette or letterboxing.",
         "Gemini Nano Banana 2.1",
         "16:9",
         "2K",
@@ -140,7 +181,7 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.\nFighting arena: The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard. Use the supplied venue photograph to preserve its distinctive architecture, surfaces and lighting. Recompose as a wide side-on anime stage background with an unobstructed horizontal playable floor at 82% image height, flat camera, clear central arena. Background props remain behind the fight plane. No fighters, people, HUD, letters or logos. Full-bleed landscape with natural floor, ceiling and walls reaching every edge. No superimposed directional lines, radial rays, speed-line border, comic frame, edge vignette or letterboxing. Keep actual architectural beams, pipes and railings.",
+        "prompt": "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.\nFighting arena: A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines. Use the supplied environment design to preserve its architecture, surfaces and lighting. Recompose as a wide side-on anime stage background with an unobstructed horizontal playable floor at 82% image height, flat camera, clear central arena. Background props remain behind the fight plane. No fighters, people, HUD, letters or logos. Full-bleed landscape with natural surfaces reaching every edge. No superimposed directional lines, radial rays, speed-line border, comic frame, edge vignette or letterboxing.",
         "model": "Gemini Nano Banana 2.1",
         "model.aspect_ratio": "16:9",
         "model.resolution": "2K",
@@ -237,7 +278,7 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nAn epic 1990s battle-anime fighting tournament title-screen background using the supplied The Yard arena as its venue. Preserve the indoor venue architecture. Golden electrical energy arcs climb the sides, cyan and magenta ki-like light clashes at the horizon, sweeping radial speed lines and dramatic inked clouds frame a dark empty central 55% for a code-rendered title and subtitle \"Higgsfield Open Source Saga\". Hand-painted cel-animation finish and deep atmospheric perspective. Environment artwork only; no people, fighters, faces, character illustrations, text, lettering or logos.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nAn epic 1990s battle-anime fighting tournament title-screen background using the supplied The Yard arena as its venue. Preserve its environment design. Golden electrical energy arcs climb the sides, cyan and magenta ki-like light clashes at the horizon, sweeping radial speed lines and dramatic inked clouds frame a dark empty central 55% for a code-rendered title and subtitle \"Higgsfield Open Source Saga\". Hand-painted cel-animation finish and deep atmospheric perspective. Environment artwork only; no people, fighters, faces, character illustrations, text, lettering or logos.",
         "Gemini Nano Banana 2.1",
         "16:9",
         "1K",
@@ -250,7 +291,7 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nAn epic 1990s battle-anime fighting tournament title-screen background using the supplied The Yard arena as its venue. Preserve the indoor venue architecture. Golden electrical energy arcs climb the sides, cyan and magenta ki-like light clashes at the horizon, sweeping radial speed lines and dramatic inked clouds frame a dark empty central 55% for a code-rendered title and subtitle \"Higgsfield Open Source Saga\". Hand-painted cel-animation finish and deep atmospheric perspective. Environment artwork only; no people, fighters, faces, character illustrations, text, lettering or logos.",
+        "prompt": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nAn epic 1990s battle-anime fighting tournament title-screen background using the supplied The Yard arena as its venue. Preserve its environment design. Golden electrical energy arcs climb the sides, cyan and magenta ki-like light clashes at the horizon, sweeping radial speed lines and dramatic inked clouds frame a dark empty central 55% for a code-rendered title and subtitle \"Higgsfield Open Source Saga\". Hand-painted cel-animation finish and deep atmospheric perspective. Environment artwork only; no people, fighters, faces, character illustrations, text, lettering or logos.",
         "model": "Gemini Nano Banana 2.1",
         "model.aspect_ratio": "16:9",
         "model.resolution": "1K",
@@ -347,7 +388,7 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nAnime fighting-game character selection backdrop inspired by the supplied The Yard venue. Dark navy center for six portrait cards, yellow halftone bursts, cyan left and magenta right energy accents, opposing diagonal light beams. No characters, grids, text, icons or baked interface controls.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nAnime fighting-game character selection backdrop inspired by the supplied The Yard venue. Dark navy center for six portrait cards, yellow halftone bursts, cyan left and magenta right energy accents, opposing diagonal light beams. No characters, grids, text, icons or baked interface controls.",
         "Gemini Nano Banana 2.1",
         "16:9",
         "1K",
@@ -360,7 +401,7 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nAnime fighting-game character selection backdrop inspired by the supplied The Yard venue. Dark navy center for six portrait cards, yellow halftone bursts, cyan left and magenta right energy accents, opposing diagonal light beams. No characters, grids, text, icons or baked interface controls.",
+        "prompt": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nAnime fighting-game character selection backdrop inspired by the supplied The Yard venue. Dark navy center for six portrait cards, yellow halftone bursts, cyan left and magenta right energy accents, opposing diagonal light beams. No characters, grids, text, icons or baked interface controls.",
         "model": "Gemini Nano Banana 2.1",
         "model.aspect_ratio": "16:9",
         "model.resolution": "1K",
@@ -457,7 +498,7 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nA bold original anime arcade title emblem reading exactly \"Comfy Fighter Z\". Typography only: electric yellow and white italic beveled letters, thick black outlines, a dramatic oversized Z, cyan and magenta edge accents. No people, faces, fighters, character illustrations, props or other lettering. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nA bold original anime arcade title emblem reading exactly \"Comfy Fighter Z\". Typography only: electric yellow and white italic beveled letters, thick black outlines, a dramatic oversized Z, cyan and magenta edge accents. No people, faces, fighters, character illustrations, props or other lettering. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "Gemini Nano Banana 2.1",
         "3:2",
         "1K",
@@ -470,7 +511,7 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nA bold original anime arcade title emblem reading exactly \"Comfy Fighter Z\". Typography only: electric yellow and white italic beveled letters, thick black outlines, a dramatic oversized Z, cyan and magenta edge accents. No people, faces, fighters, character illustrations, props or other lettering. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "prompt": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nA bold original anime arcade title emblem reading exactly \"Comfy Fighter Z\". Typography only: electric yellow and white italic beveled letters, thick black outlines, a dramatic oversized Z, cyan and magenta edge accents. No people, faces, fighters, character illustrations, props or other lettering. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "model": "Gemini Nano Banana 2.1",
         "model.aspect_ratio": "3:2",
         "model.resolution": "1K",
@@ -567,7 +608,7 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nAn isolated decorative anime arcade interface frame only. Thin cyan left top corner and magenta right top corner, angular yellow accents. All interior including health-bar, timer and fighting areas completely empty chroma green. No people, faces, fighters, character illustrations, props, text, digits or baked health bars. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nAn isolated decorative anime arcade interface frame only. Thin cyan left top corner and magenta right top corner, angular yellow accents. All interior including health-bar, timer and fighting areas completely empty chroma green. No people, faces, fighters, character illustrations, props, text, digits or baked health bars. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "Gemini Nano Banana 2.1",
         "16:9",
         "1K",
@@ -580,7 +621,7 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nAn isolated decorative anime arcade interface frame only. Thin cyan left top corner and magenta right top corner, angular yellow accents. All interior including health-bar, timer and fighting areas completely empty chroma green. No people, faces, fighters, character illustrations, props, text, digits or baked health bars. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "prompt": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nAn isolated decorative anime arcade interface frame only. Thin cyan left top corner and magenta right top corner, angular yellow accents. All interior including health-bar, timer and fighting areas completely empty chroma green. No people, faces, fighters, character illustrations, props, text, digits or baked health bars. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "model": "Gemini Nano Banana 2.1",
         "model.aspect_ratio": "16:9",
         "model.resolution": "1K",
@@ -677,7 +718,7 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nAn original circular tournament badge made from three linked rectangular workflow nodes and an electric lightning bolt, yellow white cyan and magenta inked emblem, no text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nAn original circular tournament badge made from three linked rectangular workflow nodes and an electric lightning bolt, yellow white cyan and magenta inked emblem, no text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "Gemini Nano Banana 2.1",
         "1:1",
         "1K",
@@ -690,7 +731,7 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nAn original circular tournament badge made from three linked rectangular workflow nodes and an electric lightning bolt, yellow white cyan and magenta inked emblem, no text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "prompt": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nAn original circular tournament badge made from three linked rectangular workflow nodes and an electric lightning bolt, yellow white cyan and magenta inked emblem, no text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "model": "Gemini Nano Banana 2.1",
         "model.aspect_ratio": "1:1",
         "model.resolution": "1K",
@@ -787,7 +828,7 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nA square 3x3 anime combat effects atlas, exactly nine equally sized cells row-major, one isolated effect in each cell: 1. hit, 2. block, 3. projectile, 4. dust, 5. ko, 6. powerup, 7. dash, 8. launch, 9. spark. Orange, yellow, cream, magenta and cyan effects only. Projectile travels RIGHT. No characters. All effects fit their cell with 12% empty padding, equal visual scale. No grid, separators, borders, labels or text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nA square 3x3 anime combat effects atlas, exactly nine equally sized cells row-major, one isolated effect in each cell: 1. hit, 2. block, 3. projectile, 4. dust, 5. ko, 6. powerup, 7. dash, 8. launch, 9. spark. Orange, yellow, cream, magenta and cyan effects only. Projectile travels RIGHT. No characters. All effects fit their cell with 12% empty padding, equal visual scale. No grid, separators, borders, labels or text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "Gemini Nano Banana 2.1",
         "1:1",
         "2K",
@@ -800,7 +841,7 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\nA square 3x3 anime combat effects atlas, exactly nine equally sized cells row-major, one isolated effect in each cell: 1. hit, 2. block, 3. projectile, 4. dust, 5. ko, 6. powerup, 7. dash, 8. launch, 9. spark. Orange, yellow, cream, magenta and cyan effects only. Projectile travels RIGHT. No characters. All effects fit their cell with 12% empty padding, equal visual scale. No grid, separators, borders, labels or text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "prompt": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nA square 3x3 anime combat effects atlas, exactly nine equally sized cells row-major, one isolated effect in each cell: 1. hit, 2. block, 3. projectile, 4. dust, 5. ko, 6. powerup, 7. dash, 8. launch, 9. spark. Orange, yellow, cream, magenta and cyan effects only. Projectile travels RIGHT. No characters. All effects fit their cell with 12% empty padding, equal visual scale. No grid, separators, borders, labels or text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "model": "Gemini Nano Banana 2.1",
         "model.aspect_ratio": "1:1",
         "model.resolution": "2K",
@@ -864,7 +905,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# Stages, menus, UI and effects\n\nCLOUD ONLY. This graph contains 7 paid image-generation node(s). Running those nodes consumes Comfy credits. Source Load Image and Save nodes are local file operations. No generation is triggered by creating or building these files.\n\nSource photos feed anime model references; those outputs feed all derived art for consistent identity.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
+        "# Stages, menus, UI and effects\n\nCLOUD ONLY. This graph contains 8 paid image-generation node(s). Running those nodes consumes Comfy credits. Save nodes only process local files. No generation is triggered by creating or building these files.\n\nAll references are invented from text in this graph. No photographs or files from previous sessions are loaded.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
       ]
     }
   ],

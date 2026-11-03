@@ -1,30 +1,42 @@
-# Opening movie and clean Yard stage
+# Fictional opening movie and clean stage
 
-`comfy-opening.json` is a cloud Seedance 2.5 reference-to-video workflow for one **25-second live-action opening**, with synchronized sound. The six original character photographs identify the cast; the seventh image identifies The Yard's indoor venue. The prompt describes a filmed martial-arts sequence with practical-looking gold/cyan/magenta energy effects, natural faces and clothing, and original music. It preserves the game's original people and powers, without franchise characters or costumes.
+`comfy-opening.json` is a cloud Seedance 2.5 reference-to-video workflow for one **25-second lifelike fictional opening**, with synchronized sound. Seven `CFZFictionalReference` custom nodes first generate six imaginary adult character designs and the configured fictional arena from text. They feed Seedance directly; the recipe contains no `LoadImage` nodes or previous-session filenames. The prompt derives each fighter, special move, paired exchange and environment detail from `config/game.json`. It translates those designs into a filmed martial-arts sequence without using real people's photographs or a real venue reference.
 
-The startup player shows an installed opening movie before the title screen. **Space skips directly to the title**; natural completion also opens the title. An older bundle without a movie starts at the title. Preparing a workflow does not mean its movie has been generated or installed.
+The startup player shows an installed opening movie before the title screen. **Space skips directly to the title**; natural completion also opens the title. A bundle without a movie starts at the title. The fictional demo excludes the older photo-derived movie; preparing its replacement workflow does not mean a new film has been generated or installed.
 
 ## Prepare and validate
 
+Prepare the standalone opening recipes without an existing asset bundle:
+
 ```powershell
-node tools/prepare-cinematic-workflows.cjs --base "C:\assets\accepted-saga-bundle" --out "C:\assets\cinematic-run"
+node tools/prepare-cinematic-workflows.cjs --templates-only
 ```
 
-The accepted base must contain `assets.json` and its current Yard PNG. The tool writes `plan.json`, two alternative opening workflows, and a separate `yard-clean.json` image-edit workflow under the new run's `workflows/`. It also writes the reusable 1080p recipe to `comfy-opening.json` and both video alternatives to `workflows/video/`.
+This command writes `comfy-opening.json` and the 1080p/720p alternatives under `workflows/video/`. It does not write a run plan, create a stage-edit workflow, upload files or submit generation. `npm run workflows` includes this step. No fictional reference images need to exist first: the custom nodes generate them when an authorized run is submitted. The demo references and replacement movie are currently pending generation.
+
+Once a complete fictional bundle has been generated and accepted, prepare an optional stage repair alongside the opening alternatives:
+
+```powershell
+node tools/prepare-cinematic-workflows.cjs --base "C:\assets\accepted-fictional-bundle" --out "C:\assets\cinematic-run"
+```
+
+The explicit `--base` must contain the accepted fictional `assets.json`, its configured stage PNG and its fictional environment `source` image. Its roster must match the current fictional configuration. The tool writes `plan.json`, two alternative opening workflows, and a separate `yard-clean.json` image-edit workflow under the new run's `workflows/`. The stage-edit filename is retained for compatibility; its actual asset ID and prompt follow `config.stages[0]`. The tool also refreshes the reusable opening recipes. The opening still creates seven fresh references internally; only the separate stage edit uses the two accepted images from the base bundle.
 
 The installed `ByteDance2ReferenceNodeV2` schema supports Seedance 2.5 clips from **4 to 30 seconds in one-second steps**, at 480p, 720p or 1080p. This recipe uses 16:9, 25 seconds, seven reference images and native audio. The live node accepts up to 30 image references; no video/audio reference inputs are connected here. The seed controls rerunning/caching and does not promise deterministic visual results.
 
-Use the ComfyUI MCP to confirm the server, upload the exact `plan.json.uploads` files, and validate each workflow against the installed node catalog. Uploads include the six character photos, original venue photo and accepted Yard illustration. The two video workflows are alternatives, so submit only one.
+Use the ComfyUI MCP to confirm the server and validate the workflow against the installed node catalog, including this repository's custom node pack. The opening requires no image uploads. For the optional stage edit, upload only the two exact files in `plan.json.uploads`: the accepted fictional environment source and stage illustration. The two video workflows are alternatives, so submit only one.
 
-At the live prices checked on November 2, 2026:
+At the installed ComfyUI price badges checked on November 3, 2026, the seven reference calls cost **$0.36036**: six 1K images at $0.048048 each and one 2K environment at $0.072072. These calls are additional to the video charge and are included in every opening total below:
 
-| Authorized choice | Requests | Estimated total |
+| Optional run | Requests | Estimated total |
 | --- | --- | --- |
-| 1080p opening + Yard edit | One 25-second video + one 2K image edit | $20.44 |
-| 720p opening + Yard edit | One 25-second video + one 2K image edit | $8.35 |
-| Yard edit only | One 2K image edit | $0.08 |
+| 1080p opening | Seven reference images + one 25-second video | $20.72 |
+| 720p opening | Seven reference images + one 25-second video | $8.64 |
+| 1080p opening + stage edit | Seven reference images + one 25-second video + one 2K edit | $20.79 |
+| 720p opening + stage edit | Seven reference images + one 25-second video + one 2K edit | $8.71 |
+| Stage edit only | One 2K image edit | $0.072 |
 
-These are estimates; actual billing may vary. Recheck live prices and obtain spending authorization before generation. No paid retry is included automatically. Preparation, validation, assembly and game builds do not call a model.
+The video charges alone are approximately $20.362 at 1080p and $8.276 at 720p. These are estimates, not an authorization; actual billing may vary. Recheck live prices and obtain spending authorization for this optional batch before generation. The opening is excluded from the prepared fictional image/audio demo batch. No paid retry is included automatically. Preparation, validation, assembly and game builds do not call a model.
 
 ## Generate, fetch and assemble
 
@@ -64,17 +76,17 @@ video-patch/
 
 The builder verifies the mapped file/hash and copies it to `assets/video/opening.mp4`, with `openingVideo` in the runtime manifest. Existing image/audio contracts are unchanged.
 
-## Remove the Yard border and integrate
+## Remove a stage border and integrate
 
-`yard-clean.json` uses the accepted Yard artwork as the edit target and the original venue photo as a reconstruction reference. It asks Gemini Nano Banana 2.1 to remove only the superimposed directional speed lines, radial rays and comic border, preserving the indoor architecture, composition, lighting and fight plane. Actual ceiling beams, pipes and railings remain. It writes a partial `assets.json` containing only `yard` under `stage-patch/`.
+`yard-clean.json` uses the accepted stage artwork as the edit target and its generated environment design as a reconstruction reference. It asks Gemini Nano Banana 2.1 to remove only superimposed directional speed lines, radial rays and comic borders, preserving the configured architecture or landscape, composition, lighting and fight plane. Actual structural lines remain. It writes a partial `assets.json` containing only the configured stage ID under `stage-patch/`.
 
-Inspect all four stage edges and review the full movie for recognizable people, actual motion, sound and coherent action. Then merge only accepted outputs into a complete bundle:
+Inspect all four stage edges and review the full movie for consistent fictional designs, actual motion, sound and coherent action. Then merge only accepted outputs into a complete fictional bundle:
 
 ```powershell
-npm run merge:assets -- --base "C:\assets\accepted-saga-bundle" --patch "C:\assets\cinematic-run\stage-patch" --patch "C:\assets\cinematic-run\video-patch" --out "C:\assets\cinematic-complete"
+npm run merge:assets -- --base "C:\assets\accepted-fictional-bundle" --patch "C:\assets\cinematic-run\stage-patch" --patch "C:\assets\cinematic-run\video-patch" --out "C:\assets\cinematic-complete"
 npm run build:bundle -- --bundle "C:\assets\cinematic-complete" --out "C:\assets\cinematic-export"
 npm run adopt:game -- --game "C:\assets\cinematic-export\game"
 npm run build
 ```
 
-For a stage-only update, omit the video patch. The merge retains all unaffected image/audio/video files, and adoption preserves the existing game code. Confirm opening playback, natural completion, Space-to-title skipping and the clean Yard in the browser. `config.stageStyle` keeps future full stage generations separate from the decorative UI art direction so menu speed-line accents do not return to the arena.
+For a stage-only update, omit the video patch. The merge retains all unaffected image/audio/video files, and adoption preserves the existing game code. Use a fictional base bundle so retained media cannot reintroduce the previous cast. Confirm opening playback, natural completion, Space-to-title skipping and clean stage edges in the browser. `config.stageStyle` keeps future stage generations separate from the decorative UI art direction so menu speed-line accents do not return to the arena.

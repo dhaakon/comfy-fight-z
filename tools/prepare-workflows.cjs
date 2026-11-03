@@ -5,6 +5,8 @@ const ROOT = path.resolve(__dirname, '..');
 const read = p => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
 const write = (p, value) => { const file = path.join(ROOT, p); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(value, null, 2) + '\n'); };
 const clone = x => structuredClone(x);
+const invents = item => item.sourceMode === 'Invent fictional reference';
+const isPaidImage = job => job.kind !== 'source' || job.generateSource === true;
 const POSES = {
   idle: 'relaxed fighting guard', walk: 'forward walking stride, left foot leading', punch: 'straight lead-hand jab fully extended',
   kick: 'high roundhouse kick fully extended', block: 'standing forearm guard', hit: 'recoiling from a torso hit', special: 'signature special attack release',
@@ -24,8 +26,10 @@ function makeJobs(config) {
     const special = fighter.specialMove ? `${fighter.specialMove.name}: ${fighter.specialMove.description}` : 'A forward energy burst matching the character description.';
     const base = `${config.style}\nCHARACTER: ${fighter.description}\nSIGNATURE SPECIAL MOVE: ${special}\n`;
     const ref = `${fighter.id}_reference`;
-    if (fighter.sourceImage) add({ id: `${fighter.id}_source`, kind: 'source', fighter: fighter.id, key: false, sourceImage: fighter.sourceImage, sourceInput: fighter.sourceInput });
-    add({ id: ref, kind: 'reference', fighter: fighter.id, key: true, aspect: '2:3', ...(fighter.sourceImage ? { reference: `${fighter.id}_source`, sourceInput: fighter.sourceInput } : {}), prompt: `${base}Use the supplied photo as the visible appearance reference for its main foreground subject; ignore bystanders and background. Translate that person into an original anime fighter. Create one full-body character model reference, entire head and shoes visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen clothing details according to the character description. This design is the identity reference for every later asset. ${GREEN}` });
+    const hasSource = invents(fighter) || !!fighter.sourceImage;
+    if (hasSource) add({ id: `${fighter.id}_source`, kind: 'source', fighter: fighter.id, key: false,
+      ...(invents(fighter) ? {generateSource:true,aspect:'2:3',prompt:fighter.referencePrompt || `${base}Invent one entirely fictional adult fighter from text only. Full-body right-facing reference, complete hands and shoes. No real-person or image reference is supplied. ${GREEN}`} : {sourceImage:fighter.sourceImage,sourceInput:fighter.sourceInput}) });
+    add({ id: ref, kind: 'reference', fighter: fighter.id, key: true, aspect: '2:3', ...(hasSource ? { reference: `${fighter.id}_source`, ...(!invents(fighter)&&fighter.sourceInput?{sourceInput:fighter.sourceInput}:{}) } : {}), prompt: `${base}Use the supplied reference design to preserve its appearance, costume and palette. Create one full-body character model reference, entire head and shoes visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen clothing details according to the character description. This design is the identity reference for every later asset. ${GREEN}` });
     for (const [sheet, poses] of Object.entries(config.sheets)) {
       add({ id: `${fighter.id}_${sheet}`, kind: 'sprites', fighter: fighter.id, sheet, key: true, poses, reference: ref, aspect: '1:1', resolution: '2K',
         prompt: `${base}Use the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\n${poses.map((p,i)=>`Cell ${i+1} (row ${Math.floor(i/3)+1}, column ${i%3+1}): ${p} - ${p === 'special' ? special : POSES[p]}.`).join('\n')}\n${GREEN}` });
@@ -38,14 +42,16 @@ function makeJobs(config) {
       prompt: `${base}Preserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. ${direction} ${GREEN}` });
   }
   for (const stage of config.stages) {
-    if (stage.sourceImage) add({ id: `${stage.id}_source`, kind: 'source', stage: stage.id, key: false, sourceImage: stage.sourceImage, sourceInput: stage.sourceInput });
-    add({ id: stage.id, kind:'stage', stage:stage.id, aspect:'16:9', resolution:'2K', ...(stage.sourceImage ? { reference: `${stage.id}_source`, sourceInput: stage.sourceInput } : {}),
-      prompt: `${config.stageStyle || 'Original hand-painted anime environment background with clean architectural ink and rich cel-shaded materials. No decorative graphic border or speed lines.'}\nFighting arena: ${stage.description} Use the supplied venue photograph to preserve its distinctive architecture, surfaces and lighting. Recompose as a wide side-on anime stage background with an unobstructed horizontal playable floor at 82% image height, flat camera, clear central arena. Background props remain behind the fight plane. No fighters, people, HUD, letters or logos. Full-bleed landscape with natural floor, ceiling and walls reaching every edge. No superimposed directional lines, radial rays, speed-line border, comic frame, edge vignette or letterboxing. Keep actual architectural beams, pipes and railings.` });
+    const hasSource = invents(stage) || !!stage.sourceImage;
+    if (hasSource) add({ id: `${stage.id}_source`, kind: 'source', stage: stage.id, key: false,
+      ...(invents(stage) ? {generateSource:true,aspect:'16:9',resolution:'2K',prompt:stage.referencePrompt || `${config.stageStyle}\nInvent this fictional environment from text only: ${stage.description}. No image input or real venue is supplied.`} : {sourceImage:stage.sourceImage,sourceInput:stage.sourceInput}) });
+    add({ id: stage.id, kind:'stage', stage:stage.id, aspect:'16:9', resolution:'2K', ...(hasSource ? { reference: `${stage.id}_source`, ...(!invents(stage)&&stage.sourceInput?{sourceInput:stage.sourceInput}:{}) } : {}),
+      prompt: `${config.stageStyle || 'Original hand-painted anime environment background with clean architectural ink and rich cel-shaded materials. No decorative graphic border or speed lines.'}\nFighting arena: ${stage.description} Use the supplied environment design to preserve its architecture, surfaces and lighting. Recompose as a wide side-on anime stage background with an unobstructed horizontal playable floor at 82% image height, flat camera, clear central arena. Background props remain behind the fight plane. No fighters, people, HUD, letters or logos. Full-bleed landscape with natural surfaces reaching every edge. No superimposed directional lines, radial rays, speed-line border, comic frame, edge vignette or letterboxing.` });
   }
   // Interface art must not inherit the character-directed fighter style prompt.
   const uiStyle = config.uiStyle || 'Original 2D arcade interface artwork, crisp ink outlines, rich cel shading, warm suburban comedy, cohesive late-1990s hand-drawn arcade aesthetic. No existing franchise imagery.';
   const ui = {
-    title: ['16:9', `An epic 1990s battle-anime fighting tournament title-screen background using the supplied ${config.stages[0].name} arena as its venue. Preserve the indoor venue architecture. Golden electrical energy arcs climb the sides, cyan and magenta ki-like light clashes at the horizon, sweeping radial speed lines and dramatic inked clouds frame a dark empty central 55% for a code-rendered title and subtitle "${config.subtitle || ''}". Hand-painted cel-animation finish and deep atmospheric perspective. Environment artwork only; no people, fighters, faces, character illustrations, text, lettering or logos.`],
+    title: ['16:9', `An epic 1990s battle-anime fighting tournament title-screen background using the supplied ${config.stages[0].name} arena as its venue. Preserve its environment design. Golden electrical energy arcs climb the sides, cyan and magenta ki-like light clashes at the horizon, sweeping radial speed lines and dramatic inked clouds frame a dark empty central 55% for a code-rendered title and subtitle "${config.subtitle || ''}". Hand-painted cel-animation finish and deep atmospheric perspective. Environment artwork only; no people, fighters, faces, character illustrations, text, lettering or logos.`],
     select: ['16:9', `Anime fighting-game character selection backdrop inspired by the supplied ${config.stages[0].name} venue. Dark navy center for six portrait cards, yellow halftone bursts, cyan left and magenta right energy accents, opposing diagonal light beams. No characters, grids, text, icons or baked interface controls.`],
     logo: ['3:2', `A bold original anime arcade title emblem reading exactly "${config.title}". Typography only: electric yellow and white italic beveled letters, thick black outlines, a dramatic oversized Z, cyan and magenta edge accents. No people, faces, fighters, character illustrations, props or other lettering. ${GREEN.replace('no lettering, ', '')}`],
     hud: ['16:9', 'An isolated decorative anime arcade interface frame only. Thin cyan left top corner and magenta right top corner, angular yellow accents. All interior including health-bar, timer and fighting areas completely empty chroma green. No people, faces, fighters, character illustrations, props, text, digits or baked health bars. ' + GREEN.replace('borders, ', '')],
@@ -67,13 +73,15 @@ function makeGraph(jobs, config, seedTemplate, { externalReference = false, titl
   };
   const source = seedTemplate.nodes.find(n=>n.type==='GeminiNanoBanana2V2');
   if (!source) throw new Error('Cloud node missing in workflows/templates/cloud-image.json');
-  jobs.forEach((job,index)=> {
+  const available = new Map(makeJobs(config).map(job=>[job.id,job]));
+  function ensureGenerator(job,index) {
+    if (generators.has(job.id)) return generators.get(job.id);
     let gen;
-    if (job.kind === 'source') {
+    if (job.kind === 'source' && !job.generateSource) {
       gen={id:nextId++,type:'LoadImage',title:`${job.id} | source image`,pos:[420,index*560+220],size:[340,420],flags:{},order:nodes.length,mode:0,inputs:[],outputs:[{name:'IMAGE',type:'IMAGE',links:[]},{name:'MASK',type:'MASK',links:null}],properties:{'Node name for S&R':'LoadImage',sourceImage:job.sourceImage},widgets_values:[job.sourceInput||path.basename(job.sourceImage),'image']};
     } else {
       gen=clone(source); gen.id=nextId++; gen.pos=[externalReference?460:420,index*560+220]; gen.size=[420,480];
-      gen.title=`${job.id} | cloud generation`; gen.order=nodes.length;
+      gen.title=`${job.id} | ${job.kind==='source'?'source image':'cloud generation'}`; gen.order=nodes.length;
       gen.inputs.forEach(i=>i.link=null); gen.outputs.forEach(o=>o.links=null);
       const values={prompt:job.prompt,model:config.model,'model.aspect_ratio':job.aspect,'model.resolution':job.resolution||'1K','model.thinking_level':'MINIMAL',seed:42,control_after_generate:'fixed',response_modalities:'IMAGE',system_prompt:'Create the requested original game art. Follow the layout and reference identity precisely.',temperature:1,top_p:0.95};
       gen.widgets_values_named=values;
@@ -82,16 +90,25 @@ function makeGraph(jobs, config, seedTemplate, { externalReference = false, titl
     nodes.push(gen); generators.set(job.id,gen);
     if(job.reference) {
       let ref=generators.get(job.reference);
+      if(!ref && externalReference && config.demoSource==='fictional-text-only' && !job.sourceInput) {
+        const dependency=available.get(job.reference);
+        if(!dependency)throw new Error(`Unknown fictional dependency: ${job.reference}`);
+        ref=ensureGenerator(dependency,index+1);
+      }
       if(!ref && externalReference) {
         ref={id:nextId++,type:'LoadImage',title:`Accepted reference: ${job.reference} (upload first)`,pos:[40,index*560+220],size:[320,310],flags:{},order:nodes.length,mode:0,inputs:[],outputs:[{name:'IMAGE',type:'IMAGE',links:[]},{name:'MASK',type:'MASK',links:null}],properties:{'Node name for S&R':'LoadImage'},widgets_values:[job.sourceInput||`${job.reference}.png`,'image']}; nodes.push(ref); generators.set(job.reference,ref);
       }
       if(!ref) throw new Error(`Reference ${job.reference} must precede ${job.id}`);
       connect(ref,gen,gen.inputs.findIndex(i=>i.name==='model.images.image_1'));
     }
+    return gen;
+  }
+  jobs.forEach((job,index)=> {
+    const gen=ensureGenerator(job,index);
     const save={id:nextId++,type:'SaveImage',title:`Save ${job.id}`,pos:[950,index*560+220],size:[350,330],flags:{},order:nodes.length,mode:0,inputs:[{name:'images',type:'IMAGE',link:null}],outputs:[],properties:{'Node name for S&R':'SaveImage'},widgets_values:[`hackathon/${job.id}`]};
     nodes.push(save); connect(gen,save);
   });
-  nodes.push({id:nextId++,type:'MarkdownNote',pos:[40,-100],size:[780,260],flags:{},order:nodes.length,mode:0,inputs:[],outputs:[],properties:{},widgets_values:[`# ${title}\n\nCLOUD ONLY. This graph contains ${jobs.filter(j=>j.kind!=='source').length} paid image-generation node(s). Running those nodes consumes Comfy credits. Source Load Image and Save nodes are local file operations. No generation is triggered by creating or building these files.\n\n${externalReference?'Select the accepted source/reference image in Load Image before running.':'Source photos feed anime model references; those outputs feed all derived art for consistent identity.'}\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow.`]});
+  nodes.push({id:nextId++,type:'MarkdownNote',pos:[40,-100],size:[780,260],flags:{},order:nodes.length,mode:0,inputs:[],outputs:[],properties:{},widgets_values:[`# ${title}\n\nCLOUD ONLY. This graph contains ${nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length} paid image-generation node(s). Running those nodes consumes Comfy credits. Save nodes only process local files. No generation is triggered by creating or building these files.\n\n${nodes.some(n=>n.type==='LoadImage')?'Select the intended accepted reference in Load Image before running.':'All references are invented from text in this graph. No photographs or files from previous sessions are loaded.'}\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow.`]});
   const hash=createHash('sha256').update(title).digest('hex');
   return {id:`${hash.slice(0,8)}-${hash.slice(8,12)}-4${hash.slice(13,16)}-a${hash.slice(17,20)}-${hash.slice(20,32)}`,revision:0,last_node_id:nextId-1,last_link_id:nextLink-1,nodes,links,groups:[],config:{},extra:{ds:{scale:0.7,offset:[30,140]}},version:0.4};
 }
@@ -128,7 +145,7 @@ function makeBundleGraph(jobs,config,template,{externalReference=false,rootDirec
   });
   const note=graph.nodes.find(n=>n.type==='MarkdownNote');
   note.pos=[-550,-250];note.size=[1000,360];
-  note.widgets_values=[`# ${config.title}: complete game asset factory\n\n1. Set the absolute root_directory on Asset Root. Load the supplied ref/ photos in the ${jobs.filter(j=>j.kind==='source').length} source Load Image nodes.\n2. Run the graph: ${jobs.filter(j=>j.kind!=='source').length} CLOUD image-generation nodes (paid Comfy credits) plus ${jobs.filter(j=>j.kind==='source').length} source-image saves. Each Save + Map node saves a stable raw PNG and its metadata.\n3. The final exporter waits for ALL ${jobs.length} mapped assets, then writes assets.json in that root, including descriptions, special moves and source-photo mappings.\n4. Open the Game Builder frontend, select that folder (assets.json + raw/), customize the roster/title, and export a playable directory or ZIP. There is one arena: ${config.stages[0].name}.\n\nOriginal source photos feed the anime identity references and stage; all sheets and cut-ins use those identities. Each character description and specialMove in config/game.json drives its visual special attack. Audio has a separate cloud workflow writing audio.json into this root.\n\nInstall this project's custom_nodes/dad_fighter_assets pack into ComfyUI/custom_nodes and restart ComfyUI once. Only model nodes call cloud services; root/save/manifest nodes process local files. No model downloads. Running the graph spends credits; preparing it does not.`];
+  note.widgets_values=[`# ${config.title}: complete game asset factory\n\n1. Set the absolute root_directory on Asset Root. Fictional source definitions are generated from text; this demo loads no prior-session files.\n2. Run the graph: ${jobs.filter(isPaidImage).length} CLOUD image-generation nodes (paid Comfy credits). Each Save + Map node saves a stable raw PNG and its metadata.\n3. The final exporter waits for ALL ${jobs.length} mapped assets, then writes assets.json in that root, including descriptions, special moves and source mappings.\n4. Open the Game Builder frontend, select that folder (assets.json + raw/), customize the roster/title, and export a playable directory or ZIP.\n\nNew source designs feed the anime identity references and stage; all sheets and cut-ins use those identities. Character descriptions and specialMove definitions drive the artwork. Audio has a separate cloud workflow writing audio.json into this root.\n\nInstall this project's custom_nodes/dad_fighter_assets pack into ComfyUI/custom_nodes and restart ComfyUI once. Only model nodes call cloud services; root/save/manifest nodes process local files. No model downloads. Running the graph spends credits; preparing it does not.`];
   if(patch) note.widgets_values=[`# ${title||`${config.title}: incremental art refresh`}\n\n${jobs.length} paid CLOUD image jobs. Accepted existing fighter identities and The Yard stage load from uploaded PNGs; those reference assets are reused, never regenerated.\n\nThis graph writes a PARTIAL assets.json into its own patch root. Merge replacements by asset ID into the accepted complete bundle before a strict build. Keep all assets absent from this patch, including source photos, references, the one Yard stage and existing audio. Do not load this partial manifest as a complete game.\n\nThe main comfy-hackathon.json remains the complete asset factory. Verify all 27 poses, right-facing attacks and complete feet before accepting a patch. Preparing files spends nothing. Submitting cloud jobs requires spending authorization.`];
   graph.nodes.unshift(root);graph.nodes.push(exporter);
   graph.nodes.forEach((n,i)=>n.order=i);
@@ -142,21 +159,30 @@ function prepare() {
   if(ids.some(id=>!/^[-a-z0-9]+$/.test(id)) || new Set(ids).size!==ids.length) throw new Error('Fighter/stage IDs must be unique lowercase slugs');
   if(!config.fighters.length || !config.stages.length) throw new Error('Configure at least one fighter and stage');
   for(const poses of Object.values(config.sheets)) if(poses.length!==9 || poses.some(p=>!POSES[p])) throw new Error('Each sheet needs nine supported poses');
-  for (const item of [...config.fighters,...config.stages]) if (item.sourceImage) {
-    if (!/^ref\/(characters|levels)\/[a-z0-9_-]+\.(png|jpe?g)$/i.test(item.sourceImage) || !fs.existsSync(path.join(ROOT,item.sourceImage))) throw new Error(`Missing or invalid source image: ${item.sourceImage}`);
+  for (const item of [...config.fighters,...config.stages]) if (item.sourceImage && !invents(item)) {
+    if (!/^ref\/(?:demo\/)?(characters|levels)\/[a-z0-9_-]+\.(png|jpe?g)$/i.test(item.sourceImage) || !fs.existsSync(path.join(ROOT,item.sourceImage))) throw new Error(`Missing or invalid source image: ${item.sourceImage}`);
     if (item.sourceInput && !/^[a-z0-9_.-]+\.(png|jpe?g)$/i.test(item.sourceInput)) throw new Error(`Invalid ComfyUI input filename: ${item.sourceInput}`);
   }
   const jobs=makeJobs(config);
   if(new Set(jobs.map(j=>j.id)).size!==jobs.length) throw new Error('Job IDs collide; choose different fighter/stage IDs');
+  const expectedFiles=new Set([...jobs.map(job=>job.workflow),...config.fighters.map(f=>`workflows/packs/${f.id}.json`),'workflows/packs/environment-and-ui.json']);
+  const archive=path.resolve(ROOT,'private-archive',`retired-workflows-${Date.now()}`);
+  for(const folder of ['workflows/jobs','workflows/packs'])for(const entry of fs.readdirSync(path.join(ROOT,folder),{withFileTypes:true})){
+    const relative=`${folder}/${entry.name}`;
+    if(!entry.isFile()||!entry.name.endsWith('.json')||expectedFiles.has(relative))continue;
+    const source=path.resolve(ROOT,relative),destination=path.resolve(archive,relative);
+    if(!source.startsWith(ROOT+path.sep)||!destination.startsWith(archive+path.sep)||fs.lstatSync(source).isSymbolicLink())throw new Error('Unsafe retired workflow path.');
+    fs.mkdirSync(path.dirname(destination),{recursive:true});fs.renameSync(source,destination);
+  }
   write('assets/plan.json',{version:1,jobs});
   for(const job of jobs) write(job.workflow,makeGraph([job],config,template,{externalReference:!!job.reference,title:job.id}));
   for(const fighter of config.fighters) write(`workflows/packs/${fighter.id}.json`,makeGraph(jobs.filter(j=>j.fighter===fighter.id),config,template,{title:`${fighter.name}: full art pack`}));
   write('workflows/packs/environment-and-ui.json',makeGraph(jobs.filter(j=>!j.fighter),config,template,{title:'Stages, menus, UI and effects'}));
   write('workflows/advanced/full-image-graph.json',makeBundleGraph(jobs,config,template));
   write('public/builder/example-assets.json',{schema:'dad-fighter-assets/v1',root:'.',cloudOnly:true,game:{title:config.title,subtitle:config.subtitle,fighters:config.fighters,stages:config.stages,sheets:config.sheets},assets:jobs.map(job=>({...assetRecord(job),src:`raw/${job.id}.png`}))});
-  write('simple-image-generation.json',makeGraph(jobs.filter(j=>j.fighter===config.fighters[0].id && ['source','reference'].includes(j.kind)),config,template,{title:'Start here: source photo to first anime fighter'}));
-  write('workflows/catalog.json',{model:config.model,cloudOnly:true,paid:true,paidGenerations:jobs.filter(j=>j.kind!=='source').length,mappedAssets:jobs.length,sourceReferences:jobs.filter(j=>j.kind==='source').map(j=>({id:j.id,sourceImage:j.sourceImage,sourceInput:j.sourceInput,sha256:createHash('sha256').update(fs.readFileSync(path.join(ROOT,j.sourceImage))).digest('hex')})),jobs:jobs.map(({id,kind,workflow,reference,output,sourceImage,sourceInput})=>({id,kind,workflow,reference,output,sourceImage,sourceInput})),packs:[...config.fighters.map(f=>`workflows/packs/${f.id}.json`),'workflows/packs/environment-and-ui.json']});
-  console.log(`Prepared ${jobs.length} individual workflows (${jobs.filter(j=>j.kind!=='source').length} cloud generations, ${jobs.filter(j=>j.kind==='source').length} source-image saves) and ${config.fighters.length+1} packs. No images generated or credits spent.`);
+  write('simple-image-generation.json',makeGraph(jobs.filter(j=>j.fighter===config.fighters[0].id && ['source','reference'].includes(j.kind)),config,template,{title:'Start here: invent a fictional anime fighter'}));
+  write('workflows/catalog.json',{model:config.model,cloudOnly:true,paid:true,paidGenerations:jobs.filter(isPaidImage).length,mappedAssets:jobs.length,sourceReferences:jobs.filter(j=>j.kind==='source').map(j=>({id:j.id,...(j.generateSource?{sourceMode:'Invent fictional reference',inputImages:0}:{sourceImage:j.sourceImage,sourceInput:j.sourceInput,sha256:createHash('sha256').update(fs.readFileSync(path.join(ROOT,j.sourceImage))).digest('hex')})})),jobs:jobs.map(({id,kind,workflow,reference,output,sourceImage,sourceInput,generateSource})=>({id,kind,workflow,reference,output,sourceImage,sourceInput,generateSource})),packs:[...config.fighters.map(f=>`workflows/packs/${f.id}.json`),'workflows/packs/environment-and-ui.json']});
+  console.log(`Prepared ${jobs.length} individual workflows (${jobs.filter(isPaidImage).length} cloud generations) and ${config.fighters.length+1} packs. No images generated or credits spent.`);
   require('./prepare-factory-workflows.cjs').prepareFactory();
 }
 if(require.main===module) prepare();

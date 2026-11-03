@@ -6,20 +6,32 @@
   "nodes": [
     {
       "id": 1,
-      "type": "LoadImage",
-      "title": "yard_source | source image",
+      "type": "GeminiNanoBanana2V2",
       "pos": [
         420,
         220
       ],
       "size": [
-        340,
-        420
+        420,
+        480
       ],
       "flags": {},
       "order": 0,
       "mode": 0,
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
       "outputs": [
         {
           "name": "IMAGE",
@@ -29,19 +41,48 @@
           ]
         },
         {
-          "name": "MASK",
-          "type": "MASK",
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
           "links": null
         }
       ],
       "properties": {
-        "Node name for S&R": "LoadImage",
-        "sourceImage": "ref/levels/level-theyard.jpeg"
+        "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "level-theyard.jpeg",
-        "image"
-      ]
+        "Create an entirely fictional environment from text only: The Yard, a cheerful neighborhood backyard tournament arena at golden hour. Wide 16:9 side-on fighting-game camera, broad warm terracotta patio across the foreground with an unobstructed horizontal fighting line at 82 percent image height. Behind the fight plane: low cream picket fence, red garden shed, soft rounded distant hills, a tiny barbecue well away from the arena and simple overhead string lights. Original 1990s hand-painted anime background, clean architectural ink and rich warm cel-shaded light. This is an invented location, not a recreation of a real venue. No people, portraits, readable signs, brands, logos, floor markings or emblems. Natural scenery fills all four edges without decorative borders, speed lines, vignette, panels or letterboxing.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create an entirely fictional environment from text only: The Yard, a cheerful neighborhood backyard tournament arena at golden hour. Wide 16:9 side-on fighting-game camera, broad warm terracotta patio across the foreground with an unobstructed horizontal fighting line at 82 percent image height. Behind the fight plane: low cream picket fence, red garden shed, soft rounded distant hills, a tiny barbecue well away from the arena and simple overhead string lights. Original 1990s hand-painted anime background, clean architectural ink and rich warm cel-shaded light. This is an invented location, not a recreation of a real venue. No people, portraits, readable signs, brands, logos, floor markings or emblems. Natural scenery fills all four edges without decorative borders, speed lines, vignette, panels or letterboxing.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "yard_source | source image"
     },
     {
       "id": 2,
@@ -91,7 +132,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# yard_source\n\nCLOUD ONLY. This graph contains 0 paid image-generation node(s). Running those nodes consumes Comfy credits. Source Load Image and Save nodes are local file operations. No generation is triggered by creating or building these files.\n\nSource photos feed anime model references; those outputs feed all derived art for consistent identity.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
+        "# yard_source\n\nCLOUD ONLY. This graph contains 1 paid image-generation node(s). Running those nodes consumes Comfy credits. Save nodes only process local files. No generation is triggered by creating or building these files.\n\nAll references are invented from text in this graph. No photographs or files from previous sessions are loaded.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
       ]
     }
   ],

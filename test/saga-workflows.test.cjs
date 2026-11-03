@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { makeSagaPatchJobs, makeRepairJob } = require('../tools/prepare-saga-patch.cjs');
+const { makeSagaPatchJobs, makeRepairJob, defaultRepairs, prepareSagaPatch } = require('../tools/prepare-saga-patch.cjs');
 const { makeJobs, makeBundleGraph, assetRecord } = require('../tools/prepare-workflows.cjs');
 const root = path.resolve(__dirname, '..');
 const load = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
@@ -37,18 +37,24 @@ test('saga refresh replaces only 38 selected images and shares seven accepted re
 });
 
 test('incremental refresh cannot silently invent a missing accepted identity or asset', () => {
-  assert.throws(() => makeSagaPatchJobs(config, { assets: accepted.assets.filter(asset => asset.id !== 'allyson_reference') }), /reference is missing/);
+  assert.throws(() => makeSagaPatchJobs(config, { assets: accepted.assets.filter(asset => asset.id !== `${config.fighters[0].id}_reference`) }), /reference is missing/);
   assert.throws(() => makeSagaPatchJobs(config, { assets: accepted.assets.filter(asset => asset.id !== 'logo') }), /only replace an accepted asset/);
 });
 
 test('optional repair generates one sheet while retaining its nine-pose contract', () => {
   const jobs = makeSagaPatchJobs(config, accepted);
-  const repair = makeRepairJob(jobs, 'allyson_sheetC', 'Show complete shoes in the entrance pose.');
+  const repair = makeRepairJob(jobs, `${config.fighters[0].id}_sheetC`, 'Show complete shoes in the entrance pose.');
   const graph = makeBundleGraph([repair], config, template, { externalReference: true, patch: true });
   assert.equal(graph.nodes.filter(node => node.type === 'GeminiNanoBanana2V2').length, 1);
   assert.deepEqual(repair.poses, config.sheets.sheetC);
   assert.match(repair.prompt, /Show complete shoes in the entrance pose/);
   assert.match(repair.prompt, /at least 12% clear green on ALL four sides/);
   assert.match(repair.prompt, /especially the sweep, airkick and punches attack RIGHT/);
-  assert.throws(() => makeRepairJob(jobs, 'allyson_hero'), /Repair must name a sprite sheet/);
+  assert.throws(() => makeRepairJob(jobs, `${config.fighters[0].id}_hero`), /Repair must name a sprite sheet/);
+});
+
+test('repair defaults follow edited fictional IDs and never fall back to a historic bundle', () => {
+  const fictional = { fighters: ['ember', 'moss', 'tide', 'nova', 'quartz', 'volt'].map(id => ({ id })) };
+  assert.deepEqual(defaultRepairs(fictional).map(([id]) => id), ['ember_sheetC', 'moss_sheetB', 'tide_sheet', 'nova_sheetC']);
+  assert.throws(() => prepareSagaPatch(), /Choose an accepted fictional demo bundle/);
 });

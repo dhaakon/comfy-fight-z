@@ -5,18 +5,19 @@ const path = require('node:path');
 const os = require('node:os');
 const { spawnSync } = require('node:child_process');
 const { createHash } = require('node:crypto');
-const { makeOpeningGraph, makeYardEditGraph } = require('../tools/prepare-cinematic-workflows.cjs');
+const { makeOpeningGraph, makeYardEditGraph, prepare } = require('../tools/prepare-cinematic-workflows.cjs');
 const { validateSource, assemble, probe } = require('../tools/assemble-opening.cjs');
 const root = path.resolve(__dirname, '..');
 const load = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 
-test('opening alternatives each wire seven photos to one 25-second Seedance cloud request', () => {
+test('opening alternatives each wire seven designs to one 25-second Seedance cloud request', () => {
   const config = load('config/game.json'), template = load('workflows/templates/cloud-seedance-reference.json');
   for (const resolution of ['1080p', '720p']) {
     const graph = makeOpeningGraph(config, template, { resolution });
     const generation = graph.nodes.find(node => node.type === 'ByteDance2ReferenceNodeV2');
     assert.equal(graph.nodes.filter(node => node.type === 'ByteDance2ReferenceNodeV2').length, 1);
-    assert.equal(graph.nodes.filter(node => node.type === 'LoadImage').length, 7);
+    assert.equal(graph.nodes.filter(node => node.type === 'LoadImage').length, 0);
+    assert.equal(graph.nodes.filter(node => node.type === 'CFZFictionalReference').length, 7);
     assert.equal(generation.widgets_values_named['model.duration'], 25);
     assert.equal(generation.widgets_values_named['model.resolution'], resolution);
     assert.equal(generation.widgets_values_named['model.generate_audio'], true);
@@ -24,7 +25,8 @@ test('opening alternatives each wire seven photos to one 25-second Seedance clou
     for (const [index, item] of [...config.fighters, config.stages[0]].entries()) {
       const link = graph.links.find(link => link[0] === generation.inputs[index].link);
       const source = graph.nodes.find(node => node.id === link[1]);
-      assert.equal(source.widgets_values[0], item.sourceInput);
+      assert.equal(source.widgets_values_named.prompt, item.referencePrompt);
+      assert.equal(source.type,'CFZFictionalReference');
       assert.equal(generation.inputs[index].name, `model.reference_images.image_${index + 1}`);
     }
     for (const fighter of config.fighters) assert.ok(generation.widgets_values_named['model.prompt'].includes(fighter.specialMove.name));
@@ -32,7 +34,7 @@ test('opening alternatives each wire seven photos to one 25-second Seedance clou
   }
 });
 
-test('Yard edit preserves one stage mapping and distinguishes target from original photo', () => {
+test('stage edit preserves its mapping and distinguishes target from reference design', () => {
   const config = load('config/game.json'), template = load('workflows/templates/cloud-image.json');
   const graph = makeYardEditGraph(config, template, { acceptedYardInput: 'accepted-yard.png', outputRoot: 'test-output/yard' });
   const generation = graph.nodes.find(node => node.type === 'GeminiNanoBanana2V2');
@@ -40,10 +42,28 @@ test('Yard edit preserves one stage mapping and distinguishes target from origin
     const link = graph.links.find(item => item[0] === generation.inputs.find(input => input.name === name).link);
     return graph.nodes.find(node => node.id === link[1]).widgets_values[0];
   });
-  assert.deepEqual(sources, ['accepted-yard.png', config.stages[0].sourceInput]);
-  assert.deepEqual(JSON.parse(graph.nodes.find(node => node.type === 'DFZAssetRoot').widgets_values[1]).expectedAssets, ['yard']);
-  assert.equal(JSON.parse(graph.nodes.find(node => node.type === 'DFZSaveAsset').widgets_values[0]).stage, 'yard');
+  assert.deepEqual(sources, ['accepted-yard.png', 'yard_source.png']);
+  assert.deepEqual(JSON.parse(graph.nodes.find(node => node.type === 'DFZAssetRoot').widgets_values[1]).expectedAssets, [config.stages[0].id]);
+  assert.equal(JSON.parse(graph.nodes.find(node => node.type === 'DFZSaveAsset').widgets_values[0]).stage, config.stages[0].id);
   assert.match(generation.widgets_values_named.prompt, /CHANGE ONLY/);
+});
+
+test('cinematic cast, duels and stage mapping follow fictional configuration', () => {
+  const config = load('config/game.json');
+  config.fighters = config.fighters.map((fighter, index) => ({ ...fighter, id: `fiction${index}`, name: `Invented Fighter ${index}`,
+    description: `Original blue-haired design number ${index}.`, sourceInput: `fiction${index}.png`,
+    specialMove: { name: `Burst ${index}`, description: `A compact energy shape number ${index}.` } }));
+  config.stages = [{ id: 'sky-temple', name: 'Floating Crystal Temple', description: 'A sky island with luminous crystal arches and a flat stone floor.', sourceInput: 'sky-temple.png' }];
+  const graph = makeOpeningGraph(config, load('workflows/templates/cloud-seedance-reference.json'));
+  const prompt = graph.nodes.find(node => node.type === 'ByteDance2ReferenceNodeV2').widgets_values_named['model.prompt'];
+  for (const fighter of config.fighters) assert.ok(prompt.includes(`${fighter.name} demonstrates`) || prompt.includes(`${fighter.name} answers`));
+  assert.ok(prompt.includes(config.stages[0].description));
+  assert.match(prompt, /entirely imaginary adult performers/);
+  const edit = makeYardEditGraph(config, load('workflows/templates/cloud-image.json'), { acceptedYardInput: 'accepted-temple.png', outputRoot: 'test-output/temple' });
+  const mapped = JSON.parse(edit.nodes.find(node => node.type === 'DFZSaveAsset').widgets_values[0]);
+  assert.equal(mapped.id, 'sky-temple'); assert.equal(mapped.stage, 'sky-temple');
+  assert.ok(edit.nodes.find(node => node.type === 'GeminiNanoBanana2V2').widgets_values_named.prompt.includes(config.stages[0].description));
+  assert.throws(() => prepare(), /Choose an accepted fictional demo bundle/);
 });
 
 test('assembly rejects short movies and missing native audio instead of extending them to 25 seconds', () => {
