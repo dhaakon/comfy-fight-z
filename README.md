@@ -4,6 +4,8 @@ Create an anime fighting game with your own fictional cast. ComfyUI generates th
 
 The default game has six fighters, one backyard arena called **The Yard**, and one human player versus the CPU. Each fighter has 27 poses, selection art, an introduction and a special move.
 
+**[Play the public demo at comfy-fight-z.dhaakon.com](https://comfy-fight-z.dhaakon.com/)** — no installation required. Use arrow keys and ASDF on a keyboard, or the on-screen controls on mobile. The game's **GITHUB** link opens this repository.
+
 > **Included example:** six fictional fighters, The Yard, 162 poses and 22 music, effects and voice clips. The reviewed assets are included in [`example/`](example/README.md), so building this game requires no ComfyUI server, cloud account or generation credits. Regenerating the assets is optional.
 
 ![Included six-fighter example title screen](comfyui/docs/images/10-example-title.png)
@@ -172,6 +174,8 @@ Choose **ENTER THE SAGA**, your fighter and the CPU opponent, then **LET'S FIGHT
 *Griddle versus Rivet in the included six-fighter game. Arrow keys and ASDF control your fighter; the opponent is the CPU.*
 
 Serve the game over HTTP rather than double-clicking `index.html`. Share the complete ZIP or host the exported folder on a static web server.
+
+For a runtime-only public deployment, see the [static hosting guide](build/deploy/README.md). The live demo serves the game and its generated media; generation stays in your own ComfyUI workspace.
 
 ## Where things live
 

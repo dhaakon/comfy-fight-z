@@ -10,3 +10,14 @@ node_modules/
 # Accepted runtime sources under build/public/assets are versioned.
 __pycache__/
 *.pyc
+# Local deployment credentials and private keys must never be committed.
+*.pem
+*.key
+*.p12
+*.pfx
+.aws/
+credentials
+credentials.*
+aws-credentials*
+aws_credentials*
+*accessKeys*.csv
