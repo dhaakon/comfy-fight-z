@@ -4,6 +4,31 @@ const $ = id => document.getElementById(id);
 let manifest = null, audioManifest = null, videoManifest = null, files = new Map(), selectedFiles = [], builtFiles = null, busy = false;
 let fighters = [], stages = [], objectURLs = new Map(), sample = false;
 
+async function loadFactoryTemplate() {
+  try {
+    const response = await fetch('factory-template.json'); if (!response.ok) throw new Error('Factory template unavailable');
+    const factory = await response.json();
+    if (!Array.isArray(factory.characters) || !Array.isArray(factory.environments)) throw new Error('Factory template needs character and environment slots');
+    const referenceFor = slot => slot.reference || slot.sourceInput || slot.sourceImage;
+    const activeEnvironments = factory.environments.filter(slot => slot.enabled !== false && referenceFor(slot)).length;
+    $('factory-summary').textContent = `${factory.characters.length} character upload slots and ${factory.environments.length} environment upload slots. ${activeEnvironments} environment reference${activeEnvironments === 1 ? ' is' : 's are'} configured; optional slots stay off until you supply their reference images in ComfyUI.`;
+    for (const [id, slots, label] of [['factory-characters', factory.characters, 'CHARACTER'], ['factory-environments', factory.environments, 'ENVIRONMENT']]) {
+      const list = $(id); list.replaceChildren();
+      slots.forEach((slot, index) => {
+        const configured = Boolean(referenceFor(slot)), enabled = slot.enabled !== false && configured;
+        const card = make('article', `factory-slot${enabled ? '' : ' awaiting-reference'}`);
+        card.dataset.factorySlot = slot.id; card.dataset.enabled = String(enabled);
+        card.append(make('span', 'factory-slot-number', `${label} ${String(index + 1).padStart(2, '0')}`), make('strong', '', slot.name || slot.id), make('small', '', enabled ? 'REFERENCE CONFIGURED' : configured ? 'OPTIONAL · TURNED OFF' : 'OPTIONAL · UPLOAD A REFERENCE'));
+        list.append(card);
+      });
+    }
+    const workflow = new URL(factory.workflowURL || factory.workflow || 'templates/comfy-hackathon.json', location.href);
+    if (workflow.origin !== location.origin) throw new Error('Factory workflow must be served with this builder');
+    $('download-workflow').href = workflow.href; $('download-workflow').hidden = false;
+    $('factory-slots').hidden = false;
+  } catch (_) { $('factory-summary').textContent = 'Open the main ComfyUI factory workflow, supply your character and environment references, then return here with its generated assets.json and source folder.'; }
+}
+
 function message(text, type = '') { $('status').textContent = text; $('status').className = `status-message ${type}`; }
 function clearPreviews() { for (const url of objectURLs.values()) URL.revokeObjectURL(url); objectURLs.clear(); }
 function previewURL(src) { const file = files.get(src); if (!file) return null; if (!objectURLs.has(src)) objectURLs.set(src, URL.createObjectURL(file)); return objectURLs.get(src); }
@@ -22,7 +47,7 @@ function updateReadiness() {
   status.className = `readiness ${missing ? 'incomplete' : 'complete'}`;
   if (activeFighters.length < 2 || activeStages.length < 1) { status.textContent = 'Choose at least two fighters and one arena before building.'; status.className = 'readiness incomplete'; }
   else if (missing) status.textContent = `${missing} source image${missing === 1 ? ' is' : 's are'} missing. Choose the matching asset folder, or explicitly allow placeholders for a prototype.`;
-  else status.textContent = `All ${found} source images are available. Ready to process your game art.`;
+  else status.textContent = `All ${found} source images are available. Ready to build ${activeFighters.length} fighters and ${activeStages.length} playable environment${activeStages.length === 1 ? '' : 's'}.`;
   const audioCount = audioManifest?.assets.filter(a => files.has(a.src)).length || 0;
   status.textContent += audioManifest ? ` Audio: ${audioCount}/${audioManifest.assets.length} files available.` : ' Audio is not loaded; include audio.json in this folder to add music, voices and effects.';
   if (videoManifest) status.textContent += files.has(videoManifest.openingVideo.src) ? ` Opening film: ${videoManifest.openingVideo.duration} seconds.` : ' Opening film file is missing.';
@@ -60,12 +85,22 @@ function renderFighters() {
 function renderStages() {
   $('stage-list').replaceChildren();
   stages.forEach((stage, index) => {
-    const card = make('label', 'stage-editor'), checkbox = document.createElement('input'), name = document.createElement('input');
+    const card = make('article', 'stage-editor'), checkbox = document.createElement('input'), name = document.createElement('input');
+    const definition = manifest.game.stages.find(item => item.id === stage.id);
+    const generated = manifest.assets.find(asset => asset.stage === stage.id && asset.kind === 'stage' && files.has(asset.src));
+    const source = manifest.assets.find(asset => asset.stage === stage.id && asset.kind === 'source' && files.has(asset.src));
+    const preview = make('div', 'stage-preview');
+    if (generated || source) { const image = document.createElement('img'); image.src = previewURL((generated || source).src); image.alt = stage.name; preview.append(image); }
+    else preview.append(make('span', '', 'ENVIRONMENT ' + String(index + 1).padStart(2, '0')));
     checkbox.type = 'checkbox'; checkbox.checked = stage.enabled; checkbox.dataset.stageEnabled = stage.id; checkbox.setAttribute('aria-label', `Include ${stage.name}`);
+    checkbox.disabled = definition.enabled === false && !generated && !source;
     name.type = 'text'; name.value = stage.name; name.maxLength = 60; name.dataset.stageName = stage.id; name.setAttribute('aria-label', `Name for stage ${index + 1}`);
     checkbox.addEventListener('change', () => { stage.enabled = checkbox.checked; card.classList.toggle('disabled', !stage.enabled); invalidate(); });
     name.addEventListener('input', () => { stage.name = name.value; invalidate(); });
-    card.append(checkbox, name); $('stage-list').append(card);
+    const fields = make('div', 'stage-fields'); fields.append(checkbox, name);
+    card.classList.toggle('disabled', !stage.enabled);
+    card.append(preview, fields, make('p', 'stage-details', generated ? 'GENERATED ARENA READY' : source ? 'REFERENCE LOADED · ARENA ART PENDING' : definition.enabled === false ? 'OPTIONAL · REFERENCE NOT SUPPLIED' : 'CHOOSE THE ASSET FOLDER TO LOAD ART'));
+    $('stage-list').append(card);
   });
 }
 function renderAssets() {
@@ -111,7 +146,7 @@ function loadManifest(json, label, isExample = false) {
   const checked = validateManifest(json);
   clearPreviews(); manifest = checked; audioManifest = null; videoManifest = null; sample = isExample; files = new Map();
   fighters = manifest.game.fighters.map(f => ({ id: f.id, name: f.name, color: /^#[0-9a-f]{6}$/i.test(f.color) ? f.color : '#ff9c59', enabled: true }));
-  stages = manifest.game.stages.map(s => ({ id: s.id, name: s.name, enabled: true }));
+  stages = manifest.game.stages.map(s => ({ id: s.id, name: s.name, enabled: s.enabled !== false }));
   $('game-title').value = manifest.game.title; $('source-label').textContent = label; $('example-notice').hidden = !sample;
   $('customize-empty').hidden = true; $('customize-content').hidden = false; $('allow-placeholders').checked = false;
   invalidate(); renderFighters(); renderStages(); renderAssets();
@@ -124,7 +159,7 @@ async function selectManifest(file) {
   if (busy) throw new Error('Wait for the current build or export to finish before loading another project.');
   if (!file) return;
   loadManifest(await readJson(file), file.name);
-  if (selectedFiles.length) { files = mapFolder(selectedFiles); renderFighters(); renderAssets(); updateReadiness(); }
+  if (selectedFiles.length) { files = mapFolder(selectedFiles); renderFighters(); renderStages(); renderAssets(); updateReadiness(); }
   message('Asset map loaded. Choose its folder to provide the source artwork.', 'success');
 }
 async function selectFolder(fileList) {
@@ -147,7 +182,7 @@ async function selectFolder(fileList) {
   const mapped = mapFolder(chosen, base);
   clearPreviews(); files = mapped; selectedFiles = chosen;
   if (mapped.size) { sample = false; $('example-notice').hidden = true; }
-  invalidate(); renderFighters(); renderAssets();
+  invalidate(); renderFighters(); renderStages(); renderAssets();
   message(`${files.size} source files matched to the image, audio and opening-film maps.`, 'success');
 }
 function guard(fn) { return async (...args) => { try { await fn(...args); } catch (error) { message(error.message || String(error), 'error'); } }; }
@@ -156,6 +191,7 @@ function setBusy(value) {
   for (const control of document.querySelectorAll('input,select,#load-example,#build-button,#download-zip,#export-directory')) control.disabled = value;
   $('build-button').disabled = value || !manifest;
   if (!('showDirectoryPicker' in window)) $('export-directory').disabled = true;
+  if (!value && manifest) renderStages();
 }
 async function build() {
   if (!manifest || busy) return;
@@ -168,7 +204,7 @@ async function build() {
     builtFiles = await buildGame({ manifest, audioManifest, videoManifest, files, customization: custom, onProgress: ({done,total,message:text}) => { $('build-progress').value = total ? Math.round(done / total * 100) : 0; $('progress-label').textContent = text || 'Building game…'; } });
     const bytes = [...builtFiles.values()].reduce((sum, blob) => sum + blob.size, 0);
     $('build-progress').value = 100; $('progress-label').textContent = 'Game packaged. Choose an export below.';
-    $('build-summary').textContent = `${builtFiles.size} files · ${(bytes / 1024 / 1024).toFixed(1)} MB · ${custom.fighters.filter(f => f.enabled).length} fighters`;
+    $('build-summary').textContent = `${builtFiles.size} files · ${(bytes / 1024 / 1024).toFixed(1)} MB · ${custom.fighters.filter(f => f.enabled).length} fighters · ${custom.stages.filter(s => s.enabled).length} environments`;
     $('export-ready').hidden = false;
     message(custom.allowPlaceholders && manifest.assets.some(a => !files.has(a.src)) ? 'Prototype built with placeholder artwork. The exported game labels missing art.' : 'Your custom game is built and ready to export.', 'success');
   } finally { setBusy(false); }
@@ -219,3 +255,4 @@ for (const label of document.querySelectorAll('label.button[for]')) {
   label.tabIndex = 0; label.setAttribute('role', 'button');
   label.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); $(label.htmlFor).click(); } });
 }
+loadFactoryTemplate();

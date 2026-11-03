@@ -93,7 +93,7 @@ async function skipOptionalOpening(page) {
     await page.waitForFunction(() => window.FighterDebug.snapshot().fighters[1].x < 650);
     await page.click('[data-tab="lab"]'); assert.equal(await page.locator('#lab-view').isVisible(), true);
     assert.equal(await page.locator('#arena-view').isVisible(), false);
-    await page.click('[data-tab="arena"]'); await page.click('#back-select');
+    await page.click('[data-tab="arena"]'); await page.click('#resume-button'); await page.click('#back-select');
     fs.mkdirSync(path.join(root, 'build'), { recursive: true });
     await page.screenshot({ path: path.join(root, 'build/browser-smoke.png'), fullPage: true });
     assert.deepEqual(errors, []);

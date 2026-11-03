@@ -1,0 +1,919 @@
+{
+  "CFZProjectSettings": {
+    "input": {
+      "required": {
+        "root_directory": [
+          "STRING",
+          {
+            "default": "output/comfy-fighter-z",
+            "multiline": false
+          }
+        ],
+        "title": [
+          "STRING",
+          {
+            "default": "Comfy Fighter Z",
+            "multiline": false
+          }
+        ],
+        "subtitle": [
+          "STRING",
+          {
+            "default": "Higgsfield Open Source Saga",
+            "multiline": false
+          }
+        ],
+        "style": [
+          "STRING",
+          {
+            "advanced": true,
+            "default": "Original 1990s shonen battle-anime fighting-game artwork. Bold clean ink, angular expressive eyes, two-tone cel shading, dynamic clear silhouettes and vivid energy. Preserve the supplied person's visible features, clothing and accessories; no copied franchise characters or costumes.",
+            "multiline": true
+          }
+        ],
+        "ui_style": [
+          "STRING",
+          {
+            "advanced": true,
+            "default": "Bold anime arcade tournament interface, midnight blue, vivid yellow, cyan and magenta; clear areas for readable game controls.",
+            "multiline": true
+          }
+        ],
+        "stage_style": [
+          "STRING",
+          {
+            "advanced": true,
+            "default": "Anime fighting-game stage based closely on the uploaded venue. Wide side-on camera and clear level fighting floor; keep recognizable architecture and furniture behind the fight plane. No people, lettering, logos, floor emblems, borders or vignette.",
+            "multiline": true
+          }
+        ],
+        "model": [
+          "COMBO",
+          {
+            "advanced": true,
+            "default": "Gemini Nano Banana 2.1",
+            "multiselect": false,
+            "options": [
+              "Gemini Nano Banana 2.1",
+              "Nano Banana 2 (Gemini 3.1 Flash Image)"
+            ]
+          }
+        ],
+        "seed": [
+          "INT",
+          {
+            "advanced": true,
+            "default": 42,
+            "min": 0,
+            "max": 18446744073709551615
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "root_directory",
+        "title",
+        "subtitle",
+        "style",
+        "ui_style",
+        "stage_style",
+        "model",
+        "seed"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_PROJECT"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "project"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZProjectSettings",
+    "display_name": "CFZ Project Settings",
+    "description": "Shared output root and cloud model settings. Preparing this node makes no paid requests.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZCharacterDefinition": {
+    "input": {
+      "required": {
+        "name": [
+          "STRING",
+          {
+            "default": "New Fighter",
+            "multiline": false
+          }
+        ],
+        "description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "special_name": [
+          "STRING",
+          {
+            "default": "Energy Burst",
+            "multiline": false
+          }
+        ],
+        "special_description": [
+          "STRING",
+          {
+            "default": "A compact energy projectile released from the forward palm.",
+            "multiline": true
+          }
+        ],
+        "intro_tagline": [
+          "STRING",
+          {
+            "default": "This fight is mine.",
+            "multiline": false
+          }
+        ],
+        "color": [
+          "STRING",
+          {
+            "advanced": true,
+            "default": "#ffd23f",
+            "multiline": false
+          }
+        ],
+        "character_id": [
+          "STRING",
+          {
+            "advanced": true,
+            "default": "fighter",
+            "multiline": false
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "name",
+        "description",
+        "special_name",
+        "special_description",
+        "intro_tagline",
+        "color",
+        "character_id"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_CHARACTER"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "character"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZCharacterDefinition",
+    "display_name": "CFZ Character Definition",
+    "description": "",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZCharacterFactory": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "image": [
+          "COMBO",
+          {
+            "tooltip": "Upload a reference photo. Disabled environment slots may remain empty.",
+            "default": "",
+            "multiselect": false,
+            "options": [
+              ""
+            ],
+            "image_upload": true,
+            "image_folder": "input"
+          }
+        ],
+        "name": [
+          "STRING",
+          {
+            "default": "New Fighter",
+            "multiline": false
+          }
+        ],
+        "description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "special_name": [
+          "STRING",
+          {
+            "default": "Energy Burst",
+            "multiline": false
+          }
+        ],
+        "special_description": [
+          "STRING",
+          {
+            "default": "A compact energy projectile released from the forward palm.",
+            "multiline": true
+          }
+        ],
+        "intro_tagline": [
+          "STRING",
+          {
+            "default": "This fight is mine.",
+            "multiline": false
+          }
+        ],
+        "color": [
+          "STRING",
+          {
+            "advanced": true,
+            "default": "#ffd23f",
+            "multiline": false
+          }
+        ],
+        "character_id": [
+          "STRING",
+          {
+            "advanced": true,
+            "default": "fighter",
+            "multiline": false
+          }
+        ],
+        "include_sprite_sheets": [
+          "BOOLEAN",
+          {
+            "tooltip": "Disable only when connecting the identity and character outputs to three individual CFZ Sprite Sheet nodes.",
+            "advanced": true,
+            "default": true
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "image",
+        "name",
+        "description",
+        "special_name",
+        "special_description",
+        "intro_tagline",
+        "color",
+        "character_id",
+        "include_sprite_sheets"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE",
+      "IMAGE",
+      "CFZ_CHARACTER"
+    ],
+    "output_is_list": [
+      false,
+      false,
+      false
+    ],
+    "output_name": [
+      "bundle",
+      "identity",
+      "character"
+    ],
+    "output_tooltips": [
+      null,
+      null,
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZCharacterFactory",
+    "display_name": "CFZ Character Factory",
+    "description": "PAID cloud generation: 7 images (identity, three 2K sprite sheets, portrait, hero, cut-in). With sheets disabled: 4 images. Source photo is saved locally. Uses native Comfy cloud authentication.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZSpriteSheet": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "character": [
+          "CFZ_CHARACTER",
+          {}
+        ],
+        "reference": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "sheet": [
+          "COMBO",
+          {
+            "default": "sheet",
+            "multiselect": false,
+            "options": [
+              "sheet",
+              "sheetB",
+              "sheetC"
+            ]
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "character",
+        "reference",
+        "sheet"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "bundle",
+      "sheet_image"
+    ],
+    "output_tooltips": [
+      null,
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZSpriteSheet",
+    "display_name": "CFZ Sprite Sheet",
+    "description": "PAID cloud generation: exactly one 2K 3x3 sheet for nine named poses, saved with an exact mapped pose layout. Native cloud API; no local checkpoint.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZEnvironmentFactory": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "image": [
+          "COMBO",
+          {
+            "tooltip": "Upload a reference photo. Disabled environment slots may remain empty.",
+            "default": "",
+            "multiselect": false,
+            "options": [
+              ""
+            ],
+            "image_upload": true,
+            "image_folder": "input"
+          }
+        ],
+        "enabled": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ],
+        "name": [
+          "STRING",
+          {
+            "default": "New Environment",
+            "multiline": false
+          }
+        ],
+        "description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "stage_id": [
+          "STRING",
+          {
+            "advanced": true,
+            "default": "environment",
+            "multiline": false
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "image",
+        "enabled",
+        "name",
+        "description",
+        "stage_id"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "bundle",
+      "stage"
+    ],
+    "output_tooltips": [
+      null,
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZEnvironmentFactory",
+    "display_name": "CFZ Environment Factory",
+    "description": "PAID when enabled: one reference-driven stage image. Saves the source photo locally. Disabled slots stay empty and make zero cloud calls.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZSharedArtFactory": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "stage_reference": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "stage_reference"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "bundle"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZSharedArtFactory",
+    "display_name": "CFZ Shared Game Art",
+    "description": "PAID cloud generation: six images (title, selection, logo, HUD, icons and nine combat effects). Connect the stage image from an ENABLED environment factory as the reference.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZSaveMappedAsset": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "image": [
+          "IMAGE",
+          {}
+        ],
+        "asset_json": [
+          "STRING",
+          {
+            "multiline": false
+          }
+        ],
+        "members_json": [
+          "STRING",
+          {
+            "multiline": false
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "image",
+        "asset_json",
+        "members_json"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "DFZ_ASSET"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "asset"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZSaveMappedAsset",
+    "display_name": "CFZ Save Mapped Asset (internal)",
+    "description": "",
+    "python_module": null,
+    "category": "Comfy Fighter Z/internal",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZCollectBundle": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "members_json": [
+          "STRING",
+          {
+            "multiline": false
+          }
+        ],
+        "assets": [
+          "COMFY_AUTOGROW_V3",
+          {
+            "template": {
+              "input": {
+                "required": {
+                  "asset": [
+                    "DFZ_ASSET",
+                    {}
+                  ]
+                }
+              },
+              "prefix": "asset_",
+              "min": 0,
+              "max": 10
+            }
+          }
+        ],
+        "bundles": [
+          "COMFY_AUTOGROW_V3",
+          {
+            "template": {
+              "input": {
+                "required": {
+                  "bundle": [
+                    "CFZ_BUNDLE",
+                    {}
+                  ]
+                }
+              },
+              "prefix": "bundle_",
+              "min": 0,
+              "max": 10
+            }
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "members_json",
+        "assets",
+        "bundles"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "bundle"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZCollectBundle",
+    "display_name": "CFZ Collect Bundle (internal)",
+    "description": "",
+    "python_module": null,
+    "category": "Comfy Fighter Z/internal",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZExportGameAssets": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "bundles": [
+          "COMFY_AUTOGROW_V3",
+          {
+            "template": {
+              "input": {
+                "required": {
+                  "bundle": [
+                    "CFZ_BUNDLE",
+                    {}
+                  ]
+                }
+              },
+              "prefix": "bundle_",
+              "min": 1,
+              "max": 10
+            }
+          }
+        ]
+      },
+      "hidden": {
+        "prompt": [
+          "PROMPT"
+        ],
+        "extra_pnginfo": [
+          "EXTRA_PNGINFO"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "bundles"
+      ],
+      "hidden": [
+        "prompt",
+        "extra_pnginfo"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "STRING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "manifest_path"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZExportGameAssets",
+    "display_name": "CFZ Export Complete Game",
+    "description": "Writes assets.json after verifying every image, all 27 poses per fighter, shared art and active stages. At least two fighters and one environment are required.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": true,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZExportAssetPatch": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "bundles": [
+          "COMFY_AUTOGROW_V3",
+          {
+            "template": {
+              "input": {
+                "required": {
+                  "bundle": [
+                    "CFZ_BUNDLE",
+                    {}
+                  ]
+                }
+              },
+              "prefix": "bundle_",
+              "min": 1,
+              "max": 10
+            }
+          }
+        ]
+      },
+      "hidden": {
+        "prompt": [
+          "PROMPT"
+        ],
+        "extra_pnginfo": [
+          "EXTRA_PNGINFO"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "bundles"
+      ],
+      "hidden": [
+        "prompt",
+        "extra_pnginfo"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "STRING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "manifest_path"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZExportAssetPatch",
+    "display_name": "CFZ Export Asset Patch",
+    "description": "Writes a partial mapped assets.json in a separate patch root. Merge its asset IDs into a complete bundle before building a game; it never replaces a complete manifest.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": true,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  }
+}

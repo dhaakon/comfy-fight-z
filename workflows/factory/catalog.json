@@ -1,0 +1,30 @@
+{
+  "schema": "comfy-fighter-factory/v1",
+  "cloudOnly": true,
+  "config": "config/factory.json",
+  "workflow": "comfy-hackathon.json",
+  "advancedWorkflow": "workflows/advanced/full-image-graph.json",
+  "characterSlots": 6,
+  "environmentSlots": 3,
+  "defaults": {
+    "paidImages": 49,
+    "sourceSaves": 7,
+    "mappedAssets": 56,
+    "oneK": 29,
+    "twoK": 20,
+    "estimatedUSD": 2.834832
+  },
+  "allEnvironments": {
+    "paidImages": 51,
+    "sourceSaves": 9,
+    "mappedAssets": 60,
+    "oneK": 29,
+    "twoK": 22,
+    "estimatedUSD": 2.978976
+  },
+  "templates": [
+    "workflows/factory/character-factory.json",
+    "workflows/factory/sprite-sheet.json",
+    "workflows/factory/environment-factory.json"
+  ]
+}

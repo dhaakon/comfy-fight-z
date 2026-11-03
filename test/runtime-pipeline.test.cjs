@@ -47,7 +47,7 @@ function runtime() {
 }
 
 test('partial image/audio patches merge into the complete plan with current configuration', t => {
-  const fixture = setupMerge(t); merge({ base: fixture.base, patches: [fixture.patch], out: fixture.out });
+  const fixture = setupMerge(t); merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: fixture.out });
   const merged = JSON.parse(fs.readFileSync(path.join(fixture.out, 'assets.json'))), audio = JSON.parse(fs.readFileSync(path.join(fixture.out, 'audio.json')));
   assert.equal(merged.assets.length, imagePlan.jobs.length); assert.equal(audio.assets.length, audioPlan.jobs.length);
   assert.deepEqual(merged.game.expectedAssets, merged.assets.map(a => a.id)); assert.deepEqual(merged.game.expectedAudio, audio.assets.map(a => a.id));
@@ -63,7 +63,7 @@ test('opening video survives unrelated patches and adopts without image conversi
   const fixture = setupMerge(t), bytes = 'integrity fixture only; media decoding is covered in browser tests';
   const mapped = { schema: 'comfy-fighter-video/v1', root: '.', openingVideo: { id: 'opening', src: 'raw/opening.mp4', duration: 25, sha256: hash(bytes) } };
   write(path.join(fixture.base, 'video.json'), mapped); write(path.join(fixture.base, mapped.openingVideo.src), bytes);
-  merge({ base: fixture.base, patches: [fixture.patch], out: fixture.out });
+  merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: fixture.out });
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(fixture.out, 'video.json'))), mapped);
   assert.equal(hash(fs.readFileSync(path.join(fixture.out, mapped.openingVideo.src))), mapped.openingVideo.sha256);
   const target = path.join(fixture.folder, 'game'), manifest = runtime();
@@ -77,18 +77,18 @@ test('opening video survives unrelated patches and adopts without image conversi
 test('a pose-order change is rejected before a merged bundle is written', t => {
   const fixture = setupMerge(t), file = path.join(fixture.patch, 'assets.json'), manifest = JSON.parse(fs.readFileSync(file));
   manifest.assets[0].poses.reverse(); write(file, manifest);
-  assert.throws(() => merge({ base: fixture.base, patches: [fixture.patch], out: fixture.out }), /mapping disagrees.*poses/);
+  assert.throws(() => merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: fixture.out }), /mapping disagrees.*poses/);
   assert.equal(fs.existsSync(fixture.out), false);
 });
 
 test('merge rejects corrupt bytes and incomplete intro audio', t => {
   const fixture = setupMerge(t), record = fixture.updated.assets[0];
   write(path.join(fixture.patch, record.src), 'corrupt');
-  assert.throws(() => merge({ base: fixture.base, patches: [fixture.patch], out: fixture.out }), /hash mismatch/);
+  assert.throws(() => merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: fixture.out }), /hash mismatch/);
   write(path.join(fixture.patch, record.src), `patch: ${record.id}`);
   const audioFile = path.join(fixture.patch, 'audio.json'), audio = JSON.parse(fs.readFileSync(audioFile));
   audio.assets.pop(); write(audioFile, audio);
-  assert.throws(() => merge({ base: fixture.base, patches: [fixture.patch], out: fixture.out }), /audio set is incomplete/);
+  assert.throws(() => merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: fixture.out }), /audio set is incomplete/);
   assert.equal(fs.existsSync(fixture.out), false);
 });
 
@@ -98,9 +98,9 @@ test('merge rejects source junction escapes and output aliases to the base', t =
   fs.symlinkSync(outside, path.join(fixture.patch, 'linked'), 'junction');
   const file = path.join(fixture.patch, 'assets.json'), manifest = JSON.parse(fs.readFileSync(file));
   manifest.assets[0].src = 'linked/asset.png'; manifest.assets[0].sha256 = hash('external'); write(file, manifest);
-  assert.throws(() => merge({ base: fixture.base, patches: [fixture.patch], out: fixture.out }), /symlink escapes/);
+  assert.throws(() => merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: fixture.out }), /symlink escapes/);
   fs.symlinkSync(fixture.base, path.join(fixture.folder, 'base-alias'), 'junction');
-  assert.throws(() => merge({ base: fixture.base, patches: [fixture.patch], out: path.join(fixture.folder, 'base-alias/nested') }), /separate from source/);
+  assert.throws(() => merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: path.join(fixture.folder, 'base-alias/nested') }), /separate from source/);
 });
 
 test('runtime validation requires exact configured poses and all mapped artwork', () => {

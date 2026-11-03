@@ -20,6 +20,7 @@
     "test:browser": "npm run build && node test/browser-smoke.cjs",
     "test:builder": "npm run build && node test/builder-browser.cjs",
     "workflows:audio": "node tools/prepare-audio-workflows.cjs",
+    "workflows:factory": "node tools/prepare-factory-workflows.cjs",
     "adopt:game": "node tools/adopt-game.cjs",
     "merge:assets": "node tools/merge-bundles.cjs"
   },

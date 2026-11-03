@@ -1,0 +1,317 @@
+{
+  "id": "c2bc87de-5146-4be0-a7e8-03e598e3957b",
+  "revision": 0,
+  "last_node_id": 6,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CFZProjectSettings",
+      "title": "Separate sheet patch folder",
+      "pos": [
+        -510,
+        100
+      ],
+      "size": [
+        440,
+        470
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "links": [
+            1,
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZProjectSettings"
+      },
+      "widgets_values": [
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory\\sheet-allyson",
+        "Comfy Fighter Z",
+        "Higgsfield Open Source Saga",
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
+        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
+        "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "Gemini Nano Banana 2.1",
+        42
+      ],
+      "widgets_values_named": {
+        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory\\sheet-allyson",
+        "title": "Comfy Fighter Z",
+        "subtitle": "Higgsfield Open Source Saga",
+        "style": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
+        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
+        "stage_style": "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "model": "Gemini Nano Banana 2.1",
+        "seed": 42
+      }
+    },
+    {
+      "id": 2,
+      "type": "CFZCharacterDefinition",
+      "title": "Describe the accepted fighter",
+      "pos": [
+        0,
+        100
+      ],
+      "size": [
+        440,
+        450
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterDefinition"
+      },
+      "widgets_values": [
+        "Allyson",
+        "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "Node Burst",
+        "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
+        "Every node is connected. Your defeat is next.",
+        "#f4ef35",
+        "allyson"
+      ],
+      "widgets_values_named": {
+        "name": "Allyson",
+        "description": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "special_name": "Node Burst",
+        "special_description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
+        "intro_tagline": "Every node is connected. Your defeat is next.",
+        "color": "#f4ef35",
+        "character_id": "allyson"
+      }
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "title": "Upload accepted anime identity",
+      "pos": [
+        0,
+        640
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "allyson_reference-1d26e45e4d61a8dc.png",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "allyson_reference-1d26e45e4d61a8dc.png"
+      }
+    },
+    {
+      "id": 4,
+      "type": "CFZSpriteSheet",
+      "title": "Choose sheet A, B or C",
+      "pos": [
+        540,
+        330
+      ],
+      "size": [
+        420,
+        190
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 1
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 2
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "sheet_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSpriteSheet"
+      },
+      "widgets_values": [
+        "sheet"
+      ],
+      "widgets_values_named": {
+        "sheet": "sheet"
+      }
+    },
+    {
+      "id": 5,
+      "type": "CFZExportAssetPatch",
+      "title": "Export PARTIAL assets.json",
+      "pos": [
+        1060,
+        330
+      ],
+      "size": [
+        440,
+        340
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 4
+        },
+        {
+          "name": "bundles.bundle_0",
+          "type": "CFZ_BUNDLE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "manifest_path",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZExportAssetPatch"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 6,
+      "type": "MarkdownNote",
+      "pos": [
+        -510,
+        -230
+      ],
+      "size": [
+        1940,
+        220
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# One sprite sheet from an accepted identity\n\nUpload the accepted ANIME identity image, retain its exact outfit/description and choose sheet, sheetB or sheetC. One paid 2K image (~$0.072). Exports only the selected sheet in a PARTIAL assets.json, into its own root. Review nine complete right-facing poses, clear green cell margins and complete feet, then merge by asset ID into the complete source bundle."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      4,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      2,
+      2,
+      0,
+      4,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      2,
+      "IMAGE"
+    ],
+    [
+      4,
+      1,
+      0,
+      5,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      5,
+      4,
+      0,
+      5,
+      1,
+      "CFZ_BUNDLE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6,
+      "offset": [
+        570,
+        290
+      ]
+    }
+  },
+  "version": 0.4
+}

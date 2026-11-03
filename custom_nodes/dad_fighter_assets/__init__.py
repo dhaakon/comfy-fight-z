@@ -1,7 +1,7 @@
-"""Local file-output nodes for cloud-generated Dad Fighter artwork.
+"""Mapped asset saves and cloud-native Comfy Fighter Z factory nodes.
 
-These nodes never load models or submit generation requests. Connect cloud IMAGE
-outputs to DFZSaveAsset and all resulting records to DFZExportManifest.
+The DFZ save/export nodes are local-only. CFZ factories expand native ComfyUI
+cloud nodes; they never load checkpoints or implement a separate API client.
 Content-addressed PNG paths keep an earlier completed assets.json usable while
 a new run is still generating. Older raw images are retained intentionally.
 """
@@ -193,6 +193,26 @@ def _atomic_write(destination, content):
             os.unlink(temporary)
 
 
+def _save_image(image, directory, record):
+    pixels = image.detach().cpu().numpy() if hasattr(image, "detach") else np.asarray(image)
+    if pixels.ndim != 4 or pixels.shape[0] != 1 or pixels.shape[-1] not in (3, 4):
+        raise ValueError("Each mapped asset requires exactly one RGB or RGBA image (batch size 1)")
+    if pixels.shape[1] < 1 or pixels.shape[2] < 1 or not np.isfinite(pixels).all():
+        raise ValueError("Asset image has invalid dimensions or nonfinite pixels")
+    pixels = np.rint(np.clip(pixels[0], 0.0, 1.0) * 255.0).astype(np.uint8)
+    encoded = byte_io.BytesIO()
+    Image.fromarray(pixels).save(encoded, format="PNG")
+    content = encoded.getvalue()
+    digest = hashlib.sha256(content).hexdigest()
+    relative = f"raw/{record['id']}-{digest[:16]}.png"
+    destination = _inside(directory, relative)
+    if not destination.is_file() or destination.read_bytes() != content:
+        _atomic_write(destination, content)
+    record.update(src=relative, width=int(pixels.shape[1]), height=int(pixels.shape[0]),
+                  sha256=digest, _root=str(directory))
+    return record
+
+
 class DFZAssetRoot(io.ComfyNode):
     @classmethod
     def define_schema(cls):
@@ -232,23 +252,7 @@ class DFZSaveAsset(io.ComfyNode):
     def execute(cls, image, root, asset_json):
         directory, config = _root(root)
         record = _metadata(_json_object(asset_json, "asset_json"), config)
-        pixels = image.detach().cpu().numpy() if hasattr(image, "detach") else np.asarray(image)
-        if pixels.ndim != 4 or pixels.shape[0] != 1 or pixels.shape[-1] not in (3, 4):
-            raise ValueError("Each mapped asset requires exactly one RGB or RGBA image (batch size 1)")
-        if pixels.shape[1] < 1 or pixels.shape[2] < 1 or not np.isfinite(pixels).all():
-            raise ValueError("Asset image has invalid dimensions or nonfinite pixels")
-        pixels = np.rint(np.clip(pixels[0], 0.0, 1.0) * 255.0).astype(np.uint8)
-        encoded = byte_io.BytesIO()
-        Image.fromarray(pixels).save(encoded, format="PNG")
-        content = encoded.getvalue()
-        digest = hashlib.sha256(content).hexdigest()
-        relative = f"raw/{record['id']}-{digest[:16]}.png"
-        destination = _inside(directory, relative)
-        if not destination.is_file() or destination.read_bytes() != content:
-            _atomic_write(destination, content)
-        record.update(src=relative, width=int(pixels.shape[1]), height=int(pixels.shape[0]),
-                      sha256=digest, _root=str(directory))
-        return io.NodeOutput(record)
+        return io.NodeOutput(_save_image(image, directory, record))
 
 
 class DFZExportManifest(io.ComfyNode):
@@ -305,7 +309,7 @@ class DFZExportManifest(io.ComfyNode):
             if missing or extra:
                 raise ValueError(f"Incomplete asset bundle; missing: {', '.join(missing) or 'none'}; unexpected: {', '.join(extra) or 'none'}")
         manifest = {"schema": SCHEMA, "root": ".", "cloudOnly": True,
-                    "game": {field: config[field] for field in ("title", "fighters", "stages", "sheets")},
+                    "game": config,
                     "assets": records}
         destination = _inside(directory, "assets.json")
         _atomic_write(destination, (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
@@ -429,9 +433,12 @@ class DFZExportAudioManifest(io.ComfyNode):
         return io.NodeOutput(str(destination), ui=ui.PreviewText(str(destination)))
 
 
+from .factories import FACTORY_NODES
+
+
 class DadFighterAssetsExtension(ComfyExtension):
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
-        return [DFZAssetRoot, DFZSaveAsset, DFZExportManifest, DFZSaveAudio, DFZExportAudioManifest]
+        return [DFZAssetRoot, DFZSaveAsset, DFZExportManifest, DFZSaveAudio, DFZExportAudioManifest, *FACTORY_NODES]
 
 
 async def comfy_entrypoint() -> DadFighterAssetsExtension:

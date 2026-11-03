@@ -24,7 +24,7 @@
   // Read-only snapshot for move tuning and automated browser checks.
   window.FighterDebug = Object.freeze({
     snapshot: () => state ? JSON.parse(JSON.stringify(state)) : null,
-    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', introSlot: introScene?.slot ?? null, controls: 'arrows-asdf', humanPlayers: 1 })
+    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', introSlot: introScene?.slot ?? null, controls: 'arrows-asdf', humanPlayers: 1, stageId: manifest.stages[stageIndex]?.id })
   });
   const controls = [
     { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyF: 'special' }, {}
@@ -183,7 +183,7 @@
       const artType = document.createElement('span'); artType.className = 'art-type'; artType.textContent = generated ? 'CHARACTER ART' : source ? 'SOURCE REFERENCE / ANIME ART PENDING' : 'CHARACTER ART PENDING';
       plate.append(tag, title, artType); frame.append(plate);
       const body = document.createElement('div'); body.className = 'fighter-card-body';
-      const bio = document.createElement('p'); bio.className = 'fighter-bio'; bio.textContent = f.description ? f.description.split(/(?<=[.!?])\s+/).slice(0, 2).join(' ') : 'An original challenger enters The Yard.';
+      const bio = document.createElement('p'); bio.className = 'fighter-bio'; bio.textContent = f.description ? f.description.split(/(?<=[.!?])\s+/).slice(0, 2).join(' ') : 'An original challenger enters the arena.';
       const label = document.createElement('p'); label.className = 'move-title'; label.textContent = slot ? 'CPU SIGNATURE MOVE' : 'SIGNATURE MOVE / F';
       const move = document.createElement('strong'); move.className = 'move-name'; move.textContent = f.specialMove?.name || 'Energy Break';
       const detail = document.createElement('p'); detail.className = 'move-description'; detail.textContent = f.specialMove?.description ? f.specialMove.description.split(/(?<=[.!?])\s+/)[0] : 'Launch an energy attack. Costs 30 meter.';
@@ -207,13 +207,21 @@
     $('roster-count').textContent = manifest.fighters.length;
     const stage = manifest.stages[stageIndex], background = art(stage.src) || art(assetSource(stage.sourceImage));
     $('stage-label').textContent = stage.name.toUpperCase(); $('stage-name').textContent = stage.name.toUpperCase();
-    $('stage-art-status').textContent = art(stage.src) ? 'ONE PLAYABLE ARENA' : background ? 'SOURCE REFERENCE / ANIME STAGE PENDING' : 'STAGE ART PENDING';
+    $('fight-stage-label').textContent = `${manifest.title} / ${stage.name}`.toUpperCase();
+    $('result-stage-label').textContent = `${stage.name} HAS A CHAMPION`.toUpperCase();
+    $('title-stage-label').textContent = manifest.stages.length > 1 ? `${manifest.stages.length} ENVIRONMENTS / CHOOSE YOUR ARENA` : stage.id === 'yard' && stage.name === 'The Yard' ? 'THE YARD / NEW YORK CITY' : stage.name.toUpperCase();
+    const numberWord = count => ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'][count] || String(count);
+    const arenaCount = `${numberWord(manifest.stages.length)} ${manifest.stages.length === 1 ? 'ARENA' : 'ARENAS'}`;
+    const stageSummary = manifest.stages.length === 1 && stage.id === 'yard' && stage.name === 'The Yard' ? 'ONE YARD' : arenaCount;
+    $('title-roster-summary').textContent = `SINGLE PLAYER · ${numberWord(manifest.fighters.length)} ${manifest.fighters.length === 1 ? 'FIGHTER' : 'FIGHTERS'} · ${stageSummary}`;
+    $('selection-eyebrow').textContent = `ONE NIGHT. ${arenaCount}. YOUR FIGHTERS.`;
+    $('stage-art-status').textContent = art(stage.src) ? manifest.stages.length > 1 ? `${manifest.stages.length} PLAYABLE ENVIRONMENTS` : 'ONE PLAYABLE ARENA' : background ? 'SOURCE REFERENCE / ANIME STAGE PENDING' : 'STAGE ART PENDING';
     if (background) $('stage-thumb').style.backgroundImage = 'url("' + background.src + '")';
     const complete = selected.every(i => Object.values(manifest.fighters[i].poses || {}).filter(pose => art(pose.src)).length >= 27) && art(stage.src);
     $('placeholder-label').hidden = !!complete;
     $('placeholder-label').textContent = 'SPRITE ART PENDING / PROTOTYPE FIGHTERS';
     const count = manifest.fighters.reduce((total, f) => total + Object.values(f.poses || {}).filter(p => art(p.src)).length, 0);
-    $('selection-art-status').textContent = count ? count + ' generated fighter poses loaded. Select your matchup and enter The Yard.' : 'Reference preview: character photos and the Yard reference are loaded. Anime sprites and generated audio are pending; combat uses visible prototype fighters.';
+    $('selection-art-status').textContent = count ? count + ' generated fighter poses loaded. Select your matchup and enter ' + stage.name + '.' : 'Reference preview: source artwork is loaded. Generated art and audio are pending; combat uses visible prototype fighters.';
   }
   function renderGallery() {
     const counts = [
@@ -254,7 +262,8 @@
     $('versus-overlay').hidden = true; $('versus-one').textContent = fighterData(0).name; $('versus-two').textContent = fighterData(1).name;
     $('arena-label').textContent = 'SINGLE PLAYER / VS CPU';
     $('match-status').textContent = 'First to two rounds. Hold back to block.';
-    setMusic('yard_music'); showIntroduction(0); $('intro-skip').focus();
+    const stage = manifest.stages[stageIndex];
+    setMusic(manifest.audio?.[`${stage.id}_music`] ? `${stage.id}_music` : 'yard_music'); showIntroduction(0); $('intro-skip').focus();
   }
   function reset() {
     clearIntro();
@@ -412,7 +421,7 @@
           const winner = state.fighters[0].wins > state.fighters[1].wins ? 0 : 1;
           $('match-overlay').hidden = false; $('pause-button').hidden = true;
           const heading = $('match-overlay').querySelector('h2'); heading.textContent = fighterData(winner).name.toUpperCase() + ' WINS';
-          $('match-overlay').querySelector('p:not(.eyebrow)').textContent = `${state.fighters[0].wins} — ${state.fighters[1].wins} · The Yard has a champion.`;
+          $('match-overlay').querySelector('p:not(.eyebrow)').textContent = `${state.fighters[0].wins} — ${state.fighters[1].wins} · ${manifest.stages[stageIndex].name} has a champion.`;
           $('rematch-button').innerHTML = 'RUN IT BACK <span>→</span>'; $('match-status').textContent = 'Match complete. Play again or change your lineup.';
         }
       }
@@ -438,6 +447,8 @@
     $('saga-subtitle').textContent = manifest.subtitle || fallback.subtitle;
     manifest.fighters.forEach((f, i) => { $('fighter-one').append(makeOption(i, f.name)); $('fighter-two').append(makeOption(i, f.name)); }); $('fighter-two').value = selected[1];
     manifest.stages.forEach((s, i) => $('stage').append(makeOption(i, s.name)));
+    $('stage-control').hidden = manifest.stages.length < 2;
+    document.body.classList.toggle('multiple-stages', manifest.stages.length > 1);
     galleryEntries = findEntries();
     const references = [...manifest.fighters.filter(f => !f.hero && !f.portrait), ...manifest.stages.filter(s => !s.src)].map(item => assetSource(item.sourceImage)).filter(Boolean);
     await Promise.all([...galleryEntries.filter(e => e.group !== 'audio').map(e => e.src), ...references].map(imageLoad));

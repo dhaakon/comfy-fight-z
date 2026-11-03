@@ -32,21 +32,24 @@ Workflow files are recipes, not generation receipts. Consult `public/assets/prod
 
 | File | Purpose |
 | --- | --- |
-| `comfy-hackathon.json` | Complete factory: 49 cloud images, seven source saves, final `assets.json` |
+| `comfy-hackathon.json` | Compact factory: six character uploads, three environment slots, shared art and final `assets.json` |
 | `comfy-audio.json` | Complete 22-clip audio factory, final `audio.json` |
 | `comfy-opening.json` | 25-second Seedance 2.5 opening film with generated audio |
 | `config/game.json` | Title/subtitle, six fighters, descriptions, specials, intro taglines/stock voices, one stage and art style |
+| `config/factory.json` | Reusable factory defaults: six fighters, the Yard, two empty disabled environment slots |
+| `workflows/factory/` | Focused custom-node templates for a character pack, individual sheet or environment |
+| `workflows/advanced/full-image-graph.json` | Expanded 114-node factory for inspecting native generation/save nodes |
 | `workflows/packs/`, `workflows/jobs/` | Character/environment packs and individual asset workflows |
 | `assets/plan.json`, `assets/audio-plan.json` | Generated image and audio output contracts |
 | `tools/prepare-saga-patch.cjs` | Incremental art/intro refresh using accepted reference images |
 
-Edit `config/game.json`, then regenerate both complete workflows:
+Edit `config/factory.json` for factory defaults, or `config/game.json` for the released game's CLI/audio plans, then regenerate the workflows:
 
 ```powershell
 npm run workflows
 ```
 
-This writes workflow JSON, not generated media. Keep permanent prompt changes in the configuration or generator scripts; generated workflows are overwritten by this command.
+This writes workflow JSON, not generated media. Keep defaults in the configuration, compact factory prompt changes in `custom_nodes/dad_fighter_assets/factories.py`, and expanded workflow changes in the generator scripts. Reinstall the custom node pack and restart ComfyUI after editing its Python code; regenerated workflow files are overwritten by this command.
 
 Install the project-owned mapping nodes into your ComfyUI installation, then restart ComfyUI:
 
@@ -54,7 +57,9 @@ Install the project-owned mapping nodes into your ComfyUI installation, then res
 npm run nodes:install -- --comfy-root "C:\path\to\ComfyUI"
 ```
 
-Upload the seven photos from `ref/` using the `sourceInput` filenames in the config. Open `comfy-hackathon.json` through ComfyUI/MCP, set its **Asset Root** to an absolute output directory, and validate it against the live node catalog. Set the same root in `comfy-audio.json`. Source photos produce accepted anime identities; those feed each fighter's three 3x3 sheets, portrait, hero illustration and special cut-in. The stage photo produces The Yard.
+Open `comfy-hackathon.json` through ComfyUI/MCP and set **Project Settings** to a new absolute output directory. The twelve functional nodes include six character cards and three environment cards with image upload controls. Upload photos and edit names, descriptions, specials and intro taglines directly on the cards. The Yard is populated; environment slots 2 and 3 stay empty and disabled until you supply their own references. Validate against the live node catalog before running. Source photos feed anime identities, then all 27 poses and selection art. Shared Art creates menus, logo, HUD and effects; the exporter writes their mappings and your edited metadata.
+
+The default factory expands into 49 paid image calls and seven source saves (56 mapped assets). Enabling all three environments produces 51 paid images and nine source saves (60 records), without changing the installed one-Yard game. Audio remains a separate workflow; set its output root to match the image bundle. See [the compact factory guide](docs/workflow-factory.md) for costs, individual-sheet workflows and browser downloads.
 
 All model inference uses cloud/API nodes: Gemini Nano Banana 2.1 images, Seedance 2.5 video, Sonilo music, and ElevenLabs effects and stock voices. No local model weights or voice clones are used. Generating costs credits and requires spending authorization; preparation, validation, file processing and game builds do not. Check live prices before submitting a batch.
 
@@ -86,14 +91,14 @@ npm run build:bundle -- --bundle "C:\absolute\complete-bundle" --out "C:\absolut
 
 This requires Playwright Chromium and produces `game/`, `game.zip`, screenshots and `build-test.json`. Extract the ZIP and run `npm start` inside it; no dependencies or ComfyUI connection are needed. Serve the game over HTTP, not `file://`.
 
-To install a verified export into this repository's existing game:
+To install a verified export matching this repository's canonical six fighters and one Yard stage into the existing game:
 
 ```powershell
 npm run adopt:game -- --game "C:\absolute\new-export-folder\game"
 npm run build
 ```
 
-Adoption requires FFmpeg on `PATH`. It converts runtime media to WebP/MP3, preserves the game code and retains the previous asset folder under `build/adopt-*/previous-assets`. Keep the portable source bundle separately: optimized runtime media does not replace the original generation records.
+Adoption requires FFmpeg on `PATH`. It validates against `config/game.json`, converts runtime media to WebP/MP3, preserves the game code and retains the previous asset folder under `build/adopt-*/previous-assets`. Custom rosters or two/three-environment games should use the builder or `build:bundle` to produce independent game directories/ZIPs; the canonical adoption command does not install arbitrary custom bundles. Keep the portable source bundle separately: optimized runtime media does not replace the original generation records.
 
 `npm run build -- --regenerate-assets` explicitly invokes the older local image-processing pipeline; use it only when intentionally rebuilding from its staged inputs. A normal build preserves the installed runtime.
 

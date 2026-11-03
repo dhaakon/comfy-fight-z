@@ -152,11 +152,12 @@ function prepare() {
   for(const job of jobs) write(job.workflow,makeGraph([job],config,template,{externalReference:!!job.reference,title:job.id}));
   for(const fighter of config.fighters) write(`workflows/packs/${fighter.id}.json`,makeGraph(jobs.filter(j=>j.fighter===fighter.id),config,template,{title:`${fighter.name}: full art pack`}));
   write('workflows/packs/environment-and-ui.json',makeGraph(jobs.filter(j=>!j.fighter),config,template,{title:'Stages, menus, UI and effects'}));
-  write('comfy-hackathon.json',makeBundleGraph(jobs,config,template));
+  write('workflows/advanced/full-image-graph.json',makeBundleGraph(jobs,config,template));
   write('public/builder/example-assets.json',{schema:'dad-fighter-assets/v1',root:'.',cloudOnly:true,game:{title:config.title,subtitle:config.subtitle,fighters:config.fighters,stages:config.stages,sheets:config.sheets},assets:jobs.map(job=>({...assetRecord(job),src:`raw/${job.id}.png`}))});
   write('simple-image-generation.json',makeGraph(jobs.filter(j=>j.fighter===config.fighters[0].id && ['source','reference'].includes(j.kind)),config,template,{title:'Start here: source photo to first anime fighter'}));
   write('workflows/catalog.json',{model:config.model,cloudOnly:true,paid:true,paidGenerations:jobs.filter(j=>j.kind!=='source').length,mappedAssets:jobs.length,sourceReferences:jobs.filter(j=>j.kind==='source').map(j=>({id:j.id,sourceImage:j.sourceImage,sourceInput:j.sourceInput,sha256:createHash('sha256').update(fs.readFileSync(path.join(ROOT,j.sourceImage))).digest('hex')})),jobs:jobs.map(({id,kind,workflow,reference,output,sourceImage,sourceInput})=>({id,kind,workflow,reference,output,sourceImage,sourceInput})),packs:[...config.fighters.map(f=>`workflows/packs/${f.id}.json`),'workflows/packs/environment-and-ui.json']});
   console.log(`Prepared ${jobs.length} individual workflows (${jobs.filter(j=>j.kind!=='source').length} cloud generations, ${jobs.filter(j=>j.kind==='source').length} source-image saves) and ${config.fighters.length+1} packs. No images generated or credits spent.`);
+  require('./prepare-factory-workflows.cjs').prepareFactory();
 }
 if(require.main===module) prepare();
 module.exports={makeJobs,makeGraph,makeBundleGraph,assetRecord,POSES};

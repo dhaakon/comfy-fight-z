@@ -17,6 +17,7 @@ if os.environ.get("COMFYUI_ROOT"):
 MODULE = Path(__file__).resolve().parents[1] / "custom_nodes" / "dad_fighter_assets" / "__init__.py"
 spec = importlib.util.spec_from_file_location("dad_fighter_assets", MODULE)
 nodes = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = nodes
 spec.loader.exec_module(nodes)
 
 
@@ -157,7 +158,7 @@ class BundleNodesTests(unittest.TestCase):
 
     def test_v3_extension_exposes_dynamic_asset_collection(self):
         extension = asyncio.run(nodes.comfy_entrypoint())
-        self.assertEqual(asyncio.run(extension.get_node_list()),
+        self.assertEqual(asyncio.run(extension.get_node_list())[:5],
                          [nodes.DFZAssetRoot, nodes.DFZSaveAsset, nodes.DFZExportManifest, nodes.DFZSaveAudio, nodes.DFZExportAudioManifest])
         inputs = nodes.DFZExportManifest.INPUT_TYPES()["required"]
         self.assertEqual(inputs["assets"][0], "COMFY_AUTOGROW_V3")

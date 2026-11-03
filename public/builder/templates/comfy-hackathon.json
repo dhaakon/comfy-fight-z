@@ -1,0 +1,1050 @@
+{
+  "id": "639ad575-5713-40cb-a53e-5f33127b2774",
+  "revision": 0,
+  "last_node_id": 14,
+  "last_link_id": 22,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CFZProjectSettings",
+      "title": "Project settings | output folder + game title",
+      "pos": [
+        -510,
+        120
+      ],
+      "size": [
+        450,
+        470
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "links": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZProjectSettings"
+      },
+      "widgets_values": [
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory",
+        "Comfy Fighter Z",
+        "Higgsfield Open Source Saga",
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
+        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
+        "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "Gemini Nano Banana 2.1",
+        42
+      ],
+      "widgets_values_named": {
+        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory",
+        "title": "Comfy Fighter Z",
+        "subtitle": "Higgsfield Open Source Saga",
+        "style": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
+        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
+        "stage_style": "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "model": "Gemini Nano Banana 2.1",
+        "seed": 42
+      }
+    },
+    {
+      "id": 2,
+      "type": "CFZCharacterFactory",
+      "title": "Character 1 | Allyson",
+      "pos": [
+        0,
+        120
+      ],
+      "size": [
+        440,
+        720
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "identity",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterFactory"
+      },
+      "widgets_values": [
+        "allyson.jpeg",
+        "Allyson",
+        "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "Node Burst",
+        "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
+        "Every node is connected. Your defeat is next.",
+        "#f4ef35",
+        "allyson",
+        true
+      ],
+      "widgets_values_named": {
+        "image": "allyson.jpeg",
+        "name": "Allyson",
+        "description": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "special_name": "Node Burst",
+        "special_description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
+        "intro_tagline": "Every node is connected. Your defeat is next.",
+        "color": "#f4ef35",
+        "character_id": "allyson",
+        "include_sprite_sheets": true
+      },
+      "color": "#26374b",
+      "bgcolor": "#172334"
+    },
+    {
+      "id": 3,
+      "type": "CFZCharacterFactory",
+      "title": "Character 2 | Deep",
+      "pos": [
+        490,
+        120
+      ],
+      "size": [
+        440,
+        720
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "identity",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterFactory"
+      },
+      "widgets_values": [
+        "deep.jpeg",
+        "Deep",
+        "The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "Queue Breaker",
+        "Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.",
+        "You are in my queue now.",
+        "#41d7ff",
+        "deep",
+        true
+      ],
+      "widgets_values_named": {
+        "image": "deep.jpeg",
+        "name": "Deep",
+        "description": "The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "special_name": "Queue Breaker",
+        "special_description": "Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.",
+        "intro_tagline": "You are in my queue now.",
+        "color": "#41d7ff",
+        "character_id": "deep",
+        "include_sprite_sheets": true
+      },
+      "color": "#26374b",
+      "bgcolor": "#172334"
+    },
+    {
+      "id": 4,
+      "type": "CFZCharacterFactory",
+      "title": "Character 3 | Georgia",
+      "pos": [
+        980,
+        120
+      ],
+      "size": [
+        440,
+        720
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "identity",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterFactory"
+      },
+      "widgets_values": [
+        "georgia.jpeg",
+        "Georgia",
+        "The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "Golden Cascade",
+        "Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell.",
+        "Catch the light. Feel the impact.",
+        "#ff6ccf",
+        "georgia",
+        true
+      ],
+      "widgets_values_named": {
+        "image": "georgia.jpeg",
+        "name": "Georgia",
+        "description": "The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "special_name": "Golden Cascade",
+        "special_description": "Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell.",
+        "intro_tagline": "Catch the light. Feel the impact.",
+        "color": "#ff6ccf",
+        "character_id": "georgia",
+        "include_sprite_sheets": true
+      },
+      "color": "#26374b",
+      "bgcolor": "#172334"
+    },
+    {
+      "id": 5,
+      "type": "CFZCharacterFactory",
+      "title": "Character 4 | Matt",
+      "pos": [
+        0,
+        940
+      ],
+      "size": [
+        440,
+        720
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "identity",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterFactory"
+      },
+      "widgets_values": [
+        "matt.jpeg",
+        "Matt",
+        "The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "Latent Rush",
+        "Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs.",
+        "Less waiting. More fighting.",
+        "#ff9248",
+        "matt",
+        true
+      ],
+      "widgets_values_named": {
+        "image": "matt.jpeg",
+        "name": "Matt",
+        "description": "The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "special_name": "Latent Rush",
+        "special_description": "Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs.",
+        "intro_tagline": "Less waiting. More fighting.",
+        "color": "#ff9248",
+        "character_id": "matt",
+        "include_sprite_sheets": true
+      },
+      "color": "#26374b",
+      "bgcolor": "#172334"
+    },
+    {
+      "id": 6,
+      "type": "CFZCharacterFactory",
+      "title": "Character 5 | The Photographer",
+      "pos": [
+        490,
+        940
+      ],
+      "size": [
+        440,
+        720
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            17
+          ]
+        },
+        {
+          "name": "identity",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterFactory"
+      },
+      "widgets_values": [
+        "photographer.jpeg",
+        "The Photographer",
+        "The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "Flash Frame",
+        "The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering.",
+        "Hold still. This knockout needs a close-up.",
+        "#b397ff",
+        "photographer",
+        true
+      ],
+      "widgets_values_named": {
+        "image": "photographer.jpeg",
+        "name": "The Photographer",
+        "description": "The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "special_name": "Flash Frame",
+        "special_description": "The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering.",
+        "intro_tagline": "Hold still. This knockout needs a close-up.",
+        "color": "#b397ff",
+        "character_id": "photographer",
+        "include_sprite_sheets": true
+      },
+      "color": "#26374b",
+      "bgcolor": "#172334"
+    },
+    {
+      "id": 7,
+      "type": "CFZCharacterFactory",
+      "title": "Character 6 | Rob",
+      "pos": [
+        980,
+        940
+      ],
+      "size": [
+        440,
+        720
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            18
+          ]
+        },
+        {
+          "name": "identity",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterFactory"
+      },
+      "widgets_values": [
+        "rob.jpeg",
+        "Rob",
+        "The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "Compile Crash",
+        "Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell.",
+        "Build passed. You are going down.",
+        "#6de9c9",
+        "rob",
+        true
+      ],
+      "widgets_values_named": {
+        "image": "rob.jpeg",
+        "name": "Rob",
+        "description": "The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "special_name": "Compile Crash",
+        "special_description": "Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell.",
+        "intro_tagline": "Build passed. You are going down.",
+        "color": "#6de9c9",
+        "character_id": "rob",
+        "include_sprite_sheets": true
+      },
+      "color": "#26374b",
+      "bgcolor": "#172334"
+    },
+    {
+      "id": 8,
+      "type": "CFZEnvironmentFactory",
+      "title": "Environment 1 | The Yard",
+      "pos": [
+        0,
+        1780
+      ],
+      "size": [
+        440,
+        540
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "stage",
+          "type": "IMAGE",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZEnvironmentFactory"
+      },
+      "widgets_values": [
+        "level-theyard.jpeg",
+        true,
+        "The Yard",
+        "The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard.",
+        "yard"
+      ],
+      "widgets_values_named": {
+        "image": "level-theyard.jpeg",
+        "enabled": true,
+        "name": "The Yard",
+        "description": "The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard.",
+        "stage_id": "yard"
+      },
+      "color": "#29463d",
+      "bgcolor": "#1b2927"
+    },
+    {
+      "id": 9,
+      "type": "CFZEnvironmentFactory",
+      "title": "Environment 2 | upload to enable",
+      "pos": [
+        490,
+        1780
+      ],
+      "size": [
+        440,
+        540
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            20
+          ]
+        },
+        {
+          "name": "stage",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZEnvironmentFactory"
+      },
+      "widgets_values": [
+        "",
+        false,
+        "Environment 2",
+        "",
+        "environment-2"
+      ],
+      "widgets_values_named": {
+        "image": "",
+        "enabled": false,
+        "name": "Environment 2",
+        "description": "",
+        "stage_id": "environment-2"
+      },
+      "color": "#3a3e46",
+      "bgcolor": "#1b2927"
+    },
+    {
+      "id": 10,
+      "type": "CFZEnvironmentFactory",
+      "title": "Environment 3 | upload to enable",
+      "pos": [
+        980,
+        1780
+      ],
+      "size": [
+        440,
+        540
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "stage",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZEnvironmentFactory"
+      },
+      "widgets_values": [
+        "",
+        false,
+        "Environment 3",
+        "",
+        "environment-3"
+      ],
+      "widgets_values_named": {
+        "image": "",
+        "enabled": false,
+        "name": "Environment 3",
+        "description": "",
+        "stage_id": "environment-3"
+      },
+      "color": "#3a3e46",
+      "bgcolor": "#1b2927"
+    },
+    {
+      "id": 11,
+      "type": "CFZSharedArtFactory",
+      "title": "Shared art | menus, logo, HUD + effects",
+      "pos": [
+        1510,
+        620
+      ],
+      "size": [
+        440,
+        160
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 10
+        },
+        {
+          "name": "stage_reference",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSharedArtFactory"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 12,
+      "type": "CFZExportGameAssets",
+      "title": "Export complete assets.json",
+      "pos": [
+        1510,
+        970
+      ],
+      "size": [
+        440,
+        340
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 12
+        },
+        {
+          "name": "bundles.bundle_0",
+          "type": "CFZ_BUNDLE",
+          "link": 13
+        },
+        {
+          "name": "bundles.bundle_1",
+          "type": "CFZ_BUNDLE",
+          "link": 14
+        },
+        {
+          "name": "bundles.bundle_2",
+          "type": "CFZ_BUNDLE",
+          "link": 15
+        },
+        {
+          "name": "bundles.bundle_3",
+          "type": "CFZ_BUNDLE",
+          "link": 16
+        },
+        {
+          "name": "bundles.bundle_4",
+          "type": "CFZ_BUNDLE",
+          "link": 17
+        },
+        {
+          "name": "bundles.bundle_5",
+          "type": "CFZ_BUNDLE",
+          "link": 18
+        },
+        {
+          "name": "bundles.bundle_6",
+          "type": "CFZ_BUNDLE",
+          "link": 19
+        },
+        {
+          "name": "bundles.bundle_7",
+          "type": "CFZ_BUNDLE",
+          "link": 20
+        },
+        {
+          "name": "bundles.bundle_8",
+          "type": "CFZ_BUNDLE",
+          "link": 21
+        },
+        {
+          "name": "bundles.bundle_9",
+          "type": "CFZ_BUNDLE",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "manifest_path",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZExportGameAssets"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 13,
+      "type": "MarkdownNote",
+      "pos": [
+        -510,
+        -260
+      ],
+      "size": [
+        1940,
+        290
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# Comfy Fighter Z\n## Upload photos. Describe fighters. Build your game.\n\nSix character cards generate references, three pose sheets, portraits, heroes and cut-ins. Environment 1 supplies the title/select venue; slots 2 and 3 stay empty until uploaded and enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 49 images + 7 source saves = 56 mapped assets (~$2.835). All three environments: 51 images / 60 records (~$2.979). Review current native prices before running. Audio/video are separate workflows. Opening this graph spends nothing."
+      ]
+    },
+    {
+      "id": 14,
+      "type": "MarkdownNote",
+      "pos": [
+        1510,
+        1470
+      ],
+      "size": [
+        440,
+        440
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "## Before you run\n\n1. Install custom_nodes/dad_fighter_assets and restart ComfyUI.\n2. Upload each reference on its card; edit descriptions, specials and taglines.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse workflows/factory/ for one character, one sheet or one environment. The full native graph is preserved under workflows/advanced/."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      2,
+      1,
+      0,
+      3,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      3,
+      1,
+      0,
+      4,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      4,
+      1,
+      0,
+      5,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      5,
+      1,
+      0,
+      6,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      6,
+      1,
+      0,
+      7,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      7,
+      1,
+      0,
+      8,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      8,
+      1,
+      0,
+      9,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      9,
+      1,
+      0,
+      10,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      10,
+      1,
+      0,
+      11,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      11,
+      8,
+      1,
+      11,
+      1,
+      "IMAGE"
+    ],
+    [
+      12,
+      1,
+      0,
+      12,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      13,
+      2,
+      0,
+      12,
+      1,
+      "CFZ_BUNDLE"
+    ],
+    [
+      14,
+      3,
+      0,
+      12,
+      2,
+      "CFZ_BUNDLE"
+    ],
+    [
+      15,
+      4,
+      0,
+      12,
+      3,
+      "CFZ_BUNDLE"
+    ],
+    [
+      16,
+      5,
+      0,
+      12,
+      4,
+      "CFZ_BUNDLE"
+    ],
+    [
+      17,
+      6,
+      0,
+      12,
+      5,
+      "CFZ_BUNDLE"
+    ],
+    [
+      18,
+      7,
+      0,
+      12,
+      6,
+      "CFZ_BUNDLE"
+    ],
+    [
+      19,
+      8,
+      0,
+      12,
+      7,
+      "CFZ_BUNDLE"
+    ],
+    [
+      20,
+      9,
+      0,
+      12,
+      8,
+      "CFZ_BUNDLE"
+    ],
+    [
+      21,
+      10,
+      0,
+      12,
+      9,
+      "CFZ_BUNDLE"
+    ],
+    [
+      22,
+      11,
+      0,
+      12,
+      10,
+      "CFZ_BUNDLE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Six character upload slots",
+      "bounding": [
+        -25,
+        45,
+        1470,
+        1620
+      ],
+      "color": "#4b6387",
+      "font_size": 26,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "Up to three environment upload slots",
+      "bounding": [
+        -25,
+        1705,
+        1470,
+        675
+      ],
+      "color": "#4b7f6d",
+      "font_size": 26,
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "Shared artwork + mapped export",
+      "bounding": [
+        1485,
+        545,
+        490,
+        830
+      ],
+      "color": "#826947",
+      "font_size": 26,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.36,
+      "offset": [
+        610,
+        350
+      ]
+    }
+  },
+  "version": 0.4
+}

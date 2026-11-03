@@ -1,0 +1,514 @@
+{
+  "id": "faea460f-d456-47b8-a50a-dd7e797409e5",
+  "revision": 0,
+  "last_node_id": 7,
+  "last_link_id": 15,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CFZProjectSettings",
+      "title": "Separate character patch folder",
+      "pos": [
+        -510,
+        110
+      ],
+      "size": [
+        440,
+        470
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "links": [
+            1,
+            2,
+            5,
+            8,
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZProjectSettings"
+      },
+      "widgets_values": [
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory\\character-allyson",
+        "Comfy Fighter Z",
+        "Higgsfield Open Source Saga",
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
+        "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
+        "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "Gemini Nano Banana 2.1",
+        42
+      ],
+      "widgets_values_named": {
+        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-factory\\character-allyson",
+        "title": "Comfy Fighter Z",
+        "subtitle": "Higgsfield Open Source Saga",
+        "style": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
+        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
+        "stage_style": "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+        "model": "Gemini Nano Banana 2.1",
+        "seed": 42
+      }
+    },
+    {
+      "id": 2,
+      "type": "CFZCharacterFactory",
+      "title": "Upload character | identity + selection art",
+      "pos": [
+        0,
+        110
+      ],
+      "size": [
+        440,
+        720
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "identity",
+          "type": "IMAGE",
+          "links": [
+            4,
+            7,
+            10
+          ]
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": [
+            3,
+            6,
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterFactory"
+      },
+      "widgets_values": [
+        "allyson.jpeg",
+        "Allyson",
+        "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "Node Burst",
+        "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
+        "Every node is connected. Your defeat is next.",
+        "#f4ef35",
+        "allyson",
+        false
+      ],
+      "widgets_values_named": {
+        "image": "allyson.jpeg",
+        "name": "Allyson",
+        "description": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "special_name": "Node Burst",
+        "special_description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.",
+        "intro_tagline": "Every node is connected. Your defeat is next.",
+        "color": "#f4ef35",
+        "character_id": "allyson",
+        "include_sprite_sheets": false
+      }
+    },
+    {
+      "id": 3,
+      "type": "CFZSpriteSheet",
+      "title": "Sprite sheet A | nine poses",
+      "pos": [
+        540,
+        110
+      ],
+      "size": [
+        420,
+        170
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 2
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 3
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "sheet_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSpriteSheet"
+      },
+      "widgets_values": [
+        "sheet"
+      ],
+      "widgets_values_named": {
+        "sheet": "sheet"
+      }
+    },
+    {
+      "id": 4,
+      "type": "CFZSpriteSheet",
+      "title": "Sprite sheet B | nine poses",
+      "pos": [
+        540,
+        345
+      ],
+      "size": [
+        420,
+        170
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 5
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 6
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "sheet_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSpriteSheet"
+      },
+      "widgets_values": [
+        "sheetB"
+      ],
+      "widgets_values_named": {
+        "sheet": "sheetB"
+      }
+    },
+    {
+      "id": 5,
+      "type": "CFZSpriteSheet",
+      "title": "Sprite sheet C | nine poses",
+      "pos": [
+        540,
+        580
+      ],
+      "size": [
+        420,
+        170
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 8
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 9
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "sheet_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSpriteSheet"
+      },
+      "widgets_values": [
+        "sheetC"
+      ],
+      "widgets_values_named": {
+        "sheet": "sheetC"
+      }
+    },
+    {
+      "id": 6,
+      "type": "CFZExportAssetPatch",
+      "title": "Export PARTIAL assets.json",
+      "pos": [
+        1060,
+        250
+      ],
+      "size": [
+        440,
+        340
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 11
+        },
+        {
+          "name": "bundles.bundle_0",
+          "type": "CFZ_BUNDLE",
+          "link": 12
+        },
+        {
+          "name": "bundles.bundle_1",
+          "type": "CFZ_BUNDLE",
+          "link": 13
+        },
+        {
+          "name": "bundles.bundle_2",
+          "type": "CFZ_BUNDLE",
+          "link": 14
+        },
+        {
+          "name": "bundles.bundle_3",
+          "type": "CFZ_BUNDLE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "manifest_path",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZExportAssetPatch"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 7,
+      "type": "MarkdownNote",
+      "pos": [
+        -510,
+        -230
+      ],
+      "size": [
+        1940,
+        220
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# One complete character pack\n\nUpload the source photo and edit this fighter. The character factory generates identity, portrait, hero and cut-in; its internal sheets are OFF. The three visible sheet nodes reuse that identity. Seven paid images (~$0.408) + one local source save. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      2,
+      1,
+      0,
+      3,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      3,
+      2,
+      2,
+      3,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      4,
+      2,
+      1,
+      3,
+      2,
+      "IMAGE"
+    ],
+    [
+      5,
+      1,
+      0,
+      4,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      6,
+      2,
+      2,
+      4,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      7,
+      2,
+      1,
+      4,
+      2,
+      "IMAGE"
+    ],
+    [
+      8,
+      1,
+      0,
+      5,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      9,
+      2,
+      2,
+      5,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      10,
+      2,
+      1,
+      5,
+      2,
+      "IMAGE"
+    ],
+    [
+      11,
+      1,
+      0,
+      6,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      12,
+      2,
+      0,
+      6,
+      1,
+      "CFZ_BUNDLE"
+    ],
+    [
+      13,
+      3,
+      0,
+      6,
+      2,
+      "CFZ_BUNDLE"
+    ],
+    [
+      14,
+      4,
+      0,
+      6,
+      3,
+      "CFZ_BUNDLE"
+    ],
+    [
+      15,
+      5,
+      0,
+      6,
+      4,
+      "CFZ_BUNDLE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.65,
+      "offset": [
+        570,
+        290
+      ]
+    }
+  },
+  "version": 0.4
+}

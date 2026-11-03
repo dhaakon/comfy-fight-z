@@ -20,10 +20,10 @@
         <div class="title-backdrop" id="title-backdrop"></div><div class="title-speed-lines" aria-hidden="true"></div>
         <div id="title-fighters" class="title-fighters" aria-hidden="true"></div>
         <div class="title-copy"><p class="eyebrow">SIX CHALLENGERS. ONE OPEN SOURCE SHOWDOWN.</p><h1 id="title-wordmark">COMFY FIGHTER <em>Z</em></h1><p id="saga-subtitle" class="saga-subtitle">HIGGSFIELD OPEN SOURCE SAGA</p><div class="title-rule" aria-hidden="true"></div><p class="title-pitch">Build your power. Break the limit.</p><button id="title-start" class="primary title-start" disabled>ENTER THE SAGA <span>→</span></button><p id="title-load-status" class="title-hint">PREPARING THE ARENA…</p></div>
-        <button id="opening-replay" class="text-button opening-replay" hidden>↻ REPLAY OPENING</button><div class="title-bottom"><span>THE YARD / NEW YORK CITY</span><span>SINGLE PLAYER · SIX FIGHTERS · ONE YARD</span></div>
+        <button id="opening-replay" class="text-button opening-replay" hidden>↻ REPLAY OPENING</button><div class="title-bottom"><span id="title-stage-label">THE YARD / NEW YORK CITY</span><span id="title-roster-summary">SINGLE PLAYER · SIX FIGHTERS · ONE YARD</span></div>
       </section>
       <div id="selection-screen" class="selection-screen" hidden>
-        <div id="select-heading" class="select-heading"><div><p class="eyebrow">ONE NIGHT. ONE ARENA. YOUR FIGHTERS.</p><h1 id="game-title">COMFY FIGHTER <em>Z</em></h1></div><img id="generated-logo" class="generated-logo" alt="Game title emblem" hidden><div id="edition-stamp" class="edition-stamp">BUILD NIGHT<span>EDITION 01</span></div></div>
+        <div id="select-heading" class="select-heading"><div><p id="selection-eyebrow" class="eyebrow">ONE NIGHT. ONE ARENA. YOUR FIGHTERS.</p><h1 id="game-title">COMFY FIGHTER <em>Z</em></h1></div><img id="generated-logo" class="generated-logo" alt="Game title emblem" hidden><div id="edition-stamp" class="edition-stamp">BUILD NIGHT<span>EDITION 01</span></div></div>
         <div class="selection-title"><h2>SELECT YOUR FIGHTER</h2><p><span id="roster-count">6</span> CHALLENGERS <b>/</b> FIRST TO TWO ROUNDS</p><button id="title-return" class="selection-home" aria-label="Return to title">← TITLE</button></div>
         <div class="select-board" id="select-board">
           <div id="fighter-cards" class="fighter-cards" aria-live="polite"></div>
@@ -36,12 +36,12 @@
         </div>
         <div class="battle-ready">
           <div class="stage-preview" id="stage-preview"><div id="stage-thumb" class="stage-thumb"></div><div><p class="eyebrow">THE BATTLEGROUND</p><h3 id="stage-name">THE YARD</h3><span id="stage-art-status">ONE PLAYABLE ARENA</span></div></div>
-          <div class="battle-options"><select id="mode" hidden aria-label="Game mode"><option value="cpu">ARCADE / VS CPU</option></select><label class="stage-selector">STAGE<select id="stage"></select></label><button id="start-button" class="primary">LET'S FIGHT <span>→</span></button></div>
+          <div class="battle-options"><select id="mode" hidden aria-label="Game mode"><option value="cpu">ARCADE / VS CPU</option></select><label id="stage-control" class="stage-selector" hidden>ENVIRONMENT<select id="stage"></select></label><button id="start-button" class="primary">LET'S FIGHT <span>→</span></button></div>
         </div>
         <p id="selection-art-status" class="selection-art-status"></p>
       </div>
       <div id="fight-screen" hidden><p class="rotate-hint">ROTATE FOR A BIGGER ARENA</p>
-        <div class="fight-heading"><span class="eyebrow">COMFY FIGHTER Z / THE YARD</span><button id="back-select" class="text-button">← CHARACTER SELECT</button></div>
+        <div class="fight-heading"><span id="fight-stage-label" class="eyebrow">COMFY FIGHTER Z / THE YARD</span><button id="back-select" class="text-button">← CHARACTER SELECT</button></div>
         <div class="arena-shell">
           <div class="arena-top"><span><i class="live-dot"></i> <span id="arena-label">ARCADE / VS CPU</span></span><span id="stage-label">THE YARD</span></div>
           <div class="canvas-wrap"><canvas id="arena" width="960" height="540" tabindex="0" aria-label="Fighting game arena"></canvas>
@@ -52,7 +52,7 @@
               <div class="intro-bottom"><div class="intro-progress" aria-hidden="true"><span></span><span></span></div><button id="intro-skip" class="text-button">SKIP INTRO <span>ENTER ↵</span></button></div>
             </section>
             <div id="versus-overlay" class="versus-overlay" hidden><div><span>PLAYER ONE</span><strong id="versus-one"></strong></div><b>VS</b><div><span>CPU CHALLENGER</span><strong id="versus-two"></strong></div></div>
-            <div id="match-overlay" class="match-overlay" hidden><p class="eyebrow">THE YARD HAS A CHAMPION</p><h2>VICTORY</h2><p>First to two rounds.</p><button id="rematch-button" class="primary">RUN IT BACK <span>→</span></button><button id="result-select" class="text-button">CHARACTER SELECT</button></div>
+            <div id="match-overlay" class="match-overlay" hidden><p id="result-stage-label" class="eyebrow">THE YARD HAS A CHAMPION</p><h2>VICTORY</h2><p>First to two rounds.</p><button id="rematch-button" class="primary">RUN IT BACK <span>→</span></button><button id="result-select" class="text-button">CHARACTER SELECT</button></div>
             <button id="pause-button" class="pause-button" hidden aria-label="Pause game">Ⅱ</button><div id="pause-overlay" class="pause-overlay" hidden><p class="eyebrow">TAKE A BREATHER</p><h2>PAUSED</h2><button id="resume-button" class="primary">RESUME FIGHT</button></div>
             <span id="placeholder-label" class="placeholder-label">SPRITE ART PENDING / PROTOTYPE FIGHTERS</span>
           </div>

@@ -30,11 +30,17 @@ async function syntheticBundle(folder) {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'public/builder/example-assets.json'), 'utf8'));
   manifest.game.subtitle = 'Synthetic Open Source Saga';
   manifest.game.fighters.forEach(fighter => { fighter.introTagline = `${fighter.name} is ready for the showdown.`; });
+  for (const [id, name] of [['rooftop', 'Rooftop Reference'], ['courtyard', 'Courtyard Reference']]) {
+    manifest.game.stages.push({ id, name, description: `A distinct uploaded ${name.toLowerCase()} for multi-environment export testing.` });
+    manifest.assets.push({ id: `${id}_source`, kind: 'source', stage: id, key: false, src: `raw/${id}_source.png` }, { id, kind: 'stage', stage: id, key: false, src: `raw/${id}.png` });
+  }
+  if (manifest.game.expectedAssets) manifest.game.expectedAssets = manifest.assets.map(asset => asset.id);
   for (const asset of manifest.assets) {
     const sheet = asset.kind === 'sprites' || asset.kind === 'effects';
     const width = sheet ? 300 : asset.kind === 'stage' ? 600 : 240, height = sheet ? 300 : asset.kind === 'stage' ? 338 : 300;
     const canvas = createCanvas(width, height), ctx = canvas.getContext('2d');
-    ctx.fillStyle = asset.key ? '#00ff00' : '#142d38'; ctx.fillRect(0, 0, width, height);
+    const stageColors = { yard: '#142d38', rooftop: '#205d32', courtyard: '#792d4c' };
+    ctx.fillStyle = asset.key ? '#00ff00' : asset.stage ? stageColors[asset.stage] : '#142d38'; ctx.fillRect(0, 0, width, height);
     if (sheet) for (let i = 0; i < 9; i++) {
       const x = (i % 3) * 100, y = Math.floor(i / 3) * 100;
       ctx.fillStyle = i % 2 ? '#69b8db' : '#ed8034'; ctx.fillRect(x + 37, y + 20, 26, 60);
@@ -88,6 +94,12 @@ function unzipStored(bytes, destination) {
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true }), errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(`${server.url}/builder/`);
+    const factory = JSON.parse(fs.readFileSync(path.join(root, 'public/builder/factory-template.json'), 'utf8'));
+    await page.waitForFunction(() => !document.querySelector('#factory-slots').hidden);
+    assert.equal(await page.locator('#factory-characters .factory-slot').count(), factory.characters.length);
+    assert.equal(await page.locator('#factory-environments .factory-slot').count(), factory.environments.length);
+    assert.equal(await page.locator('#factory-environments [data-enabled="false"]').count(), factory.environments.filter(stage => stage.enabled === false).length);
+    assert.ok((await page.locator('#download-workflow').getAttribute('href')).endsWith(factory.workflowURL));
     await page.click('#load-example');
     await page.waitForFunction(() => document.querySelector('#fighter-list').children.length >= 2);
     assert.equal(await page.locator('#allow-placeholders').isChecked(), false);
@@ -116,7 +128,9 @@ function unzipStored(bytes, destination) {
     await page.fill(`[data-fighter-name="${manifest.game.fighters[0].id}"]`, 'Captain Barbecue');
     await page.locator(`[data-fighter-color="${manifest.game.fighters[0].id}"]`).fill('#cc4466');
     await page.fill(`[data-stage-name="${manifest.game.stages[0].id}"]`, 'Championship Patio');
-    if (manifest.game.stages.length > 1) await page.uncheck(`[data-stage-enabled="${manifest.game.stages[1].id}"]`);
+    await page.fill('[data-stage-name="rooftop"]', 'Neon Rooftop');
+    await page.fill('[data-stage-name="courtyard"]', 'Moon Courtyard');
+    assert.equal(await page.locator('.stage-editor .stage-preview img').count(), 3, 'Each environment must preview its own source art');
     await page.click('#build-button'); await page.locator('#export-ready').waitFor({ state: 'visible', timeout: 60000 });
     assert.match(await page.locator('#status').textContent(), /custom game is built/);
     const downloaded = page.waitForEvent('download'); await page.click('#download-zip');
@@ -127,7 +141,8 @@ function unzipStored(bytes, destination) {
     assert.equal(runtime.title, 'Custom Backyard Championship');
     assert.equal(runtime.subtitle, manifest.game.subtitle);
     assert.equal(runtime.fighters[0].name, 'Captain Barbecue'); assert.equal(runtime.fighters[0].color, '#cc4466');
-    assert.equal(runtime.stages.length, 1); assert.equal(runtime.stages[0].name, 'Championship Patio');
+    assert.equal(runtime.stages.length, 3);
+    assert.deepEqual(runtime.stages.map(stage => stage.name), ['Championship Patio', 'Neon Rooftop', 'Moon Courtyard']);
     const poseCount = manifest.game.fighters.length * 27;
     assert.equal(runtime.fighters.reduce((sum, fighter) => sum + Object.keys(fighter.poses).length, 0), poseCount);
     assert.equal(runtime.fighters[0].description, manifest.game.fighters[0].description);
@@ -141,6 +156,7 @@ function unzipStored(bytes, destination) {
     assert.ok(packageFiles.has('sources/video.json'));
     assert.deepEqual(packageFiles.get(runtime.openingVideo.src), packageFiles.get('sources/raw/opening.mp4'));
     for (const job of manifest.assets.filter(a => a.kind === 'source')) assert.ok(packageFiles.has(`assets/references/${job.id}.png`));
+    for (const job of manifest.assets.filter(a => a.stage)) assert.deepEqual(packageFiles.get(`sources/${job.src}`), fs.readFileSync(path.join(bundle, job.src)), `Retain exact source bytes for ${job.id}`);
     for (const job of manifest.assets.filter(a => a.kind === 'sprites')) assert.ok(packageFiles.has(`sources/${job.src}`), `Retain source sheet ${job.id}`);
     assert.ok(packageFiles.has('sources/assets.json'), 'Retain reimportable source bundle map');
     assert.equal(JSON.parse(packageFiles.get('build-report.json')).strict, true);
@@ -173,6 +189,7 @@ function unzipStored(bytes, destination) {
     assert.equal(await game.title(), 'Custom Backyard Championship');
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().screen), 'title');
     assert.equal(await game.locator('#saga-subtitle').textContent(), manifest.game.subtitle);
+    assert.match(await game.locator('#title-roster-summary').textContent(), /THREE ARENAS/);
     assert.match(await game.locator('#fighter-one').textContent(), /Captain Barbecue/);
     assert.equal(await game.locator('#placeholder-label').isVisible(), false);
     assert.ok(Number(await game.locator('#asset-count').textContent()) >= 54);
@@ -191,6 +208,10 @@ function unzipStored(bytes, destination) {
     assert.equal(invalid.status, 416);
     await game.click('#title-start');
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().screen), 'selection');
+    assert.equal(await game.locator('#stage-control').isVisible(), true);
+    assert.equal(await game.locator('#stage option').count(), 3);
+    assert.equal(await game.locator('#selection-eyebrow').textContent(), 'ONE NIGHT. THREE ARENAS. YOUR FIGHTERS.');
+    await game.screenshot({ path: path.join(root, 'build/multi-environment-select.png') });
     await game.click('#start-button');
     assert.ok((await game.locator('#intro-tagline').textContent()).includes(runtime.fighters[0].introTagline));
     assert.equal(await game.locator('#intro-name').textContent(), 'Captain Barbecue');
@@ -199,13 +220,33 @@ function unzipStored(bytes, destination) {
     assert.equal(await game.evaluate(() => window.FighterDebug.snapshot().cpu), true);
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().humanPlayers), 1);
     await game.keyboard.press('KeyD'); await game.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].move === 'heavy');
+    for (const [index, id, name, color] of [[1, 'rooftop', 'Neon Rooftop', [32, 93, 50]], [2, 'courtyard', 'Moon Courtyard', [121, 45, 76]]]) {
+      await game.click('#back-select'); await game.selectOption('#stage', String(index));
+      assert.equal(await game.evaluate(() => window.FighterDebug.presentation().stageId), id);
+      assert.equal(await game.locator('#stage-name').textContent(), name.toUpperCase());
+      assert.equal(await game.locator('#stage-label').textContent(), name.toUpperCase());
+      assert.ok((await game.locator('#fight-stage-label').textContent()).includes(name.toUpperCase()));
+      assert.equal(await game.locator('#result-stage-label').textContent(), `${name.toUpperCase()} HAS A CHAMPION`);
+      await game.click('#start-button'); await game.click('#intro-skip'); await game.waitForFunction(() => window.FighterDebug.snapshot().phase === 'fight');
+      const pixel = await game.evaluate(() => [...document.querySelector('#arena').getContext('2d').getImageData(20, 110, 1, 1).data].slice(0, 3));
+      assert.deepEqual(pixel, color, `Gameplay canvas must render selected environment ${id}`);
+    }
+    await game.click('#back-select'); await game.setViewportSize({ width: 390, height: 844 }); await game.selectOption('#stage', '1');
+    assert.equal(await game.locator('#stage-control').isVisible(), true, 'Multi-environment picker remains usable on phones');
+    assert.equal(await game.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    assert.equal(await game.evaluate(() => {
+      const opponent = document.querySelector('#fighter-two').getBoundingClientRect(), environments = document.querySelector('.battle-ready').getBoundingClientRect();
+      return opponent.bottom <= environments.top;
+    }), true, 'Environment controls must not cover the CPU opponent selector');
+    await game.screenshot({ path: path.join(root, 'build/multi-environment-mobile.png') });
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     mobile.on('pageerror', error => errors.push(error.message));
     await mobile.goto(`${server.url}/builder/`); await mobile.click('#load-example');
     await mobile.waitForFunction(() => document.querySelector('#fighter-list').children.length >= 2);
     assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Builder must fit mobile viewport');
+    await mobile.locator('#factory-panel').screenshot({ path: path.join(root, 'build/factory-mobile.png') });
     assert.deepEqual(errors, []);
-    console.log(`Builder browser passed: strict missing-art gate, placeholder ZIP, ${manifest.assets.length} images, audio/opening-video import, descriptions/specials/taglines/subtitle, ${poseCount} poses, retained sources, ZIP extraction, directory export, title/intro/single-player gameplay and mobile layout.`);
+    console.log(`Builder browser passed: factory slots, strict missing-art gate, placeholder ZIP, ${manifest.assets.length} images, audio/opening-video import, descriptions/specials/taglines/subtitle, ${poseCount} poses, three colored environments with retained source bytes, ZIP/directory export, selected-stage gameplay pixels and mobile stage picker.`);
     console.log('Screenshot: build/builder-smoke.png');
   } finally {
     if (browser) await browser.close();

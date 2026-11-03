@@ -21,6 +21,18 @@ test('bundle validator accepts dimension-free plans and preserves exact sheet ma
   const { validateManifest } = await api, input = manifest(), result = validateManifest(input);
   assert.deepEqual(result, input); assert.notEqual(result, input); assert.deepEqual(result.assets[0].poses, poses);
 });
+
+test('factory optional text can be empty while partial bundles require merging', async () => {
+  const { validateManifest } = await api, input = manifest();
+  input.game.subtitle = '';
+  input.game.fighters[0].description = '';
+  input.game.fighters[0].introTagline = '';
+  input.game.stages[0].description = '';
+  assert.deepEqual(validateManifest(input), input);
+  assert.throws(() => validateManifest({ ...input, partial: true }), /asset patch.*Merge/);
+  input.game.stages[0].description = 123;
+  assert.throws(() => validateManifest(input), /description must be/);
+});
 test('bundle validator rejects traversal, network paths, duplicates and false pose mappings', async () => {
   const { validateManifest } = await api;
   for (const src of ['../secret.png', 'raw/../../secret.png', 'https://example.com/p.png', 'raw\\dad.png', '/raw/dad.png', 'raw/%2e%2e/file.png', 'raw/CON.png']) {

@@ -47,7 +47,9 @@ Once image and intro outputs are accepted, merge them with the original bundle. 
 npm run merge:assets -- --base "C:\assets\accepted-bundle" --patch "C:\assets\saga-run\patch" --out "C:\assets\saga-complete"
 ```
 
-For an accepted repair, add another `--patch "C:\assets\saga-run\repairs\georgia_sheetB"` before `--out`. Patches apply in order; later records replace earlier records with the same ID. The tool verifies each source hash, retains unaffected files, updates metadata from `config/game.json`, checks complete image/audio plan coverage and writes `update-report.json`. With the current plans, the merged result has 56 image records and 22 audio records. Never load a partial patch directly as the complete builder input.
+For an accepted repair, add another `--patch "C:\assets\saga-run\repairs\georgia_sheetB"` before `--out`. Patches apply in order; later records replace earlier records with the same ID. The tool verifies each source hash, retains unaffected files and optional audio/video, carries consistent edited metadata from the patch, checks completeness against the base roster/pose contract and writes `update-report.json`. Replacement IDs must already exist in the complete base; use the full factory for a new roster or additional venues. The accepted saga base has 56 image records and 22 audio records. Never load a partial patch directly as the complete builder input.
+
+For the canonical six-fighter, one-Yard release, add `--saga` to enforce `assets/plan.json`, all 22 clips in `assets/audio-plan.json`, and metadata from `config/game.json`. Leave that flag off for custom factory bundles.
 
 Build the merged folder through the strict browser compiler:
 

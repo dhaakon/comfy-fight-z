@@ -24,11 +24,12 @@ export function validateManifest(input) {
   try { manifest = typeof input === 'string' ? JSON.parse(input) : JSON.parse(JSON.stringify(input)); }
   catch { throw new Error('The selected manifest is not valid JSON.'); }
   if (manifest?.schema !== 'dad-fighter-assets/v1') throw new Error('Expected a dad-fighter-assets/v1 manifest exported by the ComfyUI bundle workflow.');
+  if (manifest.partial) throw new Error('This is an asset patch. Merge it into a complete asset bundle before building a game.');
   if (manifest.root !== '.') throw new Error('Manifest root must be "."; select the folder containing assets.json and its raw images.');
   const game = manifest.game;
   if (!game || !Array.isArray(game.fighters) || !Array.isArray(game.stages)) throw new Error('Manifest requires game.fighters and game.stages arrays.');
   text(game.title, 'Game title');
-  if (game.subtitle !== undefined) text(game.subtitle, 'Game subtitle', 200);
+  if (game.subtitle !== undefined && game.subtitle !== '') text(game.subtitle, 'Game subtitle', 200);
   if (!game.fighters.length || !game.stages.length) throw new Error('Manifest needs at least one fighter and one stage.');
   if (game.fighters.length > 64 || game.stages.length > 64) throw new Error('Manifest roster is too large (64 fighters/stages maximum).');
   const fighters = new Set(), stages = new Set();
@@ -37,8 +38,8 @@ export function validateManifest(input) {
       if (!item || !ID.test(item.id) || ids.has(item.id.toLowerCase())) throw new Error(`Invalid or duplicate ${label} ID: ${item?.id}`);
       ids.add(item.id.toLowerCase()); text(item.name, `${label} name`);
       if (item.color !== undefined && !/^#[0-9a-f]{6}$/i.test(item.color)) throw new Error(`Invalid color for ${item.id}; use #RRGGBB.`);
-      if (item.description !== undefined) text(item.description, `${item.id} description`, 4000);
-      if (item.introTagline !== undefined) text(item.introTagline, `${item.id} intro tagline`, 250);
+      if (item.description !== undefined && item.description !== '') text(item.description, `${item.id} description`, 4000);
+      if (item.introTagline !== undefined && item.introTagline !== '') text(item.introTagline, `${item.id} intro tagline`, 250);
       if (item.sourceImage !== undefined) safePath(item.sourceImage);
       if (item.specialMove !== undefined) {
         text(item.specialMove?.name, `${item.id} special move`, 100);

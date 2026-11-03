@@ -1,0 +1,93 @@
+{
+  "title": "Comfy Fighter Z",
+  "subtitle": "Higgsfield Open Source Saga",
+  "workflowURL": "/builder/templates/comfy-hackathon.json",
+  "characters": [
+    {
+      "id": "allyson",
+      "name": "Allyson",
+      "enabled": true,
+      "reference": "allyson.jpeg",
+      "sourceInput": "allyson.jpeg"
+    },
+    {
+      "id": "deep",
+      "name": "Deep",
+      "enabled": true,
+      "reference": "deep.jpeg",
+      "sourceInput": "deep.jpeg"
+    },
+    {
+      "id": "georgia",
+      "name": "Georgia",
+      "enabled": true,
+      "reference": "georgia.jpeg",
+      "sourceInput": "georgia.jpeg"
+    },
+    {
+      "id": "matt",
+      "name": "Matt",
+      "enabled": true,
+      "reference": "matt.jpeg",
+      "sourceInput": "matt.jpeg"
+    },
+    {
+      "id": "photographer",
+      "name": "The Photographer",
+      "enabled": true,
+      "reference": "photographer.jpeg",
+      "sourceInput": "photographer.jpeg"
+    },
+    {
+      "id": "rob",
+      "name": "Rob",
+      "enabled": true,
+      "reference": "rob.jpeg",
+      "sourceInput": "rob.jpeg"
+    }
+  ],
+  "environments": [
+    {
+      "id": "yard",
+      "name": "The Yard",
+      "enabled": true,
+      "reference": "level-theyard.jpeg",
+      "sourceInput": "level-theyard.jpeg"
+    },
+    {
+      "id": "environment-2",
+      "name": "Environment 2",
+      "enabled": false,
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "environment-3",
+      "name": "Environment 3",
+      "enabled": false,
+      "reference": "",
+      "sourceInput": ""
+    }
+  ],
+  "templates": [
+    {
+      "id": "character",
+      "label": "One complete character pack",
+      "url": "/builder/templates/character-factory.json"
+    },
+    {
+      "id": "sheet",
+      "label": "One sprite sheet",
+      "url": "/builder/templates/sprite-sheet.json"
+    },
+    {
+      "id": "environment",
+      "label": "One environment",
+      "url": "/builder/templates/environment-factory.json"
+    }
+  ],
+  "nodePack": {
+    "name": "Comfy Fighter Z Asset Factory",
+    "installInstructions": "Copy custom_nodes/dad_fighter_assets into your ComfyUI custom_nodes folder and restart ComfyUI. Then open the downloaded workflow."
+  }
+}

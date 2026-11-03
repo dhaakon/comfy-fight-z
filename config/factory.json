@@ -1,0 +1,164 @@
+{
+  "title": "Comfy Fighter Z",
+  "assetRoot": "assets/generated/comfy-fighter-factory",
+  "style": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.",
+  "model": "Gemini Nano Banana 2.1",
+  "fighters": [
+    {
+      "id": "allyson",
+      "name": "Allyson",
+      "color": "#f4ef35",
+      "sourceImage": "ref/characters/allyson.jpeg",
+      "sourceInput": "allyson.jpeg",
+      "description": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Node Burst",
+        "description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst."
+      },
+      "introTagline": "Every node is connected. Your defeat is next.",
+      "introVoice": "River (neutral, american)",
+      "enabled": true,
+      "acceptedReferenceInput": "allyson_reference-1d26e45e4d61a8dc.png"
+    },
+    {
+      "id": "deep",
+      "name": "Deep",
+      "color": "#41d7ff",
+      "sourceImage": "ref/characters/deep.jpeg",
+      "sourceInput": "deep.jpeg",
+      "description": "The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Queue Breaker",
+        "description": "Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell."
+      },
+      "introTagline": "You are in my queue now.",
+      "introVoice": "Daniel (male, british)",
+      "enabled": true
+    },
+    {
+      "id": "georgia",
+      "name": "Georgia",
+      "color": "#ff6ccf",
+      "sourceImage": "ref/characters/georgia.jpeg",
+      "sourceInput": "georgia.jpeg",
+      "description": "The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Golden Cascade",
+        "description": "Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell."
+      },
+      "introTagline": "Catch the light. Feel the impact.",
+      "introVoice": "Jessica (female, american)",
+      "enabled": true
+    },
+    {
+      "id": "matt",
+      "name": "Matt",
+      "color": "#ff9248",
+      "sourceImage": "ref/characters/matt.jpeg",
+      "sourceInput": "matt.jpeg",
+      "description": "The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Latent Rush",
+        "description": "Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs."
+      },
+      "introTagline": "Less waiting. More fighting.",
+      "introVoice": "Charlie (male, australian)",
+      "enabled": true
+    },
+    {
+      "id": "photographer",
+      "name": "The Photographer",
+      "color": "#b397ff",
+      "sourceImage": "ref/characters/photographer.jpeg",
+      "sourceInput": "photographer.jpeg",
+      "description": "The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Flash Frame",
+        "description": "The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering."
+      },
+      "introTagline": "Hold still. This knockout needs a close-up.",
+      "introVoice": "Brian (male, american)",
+      "enabled": true
+    },
+    {
+      "id": "rob",
+      "name": "Rob",
+      "color": "#6de9c9",
+      "sourceImage": "ref/characters/rob.jpeg",
+      "sourceInput": "rob.jpeg",
+      "description": "The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Compile Crash",
+        "description": "Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell."
+      },
+      "introTagline": "Build passed. You are going down.",
+      "introVoice": "Adam (male, american)",
+      "enabled": true
+    }
+  ],
+  "stages": [
+    {
+      "id": "yard",
+      "name": "The Yard",
+      "sourceImage": "ref/levels/level-theyard.jpeg",
+      "sourceInput": "level-theyard.jpeg",
+      "description": "The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard.",
+      "enabled": true
+    },
+    {
+      "id": "environment-2",
+      "name": "Environment 2",
+      "description": "",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": false
+    },
+    {
+      "id": "environment-3",
+      "name": "Environment 3",
+      "description": "",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": false
+    }
+  ],
+  "sheets": {
+    "sheet": [
+      "idle",
+      "walk",
+      "punch",
+      "kick",
+      "block",
+      "hit",
+      "special",
+      "down",
+      "win"
+    ],
+    "sheetB": [
+      "stance2",
+      "crouch",
+      "sweep",
+      "launcher",
+      "jump",
+      "airkick",
+      "hpunch",
+      "dash",
+      "tumble"
+    ],
+    "sheetC": [
+      "walk2",
+      "lkick",
+      "cjab",
+      "airpunch",
+      "throw",
+      "taunt",
+      "getup",
+      "powerup",
+      "entrance"
+    ]
+  },
+  "uiStyle": "Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.",
+  "subtitle": "Higgsfield Open Source Saga",
+  "stageStyle": "Original hand-painted 1990s anime indoor-environment background, clean architectural ink, rich cel-shaded materials and atmospheric practical lighting. Natural surfaces continue to all four image edges. No decorative border, directional speed lines, radial rays, manga frame, graphic vignette or letterboxing.",
+  "factorySchema": "comfy-fighter-factory/v1"
+}

@@ -8,5 +8,5 @@ const custom=path.join(root,'custom_nodes'),target=path.join(custom,'dad_fighter
 fs.mkdirSync(custom,{recursive:true});
 if(fs.existsSync(target)&&fs.lstatSync(target).isSymbolicLink())throw new Error('Custom node destination must not be a symlink');
 fs.mkdirSync(target,{recursive:true});
-fs.copyFileSync(path.resolve(__dirname,'../custom_nodes/dad_fighter_assets/__init__.py'),path.join(target,'__init__.py'));
-console.log(`Installed local asset-mapping nodes in ${target}. Restart ComfyUI to load them.`);
+for(const file of ['__init__.py','factories.py'])fs.copyFileSync(path.resolve(__dirname,'../custom_nodes/dad_fighter_assets',file),path.join(target,file));
+console.log(`Installed Comfy Fighter Z cloud factories and asset-mapping nodes in ${target}. Restart ComfyUI to load them.`);
