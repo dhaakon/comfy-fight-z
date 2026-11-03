@@ -1,6 +1,6 @@
 # Screenshot guide
 
-These PNGs were captured from running local interfaces on November 3, 2026 (UTC). Screenshots 01–07 show the fictional asset factory, builder and media-free source prototype. Screenshots 08–09 show a separately generated and verified two-fighter game. All are direct browser screenshots without compositing or reused private images.
+These PNGs were captured from running local interfaces on November 3, 2026 (UTC). Screenshots 01–07 show the fictional asset factory, builder and media-free source prototype. Screenshots 08–09 show a separately generated and verified two-fighter game. Screenshots 10–13 show the complete six-fighter game and builder using the included `example/bundle/`. All are direct browser screenshots without compositing or reused private images.
 
 | Screenshot | What it shows |
 | --- | --- |
@@ -13,8 +13,20 @@ These PNGs were captured from running local interfaces on November 3, 2026 (UTC)
 | [07-gameplay.png](07-gameplay.png) | One human fighter versus the CPU using the game's existing primitive fallback rendering. The arena visibly identifies these as prototype fighters. |
 | [08-smoke-title.png](08-smoke-title.png) | Title screen from the verified two-fighter game, with cloud-generated fictional artwork and the Higgsfield Open Source Saga subtitle. |
 | [09-smoke-gameplay.png](09-smoke-gameplay.png) | Generated Griddle and Rivet sprites fighting in the fictional Yard. This example has two fighters, not the full six-fighter roster. |
+| [10-example-title.png](10-example-title.png) | Title screen of the complete included example, with Comfy Fighter Z and Higgsfield Open Source Saga branding. |
+| [11-example-select.png](11-example-select.png) | All six newly generated fictional fighters, their selection artwork, special moves and The Yard. |
+| [12-example-gameplay.png](12-example-gameplay.png) | Griddle versus CPU Rivet using the included sprites and fictional Yard. |
+| [13-example-builder.png](13-example-builder.png) | The included bundle loaded in the builder: six fighters, 18 sheets, 56/56 images, 22/22 audio clips and a completed export with placeholders disabled. |
 
-## Generated example provenance
+## Complete included example provenance
+
+Screenshots 10–12 were copied unchanged from the successful strict build of `example/bundle/`. ComfyUI generated 56 images and 22 audio clips in one approved batch; one additional approved Tempo sheet repair replaced a duplicated recovery pose. All 18 sheets and the repaired extraction were visually reviewed. The resulting game has 162 mapped poses and passed browser image/audio decoding, introduction, CPU and player-control checks without placeholders.
+
+The same bundle passed a separate fresh-install test with no copied dependencies, no ComfyUI connection and no access to the original repository. Run `npm ci`, `npm run example` and `npm start` to build and play it. The source media, hashes and generation/repair provenance are included in [`example/bundle/`](../../../example/bundle/); the generated exports and test reports stay under ignored `output/`.
+
+Screenshot 13 is a separate 1440×1000 browser capture after importing that same bundle into the local builder and completing a strict export. It shows the actual generated portrait previews and export controls without changing the interface styles or asset data.
+
+## Earlier two-fighter smoke-test provenance
 
 Screenshots 08–09 were copied unchanged from the browser captures of a successful strict `build:bundle` export. ComfyUI generated 24 source images from text-only fictional designs; the build produced 54 mapped poses and passed runtime image, introduction, CPU and player-control checks without placeholders. No audio or video was generated for this test, and no real-person or real-venue photographs were inputs.
 
@@ -28,7 +40,7 @@ The capture script verifies that all custom nodes resolve, all nine factory imag
 
 ## Recapture the prototype interfaces (01–07)
 
-The commands below rebuild the canonical source preview and capture only screenshots 01–07. They do not recreate or overwrite the generated-game screenshots 08–09. Rebuilding also replaces an installed local game preview with the canonical source preview.
+The commands below rebuild the canonical source preview and capture only screenshots 01–07. They do not recreate or overwrite the generated-game screenshots 08–13. Rebuilding also replaces an installed local game preview with the canonical source preview.
 
 Use [build/tools/capture-readme.cjs](../../../build/tools/capture-readme.cjs) from the repository root. Node.js 22+, the npm dependencies, a Playwright-compatible Chromium browser and a running local ComfyUI server are required:
 

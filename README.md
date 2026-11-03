@@ -4,13 +4,13 @@ Create an anime fighting game with your own fictional cast. ComfyUI generates th
 
 The default game has six fighters, one backyard arena called **The Yard**, and one human player versus the CPU. Each fighter has 27 poses, selection art, an introduction and a special move.
 
-> **Status:** a two-fighter ComfyUI test—Griddle and Rivet in The Yard—passed strict export with 24 generated images and 54 poses. Its assets are local outputs, not bundled with this repository. A fresh checkout's six-fighter demo still uses prototype graphics. The two-fighter test has no audio or video.
+> **Included example:** six fictional fighters, The Yard, 162 poses and 22 music, effects and voice clips. The reviewed assets are included in [`example/`](example/README.md), so building this game requires no ComfyUI server, cloud account or generation credits. Regenerating the assets is optional.
 
-![Generated two-fighter example title screen](comfyui/docs/images/08-smoke-title.png)
+![Included six-fighter example title screen](comfyui/docs/images/10-example-title.png)
 
-*Title screen from the verified two-fighter generation test. The main workflow still defines six fighters.*
+*The included example, built from the fictional artwork in `example/bundle/`.*
 
-## 1. Start the builder
+## 1. Build the included example
 
 Install [Node.js 22 or newer](https://nodejs.org/en/download) and Git, then run:
 
@@ -18,16 +18,15 @@ Install [Node.js 22 or newer](https://nodejs.org/en/download) and Git, then run:
 git clone https://github.com/dhaakon/comfy-fight-z.git
 cd comfy-fight-z
 npm ci
-npm run workflows
-npm run build
+npm run example
 npm start
 ```
 
 Open **[the builder](http://127.0.0.1:8080/builder/)** or **[the game preview](http://127.0.0.1:8080/)**. Leave the server terminal open and use a second terminal for later commands.
 
-`npm run workflows` prepares recipes for your checkout; run it again after moving the repository. `npm run build` updates the local preview. Neither command generates artwork or spends cloud credits.
+`npm run example` checks the included assets, builds and tests a game directory and ZIP, then installs the game in `output/game/`. It installs the pinned Chromium browser once if needed. Later builds use the installed browser; there are no model calls. The command prints the export paths.
 
-**Try it without ComfyUI:** in the builder, click **Try an example project →**, check **Allow placeholder assets**, then **Build my game**. This exports an explicitly labeled prototype. Continue at step 5 to play it, or set up real asset generation below.
+To customize these assets, choose the repository's **`example/bundle/` folder** in the builder and continue at step 4. To generate a new cast, follow the steps below or the [combined example workflow guide](example/README.md).
 
 ![Builder with the six character factories and environment slots](comfyui/docs/images/03-builder-start.png)
 
@@ -39,6 +38,7 @@ Install this project's custom nodes into the ComfyUI instance you actually run:
 
 ```powershell
 npm run nodes:install -- --comfy-root "C:\path\to\your\ComfyUI"
+npm run workflows
 ```
 
 On macOS/Linux, replace the path with your absolute ComfyUI directory. It must contain **`main.py` and `nodes.py`**—not this game's `comfyui/` folder.
@@ -98,9 +98,9 @@ In the [builder](http://127.0.0.1:8080/builder/):
 3. Leave **Allow placeholder assets unchecked** for a game using complete generated artwork.
 4. Click **Build my game**, then **Download game ZIP** or **Save to a directory**.
 
-![Builder export controls after a prototype build](comfyui/docs/images/05-export-ready.png)
+![Builder with all 56 images and 22 audio clips ready to export](comfyui/docs/images/13-example-builder.png)
 
-*This screenshot shows an explicit placeholder export. The same controls package generated artwork.*
+*The included bundle passes a strict build with all six fighters and The Yard. Download the finished ZIP or save its directory.*
 
 Directory export needs a supported browser and a new, empty destination. Use ZIP if that option is unavailable. Selecting JSON alone loads metadata; the matching media folder is still required.
 
@@ -118,6 +118,8 @@ Open the printed URL, normally `http://127.0.0.1:8080/`. No `npm install`, Comfy
 
 Choose **ENTER THE SAGA**, your fighter and the CPU opponent, then **LET'S FIGHT**. Combat waits for the introductions to finish.
 
+![All six fictional fighters in the included example](comfyui/docs/images/11-example-select.png)
+
 | Control | Action |
 | --- | --- |
 | Arrow keys | Move, jump and crouch |
@@ -127,9 +129,9 @@ Choose **ENTER THE SAGA**, your fighter and the CPU opponent, then **LET'S FIGHT
 | Escape | Pause or resume combat |
 | FULLSCREEN | Enter native fullscreen after a click |
 
-![Generated Griddle and Rivet fighting in the fictional Yard](comfyui/docs/images/09-smoke-gameplay.png)
+![Generated Griddle and Rivet fighting in the fictional Yard](comfyui/docs/images/12-example-gameplay.png)
 
-*Griddle versus Rivet in the verified two-fighter example, using cloud-generated fictional sprites and arena art.*
+*Griddle versus Rivet in the included six-fighter game. Arrow keys and ASDF control your fighter; the opponent is the CPU.*
 
 Serve the game over HTTP rather than double-clicking `index.html`. Share the complete ZIP or host the exported folder on a static web server.
 
@@ -139,9 +141,10 @@ Serve the game over HTTP rather than double-clicking `index.html`. Share the com
 | --- | --- |
 | [`comfyui/`](comfyui/README.md) | Workflows, custom nodes and character/environment definitions |
 | [`build/`](build/README.md) | Game and builder source, dependencies and tests |
+| [`example/`](example/README.md) | Complete generated bundle, combined workflow and a free build command |
 | [`output/`](output/README.md) | Generated bundles, local previews and exports |
 
-`build/` contains source code. `npm run build` replaces only `output/game/` and preserves accepted runtime assets.
+`build/` contains source code. Use `npm run example` for the included generated game. The development command `npm run build` replaces `output/game/` with the canonical source preview; it does not rebuild the included example.
 
 ## Common fixes
 
@@ -150,7 +153,7 @@ Serve the game over HTTP rather than double-clicking `index.html`. Share the com
 | Missing CFZ nodes | Install into the running ComfyUI instance, restart it, reload the editor and reopen the workflow. |
 | Output points to another computer | Run `npm run workflows` and set a fresh absolute Project Settings path. |
 | Missing images or audio | Select the complete bundle; keep `assets.json`, optional `audio.json` and their mapped files together. |
-| Changed source/download is not visible | Run `npm run build` and reload the browser. |
+| Changed game code is not visible | Run `npm run example` again and reload the browser to rebuild the included game with your changes. |
 | Port is occupied | Stop the other server or choose another `PORT`; see the advanced guide. |
 | Feet are clipped or poses drift | Review and repair the source sheet before exporting. |
 

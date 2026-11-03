@@ -4,14 +4,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '../..');
 
-test('repository keeps generation, build source and output in three root folders', () => {
+test('repository separates generation, build source, the runnable example and output', () => {
   const directories = fs.readdirSync(root, {withFileTypes: true})
     .filter(entry => entry.isDirectory() && !entry.name.startsWith('.'))
     .map(entry => entry.name).sort();
-  assert.deepEqual(directories, ['build', 'comfyui', 'output']);
+  assert.deepEqual(directories, ['build', 'comfyui', 'example', 'output']);
   for (const file of ['comfyui/workflows/comfy-hackathon.json', 'comfyui/custom_nodes/comfy_fighter_assets/__init__.py',
     'comfyui/config/game.json', 'comfyui/assets/plan.json', 'build/public/index.html', 'build/tools/build.cjs',
-    'build/package-lock.json', 'output/README.md']) {
+    'build/package-lock.json', 'example/run.cjs', 'output/README.md']) {
     assert.ok(fs.statSync(path.join(root, file)).isFile(), `Missing relocated source: ${file}`);
   }
 });

@@ -25,7 +25,11 @@
     "merge:assets": "node tools/merge-bundles.cjs",
     "export:assets": "node tools/export-assets.cjs",
     "install:game": "node tools/install-game.cjs",
-    "smoke:prepare": "node ../comfyui/tools/prepare-smoke-test.cjs"
+    "smoke:prepare": "node ../comfyui/tools/prepare-smoke-test.cjs",
+    "example": "node ../example/run.cjs",
+    "example:build": "node ../example/run.cjs",
+    "example:prepare": "node ../example/prepare.cjs",
+    "example:package": "node ../build/tools/package-example.cjs"
   },
   "dependencies": {
     "@napi-rs/canvas": "1.0.9"

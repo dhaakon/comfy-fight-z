@@ -13,7 +13,7 @@ The [compact factory](workflow-factory.md) is configured separately in `comfyui/
 | Upload reference | One | 49 | 56 |
 | Upload reference | Three | 51 | 60 |
 
-Upload mode saves the seven or nine supplied references without generating them again. A separate nine-image sample-reference workflow is also available when preparing references before the art batch. The fictional demo is pending generation: its character and environment descriptions are configured, but no generated reference images, sheets or replacement movie have been accepted yet. Future sample images belong under `comfyui/ref/demo/`; no earlier session's photos or photo-derived art supply this demo.
+Upload mode saves the seven or nine supplied references without generating them again. A separate nine-image sample-reference workflow is also available when preparing references before the art batch. The complete reviewed fictional demo is included in `example/bundle/`, with 56 images and 22 audio clips; `npm run example` builds it without cloud generation. It contains no opening movie or earlier session's photos or photo-derived art. The lightweight canonical source preview remains separate.
 
 `game.title`, `game.subtitle` and fighter `description`, `specialMove: {name, description}` and `introTagline` metadata pass through ComfyUI, the builder and the runtime. The runtime stores the title/subtitle at the top of `assets/manifest.json` and the character fields on each fighter. Special descriptions drive the special pose and cut-in prompts; combat mechanics remain shared. `introTagline` supplies the on-screen introduction and the exact spoken line. The optional `introVoice` in `comfyui/config/game.json` selects a stock ElevenLabs voice during workflow preparation; it is generation configuration, not a required runtime field.
 
@@ -23,7 +23,7 @@ Upload mode saves the seven or nine supplied references without generating them 
 
 Runtime IDs are `menu_music`, `yard_music`, `ann_select`, `ann_fight`, `ann_ko`, `ann_victory`, `sfx_punch`, `sfx_kick`, `sfx_block`, `sfx_special`, `fighter_<id>_special` and `fighter_<id>_intro` for each character. The complete workflow prepares **22 clips**: two music tracks, four announcer calls, four effects, six special calls and six intro taglines. Intro clips use six distinct stock voices for fictional performances, with no voice cloning. A text introduction still displays when its audio clip is absent from an accepted bundle.
 
-The builder automatically reads both JSON files from the selected root. It copies audio to `assets/audio/`, maps it under runtime `audio`, and preserves `sources/audio.json` plus original WAVs for re-import. Audio paths and hashes are validated. Missing files in a supplied audio map fail strict export. If audio.json is absent, the builder explicitly reports that audio was not supplied. Local image and WAV processing do not perform model inference.
+The builder automatically reads both JSON files from the selected root. It copies audio to `assets/audio/`, maps it under runtime `audio`, and preserves `sources/audio.json` plus source audio for re-import. Sources may be WAV, MP3, OGG or FLAC; the included example uses MP3. Audio paths and hashes are validated. Missing files in a supplied audio map fail strict export. If audio.json is absent, the builder explicitly reports that audio was not supplied. Local image and audio processing do not perform model inference.
 
 ## Portable ComfyUI bundle
 
@@ -55,6 +55,8 @@ The main graph's Project Settings selects `<root_directory>`. Each factory node 
 ```
 
 This excerpt illustrates fields; a runnable bundle includes the actual roster, stages, sheet definitions, hashes, and all generated asset records. The builder accepts `assets.json` plus its selected root folder, verifies hashes, and uses `src` rather than guessing filenames. The final exporter rejects missing, duplicated, cross-root, or changed files. New raw images do not overwrite those referenced by an earlier complete manifest.
+
+Source images may be PNG or WebP. ComfyUI writes PNGs; the included example packages them as lossless WebP with pixel-identical decoded RGBA verified before updating paths and hashes. Its `provenance.json` records both original and packaged hashes, plus the generation and accepted repair jobs. Preserve chroma colors and alpha when converting sheets.
 
 The browser export includes `assets/manifest.json` with processed PNG sprite paths and anchor geometry, `sources/assets.json` with the portable source mapping, `sources/raw/` with original sheets and artwork, and `assets/source-manifest.json` with provenance. It also includes the standalone game code and a small local server. The older CLI pipeline below emits equivalent runtime metadata with WebP files instead.
 

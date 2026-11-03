@@ -9,7 +9,7 @@ from PIL import Image
 from comfy_api.latest import io, ui
 from comfy_execution.graph_utils import GraphBuilder
 
-from . import SHEETS, SCHEMA, AssetRecord, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
+from . import SHEETS, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
 
 Project = io.Custom("CFZ_PROJECT")
 Character = io.Custom("CFZ_CHARACTER")
@@ -152,6 +152,22 @@ class CFZProjectSettings(io.ComfyNode):
         if not isinstance(seed, int) or not 0 <= seed < 2 ** 64:
             raise ValueError("Seed must be an unsigned 64-bit integer")
         return io.NodeOutput(project)
+
+
+class CFZProjectAudioRoot(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZProjectAudioRoot", display_name="CFZ Shared Project Audio Root", category="Comfy Fighter Z",
+            description="Connect the image project's settings so audio.json and assets.json use one output folder and title. Validates audio configuration locally; makes no paid requests.",
+            inputs=[Project.Input("project"), io.String.Input("audio_config", default="{}", multiline=True)],
+            outputs=[AssetRoot.Output(display_name="root")])
+
+    @classmethod
+    def execute(cls, project, audio_config):
+        directory = _project(project)
+        config = _json_object(audio_config, "audio_config")
+        config.update(title=project["title"], subtitle=project["subtitle"])
+        return CFZAssetRoot.execute(str(directory), json.dumps(config))
 
 
 class CFZCharacterDefinition(io.ComfyNode):
@@ -493,5 +509,5 @@ class CFZExportAssetPatch(io.ComfyNode):
         return _export(project, bundles, False)
 
 
-FACTORY_NODES = [CFZProjectSettings, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZEnvironmentFactory,
+FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZEnvironmentFactory,
                  CFZSharedArtFactory, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]

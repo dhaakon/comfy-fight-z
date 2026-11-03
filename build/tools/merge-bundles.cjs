@@ -111,7 +111,7 @@ function merge({ base, patches, out, saga = false }) {
       }
       if (!job || isAudio !== (job.kind === 'audio')) throw new Error(`Unexpected asset record: ${record.id}; patches may only replace image IDs already in the complete base.`);
       for (const field of MAPPING_FIELDS) if ((!saga || field !== 'key') && !isDeepStrictEqual(record[field], job[field])) throw new Error(`Asset mapping disagrees with ${saga ? 'plan' : 'base'}: ${record.id}.${field}`);
-      if (!(filename === 'audio.json' ? /\.(wav|mp3|ogg|flac)$/i : /\.png$/i).test(record.src)) throw new Error(`Unsupported source media: ${record.id}`);
+      if (!(filename === 'audio.json' ? /\.(wav|mp3|ogg|flac)$/i : /\.(png|webp)$/i).test(record.src)) throw new Error(`Unsupported source media: ${record.id}`);
       const input = sourceFile(folder, record.src), data = fs.readFileSync(input);
       if (!/^[a-f0-9]{64}$/i.test(record.sha256 || '') || createHash('sha256').update(data).digest('hex') !== record.sha256.toLowerCase()) throw new Error(`Source hash mismatch: ${record.id}`);
       if (folder !== base) changes.push({ id: record.id, kind: record.kind, replaces: records.has(record.id) });

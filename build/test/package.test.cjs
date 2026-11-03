@@ -22,6 +22,16 @@ test('bundle validator accepts dimension-free plans and preserves exact sheet ma
   assert.deepEqual(result, input); assert.notEqual(result, input); assert.deepEqual(result.assets[0].poses, poses);
 });
 
+test('source bundles accept lossless WebP filenames while rejecting unsupported image types', async () => {
+  const { validateManifest } = await api, input = manifest();
+  input.assets[0].src = 'raw/dad_sheet.webp';
+  assert.equal(validateManifest(input).assets[0].src, 'raw/dad_sheet.webp');
+  for (const extension of ['jpg', 'gif', 'svg', 'exe']) {
+    input.assets[0].src = `raw/dad_sheet.${extension}`;
+    assert.throws(() => validateManifest(input), /PNG or WebP/);
+  }
+});
+
 test('legacy imported schemas normalize to Comfy Fighter Z output contracts', async () => {
   const { validateManifest, validateAudioManifest } = await api;
   const input = manifest(); input.schema = 'dad-fighter-assets/v1';

@@ -55,7 +55,7 @@ export function validateManifest(input) {
     ids.add(asset.id.toLowerCase());
     if (!KINDS.has(asset.kind)) throw new Error(`Unknown asset kind: ${asset.kind}`);
     safePath(asset.src);
-    if (!/\.png$/i.test(asset.src)) throw new Error(`${asset.id} must map to a PNG source image.`);
+    if (!/\.(png|webp)$/i.test(asset.src)) throw new Error(`${asset.id} must map to a PNG or WebP source image.`);
     if (paths.has(asset.src.toLowerCase())) throw new Error(`Duplicate source image mapping: ${asset.src}`);
     paths.add(asset.src.toLowerCase());
     if (asset.key !== undefined && typeof asset.key !== 'boolean') throw new Error(`Invalid chroma-key flag: ${asset.id}`);
@@ -313,7 +313,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
       image = await decode(blob, job.src);
       if ((job.width && job.width !== image.width) || (job.height && job.height !== image.height)) throw new Error(`Image dimensions differ from manifest (${image.width} x ${image.height}).`);
       if (job.kind === 'source') {
-        const src = `assets/references/${job.id}.png`; output.set(src, blob);
+        const src = `assets/references/${job.id}.${job.src.split('.').pop().toLowerCase()}`; output.set(src, blob);
         (job.fighter ? selectedFighters.get(job.fighter) : selectedStages.get(job.stage)).sourceImage = src;
       } else if (job.kind === 'sprites') {
         const collection = allCells.get(job.fighter) || new Map();

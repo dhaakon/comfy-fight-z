@@ -26,6 +26,10 @@
     "merge:assets": "node build/tools/merge-bundles.cjs",
     "export:assets": "node build/tools/export-assets.cjs",
     "install:game": "node build/tools/install-game.cjs",
-    "smoke:prepare": "node comfyui/tools/prepare-smoke-test.cjs"
+    "smoke:prepare": "node comfyui/tools/prepare-smoke-test.cjs",
+    "example": "node example/run.cjs",
+    "example:build": "node example/run.cjs",
+    "example:prepare": "node example/prepare.cjs",
+    "example:package": "node build/tools/package-example.cjs"
   }
 }

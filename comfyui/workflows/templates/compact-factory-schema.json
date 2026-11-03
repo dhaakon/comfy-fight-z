@@ -1059,5 +1059,56 @@
     "search_aliases": null,
     "essentials_category": null,
     "has_intermediate_output": false
+  },
+  "CFZProjectAudioRoot": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "audio_config": [
+          "STRING",
+          {
+            "default": "{}",
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "audio_config"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_ROOT"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "root"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZProjectAudioRoot",
+    "display_name": "CFZ Shared Project Audio Root",
+    "description": "Connect the image project's settings so audio.json and assets.json use one output folder and title. Validates audio configuration locally; makes no paid requests.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
   }
 }

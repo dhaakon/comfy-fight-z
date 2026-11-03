@@ -3,7 +3,8 @@ node_modules/
 .env.*
 !.env.example
 .mcp.json
-# All generated assets, games, reports and private archives stay under output/.
+# Generation runs, built games, reports and private archives stay under output/.
+# The reviewed, portable example/bundle is deliberately versioned for free builds.
 /output/*
 !/output/README.md
 # Accepted runtime sources under build/public/assets are versioned.

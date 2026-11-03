@@ -123,6 +123,30 @@ class CloudFactoryTests(unittest.TestCase):
             self.assertEqual(mode["options"], ["Upload reference", "Invent fictional reference"])
         self.assertNotIn("control_after_generate", factory.CFZProjectSettings.INPUT_TYPES()["required"]["seed"][1])
 
+    def test_audio_bridge_shares_project_directory_and_title_and_validates_config(self):
+        config = {"title": "Stale audio title", "subtitle": "Stale subtitle", "root_directory": str(self.base / "stale"),
+                  "fighters": [{"id": "fighter0", "name": "Fighter Zero"}], "stages": [{"id": "yard", "name": "The Yard"}],
+                  "sheets": nodes.SHEETS, "expectedAudio": ["fighter_fighter0_intro"]}
+        root = factory.CFZProjectAudioRoot.execute(self.project, json.dumps(config))[0]
+        self.assertEqual(root["path"], self.project["root_directory"])
+        self.assertEqual(root["config"]["title"], self.project["title"])
+        self.assertEqual(root["config"]["subtitle"], self.project["subtitle"])
+        self.assertEqual(root["config"]["expectedAudio"], config["expectedAudio"])
+        self.assertFalse(Path(root["path"]).exists(), "The bridge must not write files")
+        audio = {"sample_rate": 8000, "waveform": np.zeros((1, 1, 80), dtype=np.float32)}
+        record = nodes.CFZSaveAudio.execute(audio, root, json.dumps({"id": "fighter_fighter0_intro", "kind": "audio", "category": "voice", "fighter": "fighter0"}))[0]
+        manifest_path = Path(nodes.CFZExportAudioManifest.execute(root, {"audio_0": record})[0])
+        self.assertEqual(manifest_path, Path(self.project["root_directory"]) / "audio.json")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        self.assertEqual(manifest["title"], self.project["title"])
+        self.assertEqual(manifest["root"], ".")
+        self.assertEqual(manifest["assets"][0]["fighter"], "fighter0")
+        self.assertFalse(factory.CFZProjectAudioRoot.GET_NODE_INFO_V1()["api_node"])
+        with self.assertRaisesRegex(ValueError, "three standard"):
+            factory.CFZProjectAudioRoot.execute(self.project, json.dumps({**config, "sheets": {}}))
+        with self.assertRaisesRegex(ValueError, "valid JSON"):
+            factory.CFZProjectAudioRoot.execute(self.project, "{")
+
     def test_full_six_fighter_three_environment_bundle_validates_and_maps_every_image(self):
         graph = self.full_graph()
         destination = Path(graph.node("export")[0])
