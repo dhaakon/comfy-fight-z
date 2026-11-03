@@ -3,12 +3,9 @@ node_modules/
 .env.*
 !.env.example
 .mcp.json
-dist/
-build/
-# Accepted, optimized runtime assets in public/assets are versioned with the game.
-assets/generated/
-exports/
-test-runs/
-private-archive/
+# All generated assets, games, reports and private archives stay under output/.
+/output/*
+!/output/README.md
+# Accepted runtime sources under build/public/assets are versioned.
 __pycache__/
 *.pyc

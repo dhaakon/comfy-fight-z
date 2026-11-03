@@ -1,0 +1,35 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const {spawnSync} = require('node:child_process');
+const root = path.resolve(__dirname, '../..');
+
+test('pending fictional preview never regenerates media and cannot pass a strict release', t => {
+  const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'cfz-pending-demo-'));
+  t.after(() => { const resolved = path.resolve(folder); if (path.dirname(resolved) !== path.resolve(os.tmpdir()) || !path.basename(resolved).startsWith('cfz-pending-demo-')) throw new Error('Unexpected temporary fixture path'); fs.rmSync(resolved, {recursive:true, force:true}); });
+  const write = (relative, data) => { const file = path.join(folder,relative); fs.mkdirSync(path.dirname(file),{recursive:true}); fs.writeFileSync(file,typeof data === 'string' ? data : JSON.stringify(data)); };
+  for (const file of ['build/tools/build.cjs','build/tools/lib/runtime-validation.cjs']) write(file,fs.readFileSync(path.join(root,file),'utf8'));
+  write('build/tools/build-assets.cjs','throw new Error("A pending demo must not generate or reuse any art");');
+  write('build/public/index.html','<title>Fictional demo awaiting generation</title>');
+  const manifest = {version:1,title:'Fictional demo',generationPending:true,fighters:[{id:'invented',name:'Invented',poses:{}}],stages:[{id:'yard',name:'The Yard'}],ui:{},effects:{},audio:{}};
+  write('build/public/assets/manifest.json',manifest);
+  const run = (...args) => spawnSync(process.execPath,['build/tools/build.cjs',...args],{cwd:folder,encoding:'utf8',windowsHide:true});
+  const normal = run(); assert.equal(normal.status,0,normal.stderr); assert.match(normal.stdout,/media-free preview/);
+  assert.deepEqual(fs.readdirSync(path.join(folder,'output/game/assets')),['manifest.json']);
+  assert.equal(fs.existsSync(path.join(folder,'dist')),false);
+  assert.equal(fs.existsSync(path.join(folder,'build/dist')),false);
+  const game = path.join(folder,'output/game'), saved = path.join(folder,'output/preview-before-junction');
+  fs.renameSync(game,saved);
+  fs.symlinkSync(path.join(folder,'build/public'),game,'junction');
+  const redirected = run(); assert.notEqual(redirected.status,0); assert.match(redirected.stderr,/resolves outside output\/game/);
+  assert.equal(fs.readFileSync(path.join(folder,'build/public/index.html'),'utf8'),'<title>Fictional demo awaiting generation</title>');
+  fs.unlinkSync(game); fs.renameSync(saved,game);
+  const strict = run('--strict'); assert.notEqual(strict.status,0); assert.match(strict.stderr,/awaiting generation.*strict release/);
+  manifest.fighters[0].portrait = 'assets/previous.webp'; write('build/public/assets/manifest.json',manifest);
+  const contaminated = run(); assert.notEqual(contaminated.status,0); assert.match(contaminated.stderr,/must not reference any previous media/);
+  delete manifest.fighters[0].portrait; write('build/public/assets/manifest.json',manifest);
+  write('build/public/assets/unmapped-old.webp','retired media fixture');
+  const orphaned = run(); assert.notEqual(orphaned.status,0); assert.match(orphaned.stderr,/unexpected asset files/);
+});

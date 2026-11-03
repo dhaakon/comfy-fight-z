@@ -1,34 +1,29 @@
 {
-  "name": "comfy-fighter-z",
+  "name": "comfy-fighter-z-repository",
   "version": "0.1.0",
   "private": true,
-  "description": "Reference-driven cloud ComfyUI asset factory and anime fighting game",
+  "description": "ComfyUI asset generation, game builder and generated output",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "workflows": "node tools/prepare-workflows.cjs && node tools/prepare-audio-workflows.cjs && node tools/prepare-cinematic-workflows.cjs --templates-only",
-    "nodes:install": "node tools/install-comfy-nodes.cjs",
-    "import:assets": "node tools/import-assets.cjs",
-    "build:assets": "node tools/build-assets.cjs",
-    "build": "node tools/build.cjs",
-    "build:release": "node tools/build.cjs --strict",
-    "build:bundle": "node tools/build-bundle.cjs",
-    "export:dfz": "node tools/export-dfz.cjs",
-    "start": "node tools/serve.cjs",
-    "test": "node --test test/*.test.cjs",
-    "test:browser": "npm run build && node test/browser-smoke.cjs",
-    "test:builder": "npm run build && node test/builder-browser.cjs",
-    "workflows:audio": "node tools/prepare-audio-workflows.cjs",
-    "workflows:factory": "node tools/prepare-factory-workflows.cjs",
-    "workflows:demo": "node tools/prepare-fictional-demo.cjs",
-    "adopt:game": "node tools/adopt-game.cjs",
-    "merge:assets": "node tools/merge-bundles.cjs"
-  },
-  "dependencies": {
-    "@napi-rs/canvas": "1.0.9"
-  },
-  "devDependencies": {
-    "playwright": "1.64.1"
+    "postinstall": "npm --prefix build ci",
+    "workflows": "node comfyui/tools/prepare-workflows.cjs && node comfyui/tools/prepare-audio-workflows.cjs && node comfyui/tools/prepare-cinematic-workflows.cjs --templates-only",
+    "nodes:install": "node comfyui/tools/install-comfy-nodes.cjs",
+    "import:assets": "node build/tools/import-assets.cjs",
+    "build:assets": "node build/tools/build-assets.cjs",
+    "build": "node build/tools/build.cjs",
+    "build:release": "node build/tools/build.cjs --strict",
+    "build:bundle": "node build/tools/build-bundle.cjs",
+    "export:dfz": "node build/tools/export-dfz.cjs",
+    "start": "node build/tools/serve.cjs",
+    "test": "node --test build/test/*.test.cjs",
+    "test:browser": "npm run build && node build/test/browser-smoke.cjs",
+    "test:builder": "npm run build && node build/test/builder-browser.cjs",
+    "workflows:audio": "node comfyui/tools/prepare-audio-workflows.cjs",
+    "workflows:factory": "node comfyui/tools/prepare-factory-workflows.cjs",
+    "workflows:demo": "node comfyui/tools/prepare-fictional-demo.cjs",
+    "adopt:game": "node build/tools/adopt-game.cjs",
+    "merge:assets": "node build/tools/merge-bundles.cjs"
   }
 }

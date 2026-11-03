@@ -1,0 +1,103 @@
+{
+  "title": "Comfy Fighter Z",
+  "subtitle": "Higgsfield Open Source Saga",
+  "workflowURL": "/builder/templates/comfy-hackathon.json",
+  "fictional": true,
+  "characters": [
+    {
+      "id": "griddle",
+      "name": "Griddle",
+      "enabled": true,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "rivet",
+      "name": "Rivet",
+      "enabled": true,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "tempo",
+      "name": "Tempo",
+      "enabled": true,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "nimbus",
+      "name": "Nimbus",
+      "enabled": true,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "switchback",
+      "name": "Switchback",
+      "enabled": true,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "brick",
+      "name": "Brick",
+      "enabled": true,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    }
+  ],
+  "environments": [
+    {
+      "id": "yard",
+      "name": "The Yard",
+      "enabled": true,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "rooftop",
+      "name": "Sunset Rooftop",
+      "enabled": false,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    },
+    {
+      "id": "arcade",
+      "name": "Midnight Arcade",
+      "enabled": false,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
+    }
+  ],
+  "templates": [
+    {
+      "id": "character",
+      "label": "One complete character pack",
+      "url": "/builder/templates/character-factory.json"
+    },
+    {
+      "id": "sheet",
+      "label": "One sprite sheet",
+      "url": "/builder/templates/sprite-sheet.json"
+    },
+    {
+      "id": "environment",
+      "label": "One environment",
+      "url": "/builder/templates/environment-factory.json"
+    }
+  ],
+  "nodePack": {
+    "name": "Comfy Fighter Z Asset Factory",
+    "installInstructions": "Copy comfyui/custom_nodes/dad_fighter_assets into your ComfyUI custom_nodes folder and restart ComfyUI. Then open the downloaded workflow."
+  }
+}
