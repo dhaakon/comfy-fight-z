@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.mcp.json
+dist/
+build/
+# Accepted, optimized runtime assets in public/assets are versioned with the game.
+assets/generated/
+exports/
+test-runs/
+__pycache__/
+*.pyc

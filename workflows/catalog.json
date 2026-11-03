@@ -1,0 +1,464 @@
+{
+  "model": "Gemini Nano Banana 2.1",
+  "cloudOnly": true,
+  "paid": true,
+  "paidGenerations": 49,
+  "mappedAssets": 56,
+  "sourceReferences": [
+    {
+      "id": "allyson_source",
+      "sourceImage": "ref/characters/allyson.jpeg",
+      "sourceInput": "allyson.jpeg",
+      "sha256": "edb95f8729ccba658d2b219b20f566bbdf13620c723bfd33aaa2dca81ffcbe4a"
+    },
+    {
+      "id": "deep_source",
+      "sourceImage": "ref/characters/deep.jpeg",
+      "sourceInput": "deep.jpeg",
+      "sha256": "5719d46e573402773b7722d313f2fb2b96ae936a89b0064046c6996690eb1cd3"
+    },
+    {
+      "id": "georgia_source",
+      "sourceImage": "ref/characters/georgia.jpeg",
+      "sourceInput": "georgia.jpeg",
+      "sha256": "930b9fb4df7759d46ec2de2478b149e5dca462f8d60aab86f66eab8a604fa0e7"
+    },
+    {
+      "id": "matt_source",
+      "sourceImage": "ref/characters/matt.jpeg",
+      "sourceInput": "matt.jpeg",
+      "sha256": "ea5a2d6413564341fdb60c37406c505cba88cbfc89d43a2da32bb5df7d08dac8"
+    },
+    {
+      "id": "photographer_source",
+      "sourceImage": "ref/characters/photographer.jpeg",
+      "sourceInput": "photographer.jpeg",
+      "sha256": "c54e6a71f576402ce82b8ff4ab69b9fec1e0727a6755fe295cb1abbf78331d4f"
+    },
+    {
+      "id": "rob_source",
+      "sourceImage": "ref/characters/rob.jpeg",
+      "sourceInput": "rob.jpeg",
+      "sha256": "e94a341379ec56a86163395b9a2b5b58b76ccde8529773d15528597cab409310"
+    },
+    {
+      "id": "yard_source",
+      "sourceImage": "ref/levels/level-theyard.jpeg",
+      "sourceInput": "level-theyard.jpeg",
+      "sha256": "8d9399a571e6948d01e45d831fc88049b366460b5829cbca004ec5bde134f9dd"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "allyson_source",
+      "kind": "source",
+      "workflow": "workflows/jobs/allyson_source.json",
+      "output": "assets/generated/raw/allyson_source.png",
+      "sourceImage": "ref/characters/allyson.jpeg",
+      "sourceInput": "allyson.jpeg"
+    },
+    {
+      "id": "allyson_reference",
+      "kind": "reference",
+      "workflow": "workflows/jobs/allyson_reference.json",
+      "reference": "allyson_source",
+      "output": "assets/generated/raw/allyson_reference.png",
+      "sourceInput": "allyson.jpeg"
+    },
+    {
+      "id": "allyson_sheet",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/allyson_sheet.json",
+      "reference": "allyson_reference",
+      "output": "assets/generated/raw/allyson_sheet.png"
+    },
+    {
+      "id": "allyson_sheetB",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/allyson_sheetB.json",
+      "reference": "allyson_reference",
+      "output": "assets/generated/raw/allyson_sheetB.png"
+    },
+    {
+      "id": "allyson_sheetC",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/allyson_sheetC.json",
+      "reference": "allyson_reference",
+      "output": "assets/generated/raw/allyson_sheetC.png"
+    },
+    {
+      "id": "allyson_portrait",
+      "kind": "portrait",
+      "workflow": "workflows/jobs/allyson_portrait.json",
+      "reference": "allyson_reference",
+      "output": "assets/generated/raw/allyson_portrait.png"
+    },
+    {
+      "id": "allyson_hero",
+      "kind": "hero",
+      "workflow": "workflows/jobs/allyson_hero.json",
+      "reference": "allyson_reference",
+      "output": "assets/generated/raw/allyson_hero.png"
+    },
+    {
+      "id": "allyson_cutin",
+      "kind": "cutin",
+      "workflow": "workflows/jobs/allyson_cutin.json",
+      "reference": "allyson_reference",
+      "output": "assets/generated/raw/allyson_cutin.png"
+    },
+    {
+      "id": "deep_source",
+      "kind": "source",
+      "workflow": "workflows/jobs/deep_source.json",
+      "output": "assets/generated/raw/deep_source.png",
+      "sourceImage": "ref/characters/deep.jpeg",
+      "sourceInput": "deep.jpeg"
+    },
+    {
+      "id": "deep_reference",
+      "kind": "reference",
+      "workflow": "workflows/jobs/deep_reference.json",
+      "reference": "deep_source",
+      "output": "assets/generated/raw/deep_reference.png",
+      "sourceInput": "deep.jpeg"
+    },
+    {
+      "id": "deep_sheet",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/deep_sheet.json",
+      "reference": "deep_reference",
+      "output": "assets/generated/raw/deep_sheet.png"
+    },
+    {
+      "id": "deep_sheetB",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/deep_sheetB.json",
+      "reference": "deep_reference",
+      "output": "assets/generated/raw/deep_sheetB.png"
+    },
+    {
+      "id": "deep_sheetC",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/deep_sheetC.json",
+      "reference": "deep_reference",
+      "output": "assets/generated/raw/deep_sheetC.png"
+    },
+    {
+      "id": "deep_portrait",
+      "kind": "portrait",
+      "workflow": "workflows/jobs/deep_portrait.json",
+      "reference": "deep_reference",
+      "output": "assets/generated/raw/deep_portrait.png"
+    },
+    {
+      "id": "deep_hero",
+      "kind": "hero",
+      "workflow": "workflows/jobs/deep_hero.json",
+      "reference": "deep_reference",
+      "output": "assets/generated/raw/deep_hero.png"
+    },
+    {
+      "id": "deep_cutin",
+      "kind": "cutin",
+      "workflow": "workflows/jobs/deep_cutin.json",
+      "reference": "deep_reference",
+      "output": "assets/generated/raw/deep_cutin.png"
+    },
+    {
+      "id": "georgia_source",
+      "kind": "source",
+      "workflow": "workflows/jobs/georgia_source.json",
+      "output": "assets/generated/raw/georgia_source.png",
+      "sourceImage": "ref/characters/georgia.jpeg",
+      "sourceInput": "georgia.jpeg"
+    },
+    {
+      "id": "georgia_reference",
+      "kind": "reference",
+      "workflow": "workflows/jobs/georgia_reference.json",
+      "reference": "georgia_source",
+      "output": "assets/generated/raw/georgia_reference.png",
+      "sourceInput": "georgia.jpeg"
+    },
+    {
+      "id": "georgia_sheet",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/georgia_sheet.json",
+      "reference": "georgia_reference",
+      "output": "assets/generated/raw/georgia_sheet.png"
+    },
+    {
+      "id": "georgia_sheetB",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/georgia_sheetB.json",
+      "reference": "georgia_reference",
+      "output": "assets/generated/raw/georgia_sheetB.png"
+    },
+    {
+      "id": "georgia_sheetC",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/georgia_sheetC.json",
+      "reference": "georgia_reference",
+      "output": "assets/generated/raw/georgia_sheetC.png"
+    },
+    {
+      "id": "georgia_portrait",
+      "kind": "portrait",
+      "workflow": "workflows/jobs/georgia_portrait.json",
+      "reference": "georgia_reference",
+      "output": "assets/generated/raw/georgia_portrait.png"
+    },
+    {
+      "id": "georgia_hero",
+      "kind": "hero",
+      "workflow": "workflows/jobs/georgia_hero.json",
+      "reference": "georgia_reference",
+      "output": "assets/generated/raw/georgia_hero.png"
+    },
+    {
+      "id": "georgia_cutin",
+      "kind": "cutin",
+      "workflow": "workflows/jobs/georgia_cutin.json",
+      "reference": "georgia_reference",
+      "output": "assets/generated/raw/georgia_cutin.png"
+    },
+    {
+      "id": "matt_source",
+      "kind": "source",
+      "workflow": "workflows/jobs/matt_source.json",
+      "output": "assets/generated/raw/matt_source.png",
+      "sourceImage": "ref/characters/matt.jpeg",
+      "sourceInput": "matt.jpeg"
+    },
+    {
+      "id": "matt_reference",
+      "kind": "reference",
+      "workflow": "workflows/jobs/matt_reference.json",
+      "reference": "matt_source",
+      "output": "assets/generated/raw/matt_reference.png",
+      "sourceInput": "matt.jpeg"
+    },
+    {
+      "id": "matt_sheet",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/matt_sheet.json",
+      "reference": "matt_reference",
+      "output": "assets/generated/raw/matt_sheet.png"
+    },
+    {
+      "id": "matt_sheetB",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/matt_sheetB.json",
+      "reference": "matt_reference",
+      "output": "assets/generated/raw/matt_sheetB.png"
+    },
+    {
+      "id": "matt_sheetC",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/matt_sheetC.json",
+      "reference": "matt_reference",
+      "output": "assets/generated/raw/matt_sheetC.png"
+    },
+    {
+      "id": "matt_portrait",
+      "kind": "portrait",
+      "workflow": "workflows/jobs/matt_portrait.json",
+      "reference": "matt_reference",
+      "output": "assets/generated/raw/matt_portrait.png"
+    },
+    {
+      "id": "matt_hero",
+      "kind": "hero",
+      "workflow": "workflows/jobs/matt_hero.json",
+      "reference": "matt_reference",
+      "output": "assets/generated/raw/matt_hero.png"
+    },
+    {
+      "id": "matt_cutin",
+      "kind": "cutin",
+      "workflow": "workflows/jobs/matt_cutin.json",
+      "reference": "matt_reference",
+      "output": "assets/generated/raw/matt_cutin.png"
+    },
+    {
+      "id": "photographer_source",
+      "kind": "source",
+      "workflow": "workflows/jobs/photographer_source.json",
+      "output": "assets/generated/raw/photographer_source.png",
+      "sourceImage": "ref/characters/photographer.jpeg",
+      "sourceInput": "photographer.jpeg"
+    },
+    {
+      "id": "photographer_reference",
+      "kind": "reference",
+      "workflow": "workflows/jobs/photographer_reference.json",
+      "reference": "photographer_source",
+      "output": "assets/generated/raw/photographer_reference.png",
+      "sourceInput": "photographer.jpeg"
+    },
+    {
+      "id": "photographer_sheet",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/photographer_sheet.json",
+      "reference": "photographer_reference",
+      "output": "assets/generated/raw/photographer_sheet.png"
+    },
+    {
+      "id": "photographer_sheetB",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/photographer_sheetB.json",
+      "reference": "photographer_reference",
+      "output": "assets/generated/raw/photographer_sheetB.png"
+    },
+    {
+      "id": "photographer_sheetC",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/photographer_sheetC.json",
+      "reference": "photographer_reference",
+      "output": "assets/generated/raw/photographer_sheetC.png"
+    },
+    {
+      "id": "photographer_portrait",
+      "kind": "portrait",
+      "workflow": "workflows/jobs/photographer_portrait.json",
+      "reference": "photographer_reference",
+      "output": "assets/generated/raw/photographer_portrait.png"
+    },
+    {
+      "id": "photographer_hero",
+      "kind": "hero",
+      "workflow": "workflows/jobs/photographer_hero.json",
+      "reference": "photographer_reference",
+      "output": "assets/generated/raw/photographer_hero.png"
+    },
+    {
+      "id": "photographer_cutin",
+      "kind": "cutin",
+      "workflow": "workflows/jobs/photographer_cutin.json",
+      "reference": "photographer_reference",
+      "output": "assets/generated/raw/photographer_cutin.png"
+    },
+    {
+      "id": "rob_source",
+      "kind": "source",
+      "workflow": "workflows/jobs/rob_source.json",
+      "output": "assets/generated/raw/rob_source.png",
+      "sourceImage": "ref/characters/rob.jpeg",
+      "sourceInput": "rob.jpeg"
+    },
+    {
+      "id": "rob_reference",
+      "kind": "reference",
+      "workflow": "workflows/jobs/rob_reference.json",
+      "reference": "rob_source",
+      "output": "assets/generated/raw/rob_reference.png",
+      "sourceInput": "rob.jpeg"
+    },
+    {
+      "id": "rob_sheet",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/rob_sheet.json",
+      "reference": "rob_reference",
+      "output": "assets/generated/raw/rob_sheet.png"
+    },
+    {
+      "id": "rob_sheetB",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/rob_sheetB.json",
+      "reference": "rob_reference",
+      "output": "assets/generated/raw/rob_sheetB.png"
+    },
+    {
+      "id": "rob_sheetC",
+      "kind": "sprites",
+      "workflow": "workflows/jobs/rob_sheetC.json",
+      "reference": "rob_reference",
+      "output": "assets/generated/raw/rob_sheetC.png"
+    },
+    {
+      "id": "rob_portrait",
+      "kind": "portrait",
+      "workflow": "workflows/jobs/rob_portrait.json",
+      "reference": "rob_reference",
+      "output": "assets/generated/raw/rob_portrait.png"
+    },
+    {
+      "id": "rob_hero",
+      "kind": "hero",
+      "workflow": "workflows/jobs/rob_hero.json",
+      "reference": "rob_reference",
+      "output": "assets/generated/raw/rob_hero.png"
+    },
+    {
+      "id": "rob_cutin",
+      "kind": "cutin",
+      "workflow": "workflows/jobs/rob_cutin.json",
+      "reference": "rob_reference",
+      "output": "assets/generated/raw/rob_cutin.png"
+    },
+    {
+      "id": "yard_source",
+      "kind": "source",
+      "workflow": "workflows/jobs/yard_source.json",
+      "output": "assets/generated/raw/yard_source.png",
+      "sourceImage": "ref/levels/level-theyard.jpeg",
+      "sourceInput": "level-theyard.jpeg"
+    },
+    {
+      "id": "yard",
+      "kind": "stage",
+      "workflow": "workflows/jobs/yard.json",
+      "reference": "yard_source",
+      "output": "assets/generated/raw/yard.png",
+      "sourceInput": "level-theyard.jpeg"
+    },
+    {
+      "id": "title",
+      "kind": "ui",
+      "workflow": "workflows/jobs/title.json",
+      "reference": "yard",
+      "output": "assets/generated/raw/title.png"
+    },
+    {
+      "id": "select",
+      "kind": "ui",
+      "workflow": "workflows/jobs/select.json",
+      "reference": "yard",
+      "output": "assets/generated/raw/select.png"
+    },
+    {
+      "id": "logo",
+      "kind": "ui",
+      "workflow": "workflows/jobs/logo.json",
+      "output": "assets/generated/raw/logo.png"
+    },
+    {
+      "id": "hud",
+      "kind": "ui",
+      "workflow": "workflows/jobs/hud.json",
+      "output": "assets/generated/raw/hud.png"
+    },
+    {
+      "id": "icons",
+      "kind": "ui",
+      "workflow": "workflows/jobs/icons.json",
+      "output": "assets/generated/raw/icons.png"
+    },
+    {
+      "id": "combat_effects",
+      "kind": "effects",
+      "workflow": "workflows/jobs/combat_effects.json",
+      "output": "assets/generated/raw/combat_effects.png"
+    }
+  ],
+  "packs": [
+    "workflows/packs/allyson.json",
+    "workflows/packs/deep.json",
+    "workflows/packs/georgia.json",
+    "workflows/packs/matt.json",
+    "workflows/packs/photographer.json",
+    "workflows/packs/rob.json",
+    "workflows/packs/environment-and-ui.json"
+  ]
+}

@@ -1,0 +1,3385 @@
+{
+  "id": "7a3e6542-ab37-4bb1-ab9c-7344c0eac82c",
+  "revision": 0,
+  "last_node_id": 54,
+  "last_link_id": 83,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "DFZAssetRoot",
+      "title": "Shared game asset root (same folder as images)",
+      "pos": [
+        -550,
+        180
+      ],
+      "size": [
+        470,
+        410
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "links": [
+            1,
+            3,
+            6,
+            10,
+            14,
+            18,
+            22,
+            25,
+            28,
+            31,
+            34,
+            38,
+            42,
+            46,
+            50,
+            54,
+            58,
+            62,
+            66,
+            70,
+            74,
+            78,
+            82
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZAssetRoot"
+      },
+      "widgets_values": [
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\assets\\generated\\comfy-fighter-z",
+        "{\n  \"title\": \"Comfy Fighter Z\",\n  \"assetRoot\": \"assets/generated/comfy-fighter-z\",\n  \"style\": \"Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\",\n  \"model\": \"Gemini Nano Banana 2.1\",\n  \"fighters\": [\n    {\n      \"id\": \"allyson\",\n      \"name\": \"Allyson\",\n      \"color\": \"#f4ef35\",\n      \"sourceImage\": \"ref/characters/allyson.jpeg\",\n      \"sourceInput\": \"allyson.jpeg\",\n      \"description\": \"The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Node Burst\",\n        \"description\": \"Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.\"\n      },\n      \"introTagline\": \"Every node is connected. Your defeat is next.\",\n      \"introVoice\": \"River (neutral, american)\"\n    },\n    {\n      \"id\": \"deep\",\n      \"name\": \"Deep\",\n      \"color\": \"#41d7ff\",\n      \"sourceImage\": \"ref/characters/deep.jpeg\",\n      \"sourceInput\": \"deep.jpeg\",\n      \"description\": \"The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Queue Breaker\",\n        \"description\": \"Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\"\n      },\n      \"introTagline\": \"You are in my queue now.\",\n      \"introVoice\": \"Daniel (male, british)\"\n    },\n    {\n      \"id\": \"georgia\",\n      \"name\": \"Georgia\",\n      \"color\": \"#ff6ccf\",\n      \"sourceImage\": \"ref/characters/georgia.jpeg\",\n      \"sourceInput\": \"georgia.jpeg\",\n      \"description\": \"The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Golden Cascade\",\n        \"description\": \"Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell.\"\n      },\n      \"introTagline\": \"Catch the light. Feel the impact.\",\n      \"introVoice\": \"Jessica (female, american)\"\n    },\n    {\n      \"id\": \"matt\",\n      \"name\": \"Matt\",\n      \"color\": \"#ff9248\",\n      \"sourceImage\": \"ref/characters/matt.jpeg\",\n      \"sourceInput\": \"matt.jpeg\",\n      \"description\": \"The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Latent Rush\",\n        \"description\": \"Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs.\"\n      },\n      \"introTagline\": \"Less waiting. More fighting.\",\n      \"introVoice\": \"Charlie (male, australian)\"\n    },\n    {\n      \"id\": \"photographer\",\n      \"name\": \"The Photographer\",\n      \"color\": \"#b397ff\",\n      \"sourceImage\": \"ref/characters/photographer.jpeg\",\n      \"sourceInput\": \"photographer.jpeg\",\n      \"description\": \"The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Flash Frame\",\n        \"description\": \"The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering.\"\n      },\n      \"introTagline\": \"Hold still. This knockout needs a close-up.\",\n      \"introVoice\": \"Brian (male, american)\"\n    },\n    {\n      \"id\": \"rob\",\n      \"name\": \"Rob\",\n      \"color\": \"#6de9c9\",\n      \"sourceImage\": \"ref/characters/rob.jpeg\",\n      \"sourceInput\": \"rob.jpeg\",\n      \"description\": \"The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\",\n      \"specialMove\": {\n        \"name\": \"Compile Crash\",\n        \"description\": \"Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell.\"\n      },\n      \"introTagline\": \"Build passed. You are going down.\",\n      \"introVoice\": \"Adam (male, american)\"\n    }\n  ],\n  \"stages\": [\n    {\n      \"id\": \"yard\",\n      \"name\": \"The Yard\",\n      \"sourceImage\": \"ref/levels/level-theyard.jpeg\",\n      \"sourceInput\": \"level-theyard.jpeg\",\n      \"description\": \"The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard.\"\n    }\n  ],\n  \"sheets\": {\n    \"sheet\": [\n      \"idle\",\n      \"walk\",\n      \"punch\",\n      \"kick\",\n      \"block\",\n      \"hit\",\n      \"special\",\n      \"down\",\n      \"win\"\n    ],\n    \"sheetB\": [\n      \"stance2\",\n      \"crouch\",\n      \"sweep\",\n      \"launcher\",\n      \"jump\",\n      \"airkick\",\n      \"hpunch\",\n      \"dash\",\n      \"tumble\"\n    ],\n    \"sheetC\": [\n      \"walk2\",\n      \"lkick\",\n      \"cjab\",\n      \"airpunch\",\n      \"throw\",\n      \"taunt\",\n      \"getup\",\n      \"powerup\",\n      \"entrance\"\n    ]\n  },\n  \"uiStyle\": \"Original 1990s shonen battle-anime arcade interface illustration: bold brush ink, hard-edged cel shadows, explosive radial speed lines, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Dramatic heroic tournament atmosphere and strong negative space for readable game UI. Original typography and emblems; no copied franchise characters, symbols or logos.\",\n  \"subtitle\": \"Higgsfield Open Source Saga\",\n  \"expectedAudio\": [\n    \"menu_music\",\n    \"yard_music\",\n    \"ann_select\",\n    \"ann_fight\",\n    \"ann_ko\",\n    \"ann_victory\",\n    \"sfx_punch\",\n    \"sfx_kick\",\n    \"sfx_block\",\n    \"sfx_special\",\n    \"fighter_allyson_special\",\n    \"fighter_deep_special\",\n    \"fighter_georgia_special\",\n    \"fighter_matt_special\",\n    \"fighter_photographer_special\",\n    \"fighter_rob_special\",\n    \"fighter_allyson_intro\",\n    \"fighter_deep_intro\",\n    \"fighter_georgia_intro\",\n    \"fighter_matt_intro\",\n    \"fighter_photographer_intro\",\n    \"fighter_rob_intro\"\n  ]\n}"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "DFZExportAudioManifest",
+      "title": "Export audio.json after every track",
+      "pos": [
+        1550,
+        180
+      ],
+      "size": [
+        420,
+        680
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 1
+        },
+        {
+          "name": "assets.audio_0",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 4
+        },
+        {
+          "name": "assets.audio_1",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 7
+        },
+        {
+          "name": "assets.audio_2",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 11
+        },
+        {
+          "name": "assets.audio_3",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 15
+        },
+        {
+          "name": "assets.audio_4",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 19
+        },
+        {
+          "name": "assets.audio_5",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 23
+        },
+        {
+          "name": "assets.audio_6",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 26
+        },
+        {
+          "name": "assets.audio_7",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 29
+        },
+        {
+          "name": "assets.audio_8",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 32
+        },
+        {
+          "name": "assets.audio_9",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 35
+        },
+        {
+          "name": "assets.audio_10",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 39
+        },
+        {
+          "name": "assets.audio_11",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 43
+        },
+        {
+          "name": "assets.audio_12",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 47
+        },
+        {
+          "name": "assets.audio_13",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 51
+        },
+        {
+          "name": "assets.audio_14",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 55
+        },
+        {
+          "name": "assets.audio_15",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 59
+        },
+        {
+          "name": "assets.audio_16",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 63
+        },
+        {
+          "name": "assets.audio_17",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 67
+        },
+        {
+          "name": "assets.audio_18",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 71
+        },
+        {
+          "name": "assets.audio_19",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 75
+        },
+        {
+          "name": "assets.audio_20",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 79
+        },
+        {
+          "name": "assets.audio_21",
+          "type": "DFZ_AUDIO_ASSET",
+          "link": 83
+        }
+      ],
+      "outputs": [
+        {
+          "name": "manifest_path",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZExportAudioManifest"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 3,
+      "type": "SoniloTextToMusic",
+      "pos": [
+        30,
+        180
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.28.0",
+        "Node name for S&R": "SoniloTextToMusic"
+      },
+      "widgets_values": [
+        "Original instrumental anime arcade fighting-game character selection music. Bright electric guitar riffs, punchy bass, energetic drums, heroic synth brass, playful competitive energy, 148 BPM. Confident memorable original melody, no vocals, no speech, no existing game or anime melody. Steady groove, clean loop-friendly ending without a long fade. For Comfy Fighter Z.",
+        45,
+        42,
+        "fixed"
+      ],
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "menu_music | cloud audio",
+      "widgets_values_named": {
+        "prompt": "Original instrumental anime arcade fighting-game character selection music. Bright electric guitar riffs, punchy bass, energetic drums, heroic synth brass, playful competitive energy, 148 BPM. Confident memorable original melody, no vocals, no speech, no existing game or anime melody. Steady groove, clean loop-friendly ending without a long fade. For Comfy Fighter Z.",
+        "duration": 45,
+        "seed": 42,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 4,
+      "type": "DFZSaveAudio",
+      "title": "Save + map menu_music",
+      "pos": [
+        640,
+        180
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 2
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"menu_music\",\n  \"kind\": \"audio\",\n  \"category\": \"music\",\n  \"loop\": true\n}"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "SoniloTextToMusic",
+      "pos": [
+        30,
+        580
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.28.0",
+        "Node name for S&R": "SoniloTextToMusic"
+      },
+      "widgets_values": [
+        "Original instrumental 1990s battle-anime fighting-game theme for The Yard: an indoor coworking venue transformed into a lively hackathon tournament arena. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+        60,
+        42,
+        "fixed"
+      ],
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "yard_music | cloud audio",
+      "widgets_values_named": {
+        "prompt": "Original instrumental 1990s battle-anime fighting-game theme for The Yard: an indoor coworking venue transformed into a lively hackathon tournament arena. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+        "duration": 60,
+        "seed": 42,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 6,
+      "type": "DFZSaveAudio",
+      "title": "Save + map yard_music",
+      "pos": [
+        640,
+        580
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 5
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"yard_music\",\n  \"kind\": \"audio\",\n  \"category\": \"music\",\n  \"loop\": true\n}"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "ElevenLabsVoiceSelector",
+      "pos": [
+        -550,
+        670
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "links": [
+            8,
+            12,
+            16,
+            20,
+            36,
+            40,
+            44,
+            48,
+            52,
+            56
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsVoiceSelector",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "Roger (male, american)"
+      ],
+      "widgets_values_named": {
+        "voice": "Roger (male, american)"
+      },
+      "title": "Fictional performance: Roger (male, american) (preset; no cloning)"
+    },
+    {
+      "id": 7,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        980
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Choose your fighter!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Choose your fighter!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "ann_select | cloud audio"
+    },
+    {
+      "id": 9,
+      "type": "DFZSaveAudio",
+      "title": "Save + map ann_select",
+      "pos": [
+        640,
+        980
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 9
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"ann_select\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        1380
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Ready? FIGHT!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Ready? FIGHT!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "ann_fight | cloud audio"
+    },
+    {
+      "id": 11,
+      "type": "DFZSaveAudio",
+      "title": "Save + map ann_fight",
+      "pos": [
+        640,
+        1380
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 13
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"ann_fight\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        1780
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] K! O!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] K! O!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "ann_ko | cloud audio"
+    },
+    {
+      "id": 13,
+      "type": "DFZSaveAudio",
+      "title": "Save + map ann_ko",
+      "pos": [
+        640,
+        1780
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 17
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"ann_ko\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        2180
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Victory!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Victory!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "ann_victory | cloud audio"
+    },
+    {
+      "id": 15,
+      "type": "DFZSaveAudio",
+      "title": "Save + map ann_victory",
+      "pos": [
+        640,
+        2180
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 21
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"ann_victory\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "ElevenLabsTextToSoundEffects",
+      "pos": [
+        30,
+        2580
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSoundEffects",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "One isolated stylized anime fighting-game punch impact: fast airy swoosh then sharp solid thwack and tiny energy snap. Immediate attack, short clean decay, no voice, no music, no ambience.",
+        "eleven_sfx_v2",
+        0.6,
+        false,
+        0.5,
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "One isolated stylized anime fighting-game punch impact: fast airy swoosh then sharp solid thwack and tiny energy snap. Immediate attack, short clean decay, no voice, no music, no ambience.",
+        "model": "eleven_sfx_v2",
+        "model.duration": 0.6,
+        "model.loop": false,
+        "model.prompt_influence": 0.5,
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "sfx_punch | cloud audio"
+    },
+    {
+      "id": 17,
+      "type": "DFZSaveAudio",
+      "title": "Save + map sfx_punch",
+      "pos": [
+        640,
+        2580
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 24
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"sfx_punch\",\n  \"kind\": \"audio\",\n  \"category\": \"sfx\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "ElevenLabsTextToSoundEffects",
+      "pos": [
+        30,
+        2980
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSoundEffects",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "One isolated heavy arcade fighting-game kick impact: short fast swish followed by deep punchy slam with a crisp crack. Immediate attack and short clean tail. No voice, no music, no ambience.",
+        "eleven_sfx_v2",
+        0.8,
+        false,
+        0.5,
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "One isolated heavy arcade fighting-game kick impact: short fast swish followed by deep punchy slam with a crisp crack. Immediate attack and short clean tail. No voice, no music, no ambience.",
+        "model": "eleven_sfx_v2",
+        "model.duration": 0.8,
+        "model.loop": false,
+        "model.prompt_influence": 0.5,
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "sfx_kick | cloud audio"
+    },
+    {
+      "id": 19,
+      "type": "DFZSaveAudio",
+      "title": "Save + map sfx_kick",
+      "pos": [
+        640,
+        2980
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 27
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"sfx_kick\",\n  \"kind\": \"audio\",\n  \"category\": \"sfx\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "ElevenLabsTextToSoundEffects",
+      "pos": [
+        30,
+        3380
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSoundEffects",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate and concise. No voices, no music, no ambience.",
+        "eleven_sfx_v2",
+        0.6,
+        false,
+        0.5,
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate and concise. No voices, no music, no ambience.",
+        "model": "eleven_sfx_v2",
+        "model.duration": 0.6,
+        "model.loop": false,
+        "model.prompt_influence": 0.5,
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "sfx_block | cloud audio"
+    },
+    {
+      "id": 21,
+      "type": "DFZSaveAudio",
+      "title": "Save + map sfx_block",
+      "pos": [
+        640,
+        3380
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 30
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"sfx_block\",\n  \"kind\": \"audio\",\n  \"category\": \"sfx\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "ElevenLabsTextToSoundEffects",
+      "pos": [
+        30,
+        3780
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSoundEffects",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate start, compact clean tail. No voice, no music, no ambience.",
+        "eleven_sfx_v2",
+        1.2,
+        false,
+        0.5,
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate start, compact clean tail. No voice, no music, no ambience.",
+        "model": "eleven_sfx_v2",
+        "model.duration": 1.2,
+        "model.loop": false,
+        "model.prompt_influence": 0.5,
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "sfx_special | cloud audio"
+    },
+    {
+      "id": 23,
+      "type": "DFZSaveAudio",
+      "title": "Save + map sfx_special",
+      "pos": [
+        640,
+        3780
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 33
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"sfx_special\",\n  \"kind\": \"audio\",\n  \"category\": \"sfx\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 24,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        4180
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Node Burst!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Node Burst!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_allyson_special | cloud audio"
+    },
+    {
+      "id": 25,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_allyson_special",
+      "pos": [
+        640,
+        4180
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 37
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_allyson_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"allyson\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        4580
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Queue Breaker!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Queue Breaker!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_deep_special | cloud audio"
+    },
+    {
+      "id": 27,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_deep_special",
+      "pos": [
+        640,
+        4580
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 41
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_deep_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"deep\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 28,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        4980
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            45
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Golden Cascade!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Golden Cascade!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_georgia_special | cloud audio"
+    },
+    {
+      "id": 29,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_georgia_special",
+      "pos": [
+        640,
+        4980
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 45
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            47
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_georgia_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"georgia\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 30,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        5380
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            49
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Latent Rush!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Latent Rush!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_matt_special | cloud audio"
+    },
+    {
+      "id": 31,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_matt_special",
+      "pos": [
+        640,
+        5380
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 49
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            51
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_matt_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"matt\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 32,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        5780
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 52
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Flash Frame!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Flash Frame!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_photographer_special | cloud audio"
+    },
+    {
+      "id": 33,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_photographer_special",
+      "pos": [
+        640,
+        5780
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 53
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            55
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_photographer_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"photographer\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 34,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        6180
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            57
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[excited, powerful arcade announcer, crisp and energetic] Compile Crash!",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[excited, powerful arcade announcer, crisp and energetic] Compile Crash!",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_rob_special | cloud audio"
+    },
+    {
+      "id": 35,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_rob_special",
+      "pos": [
+        640,
+        6180
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 57
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 58
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            59
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_rob_special\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"rob\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "ElevenLabsVoiceSelector",
+      "pos": [
+        -550,
+        830
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "links": [
+            60
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsVoiceSelector",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "River (neutral, american)"
+      ],
+      "widgets_values_named": {
+        "voice": "River (neutral, american)"
+      },
+      "title": "Fictional performance: River (neutral, american) (preset; no cloning)"
+    },
+    {
+      "id": 36,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        6580
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 60
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            61
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[confident, energetic anime tournament fighter, crisp delivery] Every node is connected. Your defeat is next.",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] Every node is connected. Your defeat is next.",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_allyson_intro | cloud audio"
+    },
+    {
+      "id": 38,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_allyson_intro",
+      "pos": [
+        640,
+        6580
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 61
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 62
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            63
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_allyson_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"allyson\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 40,
+      "type": "ElevenLabsVoiceSelector",
+      "pos": [
+        -550,
+        990
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "links": [
+            64
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsVoiceSelector",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "Daniel (male, british)"
+      ],
+      "widgets_values_named": {
+        "voice": "Daniel (male, british)"
+      },
+      "title": "Fictional performance: Daniel (male, british) (preset; no cloning)"
+    },
+    {
+      "id": 39,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        6980
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 64
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            65
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[confident, energetic anime tournament fighter, crisp delivery] You are in my queue now.",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] You are in my queue now.",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_deep_intro | cloud audio"
+    },
+    {
+      "id": 41,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_deep_intro",
+      "pos": [
+        640,
+        6980
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 65
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 66
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            67
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_deep_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"deep\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 43,
+      "type": "ElevenLabsVoiceSelector",
+      "pos": [
+        -550,
+        1150
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "links": [
+            68
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsVoiceSelector",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "Jessica (female, american)"
+      ],
+      "widgets_values_named": {
+        "voice": "Jessica (female, american)"
+      },
+      "title": "Fictional performance: Jessica (female, american) (preset; no cloning)"
+    },
+    {
+      "id": 42,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        7380
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 68
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            69
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[confident, energetic anime tournament fighter, crisp delivery] Catch the light. Feel the impact.",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] Catch the light. Feel the impact.",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_georgia_intro | cloud audio"
+    },
+    {
+      "id": 44,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_georgia_intro",
+      "pos": [
+        640,
+        7380
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 69
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 70
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            71
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_georgia_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"georgia\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 46,
+      "type": "ElevenLabsVoiceSelector",
+      "pos": [
+        -550,
+        1310
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "links": [
+            72
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsVoiceSelector",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "Charlie (male, australian)"
+      ],
+      "widgets_values_named": {
+        "voice": "Charlie (male, australian)"
+      },
+      "title": "Fictional performance: Charlie (male, australian) (preset; no cloning)"
+    },
+    {
+      "id": 45,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        7780
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 72
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            73
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[confident, energetic anime tournament fighter, crisp delivery] Less waiting. More fighting.",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] Less waiting. More fighting.",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_matt_intro | cloud audio"
+    },
+    {
+      "id": 47,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_matt_intro",
+      "pos": [
+        640,
+        7780
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 73
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            75
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_matt_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"matt\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 49,
+      "type": "ElevenLabsVoiceSelector",
+      "pos": [
+        -550,
+        1470
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "links": [
+            76
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsVoiceSelector",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "Brian (male, american)"
+      ],
+      "widgets_values_named": {
+        "voice": "Brian (male, american)"
+      },
+      "title": "Fictional performance: Brian (male, american) (preset; no cloning)"
+    },
+    {
+      "id": 48,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        8180
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 48,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 76
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            77
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[confident, energetic anime tournament fighter, crisp delivery] Hold still. This knockout needs a close-up.",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] Hold still. This knockout needs a close-up.",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_photographer_intro | cloud audio"
+    },
+    {
+      "id": 50,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_photographer_intro",
+      "pos": [
+        640,
+        8180
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 49,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 77
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 78
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            79
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_photographer_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"photographer\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 52,
+      "type": "ElevenLabsVoiceSelector",
+      "pos": [
+        -550,
+        1630
+      ],
+      "size": [
+        320,
+        80
+      ],
+      "flags": {},
+      "order": 50,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "links": [
+            80
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsVoiceSelector",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "Adam (male, american)"
+      ],
+      "widgets_values_named": {
+        "voice": "Adam (male, american)"
+      },
+      "title": "Fictional performance: Adam (male, american) (preset; no cloning)"
+    },
+    {
+      "id": 51,
+      "type": "ElevenLabsTextToSpeech",
+      "pos": [
+        30,
+        8580
+      ],
+      "size": [
+        460,
+        320
+      ],
+      "flags": {},
+      "order": 51,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "voice",
+          "type": "ELEVENLABS_VOICE",
+          "link": 80
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            81
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ElevenLabsTextToSpeech",
+        "cnr_id": "comfy-core",
+        "ver": "0.14.1"
+      },
+      "widgets_values": [
+        "[confident, energetic anime tournament fighter, crisp delivery] Build passed. You are going down.",
+        0.45,
+        "auto",
+        "eleven_v4",
+        0.75,
+        "en",
+        42,
+        "fixed",
+        "mp3_44100_192"
+      ],
+      "widgets_values_named": {
+        "text": "[confident, energetic anime tournament fighter, crisp delivery] Build passed. You are going down.",
+        "stability": 0.45,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v4",
+        "model.similarity_boost": 0.75,
+        "language_code": "en",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "output_format": "mp3_44100_192"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "fighter_rob_intro | cloud audio"
+    },
+    {
+      "id": 53,
+      "type": "DFZSaveAudio",
+      "title": "Save + map fighter_rob_intro",
+      "pos": [
+        640,
+        8580
+      ],
+      "size": [
+        430,
+        250
+      ],
+      "flags": {},
+      "order": 52,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 81
+        },
+        {
+          "name": "root",
+          "type": "DFZ_ROOT",
+          "link": 82
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio_asset",
+          "type": "DFZ_AUDIO_ASSET",
+          "links": [
+            83
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DFZSaveAudio"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"fighter_rob_intro\",\n  \"kind\": \"audio\",\n  \"category\": \"voice\",\n  \"fighter\": \"rob\",\n  \"loop\": false\n}"
+      ]
+    },
+    {
+      "id": 54,
+      "type": "MarkdownNote",
+      "title": "Comfy Fighter Z: complete audio bundle",
+      "pos": [
+        -550,
+        -250
+      ],
+      "size": [
+        1000,
+        330
+      ],
+      "flags": {},
+      "order": 53,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "MarkdownNote"
+      },
+      "widgets_values": [
+        "# Comfy Fighter Z: complete audio bundle\n\n22 paid cloud audio jobs. Music: Sonilo. Effects: ElevenLabs SFX. Announcer, move names and fighter intro taglines: Eleven v4. Each intro uses a distinct stock preset voice for a fictional performance; it does not imitate the photographed person. No local model weights and no voice cloning.\n\nSet Asset Root to the SAME folder as the image graph. Audio saves are PCM WAVs under raw/. The exporter writes audio.json only after every track finishes; assets.json remains unchanged. Load the full folder in the builder to include both maps.\n\nMusic is requested as loop-friendly; audition the joins before release. Preparing this workflow spends nothing. Running it requires cloud credits and spending authorization."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "DFZ_ROOT"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "AUDIO"
+    ],
+    [
+      3,
+      1,
+      0,
+      4,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      4,
+      4,
+      0,
+      2,
+      1,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "AUDIO"
+    ],
+    [
+      6,
+      1,
+      0,
+      6,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      7,
+      6,
+      0,
+      2,
+      2,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      8,
+      8,
+      0,
+      7,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      9,
+      7,
+      0,
+      9,
+      0,
+      "AUDIO"
+    ],
+    [
+      10,
+      1,
+      0,
+      9,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      11,
+      9,
+      0,
+      2,
+      3,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      12,
+      8,
+      0,
+      10,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      13,
+      10,
+      0,
+      11,
+      0,
+      "AUDIO"
+    ],
+    [
+      14,
+      1,
+      0,
+      11,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      15,
+      11,
+      0,
+      2,
+      4,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      16,
+      8,
+      0,
+      12,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      17,
+      12,
+      0,
+      13,
+      0,
+      "AUDIO"
+    ],
+    [
+      18,
+      1,
+      0,
+      13,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      19,
+      13,
+      0,
+      2,
+      5,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      20,
+      8,
+      0,
+      14,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      21,
+      14,
+      0,
+      15,
+      0,
+      "AUDIO"
+    ],
+    [
+      22,
+      1,
+      0,
+      15,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      23,
+      15,
+      0,
+      2,
+      6,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      24,
+      16,
+      0,
+      17,
+      0,
+      "AUDIO"
+    ],
+    [
+      25,
+      1,
+      0,
+      17,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      26,
+      17,
+      0,
+      2,
+      7,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      27,
+      18,
+      0,
+      19,
+      0,
+      "AUDIO"
+    ],
+    [
+      28,
+      1,
+      0,
+      19,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      29,
+      19,
+      0,
+      2,
+      8,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      30,
+      20,
+      0,
+      21,
+      0,
+      "AUDIO"
+    ],
+    [
+      31,
+      1,
+      0,
+      21,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      32,
+      21,
+      0,
+      2,
+      9,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      33,
+      22,
+      0,
+      23,
+      0,
+      "AUDIO"
+    ],
+    [
+      34,
+      1,
+      0,
+      23,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      35,
+      23,
+      0,
+      2,
+      10,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      36,
+      8,
+      0,
+      24,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      37,
+      24,
+      0,
+      25,
+      0,
+      "AUDIO"
+    ],
+    [
+      38,
+      1,
+      0,
+      25,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      39,
+      25,
+      0,
+      2,
+      11,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      40,
+      8,
+      0,
+      26,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      41,
+      26,
+      0,
+      27,
+      0,
+      "AUDIO"
+    ],
+    [
+      42,
+      1,
+      0,
+      27,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      43,
+      27,
+      0,
+      2,
+      12,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      44,
+      8,
+      0,
+      28,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      45,
+      28,
+      0,
+      29,
+      0,
+      "AUDIO"
+    ],
+    [
+      46,
+      1,
+      0,
+      29,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      47,
+      29,
+      0,
+      2,
+      13,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      48,
+      8,
+      0,
+      30,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      49,
+      30,
+      0,
+      31,
+      0,
+      "AUDIO"
+    ],
+    [
+      50,
+      1,
+      0,
+      31,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      51,
+      31,
+      0,
+      2,
+      14,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      52,
+      8,
+      0,
+      32,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      53,
+      32,
+      0,
+      33,
+      0,
+      "AUDIO"
+    ],
+    [
+      54,
+      1,
+      0,
+      33,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      55,
+      33,
+      0,
+      2,
+      15,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      56,
+      8,
+      0,
+      34,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      57,
+      34,
+      0,
+      35,
+      0,
+      "AUDIO"
+    ],
+    [
+      58,
+      1,
+      0,
+      35,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      59,
+      35,
+      0,
+      2,
+      16,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      60,
+      37,
+      0,
+      36,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      61,
+      36,
+      0,
+      38,
+      0,
+      "AUDIO"
+    ],
+    [
+      62,
+      1,
+      0,
+      38,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      63,
+      38,
+      0,
+      2,
+      17,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      64,
+      40,
+      0,
+      39,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      65,
+      39,
+      0,
+      41,
+      0,
+      "AUDIO"
+    ],
+    [
+      66,
+      1,
+      0,
+      41,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      67,
+      41,
+      0,
+      2,
+      18,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      68,
+      43,
+      0,
+      42,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      69,
+      42,
+      0,
+      44,
+      0,
+      "AUDIO"
+    ],
+    [
+      70,
+      1,
+      0,
+      44,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      71,
+      44,
+      0,
+      2,
+      19,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      72,
+      46,
+      0,
+      45,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      73,
+      45,
+      0,
+      47,
+      0,
+      "AUDIO"
+    ],
+    [
+      74,
+      1,
+      0,
+      47,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      75,
+      47,
+      0,
+      2,
+      20,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      76,
+      49,
+      0,
+      48,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      77,
+      48,
+      0,
+      50,
+      0,
+      "AUDIO"
+    ],
+    [
+      78,
+      1,
+      0,
+      50,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      79,
+      50,
+      0,
+      2,
+      21,
+      "DFZ_AUDIO_ASSET"
+    ],
+    [
+      80,
+      52,
+      0,
+      51,
+      0,
+      "ELEVENLABS_VOICE"
+    ],
+    [
+      81,
+      51,
+      0,
+      53,
+      0,
+      "AUDIO"
+    ],
+    [
+      82,
+      1,
+      0,
+      53,
+      1,
+      "DFZ_ROOT"
+    ],
+    [
+      83,
+      53,
+      0,
+      2,
+      22,
+      "DFZ_AUDIO_ASSET"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.45,
+      "offset": [
+        650,
+        450
+      ]
+    }
+  },
+  "version": 0.4
+}

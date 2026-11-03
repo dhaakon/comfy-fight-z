@@ -1,0 +1,12 @@
+# Hackathon project instructions
+
+- Use cloud-hosted models for all model inference in this hackathon, including image generation. Build ComfyUI workflows with cloud/API model nodes rather than local model checkpoints.
+- Do not download local model weights or configure local inference for this project unless the user explicitly changes this preference.
+- This cloud-model preference does not itself authorize paid runs; follow the connected tools' spending-consent requirements.
+- Build Comfy Fighter Z, an anime fighting-game asset factory and browser game informed by `C:/Users/dhaak/Development/dad-fighter-z-repo`. Treat that repository as read-only reference. Keep the existing combat functionality.
+- The title screen reads Comfy Fighter Z with the subtitle Higgsfield Open Source Saga. Preserve the title, selection and two-fighter introduction flow; introTagline text and stock cloud voices come from the fighter configuration. Freeze combat during introductions and support skipping them.
+- The hackathon roster has six photo-referenced fighters: Allyson, Deep, Georgia, Matt, The Photographer, and Rob. The only playable stage is The Yard, based on `ref/levels/level-theyard.jpeg` (the indoor venue). Character descriptions and specialMove definitions in `config/game.json` drive the image and audio prompts.
+- Keep the 27 pose names and three 3x3 sheet layouts in `config/game.json` compatible with the reference. All generated art enters through `assets/plan.json` and the asset build; never silently substitute placeholder artwork in a strict release build.
+- The main `comfy-hackathon.json` must generate the complete game asset bundle: shared root directory, cloud image nodes, mapped asset saves, and final `assets.json`. The builder frontend loads this JSON plus its source folder, customizes the game, and exports a self-contained directory or ZIP.
+- `comfy-audio.json` generates music, announcer calls, effects, character special calls and six intro taglines through cloud nodes (22 clips). Write `audio.json` into the same root as `assets.json`; the builder includes both manifests and their source files in the exported game.
+- Accepted runtime media in `public/assets/` is versioned. Normal builds must preserve it. Generate updates into separate source bundles, review the sprites, merge by asset ID, export and verify the complete game, then adopt the media. Keep credentials, raw test runs, build outputs and local MCP settings out of Git.

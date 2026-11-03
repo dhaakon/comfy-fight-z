@@ -1,0 +1,1009 @@
+{
+  "id": "ca92171b-4055-4c0d-a76b-2ac89e43ec0d",
+  "revision": 0,
+  "last_node_id": 17,
+  "last_link_id": 15,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "title": "deep_source | source image",
+      "pos": [
+        420,
+        220
+      ],
+      "size": [
+        340,
+        420
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage",
+        "sourceImage": "ref/characters/deep.jpeg"
+      },
+      "widgets_values": [
+        "deep.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "SaveImage",
+      "title": "Save deep_source",
+      "pos": [
+        950,
+        220
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/deep_source"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        780
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 2
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nUse the supplied photo as the visible appearance reference for its main foreground subject; ignore bystanders and background. Translate that person into an original anime fighter. Create one full-body character model reference, entire head and shoes visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen clothing details according to the character description. This design is the identity reference for every later asset. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nUse the supplied photo as the visible appearance reference for its main foreground subject; ignore bystanders and background. Translate that person into an original anime fighter. Create one full-body character model reference, entire head and shoes visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen clothing details according to the character description. This design is the identity reference for every later asset. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "deep_reference | cloud generation"
+    },
+    {
+      "id": 4,
+      "type": "SaveImage",
+      "title": "Save deep_reference",
+      "pos": [
+        950,
+        780
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/deep_reference"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        1340
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 4
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): idle - relaxed fighting guard.\nCell 2 (row 1, column 2): walk - forward walking stride, left foot leading.\nCell 3 (row 1, column 3): punch - straight lead-hand jab fully extended.\nCell 4 (row 2, column 1): kick - high roundhouse kick fully extended.\nCell 5 (row 2, column 2): block - standing forearm guard.\nCell 6 (row 2, column 3): hit - recoiling from a torso hit.\nCell 7 (row 3, column 1): special - Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell..\nCell 8 (row 3, column 2): down - lying knocked down horizontally.\nCell 9 (row 3, column 3): win - triumphant victory pose.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "1:1",
+        "2K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): idle - relaxed fighting guard.\nCell 2 (row 1, column 2): walk - forward walking stride, left foot leading.\nCell 3 (row 1, column 3): punch - straight lead-hand jab fully extended.\nCell 4 (row 2, column 1): kick - high roundhouse kick fully extended.\nCell 5 (row 2, column 2): block - standing forearm guard.\nCell 6 (row 2, column 3): hit - recoiling from a torso hit.\nCell 7 (row 3, column 1): special - Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell..\nCell 8 (row 3, column 2): down - lying knocked down horizontally.\nCell 9 (row 3, column 3): win - triumphant victory pose.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "1:1",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "deep_sheet | cloud generation"
+    },
+    {
+      "id": 6,
+      "type": "SaveImage",
+      "title": "Save deep_sheet",
+      "pos": [
+        950,
+        1340
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/deep_sheet"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        1900
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): stance2 - upright fighting guard, second idle pose.\nCell 2 (row 1, column 2): crouch - low crouching guard.\nCell 3 (row 1, column 3): sweep - low sweeping leg kick with the attacking foot extended to the RIGHT of the hips.\nCell 4 (row 2, column 1): launcher - rising uppercut toward the RIGHT.\nCell 5 (row 2, column 2): jump - airborne with bent knees.\nCell 6 (row 2, column 3): airkick - airborne forward kick.\nCell 7 (row 3, column 1): hpunch - heavy rear-hand punch fully extended.\nCell 8 (row 3, column 2): dash - forward dash leaning toward right.\nCell 9 (row 3, column 3): tumble - airborne backward tumble.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "1:1",
+        "2K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): stance2 - upright fighting guard, second idle pose.\nCell 2 (row 1, column 2): crouch - low crouching guard.\nCell 3 (row 1, column 3): sweep - low sweeping leg kick with the attacking foot extended to the RIGHT of the hips.\nCell 4 (row 2, column 1): launcher - rising uppercut toward the RIGHT.\nCell 5 (row 2, column 2): jump - airborne with bent knees.\nCell 6 (row 2, column 3): airkick - airborne forward kick.\nCell 7 (row 3, column 1): hpunch - heavy rear-hand punch fully extended.\nCell 8 (row 3, column 2): dash - forward dash leaning toward right.\nCell 9 (row 3, column 3): tumble - airborne backward tumble.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "1:1",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "deep_sheetB | cloud generation"
+    },
+    {
+      "id": 8,
+      "type": "SaveImage",
+      "title": "Save deep_sheetB",
+      "pos": [
+        950,
+        1900
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/deep_sheetB"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        2460
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): walk2 - walking stride, right foot leading.\nCell 2 (row 1, column 2): lkick - quick low standing kick.\nCell 3 (row 1, column 3): cjab - crouching jab.\nCell 4 (row 2, column 1): airpunch - airborne punch.\nCell 5 (row 2, column 2): throw - empty-handed forward throwing motion without another person.\nCell 6 (row 2, column 3): taunt - playful confident taunt.\nCell 7 (row 3, column 1): getup - rising from one knee.\nCell 8 (row 3, column 2): powerup - powering up, clenched fists.\nCell 9 (row 3, column 3): entrance - confident entrance pose.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "1:1",
+        "2K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): walk2 - walking stride, right foot leading.\nCell 2 (row 1, column 2): lkick - quick low standing kick.\nCell 3 (row 1, column 3): cjab - crouching jab.\nCell 4 (row 2, column 1): airpunch - airborne punch.\nCell 5 (row 2, column 2): throw - empty-handed forward throwing motion without another person.\nCell 6 (row 2, column 3): taunt - playful confident taunt.\nCell 7 (row 3, column 1): getup - rising from one knee.\nCell 8 (row 3, column 2): powerup - powering up, clenched fists.\nCell 9 (row 3, column 3): entrance - confident entrance pose.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "1:1",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "deep_sheetC | cloud generation"
+    },
+    {
+      "id": 10,
+      "type": "SaveImage",
+      "title": "Save deep_sheetC",
+      "pos": [
+        950,
+        2460
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 9
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/deep_sheetC"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        3020
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 10
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A bold 1990s battle-anime character-select portrait, head and shoulders, centered recognizable face, angular expressive eyes, strong ink eyebrows, dramatic hard cel shadows and a fierce competitive expression. Keep the complete head and hair inside the image with clear padding. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "1:1",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A bold 1990s battle-anime character-select portrait, head and shoulders, centered recognizable face, angular expressive eyes, strong ink eyebrows, dramatic hard cel shadows and a fierce competitive expression. Keep the complete head and hair inside the image with clear padding. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "1:1",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "deep_portrait | cloud generation"
+    },
+    {
+      "id": 12,
+      "type": "SaveImage",
+      "title": "Save deep_portrait",
+      "pos": [
+        950,
+        3020
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/deep_portrait"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        3580
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 12
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A single full-body 1990s battle-anime character-selection hero illustration for a large versus panel. Powerful planted fighting stance, clenched or open fighting hands, sharp two-tone muscle and cloth shading, dynamic foreshortening. Entire shoes, head, hands and hair fully visible with at least 10% clear padding. Compact gold and cyan power highlights attached to the silhouette. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A single full-body 1990s battle-anime character-selection hero illustration for a large versus panel. Powerful planted fighting stance, clenched or open fighting hands, sharp two-tone muscle and cloth shading, dynamic foreshortening. Entire shoes, head, hands and hair fully visible with at least 10% clear padding. Compact gold and cyan power highlights attached to the silhouette. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "deep_hero | cloud generation"
+    },
+    {
+      "id": 14,
+      "type": "SaveImage",
+      "title": "Save deep_hero",
+      "pos": [
+        950,
+        3580
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/deep_hero"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        4140
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 14
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A dramatic anime waist-up super-attack cut-in depicting Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell. Character and attack face RIGHT, complete face and arms, intense expression and tight inked energy accents. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork, with the explosive visual energy and hand-painted cel look of Dragon Ball Z era action animation. Angular expressive eyes and brows, bold economical black ink, sculpted two-tone cel shadows, pronounced but believable athletic anatomy, sharp fabric folds, dramatic foreshortening, bright golden highlights and electric cyan or magenta energy. Original cast only: preserve each supplied person's recognizable face, body build, hairstyle silhouette, clothing and accessories. Increase pointed hair clumps only where compatible with that person; do not replace their hair, outfit or identity with an existing anime character. Strong grounded fighting stances, powerful clear action silhouettes. No copied franchise characters, costumes, symbols or logos. No extra fingers, duplicated props, lettering or watermarks.\nCHARACTER: The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.\nSIGNATURE SPECIAL MOVE: Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A dramatic anime waist-up super-attack cut-in depicting Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell. Character and attack face RIGHT, complete face and arms, intense expression and tight inked energy accents. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "deep_cutin | cloud generation"
+    },
+    {
+      "id": 16,
+      "type": "SaveImage",
+      "title": "Save deep_cutin",
+      "pos": [
+        950,
+        4140
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/deep_cutin"
+      ]
+    },
+    {
+      "id": 17,
+      "type": "MarkdownNote",
+      "pos": [
+        40,
+        -100
+      ],
+      "size": [
+        780,
+        260
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# Deep: full art pack\n\nCLOUD ONLY. This graph contains 7 paid image-generation node(s). Running those nodes consumes Comfy credits. Source Load Image and Save nodes are local file operations. No generation is triggered by creating or building these files.\n\nSource photos feed anime model references; those outputs feed all derived art for consistent identity.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      3,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      3,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      9,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      3,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      3,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      13,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      3,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      15,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7,
+      "offset": [
+        30,
+        140
+      ]
+    }
+  },
+  "version": 0.4
+}

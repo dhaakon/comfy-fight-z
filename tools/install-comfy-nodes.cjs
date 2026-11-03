@@ -1,0 +1,12 @@
+const fs=require('node:fs');
+const path=require('node:path');
+const args=process.argv.slice(2);
+if(args.length!==2||args[0]!=='--comfy-root')throw new Error('Usage: node tools/install-comfy-nodes.cjs --comfy-root <actual ComfyUI directory containing main.py>');
+const root=fs.realpathSync(path.resolve(args[1]));
+if(!fs.existsSync(path.join(root,'main.py'))||!fs.existsSync(path.join(root,'nodes.py')))throw new Error('Not a ComfyUI source directory');
+const custom=path.join(root,'custom_nodes'),target=path.join(custom,'dad_fighter_assets');
+fs.mkdirSync(custom,{recursive:true});
+if(fs.existsSync(target)&&fs.lstatSync(target).isSymbolicLink())throw new Error('Custom node destination must not be a symlink');
+fs.mkdirSync(target,{recursive:true});
+fs.copyFileSync(path.resolve(__dirname,'../custom_nodes/dad_fighter_assets/__init__.py'),path.join(target,'__init__.py'));
+console.log(`Installed local asset-mapping nodes in ${target}. Restart ComfyUI to load them.`);

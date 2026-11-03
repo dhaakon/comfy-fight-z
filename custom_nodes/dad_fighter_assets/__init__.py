@@ -1,0 +1,438 @@
+"""Local file-output nodes for cloud-generated Dad Fighter artwork.
+
+These nodes never load models or submit generation requests. Connect cloud IMAGE
+outputs to DFZSaveAsset and all resulting records to DFZExportManifest.
+Content-addressed PNG paths keep an earlier completed assets.json usable while
+a new run is still generating. Older raw images are retained intentionally.
+"""
+
+import hashlib
+import io as byte_io
+import json
+import os
+from pathlib import Path
+import re
+import tempfile
+import wave
+
+import numpy as np
+from PIL import Image
+from comfy_api.latest import ComfyExtension, io, ui
+
+
+SCHEMA = "dad-fighter-assets/v1"
+ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
+KINDS = {"source", "reference", "sprites", "portrait", "hero", "cutin", "stage", "ui", "effects"}
+AssetRoot = io.Custom("DFZ_ROOT")
+AssetRecord = io.Custom("DFZ_ASSET")
+AudioRecord = io.Custom("DFZ_AUDIO_ASSET")
+SHEETS = {
+    "sheet": ["idle", "walk", "punch", "kick", "block", "hit", "special", "down", "win"],
+    "sheetB": ["stance2", "crouch", "sweep", "launcher", "jump", "airkick", "hpunch", "dash", "tumble"],
+    "sheetC": ["walk2", "lkick", "cjab", "airpunch", "throw", "taunt", "getup", "powerup", "entrance"],
+}
+
+
+def _json_object(value, label):
+    try:
+        result = json.loads(value)
+    except (TypeError, ValueError) as error:
+        raise ValueError(f"{label} must contain valid JSON: {error}") from error
+    if not isinstance(result, dict):
+        raise ValueError(f"{label} must be a JSON object")
+    return result
+
+
+def _slug(value, label):
+    if not isinstance(value, str) or not ID_PATTERN.fullmatch(value):
+        raise ValueError(f"{label} must be a nonempty filename-safe ID (letters, digits, underscore, hyphen)")
+    return value
+
+
+def _config(value):
+    if not isinstance(value.get("title"), str) or not value["title"].strip():
+        raise ValueError("config_json requires a nonempty title")
+    result = {"title": value["title"].strip()}
+    if "subtitle" in value:
+        if not isinstance(value["subtitle"], str):
+            raise ValueError("subtitle must be text")
+        result["subtitle"] = value["subtitle"]
+    for category in ("fighters", "stages"):
+        entries = value.get(category)
+        if not isinstance(entries, list) or not entries:
+            raise ValueError(f"config_json requires a nonempty {category} array")
+        ids, accepted = set(), []
+        for entry in entries:
+            if not isinstance(entry, dict):
+                raise ValueError(f"Each {category} entry must be an object")
+            identity = _slug(entry.get("id"), f"{category} id")
+            if identity.casefold() in ids:
+                raise ValueError(f"Duplicate {category} id: {identity}")
+            ids.add(identity.casefold())
+            if not isinstance(entry.get("name"), str) or not entry["name"].strip():
+                raise ValueError(f"{category}/{identity} requires a name")
+            item = {"id": identity, "name": entry["name"].strip()}
+            for field in ("color", "description", "sourceImage", "sourceInput", "introTagline"):
+                if field in entry:
+                    if not isinstance(entry[field], str):
+                        raise ValueError(f"{category}/{identity}/{field} must be text")
+                    item[field] = entry[field]
+            if "specialMove" in entry:
+                move = entry["specialMove"]
+                if not isinstance(move, dict) or any(not isinstance(move.get(key), str) or not move[key].strip() for key in ("name", "description")):
+                    raise ValueError(f"{category}/{identity}/specialMove requires a name and description")
+                item["specialMove"] = {key: move[key] for key in ("name", "description")}
+            accepted.append(item)
+        result[category] = accepted
+    if value.get("sheets") != SHEETS:
+        raise ValueError("config_json.sheets must preserve the three standard Dad Fighter 3x3 pose layouts")
+    result["sheets"] = {name: list(poses) for name, poses in SHEETS.items()}
+    for field in ("expectedAssets", "expectedAudio"):
+        expected = value.get(field)
+        if expected is not None:
+            if not isinstance(expected, list) or not expected:
+                raise ValueError(f"{field} must be a nonempty list of asset IDs")
+            expected = [_slug(identity, "expected asset ID") for identity in expected]
+            if len({identity.casefold() for identity in expected}) != len(expected):
+                raise ValueError(f"{field} contains duplicate IDs")
+            result[field] = expected
+    return result
+
+
+def _reject_links(path):
+    """Reject symlinks and Windows junction/reparse paths, including ancestors."""
+    for part in (path, *path.parents):
+        try:
+            stat = part.lstat()
+        except FileNotFoundError:
+            continue
+        if part.is_symlink() or getattr(stat, "st_file_attributes", 0) & 0x400:
+            raise ValueError(f"Asset paths cannot contain symlinks or junctions: {part}")
+
+
+def _root_path(value):
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("root_directory must be an absolute directory path")
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        raise ValueError("root_directory must be an absolute directory path")
+    _reject_links(path)
+    path = path.resolve()
+    if path.exists() and not path.is_dir():
+        raise ValueError("root_directory points to a file")
+    return path
+
+
+def _root(root):
+    if not isinstance(root, dict) or root.get("_type") != "DFZ_ROOT":
+        raise ValueError("Connect a DFZ Asset Root node")
+    return _root_path(root.get("path")), _config(root.get("config", {}))
+
+
+def _inside(root, relative):
+    target = root / relative
+    _reject_links(target)
+    target = target.resolve()
+    if target == root or not target.is_relative_to(root):
+        raise ValueError(f"Asset path escapes the root: {relative}")
+    return target
+
+
+def _metadata(value, config):
+    identity = _slug(value.get("id"), "Asset id")
+    kind = value.get("kind")
+    if kind not in KINDS:
+        raise ValueError(f"Unknown asset kind: {kind}")
+    result = {"id": identity, "kind": kind}
+    for key, category in (("fighter", "fighters"), ("stage", "stages")):
+        if key in value:
+            identity_ref = _slug(value[key], key)
+            if identity_ref not in {entry["id"] for entry in config[category]}:
+                raise ValueError(f"Unknown {key}: {identity_ref}")
+            result[key] = identity_ref
+    if kind in {"reference", "sprites", "portrait", "hero", "cutin"} and "fighter" not in result:
+        raise ValueError(f"{kind} requires fighter metadata")
+    if kind == "stage" and "stage" not in result:
+        raise ValueError("stage requires stage metadata")
+    if kind == "source" and ("fighter" in result) == ("stage" in result):
+        raise ValueError("source requires exactly one fighter or stage mapping")
+    if "key" in value:
+        if not isinstance(value["key"], bool):
+            raise ValueError("key must be a boolean")
+        result["key"] = value["key"]
+    if kind in {"sprites", "effects"}:
+        poses = value.get("poses")
+        if not isinstance(poses, list) or len(poses) != 9:
+            raise ValueError(f"{kind} requires nine row-major pose names")
+        poses = [_slug(pose, "Pose") for pose in poses]
+        if len(set(poses)) != 9:
+            raise ValueError("Pose names must be unique")
+        result["poses"] = poses
+        if kind == "sprites":
+            sheet = value.get("sheet")
+            if sheet not in config["sheets"] or poses != config["sheets"][sheet]:
+                raise ValueError("Sprite sheet metadata must match its configured pose order")
+            result["sheet"] = sheet
+    return result
+
+
+def _atomic_write(destination, content):
+    _reject_links(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    _reject_links(destination)
+    fd, temporary = tempfile.mkstemp(prefix=f".{destination.name}.", suffix=".tmp", dir=destination.parent)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        _reject_links(destination)
+        os.replace(temporary, destination)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+class DFZAssetRoot(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DFZAssetRoot", display_name="Game Asset Root", category="Dad Fighter/assets",
+            inputs=[
+                io.String.Input("root_directory", default=str(Path.cwd() / "output" / "dad-fighter-assets")),
+                io.String.Input("config_json", default="{}", multiline=True),
+            ],
+            outputs=[AssetRoot.Output(display_name="root")],
+        )
+
+    @classmethod
+    def execute(cls, root_directory, config_json):
+        path = _root_path(root_directory)
+        config = _config(_json_object(config_json, "config_json"))
+        return io.NodeOutput({"_type": "DFZ_ROOT", "path": str(path), "config": config})
+
+
+class DFZSaveAsset(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DFZSaveAsset", display_name="Save Mapped Game Asset", category="Dad Fighter/assets",
+            inputs=[io.Image.Input("image"), AssetRoot.Input("root"),
+                    io.String.Input("asset_json", default="{}", multiline=True)],
+            outputs=[AssetRecord.Output(display_name="asset")],
+        )
+
+    @classmethod
+    def fingerprint_inputs(cls, **kwargs):
+        # Local output files may have been moved after the previous graph run.
+        # Rewriting these inexpensive save nodes does not invalidate cloud inputs.
+        return float("nan")
+
+    @classmethod
+    def execute(cls, image, root, asset_json):
+        directory, config = _root(root)
+        record = _metadata(_json_object(asset_json, "asset_json"), config)
+        pixels = image.detach().cpu().numpy() if hasattr(image, "detach") else np.asarray(image)
+        if pixels.ndim != 4 or pixels.shape[0] != 1 or pixels.shape[-1] not in (3, 4):
+            raise ValueError("Each mapped asset requires exactly one RGB or RGBA image (batch size 1)")
+        if pixels.shape[1] < 1 or pixels.shape[2] < 1 or not np.isfinite(pixels).all():
+            raise ValueError("Asset image has invalid dimensions or nonfinite pixels")
+        pixels = np.rint(np.clip(pixels[0], 0.0, 1.0) * 255.0).astype(np.uint8)
+        encoded = byte_io.BytesIO()
+        Image.fromarray(pixels).save(encoded, format="PNG")
+        content = encoded.getvalue()
+        digest = hashlib.sha256(content).hexdigest()
+        relative = f"raw/{record['id']}-{digest[:16]}.png"
+        destination = _inside(directory, relative)
+        if not destination.is_file() or destination.read_bytes() != content:
+            _atomic_write(destination, content)
+        record.update(src=relative, width=int(pixels.shape[1]), height=int(pixels.shape[0]),
+                      sha256=digest, _root=str(directory))
+        return io.NodeOutput(record)
+
+
+class DFZExportManifest(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DFZExportManifest", display_name="Export Game Assets JSON", category="Dad Fighter/assets",
+            inputs=[AssetRoot.Input("root"), io.Autogrow.Input("assets", template=io.Autogrow.TemplatePrefix(
+                AssetRecord.Input("asset"), prefix="asset_", min=1, max=100))],
+            outputs=[io.String.Output(display_name="manifest_path")],
+            is_output_node=True,
+        )
+
+    @classmethod
+    def fingerprint_inputs(cls, **kwargs):
+        return float("nan")
+
+    @classmethod
+    def execute(cls, root, assets: io.Autogrow.Type):
+        directory, config = _root(root)
+        records, identities = [], set()
+        for slot, value in assets.items():
+            if not re.fullmatch(r"asset_(?:0|[1-9][0-9]?)", slot):
+                raise ValueError(f"Unknown asset input: {slot}")
+            if not isinstance(value, dict) or value.get("_root") != str(directory):
+                raise ValueError(f"{slot} must come from the same DFZ Asset Root")
+            record = _metadata(value, config)
+            if record["id"].casefold() in identities:
+                raise ValueError(f"Duplicate asset ID: {record['id']}")
+            identities.add(record["id"].casefold())
+            if not isinstance(value.get("sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", value["sha256"]):
+                raise ValueError(f"Invalid content hash for {record['id']}")
+            relative = f"raw/{record['id']}-{value['sha256'][:16]}.png"
+            if value.get("src") != relative:
+                raise ValueError(f"Unexpected mapped path for {record['id']}")
+            file = _inside(directory, relative)
+            if not file.is_file():
+                raise ValueError(f"Mapped asset file is missing: {relative}")
+            content = file.read_bytes()
+            digest = hashlib.sha256(content).hexdigest()
+            if digest != value.get("sha256"):
+                raise ValueError(f"Mapped asset changed after saving: {relative}")
+            with Image.open(file) as image:
+                if image.size != (value.get("width"), value.get("height")):
+                    raise ValueError(f"Mapped image dimensions changed: {relative}")
+            record.update(src=relative, width=value["width"], height=value["height"], sha256=digest)
+            records.append(record)
+        if not records:
+            raise ValueError("Connect at least one saved asset before exporting a manifest")
+        expected = config.get("expectedAssets")
+        if expected is not None:
+            missing = sorted(set(expected) - {record["id"] for record in records})
+            extra = sorted({record["id"] for record in records} - set(expected))
+            if missing or extra:
+                raise ValueError(f"Incomplete asset bundle; missing: {', '.join(missing) or 'none'}; unexpected: {', '.join(extra) or 'none'}")
+        manifest = {"schema": SCHEMA, "root": ".", "cloudOnly": True,
+                    "game": {field: config[field] for field in ("title", "fighters", "stages", "sheets")},
+                    "assets": records}
+        destination = _inside(directory, "assets.json")
+        _atomic_write(destination, (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+        return io.NodeOutput(str(destination), ui=ui.PreviewText(str(destination)))
+
+
+def _audio_metadata(value, config):
+    result = {"id": _slug(value.get("id"), "Audio id"), "kind": "audio"}
+    if value.get("kind") != "audio" or value.get("category") not in {"music", "sfx", "voice"}:
+        raise ValueError("Audio metadata requires kind audio and category music, sfx, or voice")
+    result["category"] = value["category"]
+    if "fighter" in value:
+        if value["fighter"] not in {fighter["id"] for fighter in config["fighters"]}:
+            raise ValueError("Unknown audio fighter")
+        result["fighter"] = value["fighter"]
+    if "loop" in value:
+        if not isinstance(value["loop"], bool):
+            raise ValueError("Audio loop flag must be boolean")
+        result["loop"] = value["loop"]
+    return result
+
+
+class DFZSaveAudio(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DFZSaveAudio", display_name="Save Mapped Game Audio", category="Dad Fighter/assets",
+            inputs=[io.Audio.Input("audio"), AssetRoot.Input("root"),
+                    io.String.Input("asset_json", default="{}", multiline=True)],
+            outputs=[AudioRecord.Output(display_name="audio_asset")],
+        )
+
+    @classmethod
+    def fingerprint_inputs(cls, **kwargs):
+        return float("nan")
+
+    @classmethod
+    def execute(cls, audio, root, asset_json):
+        directory, config = _root(root)
+        record = _audio_metadata(_json_object(asset_json, "asset_json"), config)
+        if not isinstance(audio, dict):
+            raise ValueError("Connect one AUDIO output")
+        rate = audio.get("sample_rate")
+        if not isinstance(rate, int) or not 8000 <= rate <= 192000:
+            raise ValueError("Audio sample rate must be between 8000 and 192000 Hz")
+        waveform = audio.get("waveform")
+        samples = waveform.detach().cpu().numpy() if hasattr(waveform, "detach") else np.asarray(waveform)
+        if samples.ndim != 3 or samples.shape[0] != 1 or samples.shape[1] not in (1, 2) or not 0 < samples.shape[2] <= rate * 360:
+            raise ValueError("Audio requires one mono/stereo clip, up to 360 seconds")
+        if not np.isfinite(samples).all():
+            raise ValueError("Audio contains nonfinite samples")
+        pcm = np.rint(np.clip(samples[0].T, -1.0, 1.0) * 32767).astype("<i2")
+        encoded = byte_io.BytesIO()
+        with wave.open(encoded, "wb") as output:
+            output.setnchannels(samples.shape[1])
+            output.setsampwidth(2)
+            output.setframerate(rate)
+            output.writeframes(pcm.tobytes())
+        content = encoded.getvalue()
+        digest = hashlib.sha256(content).hexdigest()
+        relative = f"raw/{record['id']}-{digest[:16]}.wav"
+        destination = _inside(directory, relative)
+        if not destination.is_file() or destination.read_bytes() != content:
+            _atomic_write(destination, content)
+        record.update(src=relative, sha256=digest, sampleRate=rate, channels=int(samples.shape[1]),
+                      duration=samples.shape[2] / rate, _root=str(directory))
+        return io.NodeOutput(record)
+
+
+class DFZExportAudioManifest(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DFZExportAudioManifest", display_name="Export Game Audio JSON", category="Dad Fighter/assets",
+            inputs=[AssetRoot.Input("root"), io.Autogrow.Input("assets", template=io.Autogrow.TemplatePrefix(
+                AudioRecord.Input("audio_asset"), prefix="audio_", min=1, max=100))],
+            outputs=[io.String.Output(display_name="manifest_path")], is_output_node=True,
+        )
+
+    @classmethod
+    def fingerprint_inputs(cls, **kwargs):
+        return float("nan")
+
+    @classmethod
+    def execute(cls, root, assets: io.Autogrow.Type):
+        directory, config = _root(root)
+        records, identities = [], set()
+        for slot, value in assets.items():
+            if not re.fullmatch(r"audio_(?:0|[1-9][0-9]?)", slot):
+                raise ValueError(f"Unknown audio input: {slot}")
+            if not isinstance(value, dict) or value.get("_root") != str(directory):
+                raise ValueError(f"{slot} must come from the same DFZ Asset Root")
+            record = _audio_metadata(value, config)
+            if record["id"].casefold() in identities:
+                raise ValueError(f"Duplicate audio ID: {record['id']}")
+            identities.add(record["id"].casefold())
+            digest = value.get("sha256")
+            if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+                raise ValueError("Invalid audio content hash")
+            relative = f"raw/{record['id']}-{digest[:16]}.wav"
+            if value.get("src") != relative:
+                raise ValueError("Unexpected mapped audio path")
+            file = _inside(directory, relative)
+            if not file.is_file() or hashlib.sha256(file.read_bytes()).hexdigest() != digest:
+                raise ValueError(f"Mapped audio is missing or changed: {relative}")
+            with wave.open(str(file), "rb") as source:
+                rate, channels, frames = source.getframerate(), source.getnchannels(), source.getnframes()
+                if source.getsampwidth() != 2 or rate != value.get("sampleRate") or channels != value.get("channels") or frames / rate != value.get("duration"):
+                    raise ValueError("Mapped audio format changed")
+            record.update(src=relative, sha256=digest, sampleRate=rate, channels=channels, duration=frames / rate)
+            records.append(record)
+        if not records:
+            raise ValueError("Connect at least one saved audio asset")
+        expected = config.get("expectedAudio")
+        if expected is not None and set(expected) != {record["id"] for record in records}:
+            raise ValueError("Incomplete audio bundle; every expectedAudio ID must be connected")
+        manifest = {"schema": "dad-fighter-audio/v1", "root": ".", "cloudOnly": True,
+                    "title": config["title"], "assets": records}
+        destination = _inside(directory, "audio.json")
+        _atomic_write(destination, (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+        return io.NodeOutput(str(destination), ui=ui.PreviewText(str(destination)))
+
+
+class DadFighterAssetsExtension(ComfyExtension):
+    async def get_node_list(self) -> list[type[io.ComfyNode]]:
+        return [DFZAssetRoot, DFZSaveAsset, DFZExportManifest, DFZSaveAudio, DFZExportAudioManifest]
+
+
+async def comfy_entrypoint() -> DadFighterAssetsExtension:
+    return DadFighterAssetsExtension()

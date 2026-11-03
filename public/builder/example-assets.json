@@ -1,0 +1,754 @@
+{
+  "schema": "dad-fighter-assets/v1",
+  "root": ".",
+  "cloudOnly": true,
+  "game": {
+    "title": "Comfy Fighter Z",
+    "subtitle": "Higgsfield Open Source Saga",
+    "fighters": [
+      {
+        "id": "allyson",
+        "name": "Allyson",
+        "color": "#f4ef35",
+        "sourceImage": "ref/characters/allyson.jpeg",
+        "sourceInput": "allyson.jpeg",
+        "description": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "specialMove": {
+          "name": "Node Burst",
+          "description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst."
+        },
+        "introTagline": "Every node is connected. Your defeat is next.",
+        "introVoice": "River (neutral, american)"
+      },
+      {
+        "id": "deep",
+        "name": "Deep",
+        "color": "#41d7ff",
+        "sourceImage": "ref/characters/deep.jpeg",
+        "sourceInput": "deep.jpeg",
+        "description": "The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "specialMove": {
+          "name": "Queue Breaker",
+          "description": "Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell."
+        },
+        "introTagline": "You are in my queue now.",
+        "introVoice": "Daniel (male, british)"
+      },
+      {
+        "id": "georgia",
+        "name": "Georgia",
+        "color": "#ff6ccf",
+        "sourceImage": "ref/characters/georgia.jpeg",
+        "sourceInput": "georgia.jpeg",
+        "description": "The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "specialMove": {
+          "name": "Golden Cascade",
+          "description": "Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell."
+        },
+        "introTagline": "Catch the light. Feel the impact.",
+        "introVoice": "Jessica (female, american)"
+      },
+      {
+        "id": "matt",
+        "name": "Matt",
+        "color": "#ff9248",
+        "sourceImage": "ref/characters/matt.jpeg",
+        "sourceInput": "matt.jpeg",
+        "description": "The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "specialMove": {
+          "name": "Latent Rush",
+          "description": "Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs."
+        },
+        "introTagline": "Less waiting. More fighting.",
+        "introVoice": "Charlie (male, australian)"
+      },
+      {
+        "id": "photographer",
+        "name": "The Photographer",
+        "color": "#b397ff",
+        "sourceImage": "ref/characters/photographer.jpeg",
+        "sourceInput": "photographer.jpeg",
+        "description": "The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "specialMove": {
+          "name": "Flash Frame",
+          "description": "The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering."
+        },
+        "introTagline": "Hold still. This knockout needs a close-up.",
+        "introVoice": "Brian (male, american)"
+      },
+      {
+        "id": "rob",
+        "name": "Rob",
+        "color": "#6de9c9",
+        "sourceImage": "ref/characters/rob.jpeg",
+        "sourceInput": "rob.jpeg",
+        "description": "The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+        "specialMove": {
+          "name": "Compile Crash",
+          "description": "Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell."
+        },
+        "introTagline": "Build passed. You are going down.",
+        "introVoice": "Adam (male, american)"
+      }
+    ],
+    "stages": [
+      {
+        "id": "yard",
+        "name": "The Yard",
+        "sourceImage": "ref/levels/level-theyard.jpeg",
+        "sourceInput": "level-theyard.jpeg",
+        "description": "The Yard coworking lobby from the supplied reference photograph: exposed concrete ceiling and columns, silver ductwork and red pipes, long strip lights and hanging black cylindrical pendants, white walls, a rear access ramp with white railings, black reception desk and cubbies, polished pale floor and leafy plants at the edges. Recompose this exact indoor venue as a wide side-on anime fighting arena, retaining recognizable architecture. Keep furniture behind the fight plane and remove all real bystanders and readable signage. This is the sole playable level; it is an indoor venue, not a suburban backyard."
+      }
+    ],
+    "sheets": {
+      "sheet": [
+        "idle",
+        "walk",
+        "punch",
+        "kick",
+        "block",
+        "hit",
+        "special",
+        "down",
+        "win"
+      ],
+      "sheetB": [
+        "stance2",
+        "crouch",
+        "sweep",
+        "launcher",
+        "jump",
+        "airkick",
+        "hpunch",
+        "dash",
+        "tumble"
+      ],
+      "sheetC": [
+        "walk2",
+        "lkick",
+        "cjab",
+        "airpunch",
+        "throw",
+        "taunt",
+        "getup",
+        "powerup",
+        "entrance"
+      ]
+    }
+  },
+  "assets": [
+    {
+      "id": "allyson_source",
+      "kind": "source",
+      "fighter": "allyson",
+      "key": false,
+      "src": "raw/allyson_source.png"
+    },
+    {
+      "id": "allyson_reference",
+      "kind": "reference",
+      "fighter": "allyson",
+      "key": true,
+      "src": "raw/allyson_reference.png"
+    },
+    {
+      "id": "allyson_sheet",
+      "kind": "sprites",
+      "fighter": "allyson",
+      "sheet": "sheet",
+      "poses": [
+        "idle",
+        "walk",
+        "punch",
+        "kick",
+        "block",
+        "hit",
+        "special",
+        "down",
+        "win"
+      ],
+      "key": true,
+      "src": "raw/allyson_sheet.png"
+    },
+    {
+      "id": "allyson_sheetB",
+      "kind": "sprites",
+      "fighter": "allyson",
+      "sheet": "sheetB",
+      "poses": [
+        "stance2",
+        "crouch",
+        "sweep",
+        "launcher",
+        "jump",
+        "airkick",
+        "hpunch",
+        "dash",
+        "tumble"
+      ],
+      "key": true,
+      "src": "raw/allyson_sheetB.png"
+    },
+    {
+      "id": "allyson_sheetC",
+      "kind": "sprites",
+      "fighter": "allyson",
+      "sheet": "sheetC",
+      "poses": [
+        "walk2",
+        "lkick",
+        "cjab",
+        "airpunch",
+        "throw",
+        "taunt",
+        "getup",
+        "powerup",
+        "entrance"
+      ],
+      "key": true,
+      "src": "raw/allyson_sheetC.png"
+    },
+    {
+      "id": "allyson_portrait",
+      "kind": "portrait",
+      "fighter": "allyson",
+      "key": true,
+      "src": "raw/allyson_portrait.png"
+    },
+    {
+      "id": "allyson_hero",
+      "kind": "hero",
+      "fighter": "allyson",
+      "key": true,
+      "src": "raw/allyson_hero.png"
+    },
+    {
+      "id": "allyson_cutin",
+      "kind": "cutin",
+      "fighter": "allyson",
+      "key": true,
+      "src": "raw/allyson_cutin.png"
+    },
+    {
+      "id": "deep_source",
+      "kind": "source",
+      "fighter": "deep",
+      "key": false,
+      "src": "raw/deep_source.png"
+    },
+    {
+      "id": "deep_reference",
+      "kind": "reference",
+      "fighter": "deep",
+      "key": true,
+      "src": "raw/deep_reference.png"
+    },
+    {
+      "id": "deep_sheet",
+      "kind": "sprites",
+      "fighter": "deep",
+      "sheet": "sheet",
+      "poses": [
+        "idle",
+        "walk",
+        "punch",
+        "kick",
+        "block",
+        "hit",
+        "special",
+        "down",
+        "win"
+      ],
+      "key": true,
+      "src": "raw/deep_sheet.png"
+    },
+    {
+      "id": "deep_sheetB",
+      "kind": "sprites",
+      "fighter": "deep",
+      "sheet": "sheetB",
+      "poses": [
+        "stance2",
+        "crouch",
+        "sweep",
+        "launcher",
+        "jump",
+        "airkick",
+        "hpunch",
+        "dash",
+        "tumble"
+      ],
+      "key": true,
+      "src": "raw/deep_sheetB.png"
+    },
+    {
+      "id": "deep_sheetC",
+      "kind": "sprites",
+      "fighter": "deep",
+      "sheet": "sheetC",
+      "poses": [
+        "walk2",
+        "lkick",
+        "cjab",
+        "airpunch",
+        "throw",
+        "taunt",
+        "getup",
+        "powerup",
+        "entrance"
+      ],
+      "key": true,
+      "src": "raw/deep_sheetC.png"
+    },
+    {
+      "id": "deep_portrait",
+      "kind": "portrait",
+      "fighter": "deep",
+      "key": true,
+      "src": "raw/deep_portrait.png"
+    },
+    {
+      "id": "deep_hero",
+      "kind": "hero",
+      "fighter": "deep",
+      "key": true,
+      "src": "raw/deep_hero.png"
+    },
+    {
+      "id": "deep_cutin",
+      "kind": "cutin",
+      "fighter": "deep",
+      "key": true,
+      "src": "raw/deep_cutin.png"
+    },
+    {
+      "id": "georgia_source",
+      "kind": "source",
+      "fighter": "georgia",
+      "key": false,
+      "src": "raw/georgia_source.png"
+    },
+    {
+      "id": "georgia_reference",
+      "kind": "reference",
+      "fighter": "georgia",
+      "key": true,
+      "src": "raw/georgia_reference.png"
+    },
+    {
+      "id": "georgia_sheet",
+      "kind": "sprites",
+      "fighter": "georgia",
+      "sheet": "sheet",
+      "poses": [
+        "idle",
+        "walk",
+        "punch",
+        "kick",
+        "block",
+        "hit",
+        "special",
+        "down",
+        "win"
+      ],
+      "key": true,
+      "src": "raw/georgia_sheet.png"
+    },
+    {
+      "id": "georgia_sheetB",
+      "kind": "sprites",
+      "fighter": "georgia",
+      "sheet": "sheetB",
+      "poses": [
+        "stance2",
+        "crouch",
+        "sweep",
+        "launcher",
+        "jump",
+        "airkick",
+        "hpunch",
+        "dash",
+        "tumble"
+      ],
+      "key": true,
+      "src": "raw/georgia_sheetB.png"
+    },
+    {
+      "id": "georgia_sheetC",
+      "kind": "sprites",
+      "fighter": "georgia",
+      "sheet": "sheetC",
+      "poses": [
+        "walk2",
+        "lkick",
+        "cjab",
+        "airpunch",
+        "throw",
+        "taunt",
+        "getup",
+        "powerup",
+        "entrance"
+      ],
+      "key": true,
+      "src": "raw/georgia_sheetC.png"
+    },
+    {
+      "id": "georgia_portrait",
+      "kind": "portrait",
+      "fighter": "georgia",
+      "key": true,
+      "src": "raw/georgia_portrait.png"
+    },
+    {
+      "id": "georgia_hero",
+      "kind": "hero",
+      "fighter": "georgia",
+      "key": true,
+      "src": "raw/georgia_hero.png"
+    },
+    {
+      "id": "georgia_cutin",
+      "kind": "cutin",
+      "fighter": "georgia",
+      "key": true,
+      "src": "raw/georgia_cutin.png"
+    },
+    {
+      "id": "matt_source",
+      "kind": "source",
+      "fighter": "matt",
+      "key": false,
+      "src": "raw/matt_source.png"
+    },
+    {
+      "id": "matt_reference",
+      "kind": "reference",
+      "fighter": "matt",
+      "key": true,
+      "src": "raw/matt_reference.png"
+    },
+    {
+      "id": "matt_sheet",
+      "kind": "sprites",
+      "fighter": "matt",
+      "sheet": "sheet",
+      "poses": [
+        "idle",
+        "walk",
+        "punch",
+        "kick",
+        "block",
+        "hit",
+        "special",
+        "down",
+        "win"
+      ],
+      "key": true,
+      "src": "raw/matt_sheet.png"
+    },
+    {
+      "id": "matt_sheetB",
+      "kind": "sprites",
+      "fighter": "matt",
+      "sheet": "sheetB",
+      "poses": [
+        "stance2",
+        "crouch",
+        "sweep",
+        "launcher",
+        "jump",
+        "airkick",
+        "hpunch",
+        "dash",
+        "tumble"
+      ],
+      "key": true,
+      "src": "raw/matt_sheetB.png"
+    },
+    {
+      "id": "matt_sheetC",
+      "kind": "sprites",
+      "fighter": "matt",
+      "sheet": "sheetC",
+      "poses": [
+        "walk2",
+        "lkick",
+        "cjab",
+        "airpunch",
+        "throw",
+        "taunt",
+        "getup",
+        "powerup",
+        "entrance"
+      ],
+      "key": true,
+      "src": "raw/matt_sheetC.png"
+    },
+    {
+      "id": "matt_portrait",
+      "kind": "portrait",
+      "fighter": "matt",
+      "key": true,
+      "src": "raw/matt_portrait.png"
+    },
+    {
+      "id": "matt_hero",
+      "kind": "hero",
+      "fighter": "matt",
+      "key": true,
+      "src": "raw/matt_hero.png"
+    },
+    {
+      "id": "matt_cutin",
+      "kind": "cutin",
+      "fighter": "matt",
+      "key": true,
+      "src": "raw/matt_cutin.png"
+    },
+    {
+      "id": "photographer_source",
+      "kind": "source",
+      "fighter": "photographer",
+      "key": false,
+      "src": "raw/photographer_source.png"
+    },
+    {
+      "id": "photographer_reference",
+      "kind": "reference",
+      "fighter": "photographer",
+      "key": true,
+      "src": "raw/photographer_reference.png"
+    },
+    {
+      "id": "photographer_sheet",
+      "kind": "sprites",
+      "fighter": "photographer",
+      "sheet": "sheet",
+      "poses": [
+        "idle",
+        "walk",
+        "punch",
+        "kick",
+        "block",
+        "hit",
+        "special",
+        "down",
+        "win"
+      ],
+      "key": true,
+      "src": "raw/photographer_sheet.png"
+    },
+    {
+      "id": "photographer_sheetB",
+      "kind": "sprites",
+      "fighter": "photographer",
+      "sheet": "sheetB",
+      "poses": [
+        "stance2",
+        "crouch",
+        "sweep",
+        "launcher",
+        "jump",
+        "airkick",
+        "hpunch",
+        "dash",
+        "tumble"
+      ],
+      "key": true,
+      "src": "raw/photographer_sheetB.png"
+    },
+    {
+      "id": "photographer_sheetC",
+      "kind": "sprites",
+      "fighter": "photographer",
+      "sheet": "sheetC",
+      "poses": [
+        "walk2",
+        "lkick",
+        "cjab",
+        "airpunch",
+        "throw",
+        "taunt",
+        "getup",
+        "powerup",
+        "entrance"
+      ],
+      "key": true,
+      "src": "raw/photographer_sheetC.png"
+    },
+    {
+      "id": "photographer_portrait",
+      "kind": "portrait",
+      "fighter": "photographer",
+      "key": true,
+      "src": "raw/photographer_portrait.png"
+    },
+    {
+      "id": "photographer_hero",
+      "kind": "hero",
+      "fighter": "photographer",
+      "key": true,
+      "src": "raw/photographer_hero.png"
+    },
+    {
+      "id": "photographer_cutin",
+      "kind": "cutin",
+      "fighter": "photographer",
+      "key": true,
+      "src": "raw/photographer_cutin.png"
+    },
+    {
+      "id": "rob_source",
+      "kind": "source",
+      "fighter": "rob",
+      "key": false,
+      "src": "raw/rob_source.png"
+    },
+    {
+      "id": "rob_reference",
+      "kind": "reference",
+      "fighter": "rob",
+      "key": true,
+      "src": "raw/rob_reference.png"
+    },
+    {
+      "id": "rob_sheet",
+      "kind": "sprites",
+      "fighter": "rob",
+      "sheet": "sheet",
+      "poses": [
+        "idle",
+        "walk",
+        "punch",
+        "kick",
+        "block",
+        "hit",
+        "special",
+        "down",
+        "win"
+      ],
+      "key": true,
+      "src": "raw/rob_sheet.png"
+    },
+    {
+      "id": "rob_sheetB",
+      "kind": "sprites",
+      "fighter": "rob",
+      "sheet": "sheetB",
+      "poses": [
+        "stance2",
+        "crouch",
+        "sweep",
+        "launcher",
+        "jump",
+        "airkick",
+        "hpunch",
+        "dash",
+        "tumble"
+      ],
+      "key": true,
+      "src": "raw/rob_sheetB.png"
+    },
+    {
+      "id": "rob_sheetC",
+      "kind": "sprites",
+      "fighter": "rob",
+      "sheet": "sheetC",
+      "poses": [
+        "walk2",
+        "lkick",
+        "cjab",
+        "airpunch",
+        "throw",
+        "taunt",
+        "getup",
+        "powerup",
+        "entrance"
+      ],
+      "key": true,
+      "src": "raw/rob_sheetC.png"
+    },
+    {
+      "id": "rob_portrait",
+      "kind": "portrait",
+      "fighter": "rob",
+      "key": true,
+      "src": "raw/rob_portrait.png"
+    },
+    {
+      "id": "rob_hero",
+      "kind": "hero",
+      "fighter": "rob",
+      "key": true,
+      "src": "raw/rob_hero.png"
+    },
+    {
+      "id": "rob_cutin",
+      "kind": "cutin",
+      "fighter": "rob",
+      "key": true,
+      "src": "raw/rob_cutin.png"
+    },
+    {
+      "id": "yard_source",
+      "kind": "source",
+      "stage": "yard",
+      "key": false,
+      "src": "raw/yard_source.png"
+    },
+    {
+      "id": "yard",
+      "kind": "stage",
+      "stage": "yard",
+      "key": false,
+      "src": "raw/yard.png"
+    },
+    {
+      "id": "title",
+      "kind": "ui",
+      "key": false,
+      "src": "raw/title.png"
+    },
+    {
+      "id": "select",
+      "kind": "ui",
+      "key": false,
+      "src": "raw/select.png"
+    },
+    {
+      "id": "logo",
+      "kind": "ui",
+      "key": true,
+      "src": "raw/logo.png"
+    },
+    {
+      "id": "hud",
+      "kind": "ui",
+      "key": true,
+      "src": "raw/hud.png"
+    },
+    {
+      "id": "icons",
+      "kind": "ui",
+      "key": true,
+      "src": "raw/icons.png"
+    },
+    {
+      "id": "combat_effects",
+      "kind": "effects",
+      "poses": [
+        "hit",
+        "block",
+        "projectile",
+        "dust",
+        "ko",
+        "powerup",
+        "dash",
+        "launch",
+        "spark"
+      ],
+      "key": true,
+      "src": "raw/combat_effects.png"
+    }
+  ]
+}

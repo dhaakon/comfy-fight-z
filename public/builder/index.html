@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Comfy Fighter Z — Game Builder</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="shell">
+    <header class="topbar"><a class="brand" href="./"><span class="brand-symbol">D<span>×</span>F</span><span>COMFY FIGHTER Z<small>GAME BUILDER</small></span></a><a class="preview-link" href="../">Play the template <span>↗</span></a></header>
+    <main>
+      <section class="hero"><div><p class="eyebrow">FROM ASSET GRAPH TO PLAYABLE GAME</p><h1>Your artwork.<br>Your next <em>challenger.</em></h1><p class="hero-copy">Load a ComfyUI asset bundle, assemble your roster, and export a complete browser fighting game.</p></div><div class="flow-card" aria-label="Build process"><span>01 <b>COMFYUI</b> Generate</span><i>↓</i><span>02 <b>ASSETS.JSON</b> Map &amp; customize</span><i>↓</i><span>03 <b>YOUR GAME</b> Export &amp; play</span></div></section>
+      <div class="workspace">
+        <div class="main-column">
+          <section class="panel" id="input-panel"><div class="panel-heading"><span class="step">01</span><div><h2>Load your asset bundle</h2><p>Choose the root folder written by your ComfyUI workflow.</p></div></div>
+            <div class="upload-area" id="drop-zone"><span class="folder-icon" aria-hidden="true">▱</span><h3>One folder. Every game asset.</h3><p>Your root contains <code>assets.json</code> and a <code>raw/</code> folder. Add <code>audio.json</code> for music and voices.<br>Files stay in your browser while you build.</p><div class="upload-actions"><label class="button primary" for="folder-input">Choose asset folder <span>↗</span></label><label class="button secondary" for="manifest-input">Load JSON separately</label></div><input type="file" id="folder-input" webkitdirectory multiple hidden><input type="file" id="manifest-input" accept=".json,application/json" hidden><p class="drop-hint">Or drop an assets.json file here, then choose its asset folder.</p></div>
+            <div class="input-footer"><span id="source-label">No project loaded</span><button class="text-button" id="load-example">Try an example project →</button></div>
+            <div class="notice" id="example-notice" hidden>EXAMPLE PROJECT · This includes the asset map, but no generated artwork. Enable placeholder assets below to export a playable prototype.</div>
+          </section>
+          <section class="panel" id="customize-panel"><div class="panel-heading"><span class="step">02</span><div><h2>Make it your game</h2><p>Name your game and choose who enters the arena.</p></div></div>
+            <div class="empty-state" id="customize-empty"><span>THE ROSTER IS WAITING.</span><p>Load a project to customize fighters, stages, and game art.</p></div>
+            <div id="customize-content" hidden><label class="field-label" for="game-title">GAME TITLE</label><input id="game-title" class="title-input" maxlength="100" placeholder="Name your fighting game"><div class="subheading"><h3>Fighter roster</h3><span>At least two fighters</span></div><div id="fighter-list" class="fighter-list"></div><div class="subheading"><h3>Arenas</h3><span>At least one stage</span></div><div id="stage-list" class="stage-list"></div><div class="subheading"><h3>Asset inventory</h3><select id="asset-filter" aria-label="Filter assets"><option value="all">All assets</option><option value="sprites">Sprite sheets</option><option value="character">Character art</option><option value="stage">Stages</option><option value="ui">Interface</option><option value="effects">Effects</option><option value="source">Source references</option><option value="audio">Audio</option></select></div><div id="asset-grid" class="asset-grid"></div></div>
+          </section>
+        </div>
+        <aside class="export-column"><section class="panel export-panel"><div class="panel-heading"><span class="step">03</span><div><h2>Build &amp; export</h2><p>Everything your game needs, together.</p></div></div>
+          <div class="stats"><div><strong id="fighter-count">—</strong><span>FIGHTERS</span></div><div><strong id="sheet-count">—</strong><span>SPRITE SHEETS</span></div><div><strong id="file-count">—</strong><span>ASSETS FOUND</span></div></div>
+          <div id="readiness" class="readiness">Load a bundle to check its assets.</div>
+          <label class="placeholder-choice"><input type="checkbox" id="allow-placeholders"><span>Allow placeholder assets<small>Export a prototype when artwork is still missing. Missing art stays visibly labeled.</small></span></label>
+          <button class="button primary build-button" id="build-button" disabled>Build my game <span>→</span></button>
+          <div class="progress-area" id="progress-area" hidden><progress id="build-progress" max="100" value="0"></progress><span id="progress-label">Preparing game…</span></div>
+          <div class="status-message" id="status" role="status" aria-live="polite"></div>
+          <div id="export-ready" hidden><div class="ready-heading"><span>✓</span><div><strong>Your game is ready</strong><small id="build-summary"></small></div></div><button id="download-zip" class="button primary download-button">Download game ZIP <span>↓</span></button><button id="export-directory" class="button secondary directory-button">Save to a directory <span>↗</span></button><p class="directory-hint" id="directory-hint">Choose a new, empty folder for the exported game.</p></div>
+          <div class="export-contents"><p class="eyebrow">IN YOUR EXPORT</p><ul><li>Playable browser game</li><li>Your roster, names &amp; colors</li><li>Processed sprites &amp; artwork</li><li>Mapped assets and source sheets</li><li>Local server &amp; start instructions</li></ul><p>Extract the ZIP, then follow the included README to play. No image-generation credits are used by this builder.</p></div>
+        </section></aside>
+      </div>
+    </main>
+    <footer><span>BUILT FOR THE NEXT CHALLENGER.</span><span>COMFYUI → ASSET BUNDLE → CUSTOM GAME</span></footer>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

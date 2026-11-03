@@ -1,0 +1,256 @@
+{
+  "schema": "comfy-fighter-audio-plan/v1",
+  "cloudOnly": true,
+  "paid": true,
+  "workflow": "comfy-audio.json",
+  "estimatedUSD": 0.41800026666666684,
+  "estimateSource": "Installed ComfyUI node price_badge: Sonilo $0.0025/s, ElevenLabs SFX ~$0.14/min, Eleven v4 ~$0.1144/1K chars; actual billing may vary.",
+  "jobs": [
+    {
+      "id": "menu_music",
+      "category": "music",
+      "duration": 45,
+      "loop": true,
+      "prompt": "Original instrumental anime arcade fighting-game character selection music. Bright electric guitar riffs, punchy bass, energetic drums, heroic synth brass, playful competitive energy, 148 BPM. Confident memorable original melody, no vocals, no speech, no existing game or anime melody. Steady groove, clean loop-friendly ending without a long fade. For Comfy Fighter Z.",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "yard_music",
+      "category": "music",
+      "duration": 60,
+      "loop": true,
+      "prompt": "Original instrumental 1990s battle-anime fighting-game theme for The Yard: an indoor coworking venue transformed into a lively hackathon tournament arena. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "ann_select",
+      "category": "voice",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Choose your fighter!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_fight",
+      "category": "voice",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Ready? FIGHT!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_ko",
+      "category": "voice",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] K! O!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_victory",
+      "category": "voice",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Victory!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "sfx_punch",
+      "category": "sfx",
+      "duration": 0.6,
+      "prompt": "One isolated stylized anime fighting-game punch impact: fast airy swoosh then sharp solid thwack and tiny energy snap. Immediate attack, short clean decay, no voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_kick",
+      "category": "sfx",
+      "duration": 0.8,
+      "prompt": "One isolated heavy arcade fighting-game kick impact: short fast swish followed by deep punchy slam with a crisp crack. Immediate attack and short clean tail. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_block",
+      "category": "sfx",
+      "duration": 0.6,
+      "prompt": "One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate and concise. No voices, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_special",
+      "category": "sfx",
+      "duration": 1.2,
+      "prompt": "One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate start, compact clean tail. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "fighter_allyson_special",
+      "category": "voice",
+      "fighter": "allyson",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Node Burst!",
+      "characterDescription": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Node Burst",
+        "description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_deep_special",
+      "category": "voice",
+      "fighter": "deep",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Queue Breaker!",
+      "characterDescription": "The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Queue Breaker",
+        "description": "Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_georgia_special",
+      "category": "voice",
+      "fighter": "georgia",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Golden Cascade!",
+      "characterDescription": "The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Golden Cascade",
+        "description": "Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_matt_special",
+      "category": "voice",
+      "fighter": "matt",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Latent Rush!",
+      "characterDescription": "The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Latent Rush",
+        "description": "Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_photographer_special",
+      "category": "voice",
+      "fighter": "photographer",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Flash Frame!",
+      "characterDescription": "The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Flash Frame",
+        "description": "The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_rob_special",
+      "category": "voice",
+      "fighter": "rob",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Compile Crash!",
+      "characterDescription": "The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Compile Crash",
+        "description": "Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_allyson_intro",
+      "category": "voice",
+      "fighter": "allyson",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] Every node is connected. Your defeat is next.",
+      "voice": "River (neutral, american)",
+      "introTagline": "Every node is connected. Your defeat is next.",
+      "characterDescription": "The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Node Burst",
+        "description": "Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_deep_intro",
+      "category": "voice",
+      "fighter": "deep",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] You are in my queue now.",
+      "voice": "Daniel (male, british)",
+      "introTagline": "You are in my queue now.",
+      "characterDescription": "The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Queue Breaker",
+        "description": "Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_georgia_intro",
+      "category": "voice",
+      "fighter": "georgia",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] Catch the light. Feel the impact.",
+      "voice": "Jessica (female, american)",
+      "introTagline": "Catch the light. Feel the impact.",
+      "characterDescription": "The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Golden Cascade",
+        "description": "Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_matt_intro",
+      "category": "voice",
+      "fighter": "matt",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] Less waiting. More fighting.",
+      "voice": "Charlie (male, australian)",
+      "introTagline": "Less waiting. More fighting.",
+      "characterDescription": "The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Latent Rush",
+        "description": "Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_photographer_intro",
+      "category": "voice",
+      "fighter": "photographer",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] Hold still. This knockout needs a close-up.",
+      "voice": "Brian (male, american)",
+      "introTagline": "Hold still. This knockout needs a close-up.",
+      "characterDescription": "The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Flash Frame",
+        "description": "The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "fighter_rob_intro",
+      "category": "voice",
+      "fighter": "rob",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] Build passed. You are going down.",
+      "voice": "Adam (male, american)",
+      "introTagline": "Build passed. You are going down.",
+      "characterDescription": "The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering.",
+      "specialMove": {
+        "name": "Compile Crash",
+        "description": "Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    }
+  ]
+}
