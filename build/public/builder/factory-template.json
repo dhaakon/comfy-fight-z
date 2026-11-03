@@ -98,6 +98,6 @@
   ],
   "nodePack": {
     "name": "Comfy Fighter Z Asset Factory",
-    "installInstructions": "Copy comfyui/custom_nodes/dad_fighter_assets into your ComfyUI custom_nodes folder and restart ComfyUI. Then open the downloaded workflow."
+    "installInstructions": "Copy comfyui/custom_nodes/comfy_fighter_assets into your ComfyUI custom_nodes folder and restart ComfyUI. Then open the downloaded workflow."
   }
 }

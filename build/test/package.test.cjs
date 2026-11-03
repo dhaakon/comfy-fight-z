@@ -14,12 +14,21 @@ test('opening film manifest requires a portable MP4, duration and integrity hash
   }
 });
 function manifest() {
-  return { schema: 'dad-fighter-assets/v1', root: '.', game: { title: 'Custom fighters', fighters: [{ id: 'dad', name: 'Dad', color: '#ff8844' }, { id: 'rival', name: 'Rival', color: '#44aaff' }], stages: [{ id: 'yard', name: 'Yard' }], sheets: { sheet: poses } },
+  return { schema: 'comfy-fighter-assets/v1', root: '.', game: { title: 'Custom fighters', fighters: [{ id: 'dad', name: 'Dad', color: '#ff8844' }, { id: 'rival', name: 'Rival', color: '#44aaff' }], stages: [{ id: 'yard', name: 'Yard' }], sheets: { sheet: poses } },
     assets: [{ id: 'dad_sheet', kind: 'sprites', fighter: 'dad', sheet: 'sheet', poses: [...poses], src: 'raw/dad_sheet.png', key: true }] };
 }
 test('bundle validator accepts dimension-free plans and preserves exact sheet mapping', async () => {
   const { validateManifest } = await api, input = manifest(), result = validateManifest(input);
   assert.deepEqual(result, input); assert.notEqual(result, input); assert.deepEqual(result.assets[0].poses, poses);
+});
+
+test('legacy imported schemas normalize to Comfy Fighter Z output contracts', async () => {
+  const { validateManifest, validateAudioManifest } = await api;
+  const input = manifest(); input.schema = 'dad-fighter-assets/v1';
+  assert.equal(validateManifest(input).schema, 'comfy-fighter-assets/v1');
+  assert.equal(input.schema, 'dad-fighter-assets/v1');
+  const audio = { schema: 'dad-fighter-audio/v1', root: '.', assets: [{ id: 'music', kind: 'audio', category: 'music', src: 'raw/music.wav' }] };
+  assert.equal(validateAudioManifest(audio).schema, 'comfy-fighter-audio/v1');
 });
 
 test('factory optional text can be empty while partial bundles require merging', async () => {
@@ -121,7 +130,7 @@ test('source mappings and special descriptions survive validation', async () => 
 
 test('audio manifests validate portable paths, identity and categories', async () => {
   const { validateAudioManifest } = await api;
-  const input = { schema: 'dad-fighter-audio/v1', root: '.', assets: [{ id: 'yard_music', kind: 'audio', category: 'music', src: 'raw/yard.wav', loop: true }] };
+  const input = { schema: 'comfy-fighter-audio/v1', root: '.', assets: [{ id: 'yard_music', kind: 'audio', category: 'music', src: 'raw/yard.wav', loop: true }] };
   assert.equal(validateAudioManifest(input).assets[0].loop, true);
   for (const src of ['../yard.wav', 'https://example.com/audio.wav', 'raw/sound.js']) {
     assert.throws(() => validateAudioManifest({ ...input, assets: [{ ...input.assets[0], src }] }));

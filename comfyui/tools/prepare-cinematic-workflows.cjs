@@ -88,9 +88,9 @@ function makeYardEditGraph(config, template, { acceptedYardInput, acceptedSource
   generation.inputs.push({ name: 'model.images.image_2', shape: 7, type: 'IMAGE', link }); source.outputs[0].links.push(link);
   graph.links.push([link, source.id, 0, generation.id, input, 'IMAGE']); graph.nodes.push(source); graph.nodes.forEach((node, index) => node.order = index);
   graph.nodes.find(node => node.type === 'MarkdownNote').widgets_values[0] = `# ${stage.name}: remove only the graphic border\n\nONE paid Gemini Nano Banana 2.1 MINIMAL 2K edit. Accepted stage is Image 1, generated fictional environment reference is Image 2. Preserve the stage layout and fight plane; remove radiating speed lines and comic borders.\n\nThe partial assets.json contains only ${stage.id}. Merge it by ID into the complete accepted image/audio bundle after visual approval. It is independent of the opening video; never run an unapproved video variant. No local model inference and no automatic retry.`;
-  graph.nodes.find(node => node.type === 'DFZAssetRoot').pos = [-960, 220];
-  graph.nodes.find(node => node.type === 'DFZSaveAsset').pos = [980, 220];
-  graph.nodes.find(node => node.type === 'DFZExportManifest').pos = [1520, 220];
+  graph.nodes.find(node => node.type === 'CFZAssetRoot').pos = [-960, 220];
+  graph.nodes.find(node => node.type === 'CFZSaveAsset').pos = [980, 220];
+  graph.nodes.find(node => node.type === 'CFZExportManifest').pos = [1520, 220];
   graph.nodes.find(node => node.type === 'MarkdownNote').pos = [-960, -220];
   const loaders = graph.nodes.filter(node => node.type === 'LoadImage');
   loaders.forEach((node, index) => node.pos = [-400, 180 + index * 370]);

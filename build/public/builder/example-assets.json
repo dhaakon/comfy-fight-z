@@ -1,5 +1,5 @@
 {
-  "schema": "dad-fighter-assets/v1",
+  "schema": "comfy-fighter-assets/v1",
   "root": ".",
   "cloudOnly": true,
   "game": {

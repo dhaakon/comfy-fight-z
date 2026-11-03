@@ -17,8 +17,8 @@ Bundle = io.Custom("CFZ_BUNDLE")
 MODELS = ["Gemini Nano Banana 2.1", "Nano Banana 2 (Gemini 3.1 Flash Image)"]
 SOURCE_MODES = ["Upload reference", "Invent fictional reference"]
 EFFECTS = ["hit", "block", "projectile", "dust", "ko", "powerup", "dash", "launch", "spark"]
-DEFAULT_STYLE = "Original 1990s shonen battle-anime fighting-game artwork. Bold clean ink, angular expressive eyes, two-tone cel shading, dynamic clear silhouettes and vivid energy. Preserve the supplied person's visible features, clothing and accessories; no copied franchise characters or costumes."
-DEFAULT_STAGE_STYLE = "Anime fighting-game stage based closely on the uploaded venue. Wide side-on camera and clear level fighting floor; keep recognizable architecture and furniture behind the fight plane. No people, lettering, logos, floor emblems, borders or vignette."
+DEFAULT_STYLE = "Original 1990s shonen battle-anime fighting-game artwork. Bold clean ink, angular expressive eyes, two-tone cel shading, dynamic clear silhouettes and vivid energy. Preserve the supplied fictional character design, clothing and accessories; no real-person likenesses or copied franchise characters or costumes."
+DEFAULT_STAGE_STYLE = "Anime fighting-game stage based on the supplied fictional environment design. Wide side-on camera and clear level fighting floor; keep architecture and furniture behind the fight plane. No real venue details, people, lettering, logos, floor emblems, speed-line borders or vignette."
 KEY = "Flat uniform chroma green RGB(0,255,0), no green clothing, no floor shadows, no detached debris, no text, grid lines, borders or watermark."
 SYSTEM_PROMPT = "Generate exactly one finished game-art image following the requested layout and reference. Do not return a collage unless a nine-cell sprite sheet is explicitly requested."
 

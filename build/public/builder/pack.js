@@ -23,7 +23,8 @@ export function validateManifest(input) {
   let manifest;
   try { manifest = typeof input === 'string' ? JSON.parse(input) : JSON.parse(JSON.stringify(input)); }
   catch { throw new Error('The selected manifest is not valid JSON.'); }
-  if (manifest?.schema !== 'dad-fighter-assets/v1') throw new Error('Expected a dad-fighter-assets/v1 manifest exported by the ComfyUI bundle workflow.');
+  if (manifest?.schema === 'dad-fighter-assets/v1') manifest.schema = 'comfy-fighter-assets/v1';
+  if (manifest?.schema !== 'comfy-fighter-assets/v1') throw new Error('Choose the assets.json exported by the Comfy Fighter Z workflow.');
   if (manifest.partial) throw new Error('This is an asset patch. Merge it into a complete asset bundle before building a game.');
   if (manifest.root !== '.') throw new Error('Manifest root must be "."; select the folder containing assets.json and its raw images.');
   const game = manifest.game;
@@ -90,7 +91,8 @@ export function validateAudioManifest(input, game) {
   let manifest;
   try { manifest = typeof input === 'string' ? JSON.parse(input) : JSON.parse(JSON.stringify(input)); }
   catch { throw new Error('The audio manifest is not valid JSON.'); }
-  if (manifest?.schema !== 'dad-fighter-audio/v1' || manifest.root !== '.') throw new Error('Expected a dad-fighter-audio/v1 audio.json with root ".".');
+  if (manifest?.schema === 'dad-fighter-audio/v1') manifest.schema = 'comfy-fighter-audio/v1';
+  if (manifest?.schema !== 'comfy-fighter-audio/v1' || manifest.root !== '.') throw new Error('Choose a Comfy Fighter Z audio.json with root ".".');
   if (!Array.isArray(manifest.assets) || !manifest.assets.length || manifest.assets.length > 256) throw new Error('Audio manifest requires 1–256 audio assets.');
   const ids = new Set(), paths = new Set();
   for (const asset of manifest.assets) {
@@ -393,7 +395,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   if (sourceGame.expectedAssets) sourceGame.expectedAssets = jobs.map(job => job.id);
   output.set('sources/assets.json', jsonBlob({ ...source, root: '.', game: sourceGame, assets: jobs }));
   if (audioSource) output.set('sources/audio.json', jsonBlob({ ...audioSource, assets: audioJobs }));
-  output.set('assets/source-manifest.json', jsonBlob({ schema: 'dad-fighter-source-map/v1', root: '.', pathBase: 'game-package-root', sourceManifest: 'sources/assets.json', assets: accepted }));
+  output.set('assets/source-manifest.json', jsonBlob({ schema: 'comfy-fighter-source-map/v1', root: '.', pathBase: 'game-package-root', sourceManifest: 'sources/assets.json', assets: accepted }));
   output.set('build-report.json', jsonBlob({ strict: !allow, sourceAssets: jobs.length, audioAssets: acceptedAudio.length, audioStatus: audioSource ? 'included' : 'not-supplied', openingVideo: runtime.openingVideo || null, built, missing: missing.map(j => j.id), warnings, requiresVisualReview: true }));
   output.set('package.json', jsonBlob({ name: 'custom-comfy-fighter', version: '1.0.0', private: true, scripts: { start: 'node start-server.cjs' }, engines: { node: '>=22' } }));
   output.set('start-server.cjs', new Blob([SERVER], { type: 'text/javascript' }));

@@ -216,7 +216,7 @@ async function download() {
   setBusy(true);
   try {
     const blob = await zipFiles(builtFiles), url = URL.createObjectURL(blob), a = document.createElement('a');
-    a.href = url; a.download = `${$('game-title').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'dad-fighter-game'}.zip`;
+    a.href = url; a.download = `${$('game-title').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'comfy-fighter-z'}.zip`;
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
     message('Game ZIP downloaded. Extract it and follow the included README to play.', 'success');
   } finally { setBusy(false); }

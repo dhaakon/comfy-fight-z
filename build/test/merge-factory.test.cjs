@@ -24,7 +24,7 @@ function fixture(t) {
     return { ...assetRecord(job), src, sha256: hash(bytes) };
   });
   const assets = save(base, makeJobs(game), 'base'); game.expectedAssets = assets.map(item => item.id);
-  const manifest = { schema: 'dad-fighter-assets/v1', root: '.', cloudOnly: true, game, assets };
+  const manifest = { schema: 'comfy-fighter-assets/v1', root: '.', cloudOnly: true, game, assets };
   write(path.join(base, 'assets.json'), manifest);
   const replacements = save(patch, assets.filter(item => item.id === 'custom0_sheetB'), 'patch');
   const patchMap = { ...structuredClone(manifest), partial: true, game: { ...structuredClone(game), fighters: [structuredClone(game.fighters[0])], stages: [] }, assets: replacements };
@@ -61,7 +61,7 @@ test('custom three-environment factory merges an individual sheet without audio 
 
 test('custom merge preserves optional audio and video through image-only patches', t => {
   const item = fixture(t), bytes = 'audio fixture', movie = 'video fixture';
-  const audio = { schema: 'dad-fighter-audio/v1', root: '.', title: item.game.title, assets: [{ id: 'menu_music', kind: 'audio', category: 'music', loop: true, src: 'raw/menu.wav', sha256: hash(bytes) }] };
+  const audio = { schema: 'comfy-fighter-audio/v1', root: '.', title: item.game.title, assets: [{ id: 'menu_music', kind: 'audio', category: 'music', loop: true, src: 'raw/menu.wav', sha256: hash(bytes) }] };
   const video = { schema: 'comfy-fighter-video/v1', root: '.', openingVideo: { id: 'opening', src: 'raw/opening.mp4', duration: 25, sha256: hash(movie) } };
   write(path.join(item.base, 'audio.json'), audio); write(path.join(item.base, 'raw/menu.wav'), bytes);
   write(path.join(item.base, 'video.json'), video); write(path.join(item.base, 'raw/opening.mp4'), movie);

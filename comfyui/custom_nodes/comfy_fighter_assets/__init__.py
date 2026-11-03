@@ -1,6 +1,6 @@
 """Mapped asset saves and cloud-native Comfy Fighter Z factory nodes.
 
-The DFZ save/export nodes are local-only. CFZ factories expand native ComfyUI
+The CFZ save/export nodes are local-only. CFZ factories expand native ComfyUI
 cloud nodes; they never load checkpoints or implement a separate API client.
 Content-addressed PNG paths keep an earlier completed assets.json usable while
 a new run is still generating. Older raw images are retained intentionally.
@@ -20,12 +20,12 @@ from PIL import Image
 from comfy_api.latest import ComfyExtension, io, ui
 
 
-SCHEMA = "dad-fighter-assets/v1"
+SCHEMA = "comfy-fighter-assets/v1"
 ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 KINDS = {"source", "reference", "sprites", "portrait", "hero", "cutin", "stage", "ui", "effects"}
-AssetRoot = io.Custom("DFZ_ROOT")
-AssetRecord = io.Custom("DFZ_ASSET")
-AudioRecord = io.Custom("DFZ_AUDIO_ASSET")
+AssetRoot = io.Custom("CFZ_ROOT")
+AssetRecord = io.Custom("CFZ_ASSET")
+AudioRecord = io.Custom("CFZ_AUDIO_ASSET")
 SHEETS = {
     "sheet": ["idle", "walk", "punch", "kick", "block", "hit", "special", "down", "win"],
     "sheetB": ["stance2", "crouch", "sweep", "launcher", "jump", "airkick", "hpunch", "dash", "tumble"],
@@ -85,7 +85,7 @@ def _config(value):
             accepted.append(item)
         result[category] = accepted
     if value.get("sheets") != SHEETS:
-        raise ValueError("config_json.sheets must preserve the three standard Dad Fighter 3x3 pose layouts")
+        raise ValueError("config_json.sheets must preserve the three standard Comfy Fighter Z 3x3 pose layouts")
     result["sheets"] = {name: list(poses) for name, poses in SHEETS.items()}
     for field in ("expectedAssets", "expectedAudio"):
         expected = value.get(field)
@@ -124,8 +124,8 @@ def _root_path(value):
 
 
 def _root(root):
-    if not isinstance(root, dict) or root.get("_type") != "DFZ_ROOT":
-        raise ValueError("Connect a DFZ Asset Root node")
+    if not isinstance(root, dict) or root.get("_type") not in {"CFZ_ROOT", "DFZ_ROOT"}:
+        raise ValueError("Connect a CFZ Asset Root node")
     return _root_path(root.get("path")), _config(root.get("config", {}))
 
 
@@ -213,13 +213,13 @@ def _save_image(image, directory, record):
     return record
 
 
-class DFZAssetRoot(io.ComfyNode):
+class CFZAssetRoot(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(
-            node_id="DFZAssetRoot", display_name="Game Asset Root", category="Dad Fighter/assets",
+            node_id="CFZAssetRoot", display_name="Game Asset Root", category="Comfy Fighter Z/assets",
             inputs=[
-                io.String.Input("root_directory", default=str(Path.cwd() / "output" / "dad-fighter-assets")),
+                io.String.Input("root_directory", default=str(Path.cwd() / "output" / "comfy-fighter-assets")),
                 io.String.Input("config_json", default="{}", multiline=True),
             ],
             outputs=[AssetRoot.Output(display_name="root")],
@@ -229,14 +229,14 @@ class DFZAssetRoot(io.ComfyNode):
     def execute(cls, root_directory, config_json):
         path = _root_path(root_directory)
         config = _config(_json_object(config_json, "config_json"))
-        return io.NodeOutput({"_type": "DFZ_ROOT", "path": str(path), "config": config})
+        return io.NodeOutput({"_type": "CFZ_ROOT", "path": str(path), "config": config})
 
 
-class DFZSaveAsset(io.ComfyNode):
+class CFZSaveAsset(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(
-            node_id="DFZSaveAsset", display_name="Save Mapped Game Asset", category="Dad Fighter/assets",
+            node_id="CFZSaveAsset", display_name="Save Mapped Game Asset", category="Comfy Fighter Z/assets",
             inputs=[io.Image.Input("image"), AssetRoot.Input("root"),
                     io.String.Input("asset_json", default="{}", multiline=True)],
             outputs=[AssetRecord.Output(display_name="asset")],
@@ -255,11 +255,11 @@ class DFZSaveAsset(io.ComfyNode):
         return io.NodeOutput(_save_image(image, directory, record))
 
 
-class DFZExportManifest(io.ComfyNode):
+class CFZExportManifest(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(
-            node_id="DFZExportManifest", display_name="Export Game Assets JSON", category="Dad Fighter/assets",
+            node_id="CFZExportManifest", display_name="Export Game Assets JSON", category="Comfy Fighter Z/assets",
             inputs=[AssetRoot.Input("root"), io.Autogrow.Input("assets", template=io.Autogrow.TemplatePrefix(
                 AssetRecord.Input("asset"), prefix="asset_", min=1, max=100))],
             outputs=[io.String.Output(display_name="manifest_path")],
@@ -278,7 +278,7 @@ class DFZExportManifest(io.ComfyNode):
             if not re.fullmatch(r"asset_(?:0|[1-9][0-9]?)", slot):
                 raise ValueError(f"Unknown asset input: {slot}")
             if not isinstance(value, dict) or value.get("_root") != str(directory):
-                raise ValueError(f"{slot} must come from the same DFZ Asset Root")
+                raise ValueError(f"{slot} must come from the same CFZ Asset Root")
             record = _metadata(value, config)
             if record["id"].casefold() in identities:
                 raise ValueError(f"Duplicate asset ID: {record['id']}")
@@ -332,11 +332,11 @@ def _audio_metadata(value, config):
     return result
 
 
-class DFZSaveAudio(io.ComfyNode):
+class CFZSaveAudio(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(
-            node_id="DFZSaveAudio", display_name="Save Mapped Game Audio", category="Dad Fighter/assets",
+            node_id="CFZSaveAudio", display_name="Save Mapped Game Audio", category="Comfy Fighter Z/assets",
             inputs=[io.Audio.Input("audio"), AssetRoot.Input("root"),
                     io.String.Input("asset_json", default="{}", multiline=True)],
             outputs=[AudioRecord.Output(display_name="audio_asset")],
@@ -379,11 +379,11 @@ class DFZSaveAudio(io.ComfyNode):
         return io.NodeOutput(record)
 
 
-class DFZExportAudioManifest(io.ComfyNode):
+class CFZExportAudioManifest(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(
-            node_id="DFZExportAudioManifest", display_name="Export Game Audio JSON", category="Dad Fighter/assets",
+            node_id="CFZExportAudioManifest", display_name="Export Game Audio JSON", category="Comfy Fighter Z/assets",
             inputs=[AssetRoot.Input("root"), io.Autogrow.Input("assets", template=io.Autogrow.TemplatePrefix(
                 AudioRecord.Input("audio_asset"), prefix="audio_", min=1, max=100))],
             outputs=[io.String.Output(display_name="manifest_path")], is_output_node=True,
@@ -401,7 +401,7 @@ class DFZExportAudioManifest(io.ComfyNode):
             if not re.fullmatch(r"audio_(?:0|[1-9][0-9]?)", slot):
                 raise ValueError(f"Unknown audio input: {slot}")
             if not isinstance(value, dict) or value.get("_root") != str(directory):
-                raise ValueError(f"{slot} must come from the same DFZ Asset Root")
+                raise ValueError(f"{slot} must come from the same CFZ Asset Root")
             record = _audio_metadata(value, config)
             if record["id"].casefold() in identities:
                 raise ValueError(f"Duplicate audio ID: {record['id']}")
@@ -426,20 +426,45 @@ class DFZExportAudioManifest(io.ComfyNode):
         expected = config.get("expectedAudio")
         if expected is not None and set(expected) != {record["id"] for record in records}:
             raise ValueError("Incomplete audio bundle; every expectedAudio ID must be connected")
-        manifest = {"schema": "dad-fighter-audio/v1", "root": ".", "cloudOnly": True,
+        manifest = {"schema": "comfy-fighter-audio/v1", "root": ".", "cloudOnly": True,
                     "title": config["title"], "assets": records}
         destination = _inside(directory, "audio.json")
         _atomic_write(destination, (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
         return io.NodeOutput(str(destination), ui=ui.PreviewText(str(destination)))
 
 
+def _legacy_alias(base, node_id):
+    """Keep saved pre-rename workflows loadable without listing legacy nodes."""
+    def define_schema(cls):
+        schema = base.define_schema()
+        schema.node_id = node_id
+        schema.is_deprecated = True
+        schema.is_dev_only = True
+        schema.description = "Compatibility node for an earlier saved workflow. Use the current Comfy Fighter Z node for new workflows."
+        sockets = {"CFZ_ROOT": "DFZ_ROOT", "CFZ_ASSET": "DFZ_ASSET", "CFZ_AUDIO_ASSET": "DFZ_AUDIO_ASSET"}
+        descriptors = list(schema.outputs)
+        for item in schema.inputs:
+            descriptors.extend(item.get_all())
+            if hasattr(item, "template"):
+                descriptors.append(item.template.input)
+        for descriptor in descriptors:
+            if descriptor.io_type in sockets:
+                descriptor.Parent = io.Custom(sockets[descriptor.io_type])
+        return schema
+    return type(node_id, (base,), {"define_schema": classmethod(define_schema), "__module__": __name__})
+
+
+ASSET_NODES = [CFZAssetRoot, CFZSaveAsset, CFZExportManifest, CFZSaveAudio, CFZExportAudioManifest]
+LEGACY_NODES = [_legacy_alias(base, identity) for base, identity in zip(ASSET_NODES,
+    ["DFZAssetRoot", "DFZSaveAsset", "DFZExportManifest", "DFZSaveAudio", "DFZExportAudioManifest"])]
+
 from .factories import FACTORY_NODES
 
 
-class DadFighterAssetsExtension(ComfyExtension):
+class ComfyFighterAssetsExtension(ComfyExtension):
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
-        return [DFZAssetRoot, DFZSaveAsset, DFZExportManifest, DFZSaveAudio, DFZExportAudioManifest, *FACTORY_NODES]
+        return [*ASSET_NODES, *FACTORY_NODES, *LEGACY_NODES]
 
 
-async def comfy_entrypoint() -> DadFighterAssetsExtension:
-    return DadFighterAssetsExtension()
+async def comfy_entrypoint() -> ComfyFighterAssetsExtension:
+    return ComfyFighterAssetsExtension()

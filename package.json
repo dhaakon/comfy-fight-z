@@ -15,7 +15,6 @@
     "build": "node build/tools/build.cjs",
     "build:release": "node build/tools/build.cjs --strict",
     "build:bundle": "node build/tools/build-bundle.cjs",
-    "export:dfz": "node build/tools/export-dfz.cjs",
     "start": "node build/tools/serve.cjs",
     "test": "node --test build/test/*.test.cjs",
     "test:browser": "npm run build && node build/test/browser-smoke.cjs",
@@ -24,6 +23,9 @@
     "workflows:factory": "node comfyui/tools/prepare-factory-workflows.cjs",
     "workflows:demo": "node comfyui/tools/prepare-fictional-demo.cjs",
     "adopt:game": "node build/tools/adopt-game.cjs",
-    "merge:assets": "node build/tools/merge-bundles.cjs"
+    "merge:assets": "node build/tools/merge-bundles.cjs",
+    "export:assets": "node build/tools/export-assets.cjs",
+    "install:game": "node build/tools/install-game.cjs",
+    "smoke:prepare": "node comfyui/tools/prepare-smoke-test.cjs"
   }
 }

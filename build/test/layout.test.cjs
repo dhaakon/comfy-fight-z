@@ -9,7 +9,7 @@ test('repository keeps generation, build source and output in three root folders
     .filter(entry => entry.isDirectory() && !entry.name.startsWith('.'))
     .map(entry => entry.name).sort();
   assert.deepEqual(directories, ['build', 'comfyui', 'output']);
-  for (const file of ['comfyui/workflows/comfy-hackathon.json', 'comfyui/custom_nodes/dad_fighter_assets/__init__.py',
+  for (const file of ['comfyui/workflows/comfy-hackathon.json', 'comfyui/custom_nodes/comfy_fighter_assets/__init__.py',
     'comfyui/config/game.json', 'comfyui/assets/plan.json', 'build/public/index.html', 'build/tools/build.cjs',
     'build/package-lock.json', 'output/README.md']) {
     assert.ok(fs.statSync(path.join(root, file)).isFile(), `Missing relocated source: ${file}`);

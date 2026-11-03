@@ -2,7 +2,7 @@
 
 Repository paths in this guide start at the repository root. Paths inside a portable `assets.json`, `audio.json`, `video.json` or runtime manifest remain relative to that bundle or exported game; moving the repository folders does not change those contracts.
 
-The example game is Comfy Fighter Z — Higgsfield Open Source Saga: six fictional characters and one fictional stage, The Yard. Its complete image bundle has 56 records: 49 generated game-art images and seven `source` records preserving the reference designs. The default **Invent fictional reference** mode generates those seven sources internally from text, then derives the game art from them. It requires 56 paid image calls and loads no external images. The schema names remain compatible with the existing Dad Fighter asset pipeline.
+The example game is Comfy Fighter Z — Higgsfield Open Source Saga: six fictional characters and one fictional stage, The Yard. Its complete image bundle has 56 records: 49 generated game-art images and seven `source` records preserving the reference designs. The default **Invent fictional reference** mode generates those seven sources internally from text, then derives the game art from them. It requires 56 paid image calls and loads no external images.
 
 The [compact factory](workflow-factory.md) is configured separately in `comfyui/config/factory.json`: six character factories and three environment factories. Each supports inventing a reference from its text description or explicitly selecting **Upload reference** for a new supplied image. All image selectors start empty. Only The Yard is enabled initially; the other two environments remain disabled and produce nothing until enabled. Never fill an empty environment slot with The Yard implicitly. A custom bundle can contain up to three environments; this does not change the installed game's one-stage configuration.
 
@@ -19,7 +19,7 @@ Upload mode saves the seven or nine supplied references without generating them 
 
 ## Audio bundle
 
-`comfyui/workflows/comfy-audio.json` writes `audio.json` beside `assets.json`, using schema `dad-fighter-audio/v1`, `root: "."`, `title`, and an `assets` array. Every entry has `id`, `kind: "audio"`, `category: "music" | "sfx" | "voice"`, a relative WAV `src`, SHA-256, sample rate, channel count and duration. Music records have `loop: true`; character special calls also have `fighter`.
+`comfyui/workflows/comfy-audio.json` writes `audio.json` beside `assets.json`, using schema `comfy-fighter-audio/v1`, `root: "."`, `title`, and an `assets` array. Every entry has `id`, `kind: "audio"`, `category: "music" | "sfx" | "voice"`, a relative WAV `src`, SHA-256, sample rate, channel count and duration. Music records have `loop: true`; character special calls also have `fighter`.
 
 Runtime IDs are `menu_music`, `yard_music`, `ann_select`, `ann_fight`, `ann_ko`, `ann_victory`, `sfx_punch`, `sfx_kick`, `sfx_block`, `sfx_special`, `fighter_<id>_special` and `fighter_<id>_intro` for each character. The complete workflow prepares **22 clips**: two music tracks, four announcer calls, four effects, six special calls and six intro taglines. Intro clips use six distinct stock voices for fictional performances, with no voice cloning. A text introduction still displays when its audio clip is absent from an accepted bundle.
 
@@ -31,7 +31,7 @@ The main graph's Project Settings selects `<root_directory>`. Each factory node 
 
 ```json
 {
-  "schema": "dad-fighter-assets/v1",
+  "schema": "comfy-fighter-assets/v1",
   "root": ".",
   "cloudOnly": true,
   "game": {

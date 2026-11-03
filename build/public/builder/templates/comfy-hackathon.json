@@ -43,7 +43,7 @@
         "Node name for S&R": "CFZProjectSettings"
       },
       "widgets_values": [
-        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\output\\assets\\generated\\comfy-fighter-factory",
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\output\\assets\\generated\\comfy-fighter-z",
         "Comfy Fighter Z",
         "Higgsfield Open Source Saga",
         "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
@@ -53,7 +53,7 @@
         42
       ],
       "widgets_values_named": {
-        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\output\\assets\\generated\\comfy-fighter-factory",
+        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\output\\assets\\generated\\comfy-fighter-z",
         "title": "Comfy Fighter Z",
         "subtitle": "Higgsfield Open Source Saga",
         "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
@@ -831,7 +831,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "## Before you run\n\n1. Install comfyui/custom_nodes/dad_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet or one environment. The full native graph is under comfyui/workflows/advanced/."
+        "## Before you run\n\n1. Install comfyui/custom_nodes/comfy_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet or one environment. The full native graph is under comfyui/workflows/advanced/."
       ]
     }
   ],

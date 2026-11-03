@@ -49,11 +49,11 @@ function makeAudioGraph(jobs, config, templates, { rootDirectory, title = 'Comfy
     const id = nextLink++; from.outputs[0].links ??= []; from.outputs[0].links.push(id); to.inputs[input].link = id;
     links.push([id, from.id, 0, to.id, input, type]);
   };
-  const root = node('DFZAssetRoot', 'Shared game asset root (same folder as images)', [-550, 180], [], [{ name: 'root', type: 'DFZ_ROOT', links: [] }],
+  const root = node('CFZAssetRoot', 'Shared game asset root (same folder as images)', [-550, 180], [], [{ name: 'root', type: 'CFZ_ROOT', links: [] }],
     [rootDirectory || path.resolve(ROOT, config.assetRoot || 'output/assets/generated/game-pack'), JSON.stringify({ ...config, expectedAudio: jobs.map(job => job.id) }, null, 2)]);
   root.size = [470, 410];
-  const exporter = node('DFZExportAudioManifest', 'Export audio.json after every track', [1550, 180], [{ name: 'root', type: 'DFZ_ROOT', link: null }], [{ name: 'manifest_path', type: 'STRING', links: null }]);
-  exporter.size = [420, jobs.length * 25 + 130]; connect(root, exporter, 0, 'DFZ_ROOT');
+  const exporter = node('CFZExportAudioManifest', 'Export audio.json after every track', [1550, 180], [{ name: 'root', type: 'CFZ_ROOT', link: null }], [{ name: 'manifest_path', type: 'STRING', links: null }]);
+  exporter.size = [420, jobs.length * 25 + 130]; connect(root, exporter, 0, 'CFZ_ROOT');
   const voices = new Map();
   const voiceFor = job => {
     const preset = job.voice || 'Roger (male, american)';
@@ -80,10 +80,10 @@ function makeAudioGraph(jobs, config, templates, { rootDirectory, title = 'Comfy
       connect(voiceFor(job), generation, generation.inputs.findIndex(input => input.name === 'voice'), 'ELEVENLABS_VOICE');
     }
     generation.widgets_values = Object.values(generation.widgets_values_named); nodes.push(generation);
-    const save = node('DFZSaveAudio', `Save + map ${job.id}`, [640, 180 + index * 400],
-      [{ name: 'audio', type: 'AUDIO', link: null }, { name: 'root', type: 'DFZ_ROOT', link: null }], [{ name: 'audio_asset', type: 'DFZ_AUDIO_ASSET', links: [] }], [JSON.stringify(audioRecord(job), null, 2)]);
-    connect(generation, save, 0, 'AUDIO'); connect(root, save, 1, 'DFZ_ROOT');
-    exporter.inputs.push({ name: `assets.audio_${index}`, type: 'DFZ_AUDIO_ASSET', link: null }); connect(save, exporter, exporter.inputs.length - 1, 'DFZ_AUDIO_ASSET');
+    const save = node('CFZSaveAudio', `Save + map ${job.id}`, [640, 180 + index * 400],
+      [{ name: 'audio', type: 'AUDIO', link: null }, { name: 'root', type: 'CFZ_ROOT', link: null }], [{ name: 'audio_asset', type: 'CFZ_AUDIO_ASSET', links: [] }], [JSON.stringify(audioRecord(job), null, 2)]);
+    connect(generation, save, 0, 'AUDIO'); connect(root, save, 1, 'CFZ_ROOT');
+    exporter.inputs.push({ name: `assets.audio_${index}`, type: 'CFZ_AUDIO_ASSET', link: null }); connect(save, exporter, exporter.inputs.length - 1, 'CFZ_AUDIO_ASSET');
   });
   const note = node('MarkdownNote', title, [-550, -250], [], [], [
     `# ${title}\n\n${jobs.length} paid cloud audio jobs. Music: Sonilo. Effects: ElevenLabs SFX. Announcer, move names and fighter intro taglines: Eleven v4. Each intro uses a distinct stock preset voice for a fictional performance; it does not imitate any real person. No local model weights and no voice cloning.\n\nSet Asset Root to the SAME folder as the image graph. Audio saves are PCM WAVs under raw/. The exporter writes audio.json only after every track finishes; assets.json remains unchanged. Load the full folder in the builder to include both maps.\n\nMusic is requested as loop-friendly; audition the joins before release. Preparing this workflow spends nothing. Running it requires cloud credits and spending authorization.`

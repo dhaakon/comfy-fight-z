@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { createCanvas, loadImage } = require('@napi-rs/canvas');
 const { buildAssets, importAssets, readProject, keyGreen, writeJson } = require('../tools/lib/assets.cjs');
-const { exportDfz } = require('../tools/export-dfz.cjs');
+const { exportAssets } = require('../tools/export-assets.cjs');
 
 const poses = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win'];
 function fixture(t, jobs) {
@@ -181,12 +181,12 @@ test('build wires every visual asset category into the runtime manifest', async 
   assert.deepEqual([portrait.width, portrait.height], [320, 320]);
 });
 
-test('DFZ export uses reference-compatible names and refuses an existing repository', async t => {
+test('Asset export uses reference-compatible names and refuses an existing repository', async t => {
   const root = fixture(t);
   await makeSheet(path.join(root, 'output/assets/generated/raw/ember_sheet.png'));
   await buildAssets({ root, strict: true });
-  const out = path.join(root, 'output/dfz');
-  const report = exportDfz({ root, out });
+  const out = path.join(root, 'output/asset-export');
+  const report = exportAssets({ root, out });
   assert.equal(report.files, 9);
   assert.ok(fs.existsSync(path.join(out, 'src/assets/fighters/ember_idle.webp')));
   const meta = JSON.parse(fs.readFileSync(path.join(out, 'src/assets/fighters/meta.json')));
@@ -194,20 +194,20 @@ test('DFZ export uses reference-compatible names and refuses an existing reposit
   assert.ok(meta.ember.idle.ax > 0);
   const occupied = path.join(root, 'existing-game');
   fs.mkdirSync(occupied); fs.writeFileSync(path.join(occupied, 'package.json'), '{}');
-  assert.throws(() => exportDfz({ root, out: occupied }), /nonempty/);
+  assert.throws(() => exportAssets({ root, out: occupied }), /nonempty/);
   assert.equal(fs.existsSync(path.join(occupied, 'src')), false);
 });
 
-test('repeated DFZ exports remove stale managed artwork and preserve unrelated files', async t => {
+test('repeated Asset exports remove stale managed artwork and preserve unrelated files', async t => {
   const root = fixture(t);
   await makeSheet(path.join(root, 'output/assets/generated/raw/ember_sheet.png'));
   const { manifest } = await buildAssets({ root, strict: true });
-  const out = path.join(root, 'output/dfz');
-  exportDfz({ root, out });
+  const out = path.join(root, 'output/asset-export');
+  exportAssets({ root, out });
   fs.writeFileSync(path.join(out, 'review-notes.txt'), 'keep me');
   delete manifest.fighters[0].poses.win;
   writeJson(path.join(root, 'build/public/assets/manifest.json'), manifest);
-  const report = exportDfz({ root, out });
+  const report = exportAssets({ root, out });
   assert.deepEqual(report.removed, ['src/assets/fighters/ember_win.webp']);
   assert.equal(fs.existsSync(path.join(out, 'src/assets/fighters/ember_win.webp')), false);
   assert.equal(fs.readFileSync(path.join(out, 'review-notes.txt'), 'utf8'), 'keep me');

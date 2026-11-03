@@ -8,7 +8,7 @@ The example describes six fictional fighters and one fictional Yard stage. Its a
 
 ## Use the main template
 
-1. Install `comfyui/custom_nodes/dad_fighter_assets` into ComfyUI's custom nodes directory, then restart ComfyUI and reload the editor to refresh its node catalog. From this repository you can run `npm run nodes:install -- --comfy-root "C:\path\to\ComfyUI"`.
+1. Install `comfyui/custom_nodes/comfy_fighter_assets` into ComfyUI's custom nodes directory, then restart ComfyUI and reload the editor to refresh its node catalog. From this repository you can run `npm run nodes:install -- --comfy-root "C:\path\to\ComfyUI"`.
 2. Open `comfyui/workflows/comfy-hackathon.json`. Set a fresh absolute folder under this repository's `output/test-runs/` in **Project Settings**, then edit the game title, subtitle and shared styles as needed.
 3. Keep **Invent fictional reference** selected in each Character Factory. Edit the name, description, special move, intro tagline and accent color. The node creates the source design, identity, sheets and character art internally. To reuse a newly accepted fictional reference, deliberately select **Upload reference** and supply that file.
 4. Keep Environment 1 enabled; its generated stage feeds the title and selection backgrounds. To add a second or third environment, describe its setting and enable the node. Each active environment invents its own reference in text-only mode.
@@ -21,7 +21,7 @@ Each Character Factory generates a saved source, one accepted anime identity ref
 
 ## Cost and output counts
 
-The compact canvas hides implementation details, not paid calls. Factories expand into native **Gemini Nano Banana 2.1** API nodes, with 1K character/interface art and 2K sheets, stages and effects, using MINIMAL thinking. There are no model calls when opening, editing, uploading files to or preparing the workflow.
+Factories expand into native **Gemini Nano Banana 2.1** API nodes, with 1K character/interface art and 2K sheets, stages and effects, using MINIMAL thinking. There are no model calls when opening, editing, uploading files to or preparing the workflow.
 
 | Enabled factory inputs | Paid image calls | Source saves | Mapped records |
 | --- | --- | --- | --- |
@@ -30,9 +30,9 @@ The compact canvas hides implementation details, not paid calls. Factories expan
 | Uploaded references: six characters + the Yard | 49 | 7 | 56 |
 | Uploaded references: six characters + three environments | 51 | 9 | 60 |
 
-At the installed native rates checked on November 2, 2026, a 1K request is approximately $0.048048 and a 2K request $0.072072. The default text-only image factory estimates $3.195; enabling all three environments estimates $3.483. With uploaded references, estimates are $2.835 and $2.979. Source saves do not add charges beyond the listed generation calls. Actual billing may vary. Audio and video remain separate workflows; no paid retry is authorized automatically.
+At the installed native rates checked on November 3, 2026, a 1K request is approximately $0.048048 and a 2K request $0.072072. The default text-only image factory estimates $3.195; enabling all three environments estimates $3.483. With uploaded references, estimates are $2.835 and $2.979. Source saves do not add charges beyond the listed generation calls. Actual billing may vary. Audio and video remain separate workflows; no paid retry is authorized automatically.
 
-The exported folder uses the existing `dad-fighter-assets/v1` contract. The game metadata contains the actual enabled environments; disabled slots are absent from the final roster of stages. A source map containing three environments is a new custom bundle, not a change to the installed one-Yard release. Keep it in a separate root and use the builder to export it.
+The exported folder uses the `comfy-fighter-assets/v1` contract. The game metadata contains the actual enabled environments; disabled slots are absent from the final roster of stages. A source map containing three environments is a new custom bundle, not a change to the installed one-Yard release. Keep it in a separate root and use the builder to export it.
 
 ## Focused templates
 
@@ -59,6 +59,6 @@ This regenerates the compact main template, focused factory templates, the expan
 
 The builder's **New game** entry reads `build/public/builder/factory-template.json` and offers matching downloads from `build/public/builder/templates/`. Those files are generated copies of the canonical workflow JSONs. Keep permanent changes in the config or generator, then regenerate so the ComfyUI file and browser download stay identical.
 
-The compact nodes' cloud prompts live in `comfyui/custom_nodes/dad_fighter_assets/factories.py`; reinstall the node pack and restart ComfyUI after changing them. The native advanced graph's prompts live in `comfyui/tools/prepare-workflows.cjs`. New games with different rosters or additional environments are independent builder exports. `build/tools/adopt-game.cjs` still validates against the canonical six-fighter, one-Yard `comfyui/config/game.json` before replacing the installed media.
+The compact nodes' cloud prompts live in `comfyui/custom_nodes/comfy_fighter_assets/factories.py`; reinstall the node pack and restart ComfyUI after changing them. The native advanced graph's prompts live in `comfyui/tools/prepare-workflows.cjs`. New games with different rosters or additional environments are independent builder exports. `build/tools/adopt-game.cjs` still validates against the canonical six-fighter, one-Yard `comfyui/config/game.json` before replacing the installed media.
 
 Audio and opening-film generation are documented in [the asset contract](asset-contract.md) and [video workflow](video-workflow.md). They write companion maps into the same accepted source bundle and are included by the builder when present.

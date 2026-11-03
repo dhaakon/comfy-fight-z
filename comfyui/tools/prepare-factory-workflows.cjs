@@ -126,7 +126,7 @@ function makeFactoryGraph(config) {
   attachExporter(b, project, bundles, [1510, 970], true);
   const count = factoryCounts(config), full = factoryCounts(config, true);
   b.note(`# ${config.title}\n## Invent fictional fighters. Build your game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Environment 1 supplies the title/select venue; slots 2 and 3 stay disabled until enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default ${count.paidImages} image calls / ${count.mappedAssets} mapped assets (~$${count.estimatedUSD.toFixed(3)}). All three environments: ${full.paidImages} calls / ${full.mappedAssets} records (~$${full.estimatedUSD.toFixed(3)}). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing.`, [-510, -260], [1940, 290]);
-  b.note('## Before you run\n\n1. Install comfyui/custom_nodes/dad_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet or one environment. The full native graph is under comfyui/workflows/advanced/.', [1510, 1470], [440, 440]);
+  b.note('## Before you run\n\n1. Install comfyui/custom_nodes/comfy_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet or one environment. The full native graph is under comfyui/workflows/advanced/.', [1510, 1470], [440, 440]);
   b.group('Six character factories', [-25, 45, 1470, 1620], '#4b6387');
   b.group('Up to three environment factories', [-25, 1705, 1470, 675], '#4b7f6d');
   b.group('Shared artwork + mapped export', [1485, 545, 490, 830], '#826947');
@@ -179,7 +179,7 @@ function builderMetadata(config) {
       {id:'sheet',label:'One sprite sheet',url:'/builder/templates/sprite-sheet.json'},
       {id:'environment',label:'One environment',url:'/builder/templates/environment-factory.json'}],
     nodePack: { name:'Comfy Fighter Z Asset Factory',
-      installInstructions:'Copy comfyui/custom_nodes/dad_fighter_assets into your ComfyUI custom_nodes folder and restart ComfyUI. Then open the downloaded workflow.' } };
+      installInstructions:'Copy comfyui/custom_nodes/comfy_fighter_assets into your ComfyUI custom_nodes folder and restart ComfyUI. Then open the downloaded workflow.' } };
 }
 
 function prepareFactory() {

@@ -43,8 +43,8 @@ test('stage edit preserves its mapping and distinguishes target from reference d
     return graph.nodes.find(node => node.id === link[1]).widgets_values[0];
   });
   assert.deepEqual(sources, ['accepted-yard.png', 'yard_source.png']);
-  assert.deepEqual(JSON.parse(graph.nodes.find(node => node.type === 'DFZAssetRoot').widgets_values[1]).expectedAssets, [config.stages[0].id]);
-  assert.equal(JSON.parse(graph.nodes.find(node => node.type === 'DFZSaveAsset').widgets_values[0]).stage, config.stages[0].id);
+  assert.deepEqual(JSON.parse(graph.nodes.find(node => node.type === 'CFZAssetRoot').widgets_values[1]).expectedAssets, [config.stages[0].id]);
+  assert.equal(JSON.parse(graph.nodes.find(node => node.type === 'CFZSaveAsset').widgets_values[0]).stage, config.stages[0].id);
   assert.match(generation.widgets_values_named.prompt, /CHANGE ONLY/);
 });
 
@@ -60,7 +60,7 @@ test('cinematic cast, duels and stage mapping follow fictional configuration', (
   assert.ok(prompt.includes(config.stages[0].description));
   assert.match(prompt, /entirely imaginary adult performers/);
   const edit = makeYardEditGraph(config, load('comfyui/workflows/templates/cloud-image.json'), { acceptedYardInput: 'accepted-temple.png', outputRoot: 'output/test-output/temple' });
-  const mapped = JSON.parse(edit.nodes.find(node => node.type === 'DFZSaveAsset').widgets_values[0]);
+  const mapped = JSON.parse(edit.nodes.find(node => node.type === 'CFZSaveAsset').widgets_values[0]);
   assert.equal(mapped.id, 'sky-temple'); assert.equal(mapped.stage, 'sky-temple');
   assert.ok(edit.nodes.find(node => node.type === 'GeminiNanoBanana2V2').widgets_values_named.prompt.includes(config.stages[0].description));
   assert.throws(() => prepare(), /Choose an accepted fictional demo bundle/);

@@ -14,7 +14,6 @@
     "build": "node tools/build.cjs",
     "build:release": "node tools/build.cjs --strict",
     "build:bundle": "node tools/build-bundle.cjs",
-    "export:dfz": "node tools/export-dfz.cjs",
     "start": "node tools/serve.cjs",
     "test": "node --test test/*.test.cjs",
     "test:browser": "npm run build && node test/browser-smoke.cjs",
@@ -23,7 +22,10 @@
     "workflows:factory": "node ../comfyui/tools/prepare-factory-workflows.cjs",
     "workflows:demo": "node ../comfyui/tools/prepare-fictional-demo.cjs",
     "adopt:game": "node tools/adopt-game.cjs",
-    "merge:assets": "node tools/merge-bundles.cjs"
+    "merge:assets": "node tools/merge-bundles.cjs",
+    "export:assets": "node tools/export-assets.cjs",
+    "install:game": "node tools/install-game.cjs",
+    "smoke:prepare": "node ../comfyui/tools/prepare-smoke-test.cjs"
   },
   "dependencies": {
     "@napi-rs/canvas": "1.0.9"

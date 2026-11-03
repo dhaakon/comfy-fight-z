@@ -10,19 +10,19 @@ test('audio graph maps cloud outputs and waits for the complete audio bundle', (
   const templates = { music: load('comfyui/workflows/templates/cloud-music.json'), voice: load('comfyui/workflows/templates/cloud-voice.json'), sfx: load('comfyui/workflows/templates/cloud-sfx.json') };
   const graph = makeAudioGraph(jobs, config, templates);
   const byId = new Map(graph.nodes.map(node => [node.id, node]));
-  const root = graph.nodes.find(node => node.type === 'DFZAssetRoot');
-  const exported = graph.nodes.find(node => node.type === 'DFZExportAudioManifest');
+  const root = graph.nodes.find(node => node.type === 'CFZAssetRoot');
+  const exported = graph.nodes.find(node => node.type === 'CFZExportAudioManifest');
   assert.equal(jobs.length, 10 + config.fighters.length + config.fighters.filter(fighter => fighter.introTagline).length);
   assert.deepEqual(JSON.parse(root.widgets_values[1]).expectedAudio, jobs.map(job => job.id));
-  assert.equal(graph.nodes.filter(node => node.type === 'DFZSaveAudio').length, jobs.length);
-  assert.equal(exported.inputs.filter(input => input.type === 'DFZ_AUDIO_ASSET').length, jobs.length);
+  assert.equal(graph.nodes.filter(node => node.type === 'CFZSaveAudio').length, jobs.length);
+  assert.equal(exported.inputs.filter(input => input.type === 'CFZ_AUDIO_ASSET').length, jobs.length);
   assert.equal(graph.nodes.some(node => /Clone|Checkpoint|Loader/.test(node.type)), false);
   for (const job of jobs) {
     const generator = graph.nodes.find(node => node.title === `${job.id} | cloud audio`);
     assert.equal(generator.type, job.model);
     assert.deepEqual(generator.widgets_values, Object.values(generator.widgets_values_named));
     const saveLink = graph.links.find(link => link[1] === generator.id && link[5] === 'AUDIO');
-    const save = byId.get(saveLink[3]); assert.equal(save.type, 'DFZSaveAudio');
+    const save = byId.get(saveLink[3]); assert.equal(save.type, 'CFZSaveAudio');
     assert.equal(JSON.parse(save.widgets_values[0]).id, job.id);
     assert.ok(graph.links.some(link => link[1] === save.id && link[3] === exported.id));
   }

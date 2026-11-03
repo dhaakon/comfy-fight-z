@@ -24,6 +24,8 @@ The build copies the game into `output/game/`, and the server serves only that d
 
 Use `/builder/` to load a complete generated source folder containing `assets.json` and its mapped files, plus optional `audio.json` and `video.json`. It can export a self-contained game directory or ZIP. `npm run build:bundle -- --bundle <absolute-source-folder> --out <absolute-new-export-folder>` automates strict export and browser checks. Place independent exports under `output/exports/`.
 
+See the [advanced guide](../comfyui/docs/advanced.md) for automated export, optional video and reviewed asset updates.
+
 Normal builds preserve `build/public/assets/`. Adopt reviewed, verified canonical game media with `npm run adopt:game -- --game <absolute-exported-game-folder>`; keep the original source bundle separately. Custom rosters and additional environments belong in independent exports. Reports, screenshots and adoption backups belong under `output/diagnostics/`.
 
 Build, import, merge, export and test commands do not submit cloud jobs. Keep cloud generation configuration and custom nodes in `comfyui/`; never put private reference photos, retired photo-derived media, credentials or raw run outputs in `public/`.

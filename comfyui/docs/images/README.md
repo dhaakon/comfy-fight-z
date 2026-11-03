@@ -1,6 +1,6 @@
 # Screenshot guide
 
-These seven PNGs were captured from the running local interfaces on November 3, 2026 (UTC). They show the current fictional asset factory and media-free game prototype. They are fresh browser screenshots, without compositing, generated artwork or reused images from earlier sessions.
+These PNGs were captured from running local interfaces on November 3, 2026 (UTC). Screenshots 01–07 show the fictional asset factory, builder and media-free source prototype. Screenshots 08–09 show a separately generated and verified two-fighter game. All are direct browser screenshots without compositing or reused private images.
 
 | Screenshot | What it shows |
 | --- | --- |
@@ -11,12 +11,24 @@ These seven PNGs were captured from the running local interfaces on November 3, 
 | [05-export-ready.png](05-export-ready.png) | A prototype export after explicitly enabling placeholder assets. It shows 0/56 source images found and identifies the result as a prototype. This is not a generated-art release. |
 | [06-game-title.png](06-game-title.png) | The current Comfy Fighter Z title and Higgsfield Open Source Saga subtitle, with the fictional-art-pending message. |
 | [07-gameplay.png](07-gameplay.png) | One human fighter versus the CPU using the game's existing primitive fallback rendering. The arena visibly identifies these as prototype fighters. |
+| [08-smoke-title.png](08-smoke-title.png) | Title screen from the verified two-fighter game, with cloud-generated fictional artwork and the Higgsfield Open Source Saga subtitle. |
+| [09-smoke-gameplay.png](09-smoke-gameplay.png) | Generated Griddle and Rivet sprites fighting in the fictional Yard. This example has two fighters, not the full six-fighter roster. |
+
+## Generated example provenance
+
+Screenshots 08–09 were copied unchanged from the browser captures of a successful strict `build:bundle` export. ComfyUI generated 24 source images from text-only fictional designs; the build produced 54 mapped poses and passed runtime image, introduction, CPU and player-control checks without placeholders. No audio or video was generated for this test, and no real-person or real-venue photographs were inputs.
+
+The source bundle and exported game remain local under ignored `output/` folders; only these reviewed screenshots are included here. They do not indicate that the canonical six-fighter source demo has accepted artwork. See [the smaller-generation walkthrough](../advanced.md#try-a-smaller-generation-first) to reproduce the process with a new authorized run.
+
+## Prototype interface provenance
 
 The ComfyUI captures load [the main workflow](../../workflows/comfy-hackathon.json) into a fresh, isolated browser context. Its output root is changed only in that browser to `C:/comfy-fighter-z/output/test-runs/first-game/bundle`; the workflow file is unchanged, and this sample directory is never used for generation. No personal paths, account details, old reference photographs or photo-derived media are included.
 
 The capture script verifies that all custom nodes resolve, all nine factory image selectors are blank and use Invent mode, and no image previews are loaded. It checks that the example builder fails a strict build before placeholder consent, then explicitly enables placeholders for the prototype screenshot. The game captures require the fictional pending manifest with no image, audio or video assets.
 
-## Capture again
+## Recapture the prototype interfaces (01–07)
+
+The commands below rebuild the canonical source preview and capture only screenshots 01–07. They do not recreate or overwrite the generated-game screenshots 08–09. Rebuilding also replaces an installed local game preview with the canonical source preview.
 
 Use [build/tools/capture-readme.cjs](../../../build/tools/capture-readme.cjs) from the repository root. Node.js 22+, the npm dependencies, a Playwright-compatible Chromium browser and a running local ComfyUI server are required:
 

@@ -12,12 +12,14 @@ function source(root, src) {
   return file;
 }
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
-const IMAGE_SCHEMA = 'dad-fighter-assets/v1', AUDIO_SCHEMA = 'dad-fighter-audio/v1';
+const IMAGE_SCHEMA = 'comfy-fighter-assets/v1', AUDIO_SCHEMA = 'comfy-fighter-audio/v1';
+const LEGACY_SCHEMAS = { [IMAGE_SCHEMA]: 'dad-fighter-assets/v1', [AUDIO_SCHEMA]: 'dad-fighter-audio/v1' };
 const MAPPING_FIELDS = ['kind', 'fighter', 'stage', 'sheet', 'poses', 'category', 'key'];
 function readMap(folder, filename, schema) {
   const file = path.join(folder, filename);
   if (!fs.existsSync(file)) return null;
   const manifest = JSON.parse(fs.readFileSync(sourceFile(folder, filename), 'utf8'));
+  if (manifest.schema === LEGACY_SCHEMAS[schema]) manifest.schema = schema;
   if (manifest.schema !== schema || manifest.root !== '.' || !Array.isArray(manifest.assets) || !manifest.assets.length) throw new Error(`Invalid bundle map: ${file}`);
   const ids = new Set();
   for (const item of manifest.assets) {

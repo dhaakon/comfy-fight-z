@@ -27,7 +27,7 @@
           "STRING",
           {
             "advanced": true,
-            "default": "Original 1990s shonen battle-anime fighting-game artwork. Bold clean ink, angular expressive eyes, two-tone cel shading, dynamic clear silhouettes and vivid energy. Preserve the supplied person's visible features, clothing and accessories; no copied franchise characters or costumes.",
+            "default": "Original 1990s shonen battle-anime fighting-game artwork. Bold clean ink, angular expressive eyes, two-tone cel shading, dynamic clear silhouettes and vivid energy. Preserve the supplied fictional character design, clothing and accessories; no real-person likenesses or copied franchise characters or costumes.",
             "multiline": true
           }
         ],
@@ -43,7 +43,7 @@
           "STRING",
           {
             "advanced": true,
-            "default": "Anime fighting-game stage based closely on the uploaded venue. Wide side-on camera and clear level fighting floor; keep recognizable architecture and furniture behind the fight plane. No people, lettering, logos, floor emblems, borders or vignette.",
+            "default": "Anime fighting-game stage based on the supplied fictional environment design. Wide side-on camera and clear level fighting floor; keep architecture and furniture behind the fight plane. No real venue details, people, lettering, logos, floor emblems, speed-line borders or vignette.",
             "multiline": true
           }
         ],
@@ -797,7 +797,7 @@
     },
     "is_input_list": false,
     "output": [
-      "DFZ_ASSET"
+      "CFZ_ASSET"
     ],
     "output_is_list": [
       false
@@ -844,7 +844,7 @@
               "input": {
                 "required": {
                   "asset": [
-                    "DFZ_ASSET",
+                    "CFZ_ASSET",
                     {}
                   ]
                 }

@@ -2,13 +2,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { DEFAULT_ROOT, inside, writeJson, readProject, parseArgs } = require('./lib/assets.cjs');
 
-function exportDfz({ root = DEFAULT_ROOT, out } = {}) {
+function exportAssets({ root = DEFAULT_ROOT, out } = {}) {
   if (!out) throw new Error('Supply --out <new staging directory>; this adapter never updates an existing game repository.');
   const project = readProject(root);
   root = project.root;
   const target = path.resolve(out);
   if (target === root || root.startsWith(target + path.sep)) throw new Error('Export must use a dedicated staging directory.');
-  const marker = path.join(target, '.comfy-dfz-export');
+  const marker = path.join(target, '.comfy-assets-export');
   if (fs.existsSync(target) && fs.readdirSync(target).length && !fs.existsSync(marker)) {
     throw new Error('Export destination is nonempty and is not an adapter staging directory. Choose a new directory.');
   }
@@ -61,7 +61,7 @@ function exportDfz({ root = DEFAULT_ROOT, out } = {}) {
     }
   }
   fs.mkdirSync(target, { recursive: true });
-  fs.writeFileSync(marker, 'Generated asset staging directory for the Dad Fighter Z adapter.\n');
+  fs.writeFileSync(marker, 'Generated asset staging directory for the Comfy Fighter Z asset exporter.\n');
   for (const copy of copies) {
     fs.mkdirSync(path.dirname(copy.destination), { recursive: true });
     fs.copyFileSync(copy.source, copy.destination);
@@ -82,9 +82,9 @@ function exportDfz({ root = DEFAULT_ROOT, out } = {}) {
 if (require.main === module) {
   try {
     const args = parseArgs(process.argv.slice(2));
-    const report = exportDfz(args);
+    const report = exportAssets(args);
     console.log(`Exported ${report.files} art files to ${path.resolve(args.out)}.`);
     console.log('This is an asset staging export; see export-report.json for integration requirements.');
   } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { exportDfz };
+module.exports = { exportAssets };

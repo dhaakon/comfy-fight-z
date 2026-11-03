@@ -11,11 +11,11 @@ This folder contains the recipes and inputs used to generate Comfy Fighter Z ass
 | `workflows/factory/` | Focused character, sprite-sheet and environment factories |
 | `workflows/advanced/` | Expanded graphs for inspecting the native cloud nodes |
 | `config/` | Canonical game configuration and separate reusable factory defaults |
-| `custom_nodes/dad_fighter_assets/` | Project-owned cloud factories, individual-sheet nodes and manifest exporters |
+| `custom_nodes/comfy_fighter_assets/` | Project-owned cloud factories, individual-sheet nodes and manifest exporters |
 | `tools/` | Workflow preparation and custom-node installation scripts |
 | `assets/` | Image/audio generation plans and mapping contracts |
 | `ref/` | Accepted fictional sample references; replacement demo images are pending generation |
-| `docs/` | [Factory guide](docs/workflow-factory.md), [asset contract](docs/asset-contract.md), [incremental refresh](docs/incremental-refresh.md) and [opening workflow](docs/video-workflow.md) |
+| `docs/` | [Advanced guide](docs/advanced.md), [factory details](docs/workflow-factory.md), [asset contract](docs/asset-contract.md), [repairs](docs/incremental-refresh.md) and [opening workflow](docs/video-workflow.md) |
 
 Run commands from the repository root:
 

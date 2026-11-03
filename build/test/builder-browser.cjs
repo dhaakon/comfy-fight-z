@@ -57,7 +57,7 @@ async function syntheticBundle(folder) {
   wav.write('RIFF'); wav.writeUInt32LE(wav.length - 8, 4); wav.write('WAVEfmt ', 8); wav.writeUInt32LE(16, 16);
   wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22); wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(16000, 28);
   wav.writeUInt16LE(2, 32); wav.writeUInt16LE(16, 34); wav.write('data', 36); wav.writeUInt32LE(1600, 40);
-  const audio = { schema: 'dad-fighter-audio/v1', root: '.', title: manifest.game.title, assets: ['menu_music', 'sfx_punch'].map(id => ({ id, kind: 'audio', category: id.endsWith('music') ? 'music' : 'sfx', src: `raw/${id}.wav`, sha256: createHash('sha256').update(wav).digest('hex'), loop: id.endsWith('music') })) };
+  const audio = { schema: 'comfy-fighter-audio/v1', root: '.', title: manifest.game.title, assets: ['menu_music', 'sfx_punch'].map(id => ({ id, kind: 'audio', category: id.endsWith('music') ? 'music' : 'sfx', src: `raw/${id}.wav`, sha256: createHash('sha256').update(wav).digest('hex'), loop: id.endsWith('music') })) };
   for (const asset of audio.assets) fs.writeFileSync(path.join(folder, asset.src), wav);
   fs.writeFileSync(path.join(folder, 'audio.json'), JSON.stringify(audio));
   const video = fs.readFileSync(path.join(__dirname, 'fixtures/opening.mp4'));
@@ -84,7 +84,7 @@ function unzipStored(bytes, destination) {
 }
 
 (async () => {
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'dad-fighter-builder-'));
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'comfy-fighter-builder-'));
   const bundle = path.join(temp, 'bundle'); fs.mkdirSync(bundle);
   const manifest = await syntheticBundle(bundle), servers = [];
   let browser;
@@ -251,6 +251,6 @@ function unzipStored(bytes, destination) {
   } finally {
     if (browser) await browser.close();
     for (const child of servers) child.kill();
-    if (path.dirname(temp) === os.tmpdir() && path.basename(temp).startsWith('dad-fighter-builder-')) fs.rmSync(temp, { recursive: true, force: true });
+    if (path.dirname(temp) === os.tmpdir() && path.basename(temp).startsWith('comfy-fighter-builder-')) fs.rmSync(temp, { recursive: true, force: true });
   }
 })().catch(error => { console.error(error); process.exitCode = 1; });

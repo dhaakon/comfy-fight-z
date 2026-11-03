@@ -30,7 +30,7 @@ test('saga refresh replaces only 38 selected images and shares seven accepted re
   const note = graph.nodes.find(node => node.type === 'MarkdownNote').widgets_values[0];
   assert.match(note, /PARTIAL assets.json/);
   assert.match(note, /Merge replacements by asset ID/);
-  const bundleConfig = JSON.parse(graph.nodes.find(node => node.type === 'DFZAssetRoot').widgets_values[1]);
+  const bundleConfig = JSON.parse(graph.nodes.find(node => node.type === 'CFZAssetRoot').widgets_values[1]);
   assert.equal(bundleConfig.subtitle, 'Higgsfield Open Source Saga');
   assert.ok(bundleConfig.fighters.every(fighter => fighter.introTagline));
   assert.deepEqual(bundleConfig.expectedAssets, jobs.map(job => job.id));

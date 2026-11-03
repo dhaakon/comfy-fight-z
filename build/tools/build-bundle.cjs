@@ -152,7 +152,8 @@ async function main(options) {
   const manifestPath = path.join(bundle, 'assets.json'), manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const audioPath = path.join(bundle, 'audio.json'), audio = fs.existsSync(audioPath) ? JSON.parse(fs.readFileSync(audioPath, 'utf8')) : null;
   const videoPath = path.join(bundle, 'video.json'), video = fs.existsSync(videoPath) ? JSON.parse(fs.readFileSync(videoPath, 'utf8')) : null;
-  if (manifest.schema !== 'dad-fighter-assets/v1' || !Array.isArray(manifest.assets)) throw new Error('Expected the assets.json produced by the ComfyUI mapped bundle workflow.');
+  if (manifest.schema === 'dad-fighter-assets/v1') manifest.schema = 'comfy-fighter-assets/v1';
+  if (manifest.schema !== 'comfy-fighter-assets/v1' || !Array.isArray(manifest.assets)) throw new Error('Expected the assets.json produced by the Comfy Fighter Z workflow.');
   fs.mkdirSync(output, { recursive: true });
   const report = { status: 'running', startedAt: new Date().toISOString(), bundle, output, title: options.title || manifest.game.title, sourceAssets: manifest.assets.length, checks: [], browserErrors: [], screenshots: [], generationSubmitted: false };
   const saveReport = () => fs.writeFileSync(path.join(output, 'build-test.json'), JSON.stringify(report, null, 2) + '\n');

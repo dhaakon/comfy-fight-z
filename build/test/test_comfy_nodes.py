@@ -14,8 +14,8 @@ import numpy as np
 if os.environ.get("COMFYUI_ROOT"):
     sys.path.insert(0, os.environ["COMFYUI_ROOT"])
 
-MODULE = Path(__file__).resolve().parents[2] / "comfyui" / "custom_nodes" / "dad_fighter_assets" / "__init__.py"
-spec = importlib.util.spec_from_file_location("dad_fighter_assets", MODULE)
+MODULE = Path(__file__).resolve().parents[2] / "comfyui" / "custom_nodes" / "comfy_fighter_assets" / "__init__.py"
+spec = importlib.util.spec_from_file_location("comfy_fighter_assets", MODULE)
 nodes = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = nodes
 spec.loader.exec_module(nodes)
@@ -38,26 +38,26 @@ class BundleNodesTests(unittest.TestCase):
         self.pixels = np.ones((1, 12, 16, 3), dtype=np.float32)
 
     def root(self, expected=None, directory=None):
-        return nodes.DFZAssetRoot.execute(str(directory or self.directory), json.dumps(config(expected)))[0]
+        return nodes.CFZAssetRoot.execute(str(directory or self.directory), json.dumps(config(expected)))[0]
 
     def save(self, root, identity="dad_reference", **metadata):
         item = {"id": identity, "kind": "reference", "fighter": "dad", "key": True, **metadata}
-        return nodes.DFZSaveAsset.execute(self.pixels, root, json.dumps(item))[0]
+        return nodes.CFZSaveAsset.execute(self.pixels, root, json.dumps(item))[0]
 
     def test_root_does_not_create_directory_and_rejects_relative_paths(self):
         self.root()
         self.assertFalse(self.directory.exists())
         with self.assertRaisesRegex(ValueError, "absolute"):
-            nodes.DFZAssetRoot.execute("relative/bundle", json.dumps(config()))
+            nodes.CFZAssetRoot.execute("relative/bundle", json.dumps(config()))
 
     def test_saves_image_and_portable_manifest_with_no_private_paths(self):
         root = self.root(["dad_reference"])
         record = self.save(root)
-        result = nodes.DFZExportManifest.execute(root, {"asset_0": record})
+        result = nodes.CFZExportManifest.execute(root, {"asset_0": record})
         output = Path(result.result[0])
         self.assertEqual(output, self.directory / "assets.json")
         manifest = json.loads(output.read_text(encoding="utf-8"))
-        self.assertEqual(manifest["schema"], "dad-fighter-assets/v1")
+        self.assertEqual(manifest["schema"], "comfy-fighter-assets/v1")
         self.assertEqual(manifest["root"], ".")
         self.assertEqual(manifest["assets"][0]["src"], f"raw/dad_reference-{record['sha256'][:16]}.png")
         self.assertEqual([manifest["assets"][0]["width"], manifest["assets"][0]["height"]], [16, 12])
@@ -69,33 +69,33 @@ class BundleNodesTests(unittest.TestCase):
         root = self.root()
         record = self.save(root)
         with self.assertRaisesRegex(ValueError, "Duplicate asset"):
-            nodes.DFZExportManifest.execute(root, {"asset_0": record, "asset_1": record})
+            nodes.CFZExportManifest.execute(root, {"asset_0": record, "asset_1": record})
         other = self.root(directory=self.base / "other")
-        with self.assertRaisesRegex(ValueError, "same DFZ Asset Root"):
-            nodes.DFZExportManifest.execute(other, {"asset_0": record})
+        with self.assertRaisesRegex(ValueError, "same CFZ Asset Root"):
+            nodes.CFZExportManifest.execute(other, {"asset_0": record})
 
     def test_partial_export_preserves_previously_complete_manifest(self):
         root = self.root(["dad_reference", "yard"])
         ref = self.save(root)
         stage = self.save(root, "yard", kind="stage", stage="yard")
-        nodes.DFZExportManifest.execute(root, {"asset_0": ref, "asset_1": stage})
+        nodes.CFZExportManifest.execute(root, {"asset_0": ref, "asset_1": stage})
         previous = (self.directory / "assets.json").read_bytes()
         with self.assertRaisesRegex(ValueError, "Incomplete asset bundle"):
-            nodes.DFZExportManifest.execute(root, {"asset_0": ref})
+            nodes.CFZExportManifest.execute(root, {"asset_0": ref})
         self.assertEqual((self.directory / "assets.json").read_bytes(), previous)
 
     def test_rerun_uses_new_raw_path_and_failed_export_keeps_old_bundle_usable(self):
         root = self.root(["dad_reference", "yard"])
         previous_ref = self.save(root)
         stage = self.save(root, "yard", kind="stage", stage="yard")
-        nodes.DFZExportManifest.execute(root, {"asset_0": previous_ref, "asset_1": stage})
+        nodes.CFZExportManifest.execute(root, {"asset_0": previous_ref, "asset_1": stage})
         previous_manifest = (self.directory / "assets.json").read_bytes()
         previous_image = (self.directory / previous_ref["src"]).read_bytes()
         self.pixels.fill(0.25)
         next_ref = self.save(root)
         self.assertNotEqual(previous_ref["src"], next_ref["src"])
         with self.assertRaisesRegex(ValueError, "Incomplete asset bundle"):
-            nodes.DFZExportManifest.execute(root, {"asset_0": next_ref})
+            nodes.CFZExportManifest.execute(root, {"asset_0": next_ref})
         self.assertEqual((self.directory / "assets.json").read_bytes(), previous_manifest)
         self.assertEqual((self.directory / previous_ref["src"]).read_bytes(), previous_image)
 
@@ -115,10 +115,10 @@ class BundleNodesTests(unittest.TestCase):
         file = self.directory / record["src"]
         file.write_bytes(b"changed")
         with self.assertRaisesRegex(ValueError, "changed after saving"):
-            nodes.DFZExportManifest.execute(root, {"asset_0": record})
+            nodes.CFZExportManifest.execute(root, {"asset_0": record})
         file.unlink()
         with self.assertRaisesRegex(ValueError, "file is missing"):
-            nodes.DFZExportManifest.execute(root, {"asset_0": record})
+            nodes.CFZExportManifest.execute(root, {"asset_0": record})
         self.assertFalse((self.directory / "assets.json").exists())
 
     def test_traversal_and_invalid_sprite_mapping_are_rejected(self):
@@ -134,10 +134,10 @@ class BundleNodesTests(unittest.TestCase):
         root = self.root()
         metadata = json.dumps({"id": "dad_reference", "kind": "reference", "fighter": "dad"})
         with self.assertRaisesRegex(ValueError, "exactly one"):
-            nodes.DFZSaveAsset.execute(np.ones((2, 12, 16, 3)), root, metadata)
+            nodes.CFZSaveAsset.execute(np.ones((2, 12, 16, 3)), root, metadata)
         self.pixels[0, 0, 0, 0] = np.nan
         with self.assertRaisesRegex(ValueError, "nonfinite"):
-            nodes.DFZSaveAsset.execute(self.pixels, root, metadata)
+            nodes.CFZSaveAsset.execute(self.pixels, root, metadata)
 
     def test_root_symlink_is_rejected_when_platform_supports_links(self):
         target = self.base / "target"
@@ -152,28 +152,47 @@ class BundleNodesTests(unittest.TestCase):
     def test_invalid_config_and_empty_export_are_rejected(self):
         for invalid in ({}, {**config(), "fighters": []}, {**config(), "expectedAssets": ["dad", "DAD"]}):
             with self.assertRaises(ValueError):
-                nodes.DFZAssetRoot.execute(str(self.directory), json.dumps(invalid))
+                nodes.CFZAssetRoot.execute(str(self.directory), json.dumps(invalid))
         with self.assertRaisesRegex(ValueError, "at least one"):
-            nodes.DFZExportManifest.execute(self.root(), {})
+            nodes.CFZExportManifest.execute(self.root(), {})
 
     def test_v3_extension_exposes_dynamic_asset_collection(self):
         extension = asyncio.run(nodes.comfy_entrypoint())
         self.assertEqual(asyncio.run(extension.get_node_list())[:5],
-                         [nodes.DFZAssetRoot, nodes.DFZSaveAsset, nodes.DFZExportManifest, nodes.DFZSaveAudio, nodes.DFZExportAudioManifest])
-        inputs = nodes.DFZExportManifest.INPUT_TYPES()["required"]
+                         [nodes.CFZAssetRoot, nodes.CFZSaveAsset, nodes.CFZExportManifest, nodes.CFZSaveAudio, nodes.CFZExportAudioManifest])
+        inputs = nodes.CFZExportManifest.INPUT_TYPES()["required"]
         self.assertEqual(inputs["assets"][0], "COMFY_AUTOGROW_V3")
         self.assertEqual(inputs["assets"][1]["template"]["prefix"], "asset_")
         self.assertEqual(inputs["assets"][1]["template"]["min"], 1)
-        self.assertEqual(nodes.DFZSaveAsset.RETURN_TYPES, ["DFZ_ASSET"])
-        self.assertTrue(nodes.DFZExportManifest.OUTPUT_NODE)
+        self.assertEqual(nodes.CFZSaveAsset.RETURN_TYPES, ["CFZ_ASSET"])
+        self.assertTrue(nodes.CFZExportManifest.OUTPUT_NODE)
+
+    def test_legacy_workflow_aliases_keep_sockets_and_export_canonical_schema(self):
+        aliases = {node.GET_SCHEMA().node_id: node for node in nodes.LEGACY_NODES}
+        self.assertEqual(set(aliases), {"DFZAssetRoot", "DFZSaveAsset", "DFZExportManifest", "DFZSaveAudio", "DFZExportAudioManifest"})
+        for node in aliases.values():
+            self.assertTrue(node.GET_SCHEMA().is_deprecated)
+            self.assertTrue(node.GET_SCHEMA().is_dev_only)
+            self.assertEqual(node.GET_SCHEMA().category, "Comfy Fighter Z/assets")
+        self.assertEqual(aliases["DFZAssetRoot"].RETURN_TYPES, ["DFZ_ROOT"])
+        self.assertEqual(aliases["DFZSaveAsset"].RETURN_TYPES, ["DFZ_ASSET"])
+        inputs = aliases["DFZExportManifest"].INPUT_TYPES()["required"]
+        self.assertEqual(inputs["root"][0], "DFZ_ROOT")
+        self.assertEqual(inputs["assets"][1]["template"]["input"]["required"]["asset"][0], "DFZ_ASSET")
+        audio_inputs = aliases["DFZExportAudioManifest"].INPUT_TYPES()["required"]
+        self.assertEqual(audio_inputs["assets"][1]["template"]["input"]["required"]["audio_asset"][0], "DFZ_AUDIO_ASSET")
+        root = aliases["DFZAssetRoot"].execute(str(self.directory), json.dumps(config(["dad_reference"])))[0]
+        record = aliases["DFZSaveAsset"].execute(self.pixels, root, json.dumps({"id": "dad_reference", "kind": "reference", "fighter": "dad", "key": True}))[0]
+        aliases["DFZExportManifest"].execute(root, {"asset_0": record})
+        self.assertEqual(json.loads((self.directory / "assets.json").read_text())["schema"], "comfy-fighter-assets/v1")
 
     def test_source_images_keep_character_and_stage_metadata(self):
         value = config(["dad_source", "yard_source"])
         value["fighters"][0].update(sourceImage="ref/dad.jpeg", sourceInput="dad.jpeg", description="An original fighter.", specialMove={"name": "Flash", "description": "A camera flash projectile."})
-        root = nodes.DFZAssetRoot.execute(str(self.directory), json.dumps(value))[0]
+        root = nodes.CFZAssetRoot.execute(str(self.directory), json.dumps(value))[0]
         first = self.save(root, "dad_source", kind="source")
-        second = nodes.DFZSaveAsset.execute(self.pixels, root, json.dumps({"id": "yard_source", "kind": "source", "stage": "yard"}))[0]
-        nodes.DFZExportManifest.execute(root, {"asset_0": first, "asset_1": second})
+        second = nodes.CFZSaveAsset.execute(self.pixels, root, json.dumps({"id": "yard_source", "kind": "source", "stage": "yard"}))[0]
+        nodes.CFZExportManifest.execute(root, {"asset_0": first, "asset_1": second})
         manifest = json.loads((self.directory / "assets.json").read_text())
         self.assertEqual(manifest["game"]["fighters"][0]["specialMove"]["name"], "Flash")
         self.assertEqual(manifest["assets"][1]["stage"], "yard")
@@ -184,14 +203,14 @@ class BundleNodesTests(unittest.TestCase):
         import wave
         value = config()
         value["expectedAudio"] = ["yard_music"]
-        root = nodes.DFZAssetRoot.execute(str(self.directory), json.dumps(value))[0]
+        root = nodes.CFZAssetRoot.execute(str(self.directory), json.dumps(value))[0]
         samples = np.zeros((1, 2, 8000), dtype=np.float32)
         samples[0, 0, 100] = 0.5
-        record = nodes.DFZSaveAudio.execute({"waveform": samples, "sample_rate": 8000}, root,
+        record = nodes.CFZSaveAudio.execute({"waveform": samples, "sample_rate": 8000}, root,
             json.dumps({"id": "yard_music", "kind": "audio", "category": "music", "loop": True}))[0]
-        nodes.DFZExportAudioManifest.execute(root, {"audio_0": record})
+        nodes.CFZExportAudioManifest.execute(root, {"audio_0": record})
         manifest = json.loads((self.directory / "audio.json").read_text())
-        self.assertEqual(manifest["schema"], "dad-fighter-audio/v1")
+        self.assertEqual(manifest["schema"], "comfy-fighter-audio/v1")
         self.assertEqual(manifest["assets"][0]["duration"], 1)
         self.assertNotIn("_root", manifest["assets"][0])
         with wave.open(str(self.directory / record["src"]), "rb") as audio:
@@ -199,23 +218,23 @@ class BundleNodesTests(unittest.TestCase):
             decoded = np.frombuffer(audio.readframes(8000), dtype="<i2").reshape(-1, 2)
             self.assertEqual(decoded[100, 0], 16384)
         with self.assertRaisesRegex(ValueError, "Duplicate audio"):
-            nodes.DFZExportAudioManifest.execute(root, {"audio_0": record, "audio_1": record})
+            nodes.CFZExportAudioManifest.execute(root, {"audio_0": record, "audio_1": record})
         (self.directory / record["src"]).write_bytes(b"changed")
         with self.assertRaisesRegex(ValueError, "missing or changed"):
-            nodes.DFZExportAudioManifest.execute(root, {"audio_0": record})
+            nodes.CFZExportAudioManifest.execute(root, {"audio_0": record})
 
     def test_audio_rejects_bad_shape_nonfinite_and_incomplete_collection(self):
         root = self.root()
         metadata = json.dumps({"id": "sfx_punch", "kind": "audio", "category": "sfx"})
         with self.assertRaisesRegex(ValueError, "one mono/stereo"):
-            nodes.DFZSaveAudio.execute({"waveform": np.zeros((2, 1, 80)), "sample_rate": 8000}, root, metadata)
+            nodes.CFZSaveAudio.execute({"waveform": np.zeros((2, 1, 80)), "sample_rate": 8000}, root, metadata)
         with self.assertRaisesRegex(ValueError, "nonfinite"):
-            nodes.DFZSaveAudio.execute({"waveform": np.full((1, 1, 80), np.nan), "sample_rate": 8000}, root, metadata)
+            nodes.CFZSaveAudio.execute({"waveform": np.full((1, 1, 80), np.nan), "sample_rate": 8000}, root, metadata)
         value = config(); value["expectedAudio"] = ["sfx_punch", "sfx_kick"]
-        root = nodes.DFZAssetRoot.execute(str(self.directory), json.dumps(value))[0]
-        record = nodes.DFZSaveAudio.execute({"waveform": np.zeros((1, 1, 80)), "sample_rate": 8000}, root, metadata)[0]
+        root = nodes.CFZAssetRoot.execute(str(self.directory), json.dumps(value))[0]
+        record = nodes.CFZSaveAudio.execute({"waveform": np.zeros((1, 1, 80)), "sample_rate": 8000}, root, metadata)[0]
         with self.assertRaisesRegex(ValueError, "Incomplete audio"):
-            nodes.DFZExportAudioManifest.execute(root, {"audio_0": record})
+            nodes.CFZExportAudioManifest.execute(root, {"audio_0": record})
         self.assertFalse((self.directory / "audio.json").exists())
 
 

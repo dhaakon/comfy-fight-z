@@ -16,7 +16,7 @@ import numpy as np
 from PIL import Image
 
 from test_comfy_nodes import nodes
-from dad_fighter_assets import factories as factory
+from comfy_fighter_assets import factories as factory
 from comfy_api.latest import _io, io
 from comfy_api_nodes.nodes_gemini import GeminiNanoBanana2V2
 from comfy_execution.graph_utils import is_link

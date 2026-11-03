@@ -28,8 +28,8 @@ function records(folder, jobs, label) {
 function bundle(folder, images, sounds, label) {
   fs.mkdirSync(folder, { recursive: true });
   const assets = records(folder, images, label), audio = records(folder, sounds, label);
-  write(path.join(folder, 'assets.json'), { schema: 'dad-fighter-assets/v1', root: '.', game: { ...config, expectedAssets: assets.map(a => a.id) }, assets });
-  if (audio.length) write(path.join(folder, 'audio.json'), { schema: 'dad-fighter-audio/v1', root: '.', title: config.title, assets: audio });
+  write(path.join(folder, 'assets.json'), { schema: 'comfy-fighter-assets/v1', root: '.', game: { ...config, expectedAssets: assets.map(a => a.id) }, assets });
+  if (audio.length) write(path.join(folder, 'audio.json'), { schema: 'comfy-fighter-audio/v1', root: '.', title: config.title, assets: audio });
   return { assets, audio };
 }
 function setupMerge(t) {

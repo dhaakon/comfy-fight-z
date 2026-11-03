@@ -39,7 +39,7 @@ test('default and full factory counts are transparent without changing released 
   assert.deepEqual(factoryCounts(config), {paidImages:56,sourceSaves:7,mappedAssets:56,oneK:35,twoK:21,estimatedUSD:3.195192});
   assert.deepEqual(factoryCounts(config, true), {paidImages:60,sourceSaves:9,mappedAssets:60,oneK:35,twoK:25,estimatedUSD:3.48348});
   assert.equal(read('comfyui/config/game.json').stages.length, 1);
-  assert.notEqual(config.assetRoot, read('comfyui/config/game.json').assetRoot);
+  assert.equal(config.assetRoot, read('comfyui/config/game.json').assetRoot, 'Default image and audio bundles share their output root');
   assert.deepEqual(builderMetadata(config).environments.slice(1).map(e => [e.enabled,e.reference,e.sourceInput]), [[false,'',''],[false,'','']]);
 });
 
@@ -95,7 +95,7 @@ test('browser downloads match canonical workflows exactly and advanced native gr
   assert.equal(functional(advanced).length, 114);
   assert.equal(advanced.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,56);
   assert.equal(advanced.nodes.filter(n=>n.type==='LoadImage').length,0);
-  assert.equal(advanced.nodes.filter(n=>n.type==='DFZSaveAsset').length,56);
+  assert.equal(advanced.nodes.filter(n=>n.type==='CFZSaveAsset').length,56);
 });
 
 test('every shipped demo workflow starts without external image files', () => {
@@ -107,7 +107,7 @@ test('every shipped demo workflow starts without external image files', () => {
     for (const node of read(file).nodes || []) {
       assert.notEqual(node.type,'LoadImage',`${file} must not load a previous session image`);
       assert.ok(!node.widgets_values_named?.image,`${file} must not preselect an external image`);
-      if (['CFZProjectSettings','DFZAssetRoot'].includes(node.type)) {
+      if (['CFZProjectSettings','CFZAssetRoot'].includes(node.type)) {
         const outputRoot=node.widgets_values_named?.root_directory || node.widgets_values[0];
         assert.ok(path.resolve(outputRoot).startsWith(path.join(ROOT,'output')+path.sep),`${file} must write generated assets under output/`);
       }

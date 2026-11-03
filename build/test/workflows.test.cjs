@@ -56,9 +56,9 @@ test('standalone demo asset invents its dependencies; explicit accepted referenc
 });
 test('complete game graph maps all assets under one root and exports only after every save',()=>{
   const jobs=makeJobs(config), graph=makeBundleGraph(jobs,config,template);
-  const root=graph.nodes.find(n=>n.type==='DFZAssetRoot');
-  const output=graph.nodes.find(n=>n.type==='DFZExportManifest');
-  const saves=graph.nodes.filter(n=>n.type==='DFZSaveAsset');
+  const root=graph.nodes.find(n=>n.type==='CFZAssetRoot');
+  const output=graph.nodes.find(n=>n.type==='CFZExportManifest');
+  const saves=graph.nodes.filter(n=>n.type==='CFZSaveAsset');
   assert.equal(graph.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,jobs.filter(j=>j.kind!=='source'||j.generateSource).length);
   assert.equal(saves.length,jobs.length);assert.equal(output.inputs.length,jobs.length+1);
   assert.ok(path.isAbsolute(root.widgets_values[0]));
