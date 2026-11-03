@@ -104,6 +104,8 @@ Stages should leave the central fight plane clear and put their ground line near
 
 ## Reviewing generated art
 
+An optional `video.json` companion uses `{"schema":"comfy-fighter-video/v1","root":".","openingVideo":{"id":"opening","src":"raw/opening.mp4","duration":25,"sha256":"<64 hexadecimal characters>"}}`. The builder verifies the MP4 hash, preserves the source map/movie, and maps it to `assets/video/opening.mp4` under runtime `openingVideo`. Unrelated asset merges preserve this companion. Adoption copies the accepted H.264/AAC movie without re-encoding it. See [the video workflow](video-workflow.md) for preparing and verifying the exact 25-second opening.
+
 Before importing a full batch, inspect the raw sheets for exactly nine cells and the correct order. Verify the same character appears throughout, all faces point right, limbs are complete, and no pose spills into a neighboring cell. If a cell is wrong, regenerate that sheet using its individual workflow and the same accepted reference.
 
 For an incremental update, the patch exporter writes only the selected replacement IDs. Keep its root separate from the accepted bundle. `npm run merge:assets -- --base <complete folder> --patch <patch folder> --out <new folder>` validates source hashes, replaces matching IDs, retains unaffected image/audio files, and requires the merged set to satisfy the current complete plans. Repeat `--patch` for accepted single-sheet repairs; later patches take precedence. See [incremental refresh](incremental-refresh.md) for preparation and review steps. A partial manifest is not a standalone game bundle.

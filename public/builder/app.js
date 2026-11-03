@@ -1,7 +1,7 @@
-import { validateManifest, validateAudioManifest, buildGame, zipFiles, writeDirectory } from './pack.js';
+import { validateManifest, validateAudioManifest, validateVideoManifest, buildGame, zipFiles, writeDirectory } from './pack.js';
 
 const $ = id => document.getElementById(id);
-let manifest = null, audioManifest = null, files = new Map(), selectedFiles = [], builtFiles = null, busy = false;
+let manifest = null, audioManifest = null, videoManifest = null, files = new Map(), selectedFiles = [], builtFiles = null, busy = false;
 let fighters = [], stages = [], objectURLs = new Map(), sample = false;
 
 function message(text, type = '') { $('status').textContent = text; $('status').className = `status-message ${type}`; }
@@ -25,6 +25,7 @@ function updateReadiness() {
   else status.textContent = `All ${found} source images are available. Ready to process your game art.`;
   const audioCount = audioManifest?.assets.filter(a => files.has(a.src)).length || 0;
   status.textContent += audioManifest ? ` Audio: ${audioCount}/${audioManifest.assets.length} files available.` : ' Audio is not loaded; include audio.json in this folder to add music, voices and effects.';
+  if (videoManifest) status.textContent += files.has(videoManifest.openingVideo.src) ? ` Opening film: ${videoManifest.openingVideo.duration} seconds.` : ' Opening film file is missing.';
 }
 function customization() { return { title: $('game-title').value.trim(), fighters: structuredClone(fighters), stages: structuredClone(stages), allowPlaceholders: $('allow-placeholders').checked }; }
 function renderFighters() {
@@ -85,6 +86,13 @@ function renderAssets() {
     const meta = make('div', 'asset-meta'); meta.append(make('strong', '', asset.id), make('small', url ? 'found' : 'missing', `${asset.category.toUpperCase()} · ${url ? 'AVAILABLE' : 'MISSING'}`));
     card.append(preview, meta); $('asset-grid').append(card);
   }
+  if (filter === 'all' && videoManifest) {
+    const asset = videoManifest.openingVideo, card = make('article', 'asset-card'), preview = make('div', 'asset-preview'), url = previewURL(asset.src);
+    if (url) { const video = document.createElement('video'); video.controls = true; video.preload = 'metadata'; video.playsInline = true; video.src = url; video.style.width = '100%'; video.setAttribute('aria-label', 'Opening film'); preview.append(video); }
+    else preview.textContent = 'OPENING FILM MISSING';
+    const meta = make('div', 'asset-meta'); meta.append(make('strong', '', 'Opening film'), make('small', url ? 'found' : 'missing', `${asset.duration} SECONDS · ${url ? 'AVAILABLE' : 'MISSING'}`));
+    card.append(preview, meta); $('asset-grid').append(card);
+  }
 }
 function mapFolder(folderFiles, manifestFolder = null) {
   const map = new Map();
@@ -92,7 +100,7 @@ function mapFolder(folderFiles, manifestFolder = null) {
     const original = (file.webkitRelativePath || file.name).replaceAll('\\', '/');
     const candidates = manifestFolder !== null ? (original.startsWith(manifestFolder) ? [original.slice(manifestFolder.length)] : []) : [original, original.split('/').slice(1).join('/')];
     for (const relative of candidates.filter(Boolean)) {
-      if (![...(manifest?.assets || []), ...(audioManifest?.assets || [])].some(a => a.src === relative)) continue;
+      if (![...(manifest?.assets || []), ...(audioManifest?.assets || []), ...(videoManifest ? [videoManifest.openingVideo] : [])].some(a => a.src === relative)) continue;
       if (map.has(relative) && map.get(relative) !== file) throw new Error(`More than one file maps to ${relative}. Choose the exact asset root folder.`);
       map.set(relative, file);
     }
@@ -101,7 +109,7 @@ function mapFolder(folderFiles, manifestFolder = null) {
 }
 function loadManifest(json, label, isExample = false) {
   const checked = validateManifest(json);
-  clearPreviews(); manifest = checked; audioManifest = null; sample = isExample; files = new Map();
+  clearPreviews(); manifest = checked; audioManifest = null; videoManifest = null; sample = isExample; files = new Map();
   fighters = manifest.game.fighters.map(f => ({ id: f.id, name: f.name, color: /^#[0-9a-f]{6}$/i.test(f.color) ? f.color : '#ff9c59', enabled: true }));
   stages = manifest.game.stages.map(s => ({ id: s.id, name: s.name, enabled: true }));
   $('game-title').value = manifest.game.title; $('source-label').textContent = label; $('example-notice').hidden = !sample;
@@ -133,11 +141,14 @@ async function selectFolder(fileList) {
   const audioMaps = chosen.filter(file => file.name === 'audio.json' && (base === null || (file.webkitRelativePath || file.name) === `${base}audio.json`));
   if (audioMaps.length > 1) throw new Error('Several audio.json files were found. Choose the exact asset root.');
   audioManifest = audioMaps.length ? validateAudioManifest(await readJson(audioMaps[0]), manifest.game) : null;
+  const videoMaps = chosen.filter(file => file.name === 'video.json' && (base === null || (file.webkitRelativePath || file.name) === `${base}video.json`));
+  if (videoMaps.length > 1) throw new Error('Several video.json files were found. Choose the exact asset root.');
+  videoManifest = videoMaps.length ? validateVideoManifest(await readJson(videoMaps[0])) : null;
   const mapped = mapFolder(chosen, base);
   clearPreviews(); files = mapped; selectedFiles = chosen;
   if (mapped.size) { sample = false; $('example-notice').hidden = true; }
   invalidate(); renderFighters(); renderAssets();
-  message(`${files.size} source files matched to the image and audio maps.`, 'success');
+  message(`${files.size} source files matched to the image, audio and opening-film maps.`, 'success');
 }
 function guard(fn) { return async (...args) => { try { await fn(...args); } catch (error) { message(error.message || String(error), 'error'); } }; }
 function setBusy(value) {
@@ -154,7 +165,7 @@ async function build() {
   if (custom.fighters.filter(f => f.enabled).length < 2 || !custom.stages.some(s => s.enabled)) throw new Error('Choose at least two fighters and one stage.');
   setBusy(true); $('progress-area').hidden = false;
   try {
-    builtFiles = await buildGame({ manifest, audioManifest, files, customization: custom, onProgress: ({done,total,message:text}) => { $('build-progress').value = total ? Math.round(done / total * 100) : 0; $('progress-label').textContent = text || 'Building game…'; } });
+    builtFiles = await buildGame({ manifest, audioManifest, videoManifest, files, customization: custom, onProgress: ({done,total,message:text}) => { $('build-progress').value = total ? Math.round(done / total * 100) : 0; $('progress-label').textContent = text || 'Building game…'; } });
     const bytes = [...builtFiles.values()].reduce((sum, blob) => sum + blob.size, 0);
     $('build-progress').value = 100; $('progress-label').textContent = 'Game packaged. Choose an export below.';
     $('build-summary').textContent = `${builtFiles.size} files · ${(bytes / 1024 / 1024).toFixed(1)} MB · ${custom.fighters.filter(f => f.enabled).length} fighters`;

@@ -20,7 +20,7 @@ function merge({ base, patches, out }) {
   const audioPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/audio-plan.json'), 'utf8')).jobs;
   const expectedRecords = new Map([...imagePlan, ...audioPlan].map(job => [job.id, job]));
   const changes = [], imageRecords = new Map(), audioRecords = new Map();
-  let baseManifest;
+  let baseManifest, videoManifest, videoInput;
   for (const folder of roots) for (const [filename, schema, records] of [['assets.json', 'dad-fighter-assets/v1', imageRecords], ['audio.json', 'dad-fighter-audio/v1', audioRecords]]) {
     const file = path.join(folder, filename); if (!fs.existsSync(file)) continue;
     const manifest = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -40,6 +40,14 @@ function merge({ base, patches, out }) {
     }
   }
   if (!baseManifest) throw new Error('Base assets.json is required.');
+  for (const folder of roots) {
+    const file = path.join(folder, 'video.json'); if (!fs.existsSync(file)) continue;
+    const mapped = JSON.parse(fs.readFileSync(file, 'utf8')), video = mapped.openingVideo;
+    if (mapped.schema !== 'comfy-fighter-video/v1' || mapped.root !== '.' || video?.id !== 'opening' || !/\.mp4$/i.test(video.src || '') || !Number.isFinite(video.duration) || video.duration <= 0 || video.duration > 300 || !/^[a-f0-9]{64}$/i.test(video.sha256 || '')) throw new Error('Invalid opening video manifest.');
+    const input = sourceFile(folder, video.src);
+    if (createHash('sha256').update(fs.readFileSync(input)).digest('hex') !== video.sha256.toLowerCase()) throw new Error('Opening video hash mismatch.');
+    videoManifest = mapped; videoInput = input;
+  }
   const assets = [...imageRecords.values()].map(({ record }) => record), audio = [...audioRecords.values()].map(({ record }) => record);
   const expected = imagePlan.map(j => j.id);
   if (expected.length !== assets.length || expected.some(id => !imageRecords.has(id))) throw new Error('Merged image set does not match the complete asset plan.');
@@ -51,6 +59,7 @@ function merge({ base, patches, out }) {
     if (paths.has(key)) throw new Error(`Conflicting source path: ${record.src}`);
     paths.add(key);
   }
+  if (videoManifest && paths.has(videoManifest.openingVideo.src.toLowerCase())) throw new Error('Opening video path collides with other media.');
   fs.mkdirSync(out, { recursive: true });
   for (const { record, input } of [...imageRecords.values(), ...audioRecords.values()]) {
     const target = source(out, record.src); fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -61,6 +70,10 @@ function merge({ base, patches, out }) {
   delete game.assetRoot;
   fs.writeFileSync(path.join(out, 'assets.json'), JSON.stringify({ ...baseManifest, game, assets }, null, 2) + '\n');
   fs.writeFileSync(path.join(out, 'audio.json'), JSON.stringify({ schema: 'dad-fighter-audio/v1', root: '.', title: game.title, assets: audio }, null, 2) + '\n');
+  if (videoManifest) {
+    const outputVideo = source(out, videoManifest.openingVideo.src); fs.mkdirSync(path.dirname(outputVideo), { recursive: true }); fs.copyFileSync(videoInput, outputVideo);
+    fs.writeFileSync(path.join(out, 'video.json'), JSON.stringify(videoManifest, null, 2) + '\n');
+  }
   fs.writeFileSync(path.join(out, 'update-report.json'), JSON.stringify({ source: 'Accepted incremental ComfyUI updates', imageAssets: assets.length, audioAssets: audio.length, changed: changes }, null, 2) + '\n');
   console.log(`Merged ${changes.length} updates into ${assets.length} images and ${audio.length} audio assets. Unchanged files retained.`);
 }

@@ -105,6 +105,20 @@ export function validateAudioManifest(input, game) {
   return manifest;
 }
 
+export function validateVideoManifest(input) {
+  let manifest;
+  try { manifest = typeof input === 'string' ? JSON.parse(input) : structuredClone(input); }
+  catch { throw new Error('The video manifest is not valid JSON.'); }
+  if (manifest?.schema !== 'comfy-fighter-video/v1' || manifest.root !== '.') throw new Error('Expected a comfy-fighter-video/v1 video.json with root ".".');
+  const video = manifest.openingVideo;
+  if (!video || video.id !== 'opening') throw new Error('Video manifest requires an opening video.');
+  safePath(video.src);
+  if (!/\.mp4$/i.test(video.src)) throw new Error('Opening video must be an MP4.');
+  if (!Number.isFinite(video.duration) || video.duration <= 0 || video.duration > 300) throw new Error('Opening video duration must be between 0 and 300 seconds.');
+  if (typeof video.sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(video.sha256)) throw new Error('Opening video requires a SHA-256 digest.');
+  return manifest;
+}
+
 function canvas(width, height) {
   width = Math.round(width); height = Math.round(height);
   if (width < 1 || height < 1 || width > 16384 || height > 16384 || width * height > 64e6) throw new Error(`Unsupported image dimensions: ${width} x ${height}`);
@@ -209,7 +223,7 @@ function customize(items, edits, label) {
 }
 
 const SERVER = `const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
-const root=__dirname,types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.wav':'audio/wav','.mp3':'audio/mpeg','.ogg':'audio/ogg','.flac':'audio/flac'};
+const root=__dirname,types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.wav':'audio/wav','.mp3':'audio/mpeg','.ogg':'audio/ogg','.flac':'audio/flac','.mp4':'video/mp4'};
 const server=http.createServer((req,res)=>{
   if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);return res.end();}
   let p;try{p=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{res.writeHead(400);return res.end();}
@@ -237,9 +251,10 @@ const server=http.createServer((req,res)=>{
 const port=Number(process.env.PORT||8080);server.listen(port,'127.0.0.1',()=>console.log('Game: http://127.0.0.1:'+port));
 `;
 
-export async function buildGame({ manifest: input, audioManifest: audioInput = null, files, customization = {}, onProgress = () => {} }) {
+export async function buildGame({ manifest: input, audioManifest: audioInput = null, videoManifest: videoInput = null, files, customization = {}, onProgress = () => {} }) {
   const source = validateManifest(input);
   const audioSource = audioInput ? validateAudioManifest(audioInput, source.game) : null;
+  const videoSource = videoInput ? validateVideoManifest(videoInput) : null;
   if (!(files instanceof Map)) throw new Error('Choose the source image folder before building.');
   const runtime = { version: 1, title: text(customization.title ?? source.game.title, 'Game title'),
     subtitle: source.game.subtitle || '',
@@ -251,6 +266,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   const allow = customization.allowPlaceholders === true, missing = jobs.filter(job => !files.has(job.src)), warnings = [], output = new Map(), built = [];
   if (missing.length && !allow) throw new Error(`Missing ${missing.length} source image(s): ${missing.map(j => j.src).join(', ')}. Select the full asset root or explicitly allow placeholders.`);
   if (missing.length) warnings.push(`Missing artwork: ${missing.map(j => j.id).join(', ')}. The game uses labeled placeholders.`);
+  if (videoSource && !files.has(videoSource.openingVideo.src)) throw new Error('Missing opening video file. Select the complete asset root.');
   const unmapped = [];
   for (const fighter of runtime.fighters) {
     const characterJobs = jobs.filter(job => job.fighter === fighter.id);
@@ -265,9 +281,21 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   if (unmapped.length && !allow) throw new Error(`Incomplete asset mappings: ${unmapped.join(', ')}. Load the complete bundle or explicitly allow placeholders.`);
   if (unmapped.length) warnings.push(`Unmapped artwork: ${unmapped.join(', ')}. Placeholder mode is enabled.`);
   let sourceBytes = 0;
-  for (const job of [...jobs, ...audioJobs]) { const file = files.get(job.src); if (file) sourceBytes += file.size; }
+  for (const job of [...jobs, ...audioJobs, ...(videoSource ? [videoSource.openingVideo] : [])]) { const file = files.get(job.src); if (file) sourceBytes += file.size; }
   if (sourceBytes > MAX_BYTES) throw new Error('Selected source images exceed the 512 MB browser build limit.');
-  const allCells = new Map(), accepted = [], total = jobs.length + audioJobs.length + 4; let done = 0;
+  const allCells = new Map(), accepted = [], total = jobs.length + audioJobs.length + 5 + Number(!!videoSource); let done = 0;
+  if (videoSource) {
+    const video = videoSource.openingVideo, blob = files.get(video.src);
+    if (!(blob instanceof Blob) || !blob.size) throw new Error('Opening video file is empty.');
+    if (!globalThis.crypto?.subtle) throw new Error('Video integrity verification requires localhost or HTTPS.');
+    const digest = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
+    const actual = [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    if (actual !== video.sha256.toLowerCase()) throw new Error('Opening video SHA-256 mismatch.');
+    const src = 'assets/video/opening.mp4';
+    runtime.openingVideo = { ...video, src };
+    output.set(src, blob); output.set(`sources/${video.src}`, blob);
+    output.set('sources/video.json', jsonBlob(videoSource)); done++;
+  }
   for (const job of jobs) {
     onProgress({ done, total, message: `Processing ${job.id}` });
     const blob = files.get(job.src); let image;
@@ -348,7 +376,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
       warnings.push(`${fighterId}: ${error.message} Sprite export omitted; placeholder mode is enabled.`);
     }
   }
-  for (const file of ['index.html', 'game.js', 'engine.js', 'style.css']) {
+  for (const file of ['index.html', 'game.js', 'engine.js', 'anim.js', 'style.css']) {
     onProgress({ done, total, message: `Packaging ${file}` });
     const response = await fetch(new URL(`../${file}`, import.meta.url));
     if (!response.ok) throw new Error(`Game template unavailable: ${file} (${response.status}). Run the builder through its local server.`);
@@ -365,10 +393,10 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   output.set('sources/assets.json', jsonBlob({ ...source, root: '.', game: sourceGame, assets: jobs }));
   if (audioSource) output.set('sources/audio.json', jsonBlob({ ...audioSource, assets: audioJobs }));
   output.set('assets/source-manifest.json', jsonBlob({ schema: 'dad-fighter-source-map/v1', root: '.', pathBase: 'game-package-root', sourceManifest: 'sources/assets.json', assets: accepted }));
-  output.set('build-report.json', jsonBlob({ strict: !allow, sourceAssets: jobs.length, audioAssets: acceptedAudio.length, audioStatus: audioSource ? 'included' : 'not-supplied', built, missing: missing.map(j => j.id), warnings, requiresVisualReview: true }));
+  output.set('build-report.json', jsonBlob({ strict: !allow, sourceAssets: jobs.length, audioAssets: acceptedAudio.length, audioStatus: audioSource ? 'included' : 'not-supplied', openingVideo: runtime.openingVideo || null, built, missing: missing.map(j => j.id), warnings, requiresVisualReview: true }));
   output.set('package.json', jsonBlob({ name: 'custom-comfy-fighter', version: '1.0.0', private: true, scripts: { start: 'node start-server.cjs' }, engines: { node: '>=22' } }));
   output.set('start-server.cjs', new Blob([SERVER], { type: 'text/javascript' }));
-  output.set('README.txt', new Blob([`${runtime.title}\n\nRun with Node.js 22 or later:\n  npm start\nThen open http://127.0.0.1:8080\nNo npm install is required. Or serve this folder with any static HTTP server.\nOpening index.html directly as file:// will not load the asset manifest.\n\nControls: P1 A/D move, W jump, S crouch, F punch, G kick, H special.\nP2 arrow keys, J punch, K kick, L special. Hold back to block. Escape pauses.\n\nassets/manifest.json maps all runtime art and sprite anchors.\nassets/source-manifest.json is a provenance report with paths relative to the game package root.\nsources/assets.json is the re-importable asset manifest; select the sources/ directory in the builder to use it again.\nsources/ contains original accepted artwork, including sprite sheets.\nbuild-report.json records missing/omitted images. Review generated poses and anchors before release.\n${warnings.length ? '\nPLACEHOLDER BUILD: ' + warnings.join('\n') : '\nAll selected source images were processed. Visual review is still required.'}\n`], { type: 'text/plain' }));
+  output.set('README.txt', new Blob([`${runtime.title}\n\nRun with Node.js 22 or later:\n  npm start\nThen open http://127.0.0.1:8080\nNo npm install is required. Or serve this folder with any static HTTP server.\nOpening index.html directly as file:// will not load the asset manifest.\n\nControls: One human fighter versus CPU. Arrow keys move, jump and crouch.\nA punch, S kick, D heavy strike, F special. Hold back to block. Escape pauses.\nSpace skips the opening film and fighter introductions. Use the fullscreen button to fill the display.\n\nassets/manifest.json maps all runtime art and sprite anchors.\nassets/source-manifest.json is a provenance report with paths relative to the game package root.\nsources/assets.json is the re-importable asset manifest; select the sources/ directory in the builder to use it again.\nsources/ contains original accepted artwork, including sprite sheets.\nbuild-report.json records missing/omitted images. Review generated poses and anchors before release.\n${warnings.length ? '\nPLACEHOLDER BUILD: ' + warnings.join('\n') : '\nAll selected source images were processed. Visual review is still required.'}\n`], { type: 'text/plain' }));
   onProgress({ done: total, total, message: `Ready: ${output.size} files` });
   return output;
 }

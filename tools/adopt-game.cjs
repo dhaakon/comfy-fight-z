@@ -17,10 +17,11 @@ function adoptionInputs(source, manifest, config, plan) {
     if (inputs.has(src)) continue;
     const input = sourceFile(source, src), extension = path.extname(input).toLowerCase();
     const audio = ['.wav', '.mp3', '.ogg', '.flac'].includes(extension);
-    if (!audio && !['.png', '.webp', '.jpg', '.jpeg'].includes(extension)) throw new Error(`Unsupported runtime media: ${src}`);
-    const next = src.replace(/\.[^.]+$/, audio ? '.mp3' : '.webp'), key = next.toLowerCase();
+    const video = extension === '.mp4';
+    if (!audio && !video && !['.png', '.webp', '.jpg', '.jpeg'].includes(extension)) throw new Error(`Unsupported runtime media: ${src}`);
+    const next = src.replace(/\.[^.]+$/, video ? '.mp4' : audio ? '.mp3' : '.webp'), key = next.toLowerCase();
     if (outputs.has(key)) throw new Error(`Converted output collision: ${outputs.get(key)} and ${src}`);
-    outputs.set(key, src); inputs.set(src, { input, audio, next });
+    outputs.set(key, src); inputs.set(src, { input, audio, video, next });
   }
   return inputs;
 }
@@ -38,11 +39,12 @@ async function adopt(game) {
   const converted = new Map(); let sourceBytes = 0, outputBytes = 0;
   async function media(src, reference = false) {
     if (converted.has(src)) return converted.get(src);
-    const { input, audio, next } = inputs.get(src);
+    const { input, audio, video, next } = inputs.get(src);
     sourceBytes += fs.statSync(input).size;
     const output = inside(stage, next);
     fs.mkdirSync(path.dirname(output), { recursive: true });
-    if (audio) {
+    if (video) fs.copyFileSync(input, output);
+    else if (audio) {
       const result = spawnSync('ffmpeg', ['-v', 'error', '-nostdin', '-i', input, '-codec:a', 'libmp3lame', '-q:a', '2', '-y', output], { windowsHide: true, encoding: 'utf8' });
       if (result.status !== 0) throw new Error(`Audio conversion failed: ${result.stderr || result.error?.message}`);
     } else {
@@ -72,8 +74,9 @@ async function adopt(game) {
     for (const entry of Object.values(manifest.audio || {})) {
       entry.src = await media(entry.src); delete entry.sha256; // Source WAV digest does not describe the encoded MP3.
     }
+    if (manifest.openingVideo) manifest.openingVideo.src = await media(manifest.openingVideo.src);
     fs.writeFileSync(path.join(assets, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
-    fs.writeFileSync(path.join(assets, 'production.json'), JSON.stringify({ title: manifest.title, source: 'Verified ComfyUI bundle export', generatedWith: ['Gemini Nano Banana 2.1', 'Sonilo', 'ElevenLabs'], fighters: manifest.fighters.length, stages: manifest.stages.length, poses: manifest.fighters.reduce((n, f) => n + Object.keys(f.poses).length, 0), audio: Object.keys(manifest.audio || {}).length, files: converted.size, sourceBytes, outputBytes, formats: 'WebP quality 94, MP3 VBR quality 2; source reference previews limited to 1200px' }, null, 2) + '\n');
+    fs.writeFileSync(path.join(assets, 'production.json'), JSON.stringify({ title: manifest.title, source: 'Verified ComfyUI bundle export', generatedWith: ['Gemini Nano Banana 2.1', 'Sonilo', 'ElevenLabs', ...(manifest.openingVideo ? ['Seedance 2.5'] : [])], openingVideo: manifest.openingVideo ? { duration: manifest.openingVideo.duration, format: 'H.264/AAC MP4' } : null, fighters: manifest.fighters.length, stages: manifest.stages.length, poses: manifest.fighters.reduce((n, f) => n + Object.keys(f.poses).length, 0), audio: Object.keys(manifest.audio || {}).length, files: converted.size, sourceBytes, outputBytes, formats: 'WebP quality 94, MP3 VBR quality 2, accepted MP4 copied unchanged; source reference previews limited to 1200px' }, null, 2) + '\n');
     // Keep the prior accepted runtime for recovery, then publish atomically.
     if (fs.existsSync(destination)) fs.renameSync(destination, path.join(stage, 'previous-assets'));
     try { fs.renameSync(assets, destination); }

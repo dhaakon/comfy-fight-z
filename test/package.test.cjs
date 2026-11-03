@@ -5,6 +5,14 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const api = import(pathToFileURL(path.join(__dirname, '../public/builder/pack.js')).href);
 const poses = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win'];
+test('opening film manifest requires a portable MP4, duration and integrity hash', async () => {
+  const { validateVideoManifest } = await api;
+  const video = { schema: 'comfy-fighter-video/v1', root: '.', openingVideo: { id: 'opening', src: 'raw/opening.mp4', duration: 25, sha256: 'a'.repeat(64) } };
+  assert.deepEqual(validateVideoManifest(video), video);
+  for (const patch of [{ src: '../opening.mp4' }, { src: 'https://example.com/opening.mp4' }, { src: 'raw/opening.exe' }, { duration: 0 }, { duration: 301 }, { sha256: '' }]) {
+    assert.throws(() => validateVideoManifest({ ...video, openingVideo: { ...video.openingVideo, ...patch } }));
+  }
+});
 function manifest() {
   return { schema: 'dad-fighter-assets/v1', root: '.', game: { title: 'Custom fighters', fighters: [{ id: 'dad', name: 'Dad', color: '#ff8844' }, { id: 'rival', name: 'Rival', color: '#44aaff' }], stages: [{ id: 'yard', name: 'Yard' }], sheets: { sheet: poses } },
     assets: [{ id: 'dad_sheet', kind: 'sprites', fighter: 'dad', sheet: 'sheet', poses: [...poses], src: 'raw/dad_sheet.png', key: true }] };

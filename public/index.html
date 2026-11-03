@@ -1,20 +1,26 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b0718"><title>Comfy Fighter Z</title><link rel="stylesheet" href="style.css"></head>
-<body>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#0b0718"><title>Comfy Fighter Z</title><link rel="stylesheet" href="style.css"></head>
+<body data-scene="title">
 <div class="app">
   <header class="topbar">
     <a class="brand" href="./" aria-label="Comfy Fighter Z home"><span class="brand-mark">CF<span>Z</span></span><span class="brand-name">COMFY FIGHTER Z<small>HIGGSFIELD OPEN SOURCE SAGA</small></span></a>
     <nav aria-label="Main navigation"><button class="nav-button active" data-tab="arena">PLAY</button><button class="nav-button" data-tab="lab">ASSET LAB <span id="asset-count">0</span></button></nav>
-    <button id="audio-button" class="sound-button" aria-pressed="false" title="Enable generated game audio">SOUND OFF</button>
+    <button id="fullscreen-button" class="sound-button" title="Toggle fullscreen" aria-label="Enter fullscreen">⛶ FULLSCREEN</button><button id="audio-button" class="sound-button" aria-pressed="false" title="Enable generated game audio">SOUND OFF</button>
   </header>
+  <section id="opening-screen" class="opening-screen" hidden aria-label="Comfy Fighter Z opening film">
+    <video id="opening-video" playsinline preload="metadata" aria-label="Opening film"></video>
+    <div class="opening-caption"><span>HIGGSFIELD OPEN SOURCE SAGA</span><span>THE OPENING</span></div>
+    <div id="opening-gate" class="opening-gate" hidden><p class="eyebrow">THE SAGA BEGINS</p><h2>COMFY FIGHTER Z</h2><button id="opening-play" class="primary">PLAY OPENING WITH SOUND</button><button id="opening-continue" class="text-button">CONTINUE TO TITLE</button></div>
+    <div class="opening-controls"><button id="opening-sound" class="text-button">ENABLE SOUND</button><button id="opening-skip" class="text-button">SKIP OPENING <kbd>SPACE</kbd></button></div>
+  </section>
   <main>
     <section id="arena-view">
       <section id="title-screen" class="title-screen" aria-label="Comfy Fighter Z title screen">
         <div class="title-backdrop" id="title-backdrop"></div><div class="title-speed-lines" aria-hidden="true"></div>
         <div id="title-fighters" class="title-fighters" aria-hidden="true"></div>
         <div class="title-copy"><p class="eyebrow">SIX CHALLENGERS. ONE OPEN SOURCE SHOWDOWN.</p><h1 id="title-wordmark">COMFY FIGHTER <em>Z</em></h1><p id="saga-subtitle" class="saga-subtitle">HIGGSFIELD OPEN SOURCE SAGA</p><div class="title-rule" aria-hidden="true"></div><p class="title-pitch">Build your power. Break the limit.</p><button id="title-start" class="primary title-start" disabled>ENTER THE SAGA <span>→</span></button><p id="title-load-status" class="title-hint">PREPARING THE ARENA…</p></div>
-        <div class="title-bottom"><span>THE YARD / NEW YORK CITY</span><span>ARCADE · LOCAL VERSUS · SIX ORIGINAL FIGHTERS</span></div>
+        <button id="opening-replay" class="text-button opening-replay" hidden>↻ REPLAY OPENING</button><div class="title-bottom"><span>THE YARD / NEW YORK CITY</span><span>SINGLE PLAYER · SIX FIGHTERS · ONE YARD</span></div>
       </section>
       <div id="selection-screen" class="selection-screen" hidden>
         <div id="select-heading" class="select-heading"><div><p class="eyebrow">ONE NIGHT. ONE ARENA. YOUR FIGHTERS.</p><h1 id="game-title">COMFY FIGHTER <em>Z</em></h1></div><img id="generated-logo" class="generated-logo" alt="Game title emblem" hidden><div id="edition-stamp" class="edition-stamp">BUILD NIGHT<span>EDITION 01</span></div></div>
@@ -22,19 +28,19 @@
         <div class="select-board" id="select-board">
           <div id="fighter-cards" class="fighter-cards" aria-live="polite"></div>
           <section class="roster-panel" aria-label="Choose your fighters">
-            <div class="player-switch" aria-label="Choose player to edit"><button data-pick-slot="0" class="active">1P <span>PLAYER ONE</span></button><span class="versus">VS</span><button data-pick-slot="1">2P <span>CHALLENGER</span></button></div>
+            <div class="player-switch"><span class="player-label p1">1P / CHOOSE YOUR FIGHTER</span><span class="versus">VS</span><span class="player-label p2">CPU</span></div>
             <div id="fighter-grid" class="fighter-grid"></div>
             <p id="pick-hint" class="pick-hint">Choose a fighter for Player One.</p>
-            <div class="lineup"><label><span class="player-label p1">PLAYER ONE</span><select id="fighter-one" aria-label="Player one fighter"></select></label><label><span class="player-label p2">CHALLENGER</span><select id="fighter-two" aria-label="Challenger fighter"></select></label></div>
+            <div class="lineup"><label hidden><span class="player-label p1">PLAYER ONE</span><select id="fighter-one" aria-label="Player one fighter"></select></label><label><span class="player-label p2">CPU OPPONENT</span><select id="fighter-two" aria-label="CPU opponent fighter"></select></label></div>
           </section>
         </div>
         <div class="battle-ready">
           <div class="stage-preview" id="stage-preview"><div id="stage-thumb" class="stage-thumb"></div><div><p class="eyebrow">THE BATTLEGROUND</p><h3 id="stage-name">THE YARD</h3><span id="stage-art-status">ONE PLAYABLE ARENA</span></div></div>
-          <div class="battle-options"><label>GAME MODE<select id="mode"><option value="cpu">ARCADE / VS CPU</option><option value="local">LOCAL / TWO PLAYERS</option></select></label><label class="stage-selector">STAGE<select id="stage"></select></label><button id="start-button" class="primary">LET'S FIGHT <span>→</span></button></div>
+          <div class="battle-options"><select id="mode" hidden aria-label="Game mode"><option value="cpu">ARCADE / VS CPU</option></select><label class="stage-selector">STAGE<select id="stage"></select></label><button id="start-button" class="primary">LET'S FIGHT <span>→</span></button></div>
         </div>
         <p id="selection-art-status" class="selection-art-status"></p>
       </div>
-      <div id="fight-screen" hidden>
+      <div id="fight-screen" hidden><p class="rotate-hint">ROTATE FOR A BIGGER ARENA</p>
         <div class="fight-heading"><span class="eyebrow">COMFY FIGHTER Z / THE YARD</span><button id="back-select" class="text-button">← CHARACTER SELECT</button></div>
         <div class="arena-shell">
           <div class="arena-top"><span><i class="live-dot"></i> <span id="arena-label">ARCADE / VS CPU</span></span><span id="stage-label">THE YARD</span></div>
@@ -45,7 +51,7 @@
               <div class="intro-copy-block"><p id="intro-slot" class="eyebrow">PLAYER ONE ENTERS</p><h2 id="intro-name"></h2><p id="intro-special" class="intro-special"></p><blockquote id="intro-tagline"></blockquote></div>
               <div class="intro-bottom"><div class="intro-progress" aria-hidden="true"><span></span><span></span></div><button id="intro-skip" class="text-button">SKIP INTRO <span>ENTER ↵</span></button></div>
             </section>
-            <div id="versus-overlay" class="versus-overlay" hidden><div><span>PLAYER ONE</span><strong id="versus-one"></strong></div><b>VS</b><div><span>CHALLENGER</span><strong id="versus-two"></strong></div></div>
+            <div id="versus-overlay" class="versus-overlay" hidden><div><span>PLAYER ONE</span><strong id="versus-one"></strong></div><b>VS</b><div><span>CPU CHALLENGER</span><strong id="versus-two"></strong></div></div>
             <div id="match-overlay" class="match-overlay" hidden><p class="eyebrow">THE YARD HAS A CHAMPION</p><h2>VICTORY</h2><p>First to two rounds.</p><button id="rematch-button" class="primary">RUN IT BACK <span>→</span></button><button id="result-select" class="text-button">CHARACTER SELECT</button></div>
             <button id="pause-button" class="pause-button" hidden aria-label="Pause game">Ⅱ</button><div id="pause-overlay" class="pause-overlay" hidden><p class="eyebrow">TAKE A BREATHER</p><h2>PAUSED</h2><button id="resume-button" class="primary">RESUME FIGHT</button></div>
             <span id="placeholder-label" class="placeholder-label">SPRITE ART PENDING / PROTOTYPE FIGHTERS</span>
@@ -53,12 +59,11 @@
           <div class="arena-bottom"><span id="match-status">First to two rounds. Hold back to block.</span><button id="reset-button" class="text-button">CHANGE FIGHTERS ↻</button></div>
         </div>
       </div>
-      <div id="touch-panel" hidden class="touch-controls" aria-label="Player one touch controls"><div><button data-control="left">←</button><button data-control="right">→</button><button data-control="jump">↑</button><button data-control="down">↓</button></div><div><button data-control="punch">P</button><button data-control="kick">K</button><button data-control="special">SP</button></div></div>
-      <section class="control-panel" id="controls-panel" hidden><div class="control-title"><p class="eyebrow">KNOW YOUR MOVES</p><h3>NO EXCUSES.<br>JUST COMBOS.</h3></div><div class="control-group"><span class="player-label p1">PLAYER ONE</span><p><kbd>A</kbd><kbd>D</kbd> Move <kbd>W</kbd> Jump <kbd>S</kbd> Crouch</p><p><kbd>F</kbd> Punch <kbd>G</kbd> Kick <kbd>H</kbd> Special</p></div><div class="control-group"><span class="player-label p2">PLAYER TWO</span><p><kbd>←</kbd><kbd>→</kbd> Move <kbd>↑</kbd> Jump <kbd>↓</kbd> Crouch</p><p><kbd>J</kbd> Punch <kbd>K</kbd> Kick <kbd>L</kbd> Special</p></div><p class="control-note">Hold back to block. Specials use 30 meter. <kbd>Esc</kbd> pauses.</p></section>
-    </section>
+      <div id="touch-panel" hidden class="touch-controls" aria-label="Player one touch controls"><div class="touch-direction"><button data-control="left" aria-label="Move left">←</button><button data-control="right" aria-label="Move right">→</button><button data-control="jump" aria-label="Jump">↑</button><button data-control="down" aria-label="Crouch">↓</button></div><div class="touch-attacks"><button data-control="punch" aria-label="Punch">A<small>PUNCH</small></button><button data-control="kick" aria-label="Kick">S<small>KICK</small></button><button data-control="heavy" aria-label="Heavy attack">D<small>HEAVY</small></button><button data-control="special" aria-label="Special attack">F<small>SPECIAL</small></button></div></div>
+      <section class="control-panel" id="controls-panel" hidden aria-label="Game controls"><span><kbd>←</kbd><kbd>→</kbd> MOVE <kbd>↑</kbd> JUMP <kbd>↓</kbd> CROUCH</span><span><kbd>A</kbd> PUNCH <kbd>S</kbd> KICK <kbd>D</kbd> HEAVY <kbd>F</kbd> SPECIAL</span><span>HOLD BACK TO BLOCK <b>·</b> <kbd>ESC</kbd> PAUSE</span></section>    </section>
     <section id="lab-view" hidden><div class="section-header"><div><p class="eyebrow">THE ART BEHIND THE FIGHT</p><h1>ASSET <em>LAB</em></h1></div><p class="intro-copy">Fighters, special moves, stage and sound.<br>Every generated asset in this build.</p></div><div id="coverage" class="coverage"></div><div class="lab-toolbar"><label for="lab-filter">SHOW</label><select id="lab-filter"><option value="all">All artwork</option><option value="fighters">Fighter poses</option><option value="portraits">Character art</option><option value="stages">Stages</option><option value="ui">Interface</option><option value="effects">Effects</option><option value="audio">Audio</option></select></div><div id="asset-gallery" class="asset-gallery"></div></section>
   </main>
   <footer><span>COMFY FIGHTER Z <b>©</b> HIGGSFIELD OPEN SOURCE SAGA</span><span>6 FIGHTERS. 1 YARD. ZERO EXCUSES.</span></footer>
 </div>
-<script src="engine.js"></script><script src="game.js"></script>
+<script src="engine.js"></script><script src="anim.js"></script><script src="game.js"></script>
 </body></html>

@@ -59,6 +59,21 @@ test('partial image/audio patches merge into the complete plan with current conf
   assert.deepEqual(merged.assets.find(a => a.id === unchanged.id), unchanged);
 });
 
+test('opening video survives unrelated patches and adopts without image conversion', t => {
+  const fixture = setupMerge(t), bytes = 'integrity fixture only; media decoding is covered in browser tests';
+  const mapped = { schema: 'comfy-fighter-video/v1', root: '.', openingVideo: { id: 'opening', src: 'raw/opening.mp4', duration: 25, sha256: hash(bytes) } };
+  write(path.join(fixture.base, 'video.json'), mapped); write(path.join(fixture.base, mapped.openingVideo.src), bytes);
+  merge({ base: fixture.base, patches: [fixture.patch], out: fixture.out });
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(fixture.out, 'video.json'))), mapped);
+  assert.equal(hash(fs.readFileSync(path.join(fixture.out, mapped.openingVideo.src))), mapped.openingVideo.sha256);
+  const target = path.join(fixture.folder, 'game'), manifest = runtime();
+  write(path.join(target, 'assets/shared.webp'), 'image fixture');
+  write(path.join(target, 'assets/video/opening.mp4'), bytes);
+  manifest.openingVideo = { ...mapped.openingVideo, src: 'assets/video/opening.mp4' };
+  const video = adoptionInputs(target, manifest, config, imagePlan).get(manifest.openingVideo.src);
+  assert.equal(video.video, true); assert.equal(video.next, manifest.openingVideo.src);
+});
+
 test('a pose-order change is rejected before a merged bundle is written', t => {
   const fixture = setupMerge(t), file = path.join(fixture.patch, 'assets.json'), manifest = JSON.parse(fs.readFileSync(file));
   manifest.assets[0].poses.reverse(); write(file, manifest);

@@ -1,0 +1,524 @@
+{
+  "id": "2a279bbb-c4cb-4740-a9bb-3caa7babf9e4",
+  "revision": 0,
+  "last_node_id": 10,
+  "last_link_id": 8,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "title": "Reference 1: Allyson",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        340,
+        310
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "allyson.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "title": "Reference 2: Deep",
+      "pos": [
+        0,
+        350
+      ],
+      "size": [
+        340,
+        310
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "deep.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "title": "Reference 3: Georgia",
+      "pos": [
+        0,
+        700
+      ],
+      "size": [
+        340,
+        310
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "georgia.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "title": "Reference 4: Matt",
+      "pos": [
+        0,
+        1050
+      ],
+      "size": [
+        340,
+        310
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "matt.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "LoadImage",
+      "title": "Reference 5: The Photographer",
+      "pos": [
+        0,
+        1400
+      ],
+      "size": [
+        340,
+        310
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "photographer.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoadImage",
+      "title": "Reference 6: Rob",
+      "pos": [
+        0,
+        1750
+      ],
+      "size": [
+        340,
+        310
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "rob.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "LoadImage",
+      "title": "Reference 7: The Yard",
+      "pos": [
+        0,
+        2100
+      ],
+      "size": [
+        340,
+        310
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "level-theyard.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "ByteDance2ReferenceNodeV2",
+      "pos": [
+        470,
+        220
+      ],
+      "size": [
+        660,
+        1000
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.reference_images.image_1",
+          "type": "IMAGE",
+          "shape": 7,
+          "link": 1
+        },
+        {
+          "name": "model.reference_images.image_2",
+          "type": "IMAGE",
+          "shape": 7,
+          "link": 2
+        },
+        {
+          "name": "model.reference_images.image_3",
+          "type": "IMAGE",
+          "shape": 7,
+          "link": 3
+        },
+        {
+          "name": "model.reference_images.image_4",
+          "type": "IMAGE",
+          "shape": 7,
+          "link": 4
+        },
+        {
+          "name": "model.reference_images.image_5",
+          "type": "IMAGE",
+          "shape": 7,
+          "link": 5
+        },
+        {
+          "name": "model.reference_images.image_6",
+          "type": "IMAGE",
+          "shape": 7,
+          "link": 6
+        },
+        {
+          "name": "model.reference_images.image_7",
+          "type": "IMAGE",
+          "shape": 7,
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "draft_task_id",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ByteDance2ReferenceNodeV2"
+      },
+      "widgets_values": [
+        "Seedance 2.5",
+        "Create one continuous 25-second cinematic opening movie for an original fighting game. Photorealistic LIVE-ACTION film, real adult performers, natural skin pores, real cloth and hair, believable weight and lens depth, cinematic lighting and practical-looking energy VFX. Capture the dramatic martial-arts energy and heroic power-up spectacle of Dragon Ball Z era battle anime translated into live action, while keeping this original cast and their real streetwear. This is not a cartoon, illustration, cel-shaded render or plastic CG animation. No franchise characters, costumes, emblems or recognizable music.\nREFERENCE CAST:\nImage 1 is Allyson: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Node Burst: Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.\nImage 2 is Deep: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nImage 3 is Georgia: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Golden Cascade: Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell.\nImage 4 is Matt: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Latent Rush: Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs.\nImage 5 is The Photographer: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Flash Frame: The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering.\nImage 6 is Rob: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Compile Crash: Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell.\nImage 7 is The Yard, the actual indoor venue. Preserve its exposed concrete ceiling, suspended black pendant lights, white walls, central ramp/railing, plants, black reception desk and polished floor. Ignore all bystanders and unrelated objects in the source photos. Only the six foreground reference people appear. Keep the Photographer's camera as one camera; Rob can set his laptop safely aside before fighting. Avoid readable shirt lettering/name tags.\nSHOT PLAN, exactly 25 seconds, with coherent match cuts and the same venue throughout:\n0-4s: Low tracking camera glides over The Yard floor into a wide live-action reveal of all six fighters forming two opposing groups. Warm pendant light, cool rim light, dust gently lifting as power builds. Every face receives a readable moment.\n4-9s: Allyson and Deep square off in medium close-up and a low side angle: Allyson forms golden linked rectangular energy nodes between open hands; Deep answers with compact cyan concentric energy rings. They exchange one rapid blocked palm strike and recoil into grounded stances.\n9-14s: Match cut to Georgia and Matt. Georgia spins a controlled golden crescent from one hand; Matt slides under it with a short magenta energy dash and stops cleanly. Show both faces and real clothing motion; no injury, gore or property destruction.\n14-19s: The Photographer braces the single camera and fires one white-gold flash-shaped energy burst. Rob counters with a compact cyan angular shield and a grounded forward palm strike. Cinematic shutter click, energy crack, fast but readable choreography.\n19-25s: Wide orbit resolves into all six facing the camera in a heroic group formation, gold/cyan/magenta auras close to their bodies, overhead lights glowing. A brief synchronized power surge ripples across the floor, then they settle into strong ready stances. Finish on a steady full-frame heroic shot that cuts naturally to the game's title screen.\nCAMERA AND SOUND: 16:9 landscape, consistent lifelike anatomy, realistic optical motion blur, crisp faces, restrained film grain, sweeping low-angle camera. Native synchronized footfalls, cloth movement, impact whooshes and electrical energy sounds with an ORIGINAL rising guitar/orchestral battle score. No intelligible dialogue and no voice imitation. No narration, on-screen titles, captions, text, logo, watermark, comic borders, graphic speed-line frames, split screens or letterboxing. No black opening/closing frames. Every shot is moving footage, never a still-image slideshow.",
+        "1080p",
+        "16:9",
+        25,
+        true,
+        "reference",
+        "mp4",
+        true,
+        false,
+        20261102,
+        "fixed",
+        false
+      ],
+      "widgets_values_named": {
+        "model": "Seedance 2.5",
+        "model.prompt": "Create one continuous 25-second cinematic opening movie for an original fighting game. Photorealistic LIVE-ACTION film, real adult performers, natural skin pores, real cloth and hair, believable weight and lens depth, cinematic lighting and practical-looking energy VFX. Capture the dramatic martial-arts energy and heroic power-up spectacle of Dragon Ball Z era battle anime translated into live action, while keeping this original cast and their real streetwear. This is not a cartoon, illustration, cel-shaded render or plastic CG animation. No franchise characters, costumes, emblems or recognizable music.\nREFERENCE CAST:\nImage 1 is Allyson: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The node conductor. Short dark hair beneath a black cap, large black rectangular glasses, cream graphic T-shirt with yellow and black blocks, dark trousers, silver chain and belt chain. A lively open-hand guard and confident grin. Complete unseen footwear as black high-top sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Node Burst: Allyson links bright yellow rectangular energy nodes between both open palms, then thrusts forward to release a compact connected-node projectile toward the right. Keep the shape close to the hands in the sprite; the separate game projectile continues the burst.\nImage 2 is Deep: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The queue breaker. Tousled dark hair, round thin metal glasses, neat short beard, open cream hoodie over a cream yellow-and-black graphic T-shirt, blue jeans and a metal wristwatch. A grounded two-palm fighting stance. Complete unseen footwear as cream sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Queue Breaker: Deep braces both feet, draws cyan concentric workflow rings between the palms, then pushes a compressed blue energy pulse toward the right. A precise two-handed release with a short ring trail, never obscuring the face or extending beyond the sprite cell.\nImage 3 is Georgia: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The golden cascade. Long dark hair, small gold earrings and pendant necklace, cream graphic T-shirt with rolled sleeves and yellow-and-black blocks, blue jeans and a gold bracelet. A relaxed confident guard that turns into sweeping hand strikes. Complete unseen footwear as white sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Golden Cascade: Georgia sweeps one hand across the body and releases a gold-and-magenta crescent pulse toward the right. The other hand guards the torso, with a short ribbon of sparkling light following the wrist. Preserve the long hair silhouette and keep all particles inside the sprite cell.\nImage 4 is Matt: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The latent striker. Shaggy medium-length dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, pale blue jeans and a dark wristwatch. A loose boxing guard and playful grin. Complete unseen footwear as black-and-white trainers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Latent Rush: Matt twists into a forceful forward palm strike that fires a compact orange energy pulse toward the right, with two short orange afterimage strokes behind the striking arm. The pose reads as one complete fighter, with no duplicated bodies and no cropped limbs.\nImage 5 is The Photographer: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The flash-frame fighter. Long dark hair, black short-sleeve top, loose dark trousers, headphones around the neck, a compact black camera on a short hand grip and visible forearm ink. The camera obscures the face in the photograph: create an original stylized face without claiming an exact unseen likeness. Keep the camera secured on a short strap for ordinary punches and kicks. Complete unseen footwear as dark sneakers. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Flash Frame: The Photographer raises the compact camera toward the right and triggers a concentrated violet-and-white shutter flash that becomes the special projectile. Keep the camera, grip and hands anatomically clear, with a single contained lens flare and no camera-brand lettering.\nImage 6 is Rob: preserve the main foreground person's face, natural build, hairstyle, clothing and accessories. The compile crusher. Short swept dark hair, clean-shaven face, cream graphic T-shirt with yellow-and-black blocks, light trousers and a slim metal bracelet. A compact silver laptop is a visual motif; keep it tucked in a small dark shoulder sling during ordinary combat so both hands remain free. Complete unseen footwear as gray trainers. Use only the foreground subject and remove other people, labels and logos. The fighting persona and powers are fictional; preserve visible reference features without copying name tags or small shirt lettering. Their fictional power is Compile Crash: Rob snaps a palm forward and launches a compact cyan cluster of angular pixel blocks toward the right, as if a successful build has become a solid energy projectile. The off hand stays near the laptop sling. Keep the pulse close to the palm and the whole body inside the cell.\nImage 7 is The Yard, the actual indoor venue. Preserve its exposed concrete ceiling, suspended black pendant lights, white walls, central ramp/railing, plants, black reception desk and polished floor. Ignore all bystanders and unrelated objects in the source photos. Only the six foreground reference people appear. Keep the Photographer's camera as one camera; Rob can set his laptop safely aside before fighting. Avoid readable shirt lettering/name tags.\nSHOT PLAN, exactly 25 seconds, with coherent match cuts and the same venue throughout:\n0-4s: Low tracking camera glides over The Yard floor into a wide live-action reveal of all six fighters forming two opposing groups. Warm pendant light, cool rim light, dust gently lifting as power builds. Every face receives a readable moment.\n4-9s: Allyson and Deep square off in medium close-up and a low side angle: Allyson forms golden linked rectangular energy nodes between open hands; Deep answers with compact cyan concentric energy rings. They exchange one rapid blocked palm strike and recoil into grounded stances.\n9-14s: Match cut to Georgia and Matt. Georgia spins a controlled golden crescent from one hand; Matt slides under it with a short magenta energy dash and stops cleanly. Show both faces and real clothing motion; no injury, gore or property destruction.\n14-19s: The Photographer braces the single camera and fires one white-gold flash-shaped energy burst. Rob counters with a compact cyan angular shield and a grounded forward palm strike. Cinematic shutter click, energy crack, fast but readable choreography.\n19-25s: Wide orbit resolves into all six facing the camera in a heroic group formation, gold/cyan/magenta auras close to their bodies, overhead lights glowing. A brief synchronized power surge ripples across the floor, then they settle into strong ready stances. Finish on a steady full-frame heroic shot that cuts naturally to the game's title screen.\nCAMERA AND SOUND: 16:9 landscape, consistent lifelike anatomy, realistic optical motion blur, crisp faces, restrained film grain, sweeping low-angle camera. Native synchronized footfalls, cloth movement, impact whooshes and electrical energy sounds with an ORIGINAL rising guitar/orchestral battle score. No intelligible dialogue and no voice imitation. No narration, on-screen titles, captions, text, logo, watermark, comic borders, graphic speed-line frames, split screens or letterboxing. No black opening/closing frames. Every shot is moving footage, never a still-image slideshow.",
+        "model.resolution": "1080p",
+        "model.ratio": "16:9",
+        "model.duration": 25,
+        "model.generate_audio": true,
+        "model.task_type": "reference",
+        "model.output_format": "mp4",
+        "model.auto_downscale": true,
+        "model.auto_upscale": false,
+        "seed": 20261102,
+        "control_after_generate": "fixed",
+        "watermark": false
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "25-second live-action opening | Seedance 2.5 1080p"
+    },
+    {
+      "id": 9,
+      "type": "SaveVideo",
+      "pos": [
+        1230,
+        280
+      ],
+      "size": [
+        689.984375,
+        125.9375
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "comfy-fighter-z/opening/opening-1080p",
+        "auto",
+        "auto"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/opening/opening-1080p",
+        "format": "auto",
+        "codec": "auto"
+      },
+      "title": "Save opening movie for local browser normalization"
+    },
+    {
+      "id": 10,
+      "type": "MarkdownNote",
+      "title": "Opening movie: paid cloud generation",
+      "pos": [
+        460,
+        -200
+      ],
+      "size": [
+        1000,
+        350
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# Comfy Fighter Z: 25-second live-action opening\n\nONE paid Seedance 2.5 reference-to-video request, 1080p, 16:9, native audio. Seven local photo Load Image nodes identify the six fighters and indoor Yard venue. Upload the exact config sourceInput filenames first. No local model weights, no voice cloning.\n\nThis workflow saves into ComfyUI/output/comfy-fighter-z/opening/. After reviewing the result, use tools/assemble-opening.cjs --input <downloaded.mp4> --out <separate-bundle-root> to normalize browser codecs and create raw/opening.mp4 plus video.json. The assembly step never calls a model.\n\nThe 1080p and 720p workflows are alternatives: run only the authorized one. No automatic paid retries. A Seedance seed controls caching, not deterministic image identity."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      8,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      8,
+      2,
+      "IMAGE"
+    ],
+    [
+      4,
+      4,
+      0,
+      8,
+      3,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      8,
+      4,
+      "IMAGE"
+    ],
+    [
+      6,
+      6,
+      0,
+      8,
+      5,
+      "IMAGE"
+    ],
+    [
+      7,
+      7,
+      0,
+      8,
+      6,
+      "IMAGE"
+    ],
+    [
+      8,
+      8,
+      0,
+      9,
+      0,
+      "VIDEO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5,
+      "offset": [
+        40,
+        230
+      ]
+    }
+  },
+  "version": 0.4
+}

@@ -1896,5 +1896,11 @@
       "channels": 1,
       "duration": 3.12
     }
+  },
+  "openingVideo": {
+    "id": "opening",
+    "src": "assets/video/opening.mp4",
+    "duration": 25,
+    "sha256": "e99df57cd670849835e3e6e1eb54867541745098b199dd583c7be0d8b9787186"
   }
 }

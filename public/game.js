@@ -12,6 +12,8 @@
   let selected = [0, 1], stageIndex = 0, galleryEntries = [], cutin = null, selectedTab = 'arena', pickingSlot = 0;
   let audioEnabled = false, audioInteracted = false, music = null, musicId = null;
   let introScene = null, introVoice = null, impactFrames = 0;
+  let openingActive = false, openingStarted = false;
+  const fighterRenderer = window.FighterAnim?.createRenderer();
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const fallbackTaglines = {
     allyson: 'Every node leads to your defeat.', deep: 'Your queue ends here.', georgia: 'Watch the whole arena turn gold.',
@@ -22,18 +24,35 @@
   // Read-only snapshot for move tuning and automated browser checks.
   window.FighterDebug = Object.freeze({
     snapshot: () => state ? JSON.parse(JSON.stringify(state)) : null,
-    presentation: () => ({ screen: !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', introSlot: introScene?.slot ?? null })
+    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', introSlot: introScene?.slot ?? null, controls: 'arrows-asdf', humanPlayers: 1 })
   });
   const controls = [
-    { KeyA: 'left', KeyD: 'right', KeyW: 'jump', KeyS: 'down', KeyF: 'punch', KeyG: 'kick', KeyH: 'special' },
-    { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyJ: 'punch', KeyK: 'kick', KeyL: 'special' }
+    { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyF: 'special' }, {}
   ];
+  function setScene(scene) { document.body.dataset.scene = scene; }
   function art(src) { return typeof src === 'string' ? images.get(src) : null; }
   function assetSource(value) { return typeof value === 'string' ? value : value?.src; }
   function ui(name) { return art(assetSource(manifest.ui?.[name])); }
   function fighterData(slot) { return manifest.fighters[selected[slot]]; }
   function portraitSource(f, hero = false) { return [hero && f.hero, f.portrait, f.hero, f.sourceImage].map(assetSource).find(src => art(src)); }
   function generatedPortrait(f) { return !![f.hero, f.portrait].map(assetSource).find(src => art(src)); }
+  function finishOpening() {
+    if (!openingActive) return;
+    openingActive = false; $('opening-video').pause(); $('opening-screen').hidden = true; $('opening-gate').hidden = true;
+    setScene('title'); $('title-screen').hidden = false; setMusic('menu_music'); refreshAudio(); $('title-start').focus({ preventScroll: true });
+  }
+  async function playOpening(withSound = false) {
+    const entry = manifest.openingVideo, src = assetSource(entry); if (!src) return;
+    clearIntro(); state = null; paused = false; openingActive = true; setScene('opening');
+    $('title-screen').hidden = true; $('selection-screen').hidden = true; $('fight-screen').hidden = true;
+    $('controls-panel').hidden = true; $('touch-panel').hidden = true; $('opening-screen').hidden = false; $('opening-gate').hidden = true;
+    music?.pause(); activeSounds.forEach(sound => sound.pause()); activeSounds.clear();
+    const video = $('opening-video'); if (!openingStarted) { video.src = src; openingStarted = true; }
+    video.currentTime = 0; video.muted = !withSound; $('opening-sound').textContent = withSound ? 'SOUND ON' : 'ENABLE SOUND';
+    if (withSound) { audioEnabled = true; audioInteracted = true; }
+    try { await video.play(); if (openingActive) $('opening-skip').focus({ preventScroll: true }); }
+    catch (_) { if (openingActive) { $('opening-gate').hidden = false; $('opening-play').focus({ preventScroll: true }); } }
+  }
   function playSound(id, volume = .6) {
     const src = assetSource(manifest.audio?.[id]); if (!audioEnabled || !src) return;
     const sound = new Audio(src); sound.volume = volume; activeSounds.add(sound);
@@ -50,6 +69,7 @@
   }
   function refreshAudio() {
     $('audio-button').textContent = audioEnabled ? 'SOUND ON' : 'SOUND OFF'; $('audio-button').setAttribute('aria-pressed', String(audioEnabled));
+    if (openingActive) { music?.pause(); $('opening-video').muted = !audioEnabled; return; }
     if (!audioEnabled) { music?.pause(); introVoice?.pause(); activeSounds.forEach(sound => sound.pause()); activeSounds.clear(); }
     else if (!paused) {
       music?.play().catch(() => {});
@@ -71,12 +91,14 @@
   }
   function enterSaga() {
     if ($('title-start').disabled) return;
+    setScene('selection');
     engageAudio(); $('title-screen').hidden = true; $('selection-screen').hidden = false; $('fight-screen').hidden = true;
     $('controls-panel').hidden = false; $('touch-panel').hidden = true; setMusic('menu_music');
     $('fighter-grid').querySelector('button')?.focus();
   }
   function showTitle() {
     reset(); $('selection-screen').hidden = true; $('title-screen').hidden = false;
+    setScene('title');
     $('controls-panel').hidden = true; $('touch-panel').hidden = true;
     $('title-start').focus();
   }
@@ -84,7 +106,8 @@
     introVoice?.pause(); if (introVoice) activeSounds.delete(introVoice);
     const fighter = fighterData(slot), voiceId = 'fighter_' + fighter.id + '_intro';
     const duration = Number(manifest.audio?.[voiceId]?.duration) || 2.8;
-    introScene = { slot, elapsed: 0, duration: Math.max(2800, Math.min(7500, duration * 1000 + 600)) };
+    introScene = { slot, elapsed: 0, duration: Math.max(2800, Math.min(7500, duration * 1000 + 600)), actor: { ...state.fighters[slot], x: 300, y: 0, facing: 1 } };
+    setScene('intro');
     const panel = $('intro-screen'); panel.hidden = false; panel.dataset.slot = String(slot); panel.classList.toggle('long-name', fighter.name.length > 14);
     panel.style.setProperty('--intro-accent', fighter.color || (slot ? '#2edbc8' : '#ffd23f'));
     panel.classList.remove('arriving'); void panel.offsetWidth; panel.classList.add('arriving');
@@ -93,7 +116,8 @@
     $('intro-special').textContent = fighter.specialMove?.name || 'A NEW CHALLENGER';
     $('intro-tagline').textContent = '“' + (fighter.introTagline || fallbackTaglines[fighter.id] || 'This fight is mine.') + '”';
     const portrait = $('intro-portrait'), src = portraitSource(fighter, true); portrait.replaceChildren();
-    if (src) { const img = document.createElement('img'); img.src = src; img.alt = fighter.name; portrait.append(img); }
+    if (fighterRenderer && art(fighter.poses?.idle?.src)) { const actor = document.createElement('canvas'); actor.id = 'intro-actor'; actor.width = 600; actor.height = 600; actor.setAttribute('aria-label', fighter.name + ' entrance animation'); portrait.append(actor); }
+    else if (src) { const img = document.createElement('img'); img.src = src; img.alt = fighter.name; portrait.append(img); }
     else { const emblem = document.createElement('span'); emblem.textContent = fighter.name.slice(0, 1); portrait.append(emblem); }
     panel.querySelectorAll('.intro-progress span').forEach((mark, index) => { mark.classList.toggle('active', index === slot); mark.classList.toggle('complete', index < slot); });
     if (music) music.volume = .1;
@@ -102,12 +126,18 @@
   function finishIntroduction() {
     if (!introScene) return;
     clearIntro(); keys.clear(); pendingKeys.clear(); Object.keys(touch).forEach(key => delete touch[key]); accumulator = 0;
+    setScene('fight');
     $('versus-overlay').hidden = false; $('pause-button').hidden = false; $('touch-panel').hidden = false;
     canvas.focus();
   }
   function updateIntroduction(milliseconds) {
     if (!introScene || paused || selectedTab !== 'arena') return;
     introScene.elapsed += milliseconds;
+    const actor = $('intro-actor');
+    if (actor) {
+      const introContext = actor.getContext('2d'); introContext.clearRect(0, 0, 600, 600);
+      fighterRenderer.draw(introContext, introScene.actor, fighterData(introScene.slot), art, state, { ground: 575, height: 480, reducedMotion: reducedMotion.matches, introFrame: introScene.elapsed * .06 });
+    }
     if (introScene.elapsed >= introScene.duration) {
       if (introScene.slot === 0) showIntroduction(1); else finishIntroduction();
     }
@@ -148,13 +178,13 @@
       if (source) { const img = document.createElement('img'); img.src = source; img.alt = f.name; img.classList.toggle('reference', !generated); frame.append(img); }
       else { const placeholder = document.createElement('div'); placeholder.className = 'fallback-portrait'; placeholder.textContent = String(index + 1).padStart(2, '0'); frame.append(placeholder); }
       const plate = document.createElement('div'); plate.className = 'fighter-nameplate';
-      const tag = document.createElement('span'); tag.className = 'mini-tag'; tag.textContent = slot ? ($('mode').value === 'cpu' ? 'CPU / CHALLENGER' : '2P / CHALLENGER') : '1P / PLAYER ONE';
+      const tag = document.createElement('span'); tag.className = 'mini-tag'; tag.textContent = slot ? 'CPU / CHALLENGER' : '1P / YOUR FIGHTER';
       const title = document.createElement('h3'); title.textContent = f.name.toUpperCase();
       const artType = document.createElement('span'); artType.className = 'art-type'; artType.textContent = generated ? 'CHARACTER ART' : source ? 'SOURCE REFERENCE / ANIME ART PENDING' : 'CHARACTER ART PENDING';
       plate.append(tag, title, artType); frame.append(plate);
       const body = document.createElement('div'); body.className = 'fighter-card-body';
       const bio = document.createElement('p'); bio.className = 'fighter-bio'; bio.textContent = f.description ? f.description.split(/(?<=[.!?])\s+/).slice(0, 2).join(' ') : 'An original challenger enters The Yard.';
-      const label = document.createElement('p'); label.className = 'move-title'; label.textContent = 'SIGNATURE MOVE / ' + (slot ? 'L' : 'H');
+      const label = document.createElement('p'); label.className = 'move-title'; label.textContent = slot ? 'CPU SIGNATURE MOVE' : 'SIGNATURE MOVE / F';
       const move = document.createElement('strong'); move.className = 'move-name'; move.textContent = f.specialMove?.name || 'Energy Break';
       const detail = document.createElement('p'); detail.className = 'move-description'; detail.textContent = f.specialMove?.description ? f.specialMove.description.split(/(?<=[.!?])\s+/)[0] : 'Launch an energy attack. Costs 30 meter.';
       body.append(bio, label, move, detail); card.append(frame, body); $('fighter-cards').append(card);
@@ -162,18 +192,18 @@
     $('fighter-grid').replaceChildren();
     manifest.fighters.forEach((f, index) => {
       const tile = document.createElement('button'); tile.className = 'fighter-tile'; tile.dataset.fighter = f.id; tile.classList.toggle('long-name', f.name.length > 14);
-      tile.style.setProperty('--accent', f.color || '#7a5cff'); tile.setAttribute('aria-label', 'Select ' + f.name + ' for player ' + (pickingSlot + 1));
+      tile.style.setProperty('--accent', f.color || '#7a5cff'); tile.setAttribute('aria-label', 'Play as ' + f.name);
       tile.classList.toggle('picked-one', selected[0] === index); tile.classList.toggle('picked-two', selected[1] === index);
       tile.setAttribute('aria-pressed', String(selected[pickingSlot] === index));
       const src = portraitSource(f);
       if (src) { const img = document.createElement('img'); img.src = src; img.alt = ''; tile.append(img); }
       else { const number = document.createElement('span'); number.className = 'tile-number'; number.textContent = String(index + 1).padStart(2, '0'); tile.append(number); }
       const name = document.createElement('span'); name.className = 'tile-name'; name.textContent = f.name; tile.append(name);
-      selected.forEach((picked, slot) => { if (picked === index) { const badge = document.createElement('span'); badge.className = 'pick-badge' + (slot ? ' two' : ''); badge.textContent = slot ? '2P' : '1P'; tile.append(badge); } });
+      selected.forEach((picked, slot) => { if (picked === index) { const badge = document.createElement('span'); badge.className = 'pick-badge' + (slot ? ' two' : ''); badge.textContent = slot ? 'CPU' : '1P'; tile.append(badge); } });
       tile.addEventListener('click', () => chooseFighter(index)); $('fighter-grid').append(tile);
     });
     document.querySelectorAll('[data-pick-slot]').forEach(button => button.classList.toggle('active', Number(button.dataset.pickSlot) === pickingSlot));
-    $('pick-hint').textContent = 'Choose a fighter for ' + (pickingSlot ? 'the challenger.' : 'Player One.');
+    $('pick-hint').textContent = 'ARROWS TO CHOOSE · ENTER TO FIGHT';
     $('roster-count').textContent = manifest.fighters.length;
     const stage = manifest.stages[stageIndex], background = art(stage.src) || art(assetSource(stage.sourceImage));
     $('stage-label').textContent = stage.name.toUpperCase(); $('stage-name').textContent = stage.name.toUpperCase();
@@ -217,18 +247,19 @@
   function start() {
     engageAudio();
     clearIntro();
-    state = E.create(selected.map(i => manifest.fighters[i].id), { cpu: $('mode').value === 'cpu' });
+    state = E.create(selected.map(i => manifest.fighters[i].id), { cpu: true });
     paused = false; keys.clear(); pendingKeys.clear(); cutin = null; accumulator = 0; impactFrames = 0;
     $('title-screen').hidden = true; $('selection-screen').hidden = true; $('fight-screen').hidden = false; $('touch-panel').hidden = true;
     $('match-overlay').hidden = true; $('pause-overlay').hidden = true; $('pause-button').hidden = true;
     $('versus-overlay').hidden = true; $('versus-one').textContent = fighterData(0).name; $('versus-two').textContent = fighterData(1).name;
-    $('arena-label').textContent = state.cpu ? 'ARCADE / VS CPU' : 'LOCAL / TWO PLAYERS';
+    $('arena-label').textContent = 'SINGLE PLAYER / VS CPU';
     $('match-status').textContent = 'First to two rounds. Hold back to block.';
     setMusic('yard_music'); showIntroduction(0); $('intro-skip').focus();
   }
   function reset() {
     clearIntro();
     state = null; paused = false; keys.clear(); pendingKeys.clear(); cutin = null;
+    setScene('selection');
     $('title-screen').hidden = true; $('selection-screen').hidden = false; $('fight-screen').hidden = true;
     $('controls-panel').hidden = false; $('touch-panel').hidden = true;
     $('match-overlay').hidden = true; $('pause-overlay').hidden = true; $('pause-button').hidden = true; $('versus-overlay').hidden = true;
@@ -289,12 +320,8 @@
     ctx.fillStyle = '#141f24'; ctx.fillRect(-15, -121, 30, 7); ctx.restore();
   }
   function drawFighter(f, slot) {
-    const data = fighterData(slot), meta = data.poses?.[f.pose] || data.poses?.idle, img = art(meta?.src);
-    ctx.fillStyle = '#10202155'; ctx.beginPath(); ctx.ellipse(f.x, E.GROUND + 3, 52, 10, 0, 0, Math.PI * 2); ctx.fill();
-    if (!img) return fallbackFighter(f, data);
-    const base = data.poses.idle || meta, scale = 205 / (base.bh || base.h || 400);
-    ctx.save(); ctx.translate(f.x, E.GROUND - f.y); ctx.scale(f.facing * scale, scale);
-    ctx.drawImage(img, -meta.ax, -meta.ay, meta.w, meta.h); ctx.restore();
+    const data = fighterData(slot);
+    if (!fighterRenderer?.draw(ctx, f, data, art, state, { ground: E.GROUND, height: 225, reducedMotion: reducedMotion.matches })) fallbackFighter(f, data);
   }
   function effect(name, x, y, facing = 1, opacity = 1, size = 120) {
     const meta = manifest.effects?.[name], img = art(assetSource(meta));
@@ -304,13 +331,6 @@
   function hud() {
     const fighters = state?.fighters || [E.create().fighters[0], E.create().fighters[1]];
     ctx.fillStyle = '#0e1b22b8'; ctx.fillRect(0, 0, 960, 88);
-    if (ui('hud')) {
-      // The generated HUD is a full-screen frame. Use its upper trim as decoration;
-      // health bars, names and portraits are drawn from live game data below.
-      const frame = ui('hud'); ctx.globalAlpha = .4;
-      ctx.drawImage(frame, 0, 0, frame.width, frame.height * .07, 0, 0, 960, 22);
-      ctx.globalAlpha = 1;
-    }
     fighters.forEach((f, slot) => {
       const data = fighterData(slot), x = slot ? 550 : 55, width = 355, color = slot ? '#2edbc8' : '#ffd23f';
       ctx.textAlign = slot ? 'right' : 'left'; ctx.fillStyle = '#eeeee5'; ctx.font = 'bold 17px Arial'; ctx.fillText(data.name.toUpperCase(), slot ? 905 : 55, 26);
@@ -323,7 +343,6 @@
     });
     ctx.textAlign = 'center'; ctx.font = 'italic 46px Impact'; ctx.fillStyle = '#ffd23f'; ctx.fillText(Math.ceil((state?.time ?? 5940) / 60).toString().padStart(2, '0'), 480, 52);
     ctx.font = '8px Arial'; ctx.fillStyle = '#afc0bd'; ctx.fillText('ROUND ' + (state?.round || 1), 480, 72);
-    if (ui('icons')) { ctx.globalAlpha = .65; ctx.drawImage(ui('icons'), 425, 476, 110, 36); ctx.globalAlpha = 1; }
   }
   function render() {
     ctx.clearRect(0, 0, 960, 540); ctx.save();
@@ -380,8 +399,8 @@
         }
         if (state.frame > 50) $('versus-overlay').hidden = true;
         state.fighters.forEach((f, slot) => {
-          if (f.move && f.move !== previousMoves[slot] && ['punch','kick','special'].includes(f.move)) {
-            playSound('sfx_' + f.move, .45);
+          if (f.move && f.move !== previousMoves[slot] && ['punch','kick','heavy','special'].includes(f.move)) {
+            playSound('sfx_' + (f.move === 'heavy' ? 'punch' : f.move), .45);
             if (f.move === 'special') playSound('fighter_' + fighterData(slot).id + '_special', .75);
           }
         });
@@ -436,6 +455,19 @@
     });
     refreshCards(); renderGallery(); setMusic('menu_music');
     $('title-start').disabled = false; $('title-load-status').textContent = 'PRESS ENTER OR TAP TO START';
+    $('opening-replay').hidden = !assetSource(manifest.openingVideo);
+    $('opening-skip').addEventListener('click', finishOpening); $('opening-continue').addEventListener('click', finishOpening);
+    $('opening-play').addEventListener('click', () => playOpening(true)); $('opening-replay').addEventListener('click', () => playOpening(audioEnabled));
+    $('opening-video').addEventListener('ended', finishOpening); $('opening-video').addEventListener('error', finishOpening);
+    $('opening-sound').addEventListener('click', () => {
+      audioEnabled = $('opening-video').muted; audioInteracted = true; refreshAudio();
+      $('opening-sound').textContent = audioEnabled ? 'SOUND ON' : 'ENABLE SOUND'; $('opening-video').play().catch(() => { $('opening-gate').hidden = false; });
+    });
+    $('fullscreen-button').addEventListener('click', async () => {
+      try { if (document.fullscreenElement) await document.exitFullscreen(); else if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); }
+      catch (_) { $('fullscreen-button').title = 'Fullscreen is unavailable in this browser. The game already fills the viewport.'; }
+    });
+    document.addEventListener('fullscreenchange', () => { $('fullscreen-button').textContent = document.fullscreenElement ? '⛶ EXIT FULLSCREEN' : '⛶ FULLSCREEN'; $('fullscreen-button').setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen'); });
     $('title-start').addEventListener('click', enterSaga); $('title-return').addEventListener('click', showTitle);
     $('intro-skip').addEventListener('click', finishIntroduction);
     $('fighter-one').addEventListener('change', event => { selected[0] = Number(event.target.value); reset(); });
@@ -451,10 +483,24 @@
     document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => {
       selectedTab = button.dataset.tab; document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b === button));
       $('arena-view').hidden = selectedTab !== 'arena'; $('lab-view').hidden = selectedTab !== 'lab'; if (selectedTab === 'lab') pause(true);
+      setScene(selectedTab === 'lab' ? 'lab' : introScene ? 'intro' : state ? 'fight' : !$('title-screen').hidden ? 'title' : 'selection');
     }));
     window.addEventListener('keydown', event => {
       if (['INPUT', 'SELECT', 'TEXTAREA'].includes(event.target.tagName)) return;
       const interactiveTarget = !!event.target.closest('button, a, audio');
+      if (openingActive) {
+        if (!event.repeat && (event.code === 'Escape' || event.code === 'Space' && (!interactiveTarget || event.target.closest('#opening-skip')))) { event.preventDefault(); finishOpening(); }
+        return;
+      }
+      if (selectedTab === 'arena' && !$('selection-screen').hidden) {
+        const tile = event.target.closest('.fighter-tile');
+        if (tile && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.code)) {
+          event.preventDefault(); const step = event.code === 'ArrowLeft' ? -1 : event.code === 'ArrowRight' ? 1 : event.code === 'ArrowUp' ? -3 : 3;
+          chooseFighter((selected[0] + step + manifest.fighters.length) % manifest.fighters.length); return;
+        }
+        if (!event.repeat && event.code === 'Enter' && (tile || !interactiveTarget)) { event.preventDefault(); start(); return; }
+        if (!event.repeat && event.code === 'Escape') { event.preventDefault(); showTitle(); return; }
+      }
       if (selectedTab === 'arena' && introScene && !paused && !event.repeat && (event.code === 'Escape' || ['Enter', 'Space'].includes(event.code) && (!interactiveTarget || event.target.closest('#intro-skip')))) { event.preventDefault(); finishIntroduction(); return; }
       if (selectedTab === 'arena' && !$('title-screen').hidden && ['Enter', 'Space'].includes(event.code) && !event.repeat && !interactiveTarget) { event.preventDefault(); enterSaga(); return; }
       if (selectedTab === 'arena' && event.code === 'Escape' && !event.repeat) { event.preventDefault(); pause(); return; }
@@ -467,6 +513,7 @@
       button.addEventListener('pointerdown', event => { event.preventDefault(); button.setPointerCapture(event.pointerId); touch[button.dataset.control] = true; });
       ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => button.addEventListener(type, () => { delete touch[button.dataset.control]; }));
     });
+    if (assetSource(manifest.openingVideo)) playOpening(false);
     requestAnimationFrame(frame);
   }
   init();

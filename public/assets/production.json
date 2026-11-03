@@ -4,14 +4,19 @@
   "generatedWith": [
     "Gemini Nano Banana 2.1",
     "Sonilo",
-    "ElevenLabs"
+    "ElevenLabs",
+    "Seedance 2.5"
   ],
+  "openingVideo": {
+    "duration": 25,
+    "format": "H.264/AAC MP4"
+  },
   "fighters": 6,
   "stages": 1,
   "poses": 162,
   "audio": 22,
-  "files": 224,
-  "sourceBytes": 145606419,
-  "outputBytes": 12322618,
-  "formats": "WebP quality 94, MP3 VBR quality 2; source reference previews limited to 1200px"
+  "files": 225,
+  "sourceBytes": 158589289,
+  "outputBytes": 25341590,
+  "formats": "WebP quality 94, MP3 VBR quality 2, accepted MP4 copied unchanged; source reference previews limited to 1200px"
 }

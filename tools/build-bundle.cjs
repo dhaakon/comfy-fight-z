@@ -151,6 +151,7 @@ async function main(options) {
   if (fs.existsSync(output) && (!fs.statSync(output).isDirectory() || fs.readdirSync(output).length)) throw new Error('Output must be a new or empty directory; previous exports are never overwritten.');
   const manifestPath = path.join(bundle, 'assets.json'), manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const audioPath = path.join(bundle, 'audio.json'), audio = fs.existsSync(audioPath) ? JSON.parse(fs.readFileSync(audioPath, 'utf8')) : null;
+  const videoPath = path.join(bundle, 'video.json'), video = fs.existsSync(videoPath) ? JSON.parse(fs.readFileSync(videoPath, 'utf8')) : null;
   if (manifest.schema !== 'dad-fighter-assets/v1' || !Array.isArray(manifest.assets)) throw new Error('Expected the assets.json produced by the ComfyUI mapped bundle workflow.');
   fs.mkdirSync(output, { recursive: true });
   const report = { status: 'running', startedAt: new Date().toISOString(), bundle, output, title: options.title || manifest.game.title, sourceAssets: manifest.assets.length, checks: [], browserErrors: [], screenshots: [], generationSubmitted: false };
@@ -196,7 +197,13 @@ async function main(options) {
     }
     report.audioCount = Object.keys(runtime.audio || {}).length;
     assert.equal(report.audioCount, audio?.assets.length || 0);
-    assert.ok(archiveFiles.has('sources/assets.json')); assert.ok(archiveFiles.has('start-server.cjs'));
+    assert.ok(archiveFiles.has('sources/assets.json')); assert.ok(archiveFiles.has('start-server.cjs')); assert.ok(archiveFiles.has('anim.js'));
+    if (video) {
+      assert.ok(runtime.openingVideo?.src && archiveFiles.has(runtime.openingVideo.src), 'Opening video is mapped into the standalone game');
+      assert.ok(archiveFiles.has('sources/video.json')); assert.ok(archiveFiles.has(`sources/${video.openingVideo.src}`));
+      assert.deepEqual(archiveFiles.get(runtime.openingVideo.src), archiveFiles.get(`sources/${video.openingVideo.src}`), 'Export preserves opening video bytes');
+      report.openingVideo = runtime.openingVideo; report.checks.push('opening video manifest and original media retained');
+    }
     report.poseCount = poseCount; report.exportedFiles = archiveFiles.size; report.zipBytes = fs.statSync(archive).size;
     report.checks.push('ZIP record bounds and CRC checksums', 'all source artwork retained', `${poseCount} mapped fighter poses`);
     saveReport();
@@ -212,6 +219,21 @@ async function main(options) {
     await game.waitForFunction(count => Number(document.querySelector('#asset-count').textContent) === count, expectedLoaded, { timeout: 60000 });
     assert.equal(await game.title(), report.title); assert.equal(await game.locator('#placeholder-label').isVisible(), false);
     assert.equal(await game.locator('#fighter-one option').count(), runtime.fighters.length);
+    if (video) {
+      report.videoDuration = await game.evaluate(src => new Promise((resolve, reject) => {
+        const media = document.createElement('video'), timer = setTimeout(() => reject(new Error('Opening video metadata timeout')), 20000);
+        media.preload = 'metadata'; media.onloadedmetadata = () => { clearTimeout(timer); resolve(media.duration); };
+        media.onerror = () => { clearTimeout(timer); reject(new Error('Opening video decode failed')); }; media.src = src;
+      }), runtime.openingVideo.src);
+      assert.ok(Number.isFinite(report.videoDuration) && report.videoDuration > 0);
+      assert.ok(Math.abs(report.videoDuration - video.openingVideo.duration) < .5, 'Opening video duration must match its manifest');
+      if (await game.locator('#opening-screen').isVisible()) {
+        await game.screenshot({ path: path.join(output, 'opening-video.png'), fullPage: true }); report.screenshots.push('opening-video.png');
+        await game.keyboard.press('Space');
+      }
+      report.checks.push('opening MP4 metadata decoded and Space skip reaches title');
+    }
+    await game.waitForFunction(() => window.FighterDebug.presentation().screen === 'title');
     if (report.audioCount) {
       report.audioDurations = await game.evaluate(async entries => {
         const durations = {};
@@ -230,7 +252,7 @@ async function main(options) {
     await game.click('#title-start');
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().screen), 'selection');
     await game.screenshot({ path: path.join(output, 'character-select.png'), fullPage: true }); report.screenshots.push('character-select.png');
-    await game.selectOption('#mode', 'cpu'); await game.click('#start-button');
+    await game.click('#start-button');
     await game.waitForFunction(() => window.FighterDebug.presentation().introSlot === 0);
     if (runtime.fighters[0].introTagline) assert.ok((await game.locator('#intro-tagline').textContent()).includes(runtime.fighters[0].introTagline));
     const introStart = await game.evaluate(() => window.FighterDebug.snapshot());
@@ -243,24 +265,25 @@ async function main(options) {
     assert.equal(await game.evaluate(() => window.FighterDebug.snapshot().cpu), true);
     await game.waitForFunction(() => window.FighterDebug.snapshot().fighters[1].x < 650);
     report.cpuSnapshot = await game.evaluate(() => window.FighterDebug.snapshot());
-    // Test attack contact against a stationary local opponent. The CPU deliberately
-    // backs away from jabs and can interrupt the player, so a CPU hit is not deterministic.
-    await game.click('#reset-button'); await game.selectOption('#mode', 'local'); await game.click('#start-button');
+    // Verify human controls before the CPU reaches contact distance. Hit resolution
+    // itself is deterministic in the engine tests; the public game is always vs CPU.
+    await game.click('#back-select'); await game.click('#start-button');
     await game.click('#intro-skip');
     await game.waitForFunction(() => window.FighterDebug.snapshot()?.phase === 'fight');
-    assert.equal(await game.evaluate(() => window.FighterDebug.snapshot().cpu), false);
-    await game.keyboard.down('KeyD');
-    await game.waitForFunction(() => { const s = window.FighterDebug.snapshot(); return Math.abs(s.fighters[0].x - s.fighters[1].x) < 85; });
-    await game.keyboard.up('KeyD');
-    await game.keyboard.press('KeyF');
-    await game.waitForFunction(() => window.FighterDebug.snapshot().fighters[1].hp < 100);
+    assert.equal(await game.evaluate(() => window.FighterDebug.snapshot().cpu), true);
+    assert.equal(await game.evaluate(() => window.FighterDebug.presentation().humanPlayers), 1);
+    const initialX = await game.evaluate(() => window.FighterDebug.snapshot().fighters[0].x);
+    await game.keyboard.down('ArrowRight');
+    await game.waitForFunction(x => window.FighterDebug.snapshot().fighters[0].x > x + 20, initialX);
+    await game.keyboard.up('ArrowRight'); await game.keyboard.press('KeyD');
+    await game.waitForFunction(() => { const f = window.FighterDebug.snapshot().fighters[0]; return f.move === 'heavy' && f.moveFrame >= 9; });
     report.combatSnapshot = await game.evaluate(() => window.FighterDebug.snapshot());
     await game.screenshot({ path: path.join(output, 'gameplay.png'), fullPage: true }); report.screenshots.push('gameplay.png');
     await game.click('[data-tab="lab"]'); await game.selectOption('#lab-filter', 'fighters');
     assert.equal(await game.locator('.asset-card img').count(), poseCount);
     await game.screenshot({ path: path.join(output, 'sprite-gallery.png'), fullPage: true }); report.screenshots.push('sprite-gallery.png');
     assert.deepEqual(failedRequests, []); assert.deepEqual(report.browserErrors, []);
-    report.checks.push('exported standalone server started', 'all runtime images loaded with no placeholders', 'title enters character selection', 'fighter introduction freezes combat and can be skipped', 'CPU movement', 'local-versus player attack connects', 'sprite gallery contains every fighter pose', 'no browser page errors or failed runtime requests');
+    report.checks.push('exported standalone server started', 'all runtime images loaded with no placeholders', 'title enters character selection', 'fighter introduction freezes combat and can be skipped', 'CPU movement', 'single human arrow movement and D heavy attack', 'sprite gallery contains every fighter pose', 'no browser page errors or failed runtime requests');
     report.status = 'passed'; report.finishedAt = new Date().toISOString(); saveReport();
     console.log(`Built and verified ${archiveFiles.size} files, ${poseCount} fighter poses.\nZIP: ${archive}\nGame: ${path.join(output, 'game')}\nReport: ${path.join(output, 'build-test.json')}`);
     return report;

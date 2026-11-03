@@ -36,6 +36,10 @@ function runtimeSources(manifest, { config, plan, strict = false } = {}) {
   }
   for (const stage of manifest.stages) { if (stage.src) add(stage.src); if (stage.sourceImage) add(stage.sourceImage); }
   for (const group of ['ui', 'effects', 'audio']) Object.values(manifest[group] || {}).forEach(add);
+  if (manifest.openingVideo) {
+    if (!Number.isFinite(manifest.openingVideo.duration) || manifest.openingVideo.duration <= 0 || !/\.mp4$/i.test(manifest.openingVideo.src)) throw new Error('Invalid opening video mapping.');
+    add(manifest.openingVideo);
+  }
   if (strict) {
     const sameIds = (actual, expected) => actual.length === expected.length && new Set(actual).size === actual.length && expected.every(id => actual.includes(id));
     if (!sameIds(manifest.fighters.map(f => f.id), config.fighters.map(f => f.id)) || !sameIds(manifest.stages.map(s => s.id), config.stages.map(s => s.id))) throw new Error('Strict runtime roster and stages must match config.');

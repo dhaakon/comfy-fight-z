@@ -69,3 +69,50 @@ test('CPU cannot instantly read and guard a new point-blank jab', () => {
   const s = ready(); s.cpu = true; step(s, { punch: true }, {}, 5);
   assert.equal(s.fighters[1].hp, 93);
 });
+
+test('heavy strike is slower and stronger than a jab and never repeats from a held button', () => {
+  const s = ready(); step(s, { heavy: true }, {}, 5);
+  assert.equal(s.fighters[0].move, 'heavy'); assert.equal(s.fighters[1].hp, 100);
+  step(s, { heavy: true }, {}, 50);
+  assert.equal(s.fighters[1].hp, 85); assert.equal(s.fighters[0].move, null);
+});
+
+test('crouch input chooses a distinct jab or sweep and locks its variant through recovery', () => {
+  for (const [action, pose, damage] of [['punch', 'cjab', 6], ['kick', 'sweep', 10]]) {
+    const s = ready(); step(s, { down: true, [action]: true });
+    const f = s.fighters[0]; assert.equal(f.moveVariant, 'crouch'); assert.equal(E.moveData(f).pose, pose);
+    step(s, {}, {}, 11); assert.equal(f.moveVariant, 'crouch'); assert.equal(s.fighters[1].hp, 100 - damage);
+  }
+});
+
+test('crouching heavy launches an unguarded opponent, then recovers on the ground', () => {
+  const s = ready(); step(s, { down: true, heavy: true }, {}, 12);
+  const victim = s.fighters[1]; assert.equal(victim.hp, 87); assert.equal(victim.pose, 'tumble'); assert.ok(victim.vy > 0 && victim.launched);
+  step(s, {}, {}, 90); assert.equal(victim.y, 0); assert.equal(victim.vy, 0); assert.equal(victim.stun, 0); assert.equal(victim.launched, false);
+});
+
+test('blocking a launcher prevents launch and only takes chip damage', () => {
+  const s = ready(); s.fighters[1].x = 464;
+  step(s, { down: true, heavy: true }, { right: true }, 12);
+  const victim = s.fighters[1]; assert.equal(victim.hp, 99); assert.equal(victim.y, 0); assert.equal(victim.launched, false); assert.equal(victim.pose, 'block');
+});
+
+test('air attacks select airborne poses and landing ends their recovery', () => {
+  const s = ready(), f = s.fighters[0]; f.y = 80; f.vy = 0;
+  step(s, { kick: true }); assert.equal(f.moveVariant, 'air'); assert.equal(E.moveData(f).pose, 'airkick');
+  f.y = 2; f.vy = -3; step(s);
+  assert.equal(f.move, null); assert.equal(f.y, 0); assert.equal(f.landFrames, 6);
+});
+
+test('impact freeze also freezes motion time and hit-reaction age', () => {
+  const s = ready(); step(s, { punch: true }, {}, 5);
+  const frame = s.motionFrame, age = s.fighters[1].hitAge, stop = s.hitstop;
+  step(s, {}, {}, stop); assert.equal(s.motionFrame, frame); assert.equal(s.fighters[1].hitAge, age);
+  step(s); assert.ok(s.motionFrame > frame); assert.ok(s.fighters[1].hitAge > age);
+});
+
+test('CPU mode ignores a second human input stream', () => {
+  const s = ready(); s.cpu = true;
+  step(s, {}, { heavy: true, special: true, left: true });
+  assert.equal(s.fighters[1].move, null); assert.equal(s.fighters[1].x, 480); assert.equal(s.fighters[1].energy, 60.035);
+});

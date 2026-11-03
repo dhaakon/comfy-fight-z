@@ -54,6 +54,9 @@ async function syntheticBundle(folder) {
   const audio = { schema: 'dad-fighter-audio/v1', root: '.', title: manifest.game.title, assets: ['menu_music', 'sfx_punch'].map(id => ({ id, kind: 'audio', category: id.endsWith('music') ? 'music' : 'sfx', src: `raw/${id}.wav`, sha256: createHash('sha256').update(wav).digest('hex'), loop: id.endsWith('music') })) };
   for (const asset of audio.assets) fs.writeFileSync(path.join(folder, asset.src), wav);
   fs.writeFileSync(path.join(folder, 'audio.json'), JSON.stringify(audio));
+  const video = fs.readFileSync(path.join(__dirname, 'fixtures/opening.mp4'));
+  fs.writeFileSync(path.join(folder, 'raw/opening.mp4'), video);
+  fs.writeFileSync(path.join(folder, 'video.json'), JSON.stringify({ schema: 'comfy-fighter-video/v1', root: '.', openingVideo: { id: 'opening', src: 'raw/opening.mp4', duration: 2, sha256: createHash('sha256').update(video).digest('hex') } }));
   return manifest;
 }
 function unzipStored(bytes, destination) {
@@ -133,6 +136,10 @@ function unzipStored(bytes, destination) {
     assert.deepEqual(Object.keys(runtime.audio).sort(), ['menu_music', 'sfx_punch']);
     assert.ok(packageFiles.has('assets/audio/menu_music.wav'));
     assert.ok(packageFiles.has('sources/audio.json'));
+    assert.ok(packageFiles.has('anim.js'), 'Procedural animation must be in the standalone export');
+    assert.equal(runtime.openingVideo.src, 'assets/video/opening.mp4');
+    assert.ok(packageFiles.has('sources/video.json'));
+    assert.deepEqual(packageFiles.get(runtime.openingVideo.src), packageFiles.get('sources/raw/opening.mp4'));
     for (const job of manifest.assets.filter(a => a.kind === 'source')) assert.ok(packageFiles.has(`assets/references/${job.id}.png`));
     for (const job of manifest.assets.filter(a => a.kind === 'sprites')) assert.ok(packageFiles.has(`sources/${job.src}`), `Retain source sheet ${job.id}`);
     assert.ok(packageFiles.has('sources/assets.json'), 'Retain reimportable source bundle map');
@@ -161,6 +168,8 @@ function unzipStored(bytes, destination) {
     const game = await browser.newPage(); game.on('pageerror', error => errors.push(error.message));
     await game.goto(gameServer.url); await game.waitForFunction(() => document.querySelector('#fighter-one').options.length >= 2);
     await game.waitForFunction(() => Number(document.querySelector('#asset-count').textContent) >= 54);
+    if (await game.locator('#opening-screen').isVisible()) await game.keyboard.press('Space');
+    await game.waitForFunction(() => window.FighterDebug.presentation().screen === 'title');
     assert.equal(await game.title(), 'Custom Backyard Championship');
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().screen), 'title');
     assert.equal(await game.locator('#saga-subtitle').textContent(), manifest.game.subtitle);
@@ -171,6 +180,10 @@ function unzipStored(bytes, destination) {
       const audio = new Audio(); audio.onloadedmetadata = () => resolve(audio.duration); audio.onerror = () => reject(new Error('Exported audio did not decode')); audio.src = src;
     }), runtime.audio.menu_music.src);
     assert.ok(audioDuration > 0 && audioDuration < 1, 'Exported WAV must decode in the browser');
+    const videoDuration = await game.evaluate(src => new Promise((resolve, reject) => {
+      const video = document.createElement('video'); video.onloadedmetadata = () => resolve(video.duration); video.onerror = () => reject(new Error('Exported opening video did not decode')); video.src = src;
+    }), runtime.openingVideo.src);
+    assert.ok(Math.abs(videoDuration - 2) < .1, 'Exported MP4 must retain its duration');
     const audioURL = `${gameServer.url}/${runtime.audio.menu_music.src}`;
     const partial = await fetch(audioURL, { headers: { Range: 'bytes=0-43' } });
     assert.equal(partial.status, 206); assert.equal((await partial.arrayBuffer()).byteLength, 44);
@@ -183,13 +196,16 @@ function unzipStored(bytes, destination) {
     assert.equal(await game.locator('#intro-name').textContent(), 'Captain Barbecue');
     assert.equal(await game.evaluate(() => window.FighterDebug.snapshot().frame), 0);
     await game.click('#intro-skip'); await game.waitForFunction(() => window.FighterDebug.snapshot()?.phase === 'fight');
+    assert.equal(await game.evaluate(() => window.FighterDebug.snapshot().cpu), true);
+    assert.equal(await game.evaluate(() => window.FighterDebug.presentation().humanPlayers), 1);
+    await game.keyboard.press('KeyD'); await game.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].move === 'heavy');
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     mobile.on('pageerror', error => errors.push(error.message));
     await mobile.goto(`${server.url}/builder/`); await mobile.click('#load-example');
     await mobile.waitForFunction(() => document.querySelector('#fighter-list').children.length >= 2);
     assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Builder must fit mobile viewport');
     assert.deepEqual(errors, []);
-    console.log(`Builder browser passed: strict missing-art gate, placeholder ZIP, ${manifest.assets.length} images and audio import, descriptions/specials/taglines/subtitle, ${poseCount} poses, retained sources, ZIP extraction, directory export, title/intro/gameplay and mobile layout.`);
+    console.log(`Builder browser passed: strict missing-art gate, placeholder ZIP, ${manifest.assets.length} images, audio/opening-video import, descriptions/specials/taglines/subtitle, ${poseCount} poses, retained sources, ZIP extraction, directory export, title/intro/single-player gameplay and mobile layout.`);
     console.log('Screenshot: build/builder-smoke.png');
   } finally {
     if (browser) await browser.close();
