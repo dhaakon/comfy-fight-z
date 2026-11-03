@@ -137,6 +137,8 @@ function unzipStored(bytes, destination) {
     const download = await downloaded, zipPath = path.join(temp, 'custom.zip'); await download.saveAs(zipPath);
     const exported = path.join(temp, 'exported'); fs.mkdirSync(exported);
     const packageFiles = unzipStored(fs.readFileSync(zipPath), exported);
+    assert.deepEqual(packageFiles.get('LICENSE'), fs.readFileSync(path.join(root, 'LICENSE')), 'Preserve the complete MIT notice in the game ZIP');
+    assert.equal(JSON.parse(packageFiles.get('package.json')).license, 'MIT');
     const runtime = JSON.parse(packageFiles.get('assets/manifest.json'));
     assert.equal(runtime.title, 'Custom Backyard Championship');
     assert.equal(runtime.subtitle, manifest.game.subtitle);

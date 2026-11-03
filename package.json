@@ -1,6 +1,7 @@
 {
   "name": "comfy-fighter-z-repository",
   "version": "0.1.0",
+  "license": "MIT",
   "private": true,
   "description": "ComfyUI asset generation, game builder and generated output",
   "engines": {

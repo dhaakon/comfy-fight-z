@@ -182,6 +182,9 @@ async function main(options) {
     await builderPage.click('#download-zip'); const download = await downloadPromise;
     const archive = path.join(output, 'game.zip'); await download.saveAs(archive);
     const archiveFiles = extractStoredZip(fs.readFileSync(archive), path.join(output, 'game'));
+    assert.deepEqual(archiveFiles.get('LICENSE'), fs.readFileSync(path.join(PROJECT, 'LICENSE')), 'Standalone game must retain the repository MIT notice');
+    assert.equal(JSON.parse(archiveFiles.get('package.json')).license, 'MIT');
+    report.checks.push('complete MIT license notice and package metadata retained');
     const runtime = JSON.parse(archiveFiles.get('assets/manifest.json')), assetReport = JSON.parse(archiveFiles.get('build-report.json'));
     assert.equal(assetReport.strict, true); assert.deepEqual(assetReport.missing, []); assert.deepEqual(assetReport.warnings, []);
     assert.equal(assetReport.built.length, manifest.assets.length); assert.equal(runtime.title, report.title);

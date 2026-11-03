@@ -2,7 +2,7 @@
 
 Build a complete browser fighting game from the included generated assets, then customize it or generate your own cast.
 
-**Verified example:** the complete generated bundle is included in `example/bundle/`. A fresh checkout passed dependency installation, strict export, and browser gameplay checks: **315 game files, six fighters, one arena, 162 poses, and 22 audio clips**. Building this example never generates missing assets or spends cloud credits.
+**Verified example:** the complete generated bundle is included in `example/bundle/`. A fresh checkout passed dependency installation, strict export, and browser gameplay checks: **six fighters, one arena, 162 poses, and 22 audio clips**. Building this example never generates missing assets or spends cloud credits.
 
 ## Build and play
 

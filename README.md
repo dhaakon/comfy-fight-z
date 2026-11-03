@@ -63,7 +63,7 @@ The main workflow contains Project Settings, six Character Factories, three Envi
 
 1. In **Project Settings**, set `root_directory` to a **fresh absolute folder**, such as `C:\games\comfy-fight-z\output\test-runs\my-game\bundle`. This is where ComfyUI writes the bundle; use a path on the ComfyUI server's machine.
 2. Edit each character's name, description, special move and introduction tagline. Keep each `character_id` unique and stable.
-3. Keep **Invent fictional reference** selected to create designs entirely from text. Image selectors can stay empty. To use a newly supplied fictional illustration, explicitly switch that factory to **Upload reference** and select its image.
+3. Keep **Invent fictional reference** selected to create designs entirely from text. Image selectors can stay empty. To supply your own artwork, follow [Use your own source images and backgrounds](#use-your-own-source-images-and-backgrounds).
 4. Keep **Environment 1 / The Yard enabled**. Leave the other two environments disabled for the one-arena game; they make no model calls.
 5. Review the cloud cost, then run the workflow and wait for the final exporter to finish.
 
@@ -91,11 +91,41 @@ bundle/
 
 Keep the whole folder together. Review all three sheets per fighter for complete hands and feet, consistent identity and nine correctly ordered poses. A valid file cannot guarantee a good drawing.
 
+### Use your own source images and backgrounds
+
+Open **`comfyui/workflows/comfy-hackathon.json`** after completing step 2. This main template supports uploaded references; `example:prepare` is reserved for the text-generated fictional example. Save a separate copy of the workflow and set **Project Settings → `root_directory`** to a fresh absolute output folder for your custom game.
+
+Prepare PNG, JPEG or WebP images with clear designs:
+
+| Input | What works well |
+| --- | --- |
+| Character reference | One fictional character per image, with a clear face, outfit, complete hands and feet, and room around the figure. Avoid green clothing because the generated sheets use a green background for sprite extraction. |
+| Background reference | A wide, preferably 16:9 scene viewed from the side, with clear ground near the bottom and scenery behind the fighting area. Keep the floor free of foreground obstacles and decorative borders. |
+
+**Add your characters:**
+
+1. In a **Character Factory**, change `source_mode` to **Upload reference**.
+2. Use the upload control beside **`image`** to select your file, then confirm its filename is selected. ComfyUI stores it in the running server's input folder. Uploading through the editor also works when the server is on another machine; select the uploaded filename rather than entering an absolute path.
+3. Update `name` and `description` to match your character, then edit `special_name`, `special_description` and `intro_tagline`. Keep a unique, stable `character_id` and leave **`include_sprite_sheets` enabled** in the advanced fields.
+4. Repeat for each character you want to replace. Other slots can stay in **Invent fictional reference** mode to generate their designs from text. That mode ignores the `image` selection.
+
+Each character factory uses the reference to generate an anime identity, three 3×3 sheets containing **27 poses**, a selection portrait, a full-body hero and a special-move cut-in. The description and special-move fields guide those images.
+
+**Add your backgrounds:**
+
+1. In **Environment 1**, keep `enabled` on, switch `source_mode` to **Upload reference**, and upload/select your background through `image`.
+2. Change the environment `name` and `description` to match the scene. The factory generates a playable arena from this reference; the supplied image is a guide for its layout and appearance. Environment 1 also supplies the setting for the title and selection artwork, so keep its connection to **Shared Art** intact.
+3. For a one-arena game, leave Environments 2 and 3 disabled. To add more arenas, enable either slot and select **Upload reference** before uploading its image, or keep **Invent fictional reference** selected and describe the scene in text. Keep each `stage_id` unique. The template supports up to three environments.
+
+Review the cloud cost and run the workflow. Uploading alone makes no model calls; generation uses cloud credits. Once the final exporter finishes, choose the **complete generated folder containing `assets.json` and `raw/`** in the builder. Select at least two fighters and one arena, then follow [step 4](#4-export-your-game) to export. A game with multiple included arenas shows an **ENVIRONMENT** selector.
+
+Uploaded references are saved in the bundle and retained in the exported game's `sources/` folder, so use artwork you intend to include when sharing the game. For the public demo, keep character and location designs fictional. To change only one sheet or character in an existing bundle, see [incremental asset updates](comfyui/docs/incremental-refresh.md).
+
 ### Optional: add sound
 
 Open **`comfyui/workflows/comfy-audio.json`**, set its **Asset Root to the same folder** as the image workflow, and run it after reviewing the separate cost. It adds `audio.json` and 22 clips for music, effects, announcements, special moves and introductions—about **$0.43** for the default dialogue.
 
-If you changed names or taglines, update `comfyui/config/game.json` and run `npm run workflows:audio` before opening the audio graph. Canvas edits in the image workflow do not update audio automatically. Voices use stock presets, without voice cloning.
+If you changed fighter names, special-move names, taglines or character/stage IDs, update the corresponding fields in `comfyui/config/game.json` and run `npm run workflows:audio` before opening the audio graph. Keep audio IDs aligned with the image bundle. Canvas edits in the image workflow do not update audio automatically. Voices use stock presets, without voice cloning.
 
 ## 4. Export your game
 
@@ -170,3 +200,7 @@ For [configuration, audio, automated exports, optional video, repairs and tests]
 The [explainer video guide](comfyui/docs/explainer-video.md) includes the narration workflow, screen recorder and captioned video renderer.
 
 Shipped designs are fictional. Keep private photos, retired media, credentials and raw generation runs out of published source and screenshots. Earlier Git history can still contain older files; the current demo does not use them.
+
+## License
+
+This project is available under the [MIT License](LICENSE). You can use, modify and redistribute it, including commercially, while retaining the license and copyright notice. Exported games include a copy of the license. Third-party components retain their own licenses.

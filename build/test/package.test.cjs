@@ -5,6 +5,11 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const api = import(pathToFileURL(path.join(__dirname, '../public/builder/pack.js')).href);
 const poses = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win'];
+test('the browser export template retains the exact repository MIT notice', () => {
+  const license = fs.readFileSync(path.join(__dirname, '../../LICENSE'));
+  assert.ok(license.equals(fs.readFileSync(path.join(__dirname, '../public/LICENSE'))));
+  assert.match(license.toString('utf8'), /^MIT License\n\nCopyright \(c\) 2026 dhaakon/);
+});
 test('opening film manifest requires a portable MP4, duration and integrity hash', async () => {
   const { validateVideoManifest } = await api;
   const video = { schema: 'comfy-fighter-video/v1', root: '.', openingVideo: { id: 'opening', src: 'raw/opening.mp4', duration: 25, sha256: 'a'.repeat(64) } };

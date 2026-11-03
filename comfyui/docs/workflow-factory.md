@@ -4,7 +4,7 @@ Paths and command examples in this guide start at the repository root. Generatio
 
 Enable Nodes 2.0 in the ComfyUI editor and open `comfyui/workflows/comfy-hackathon.json`. Its twelve functional nodes are encapsulated custom nodes: Project Settings, six Character Factories, three Environment Factories, Shared Art and Export Game Assets. They expand into native cloud generation and mapped saves when run; there are no local model checkpoints.
 
-The example describes six fictional fighters and one fictional Yard stage. Its artwork is currently pending generation; the earlier photo-derived media has been retired. `comfyui/config/factory.json` contains six character definitions and three environment definitions. The Yard is enabled, while environments 2 and 3 remain disabled. Every image selector is empty. The default **Invent fictional reference** mode generates a fresh design from text and never loads, hashes or validates a selected image, even if a stale selection exists in an older editor tab.
+The template describes six fictional fighters and one fictional Yard stage. A complete reviewed example is included in `example/bundle/`; `npm run example` builds it without generation. `comfyui/config/factory.json` contains six character definitions and three environment definitions. The Yard is enabled, while environments 2 and 3 remain disabled. Every image selector is empty. The default **Invent fictional reference** mode generates a fresh design from text and never loads, hashes or validates a selected image, even if a stale selection exists in an older editor tab.
 
 ## Use the main template
 
@@ -16,6 +16,8 @@ The example describes six fictional fighters and one fictional Yard stage. Its a
 6. Review the generated artwork, then open `/builder/` and load the complete output folder containing `assets.json` and `raw/` to customize and export a game.
 
 Names, descriptions, special moves, taglines and stage definitions edited on the factory nodes are collected into the exported manifest. You do not have to hand-edit a mapping JSON after changing those fields. Keep IDs unique; changing an ID changes the asset filenames and mappings that use it.
+
+For the upload steps, image recommendations and additional arena slots, see [Use your own source images and backgrounds](../../README.md#use-your-own-source-images-and-backgrounds). Uploaded references are saved into the source bundle and travel with exported games.
 
 Each Character Factory generates a saved source, one accepted anime identity reference, three 3x3 pose sheets, a portrait, a full-body hero and a special cut-in. The 27 pose names remain compatible with the game. Each enabled Environment Factory saves its own source and generates one clean arena. Shared Art generates title/select backgrounds, logo, HUD, emblem and the nine-effect atlas. The final exporter waits for every selected output and checks that the complete game art is present.
 

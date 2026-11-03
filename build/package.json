@@ -1,6 +1,7 @@
 {
   "name": "comfy-fighter-z",
   "version": "0.1.0",
+  "license": "MIT",
   "private": true,
   "description": "Reference-driven cloud ComfyUI asset factory and anime fighting game",
   "engines": {

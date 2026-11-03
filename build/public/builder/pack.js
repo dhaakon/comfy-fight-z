@@ -3,6 +3,7 @@ import { segmentSheet } from './sheet-layout.mjs';
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
 const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'stage', 'ui', 'effects']);
 const MAX_BYTES = 512 * 1024 * 1024;
+const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'style.css', 'LICENSE'];
 const REQUIRED_POSES = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win', 'stance2', 'crouch', 'sweep', 'launcher', 'jump', 'airkick', 'hpunch', 'dash', 'tumble', 'walk2', 'lkick', 'cjab', 'airpunch', 'throw', 'taunt', 'getup', 'powerup', 'entrance'];
 const encoder = new TextEncoder();
 const jsonBlob = value => new Blob([JSON.stringify(value, null, 2) + '\n'], { type: 'application/json' });
@@ -286,7 +287,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   let sourceBytes = 0;
   for (const job of [...jobs, ...audioJobs, ...(videoSource ? [videoSource.openingVideo] : [])]) { const file = files.get(job.src); if (file) sourceBytes += file.size; }
   if (sourceBytes > MAX_BYTES) throw new Error('Selected source images exceed the 512 MB browser build limit.');
-  const allCells = new Map(), accepted = [], total = jobs.length + audioJobs.length + 5 + Number(!!videoSource); let done = 0;
+  const allCells = new Map(), accepted = [], total = jobs.length + audioJobs.length + TEMPLATE_FILES.length + Number(!!videoSource); let done = 0;
   if (videoSource) {
     const video = videoSource.openingVideo, blob = files.get(video.src);
     if (!(blob instanceof Blob) || !blob.size) throw new Error('Opening video file is empty.');
@@ -379,14 +380,14 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
       warnings.push(`${fighterId}: ${error.message} Sprite export omitted; placeholder mode is enabled.`);
     }
   }
-  for (const file of ['index.html', 'game.js', 'engine.js', 'anim.js', 'style.css']) {
+  for (const file of TEMPLATE_FILES) {
     onProgress({ done, total, message: `Packaging ${file}` });
     const response = await fetch(new URL(`../${file}`, import.meta.url));
     if (!response.ok) throw new Error(`Game template unavailable: ${file} (${response.status}). Run the builder through its local server.`);
     let content = await response.text();
     // A runtime template may link back to the builder; exported games must not.
     if (file === 'index.html') content = content.replace(/<a\b[^>]*href=["'][^"']*builder[^"']*["'][^>]*>[\s\S]*?<\/a>/gi, '');
-    output.set(file, new Blob([content], { type: file.endsWith('.html') ? 'text/html' : file.endsWith('.css') ? 'text/css' : 'text/javascript' })); done++;
+    output.set(file, new Blob([content], { type: file === 'LICENSE' ? 'text/plain' : file.endsWith('.html') ? 'text/html' : file.endsWith('.css') ? 'text/css' : 'text/javascript' })); done++;
   }
   output.set('assets/manifest.json', jsonBlob(runtime));
   const sourceGame = { ...source.game, title: runtime.title,
@@ -397,7 +398,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   if (audioSource) output.set('sources/audio.json', jsonBlob({ ...audioSource, assets: audioJobs }));
   output.set('assets/source-manifest.json', jsonBlob({ schema: 'comfy-fighter-source-map/v1', root: '.', pathBase: 'game-package-root', sourceManifest: 'sources/assets.json', assets: accepted }));
   output.set('build-report.json', jsonBlob({ strict: !allow, sourceAssets: jobs.length, audioAssets: acceptedAudio.length, audioStatus: audioSource ? 'included' : 'not-supplied', openingVideo: runtime.openingVideo || null, built, missing: missing.map(j => j.id), warnings, requiresVisualReview: true }));
-  output.set('package.json', jsonBlob({ name: 'custom-comfy-fighter', version: '1.0.0', private: true, scripts: { start: 'node start-server.cjs' }, engines: { node: '>=22' } }));
+  output.set('package.json', jsonBlob({ name: 'custom-comfy-fighter', version: '1.0.0', license: 'MIT', private: true, scripts: { start: 'node start-server.cjs' }, engines: { node: '>=22' } }));
   output.set('start-server.cjs', new Blob([SERVER], { type: 'text/javascript' }));
   output.set('README.txt', new Blob([`${runtime.title}\n\nRun with Node.js 22 or later:\n  npm start\nThen open http://127.0.0.1:8080\nNo npm install is required. Or serve this folder with any static HTTP server.\nOpening index.html directly as file:// will not load the asset manifest.\n\nControls: One human fighter versus CPU. Arrow keys move, jump and crouch.\nA punch, S kick, D heavy strike, F special. Hold back to block. Escape pauses.\nSpace skips the opening film and fighter introductions. Use the fullscreen button to fill the display.\n\nassets/manifest.json maps all runtime art and sprite anchors.\nassets/source-manifest.json is a provenance report with paths relative to the game package root.\nsources/assets.json is the re-importable asset manifest; select the sources/ directory in the builder to use it again.\nsources/ contains original accepted artwork, including sprite sheets.\nbuild-report.json records missing/omitted images. Review generated poses and anchors before release.\n${warnings.length ? '\nPLACEHOLDER BUILD: ' + warnings.join('\n') : '\nAll selected source images were processed. Visual review is still required.'}\n`], { type: 'text/plain' }));
   onProgress({ done: total, total, message: `Ready: ${output.size} files` });
