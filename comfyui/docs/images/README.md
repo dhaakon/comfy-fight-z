@@ -18,6 +18,8 @@ These PNGs were captured from running local interfaces on November 3, 2026 (UTC)
 | [12-example-gameplay.png](12-example-gameplay.png) | Griddle versus CPU Rivet using the included sprites and fictional Yard. |
 | [13-example-builder.png](13-example-builder.png) | The included bundle loaded in the builder: six fighters, 18 sheets, 56/56 images, 22/22 audio clips and a completed export with placeholders disabled. |
 
+[`14-explainer-poster.jpg`](14-explainer-poster.jpg) is copied unchanged from the finished explainer's poster. It links to the narrated [workflow walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/tag/explainer-v1), which shows the earlier two-fighter example. It is separate from the direct browser screenshots above.
+
 ## Complete included example provenance
 
 Screenshots 10–12 were copied unchanged from the successful strict build of `example/bundle/`. ComfyUI generated 56 images and 22 audio clips in one approved batch; one additional approved Tempo sheet repair replaced a duplicated recovery pose. All 18 sheets and the repaired extraction were visually reviewed. The resulting game has 162 mapped poses and passed browser image/audio decoding, introduction, CPU and player-control checks without placeholders.

@@ -1,5 +1,7 @@
 # Reproduce the Comfy Fighter Z explainer
 
+[Watch or download the finished walkthrough (2:53, 1080p)](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.mp4). The [video release](https://github.com/dhaakon/comfy-fight-z/releases/tag/explainer-v1) also includes subtitles, a transcript and chapter timestamps. It shows the earlier two-fighter demonstration; the [current README](../../README.md) builds the included six-fighter example with audio.
+
 The explainer combines real ComfyUI and builder recordings, four motion cards, and twelve separately generated narration clips. The output is a 1920 × 1080, 30 fps MP4 with captions, a transcript, chapter timestamps, and a poster. It targets about three minutes; the final length follows the actual narration.
 
 The footage shows the completed **two-fighter example**, Griddle and Rivet in The Yard: 24 generated images and 54 poses. The main six-character template remains intact. The example has no generated game audio or opening film; the explainer narration is separate.

@@ -10,6 +10,14 @@ The default game has six fighters, one backyard arena called **The Yard**, and o
 
 *The included example, built from the fictional artwork in `example/bundle/`.*
 
+## Watch the walkthrough
+
+[![Play the Comfy Fighter Z workflow walkthrough](comfyui/docs/images/14-explainer-poster.jpg)](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.mp4)
+
+**[Watch or download the video — 2:53, 1080p](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.mp4)** · [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.srt)
+
+See the ComfyUI factories, fictional character generation, asset review and game export, with narration and captions. The video shows the earlier two-fighter walkthrough; the current six-fighter example and its build commands are below.
+
 ## 1. Build the included example
 
 Install [Node.js 22 or newer](https://nodejs.org/en/download) and Git, then run:
