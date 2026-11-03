@@ -1,0 +1,204 @@
+{
+  "schema": "comfy-fighter-explainer/v1",
+  "title": "Comfy Fighter Z",
+  "subtitle": "Higgsfield Open Source Saga",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "targetDurationSeconds": 172,
+  "narrationWordsPerMinute": 145,
+  "repositoryURL": "https://github.com/dhaakon/comfy-fight-z",
+  "footageDisclosure": "Completed two-fighter example: Griddle and Rivet in The Yard, 24 generated images and 54 poses. The main six-character template remains intact; the example contains no generated game audio or opening video.",
+  "voice": {
+    "preset": "Brian (male, american)",
+    "model": "eleven_v4",
+    "stability": 0.55,
+    "similarityBoost": 0.75,
+    "languageCode": "en",
+    "deliveryTag": "[clear, confident, conversational narration]",
+    "outputFormat": "mp3_44100_192",
+    "saveFormat": "flac",
+    "seed": 20261103
+  },
+  "scenes": [
+    {
+      "id": "01-result",
+      "title": "From a workflow to a game",
+      "targetSeconds": 15,
+      "narration": "This is Comfy Fighter Z: Higgsfield Open Source Saga. You are watching a completed two-fighter example: Griddle versus Rivet in The Yard. Here is how descriptions become your own playable game.",
+      "audio": "audio/01-result.flac",
+      "visual": "captures/01-result.webm",
+      "onScreen": [
+        "Comfy Fighter Z",
+        "Higgsfield Open Source Saga",
+        "Generated example: 2 fighters · The Yard"
+      ],
+      "visualDirection": "Open on the generated title, then a short gameplay exchange. Add a discreet, persistent two-fighter example label during game footage. Reveal the project title with a clean cyan and yellow accent."
+    },
+    {
+      "id": "02-setup",
+      "title": "One project, three folders",
+      "targetSeconds": 14,
+      "narration": "Start with Node.js twenty-two or newer. Clone the repository, install dependencies, and prepare the workflows. Three folders keep things clear: comfyui holds generation sources, build holds the game, and output holds your results.",
+      "audio": "audio/02-setup.flac",
+      "visual": "cards/02-setup.webm",
+      "onScreen": [
+        "comfyui/ → Generate",
+        "build/ → Game + builder",
+        "output/ → Your results",
+        "npm ci",
+        "npm run workflows",
+        "npm run build",
+        "npm start"
+      ],
+      "visualDirection": "Animated three-folder diagram beside a readable terminal card. Show commands as text, without executing npm run build or replacing the installed generated game."
+    },
+    {
+      "id": "03-custom-nodes",
+      "title": "Install the custom factories",
+      "targetSeconds": 14,
+      "narration": "Install the included custom node pack into the ComfyUI instance you actually run. Restart the server and reload the editor. Sign in for cloud models; no local checkpoints are needed.",
+      "audio": "audio/03-custom-nodes.flac",
+      "visual": "cards/03-custom-nodes.webm",
+      "onScreen": [
+        "npm run nodes:install -- --comfy-root <ComfyUI folder>",
+        "Use the folder containing main.py + nodes.py",
+        "Restart ComfyUI · Reload the editor",
+        "Cloud models · No checkpoint downloads"
+      ],
+      "visualDirection": "Show the install command on a motion card, then transition to the working ComfyUI graph. Use a generic example server path, with no personal account or filesystem information."
+    },
+    {
+      "id": "04-main-factory",
+      "title": "Six fighters. Three arena slots.",
+      "targetSeconds": 14,
+      "narration": "Open the main workflow. Twelve custom nodes contain six character factories, three environment factories, shared artwork, project settings, and the exporter. Only The Yard is enabled initially. The full six-character template stays intact.",
+      "audio": "audio/04-main-factory.flac",
+      "visual": "captures/04-main-factory.webm",
+      "onScreen": [
+        "comfyui/workflows/comfy-hackathon.json",
+        "6 character factories",
+        "3 environment slots · 1 enabled",
+        "Shared art → assets.json"
+      ],
+      "visualDirection": "Pan across the complete main workflow, highlighting the six character cards, then the three environment cards. Dim the two disabled environments. Finish on the exporter connection."
+    },
+    {
+      "id": "05-source-mode",
+      "title": "Invent a fictional cast",
+      "targetSeconds": 13,
+      "narration": "Choose Invent fictional reference to create each design from text. It ignores the image selector. Or switch to Upload reference and select a new fictional illustration. These examples never use real-person photographs.",
+      "audio": "audio/05-source-mode.flac",
+      "visual": "captures/05-source-mode.webm",
+      "onScreen": [
+        "Invent fictional reference → text only",
+        "Upload reference → a new fictional illustration",
+        "No real-person photos"
+      ],
+      "visualDirection": "Close up the source_mode field with Invent fictional reference selected and an empty image selector. Explain Upload reference with a labeled card using only a newly generated fictional illustration."
+    },
+    {
+      "id": "06-character-design",
+      "title": "Describe the fighter and special",
+      "targetSeconds": 15,
+      "narration": "Describe a memorable silhouette, outfit, and personality. Add the special move's name and visual action, then write an introduction tagline. These guide the art; combat rules stay shared. Avoid green clothing for clean sprite extraction.",
+      "audio": "audio/06-character-design.flac",
+      "visual": "captures/06-character-design.webm",
+      "onScreen": [
+        "Description → silhouette + outfit",
+        "Special move → visual action",
+        "Intro tagline → personality",
+        "Keep character IDs stable"
+      ],
+      "visualDirection": "Highlight Griddle's editable description, special name and tagline, then crossfade to his generated portrait and cut-in. Keep readable text callouts beside the matching fields."
+    },
+    {
+      "id": "07-output-and-cost",
+      "title": "Choose a folder. Review the cost.",
+      "targetSeconds": 16,
+      "narration": "Set a fresh absolute output folder, then review the cost before running. The complete template estimates fifty-six image calls, about three dollars twenty. The two-fighter test uses twenty-four images, about one dollar thirty-seven.",
+      "audio": "audio/07-output-and-cost.flac",
+      "visual": "captures/07-output-and-cost.webm",
+      "onScreen": [
+        "Fresh output: output/test-runs/my-game/bundle",
+        "Full default: 56 images · ≈ $3.20",
+        "Two-fighter test: 24 images · ≈ $1.37",
+        "Estimates ? Actual billing varies"
+      ],
+      "visualDirection": "Show a generic fresh output folder and two cost cards. Label estimates clearly, with a short note that actual billing varies. Do not click a generation button during capture."
+    },
+    {
+      "id": "08-review-bundle",
+      "title": "Review the generated bundle",
+      "targetSeconds": 15,
+      "narration": "When generation finishes, keep assets dot JSON with its raw folder. This verified example contains twenty-four generated images and fifty-four poses. Inspect complete feet, consistent identity, clear spacing, and attacks facing right.",
+      "audio": "audio/08-review-bundle.flac",
+      "visual": "cards/08-review-bundle.webm",
+      "onScreen": [
+        "assets.json + raw/ stay together",
+        "Verified example: 24 images · 54 poses",
+        "Review every pose before export"
+      ],
+      "visualDirection": "Animate assets.json and raw/ joining into one folder. Show the actual generated Griddle and Rivet sheets and sprite gallery, with quiet markers identifying the nine cells and complete shoes."
+    },
+    {
+      "id": "09-builder",
+      "title": "Make it your game",
+      "targetSeconds": 14,
+      "narration": "In the browser builder, choose the complete asset folder. Customize the title, names, colors, and roster, keeping at least two fighters and one arena. These controls change labels and interface accents, not painted pixels.",
+      "audio": "audio/09-builder.flac",
+      "visual": "captures/09-builder.webm",
+      "onScreen": [
+        "Choose asset folder",
+        "Customize title · names · colors",
+        "At least 2 fighters + 1 arena"
+      ],
+      "visualDirection": "Show the real two-fighter bundle loading in the builder. Move through title, fighter names and accent colors, then the completed asset inventory. Avoid saving edits into canonical source files."
+    },
+    {
+      "id": "10-export",
+      "title": "Build once. Export your game.",
+      "targetSeconds": 14,
+      "narration": "Leave Allow placeholder assets unchecked and build the game. Strict export verifies mapped files and packages the existing engine. Download the ZIP, or save into an empty directory. Keep the sources for later edits.",
+      "audio": "audio/10-export.flac",
+      "visual": "captures/10-export.webm",
+      "onScreen": [
+        "Allow placeholder assets: OFF",
+        "Strict build: all source images verified",
+        "Download ZIP · Save directory",
+        "sources/ keeps the project editable"
+      ],
+      "visualDirection": "Show the strict build succeeding with all source files present, then frame the ZIP and directory export buttons. A simple package animation reveals game code, processed assets and sources."
+    },
+    {
+      "id": "11-play",
+      "title": "Extract. Start. Fight.",
+      "targetSeconds": 15,
+      "narration": "Extract the game and run N P M start inside its folder. Choose your fighter and CPU opponent. Arrows move, jump, and crouch. A punches, S kicks, D hits hard, and F fires the special.",
+      "audio": "audio/11-play.flac",
+      "visual": "captures/11-play.webm",
+      "onScreen": [
+        "npm start",
+        "Arrows: move · jump · crouch",
+        "A: punch   S: kick   D: heavy   F: special",
+        "One player versus CPU · Space skips intros"
+      ],
+      "visualDirection": "Show npm start as a clean overlay, then transition through character selection and introductions into live gameplay. Overlay the arrow keys and ASDF controls; show one readable attack and the fullscreen control."
+    },
+    {
+      "id": "12-next-steps",
+      "title": "Build your own saga",
+      "targetSeconds": 13,
+      "narration": "Make it yours: expand the cast, add music and voices, or create an opening film. Those extras are separate cloud runs. Find the workflows and walkthrough in the Comfy Fighter Z repository.",
+      "audio": "audio/12-next-steps.flac",
+      "visual": "cards/12-next-steps.webm",
+      "onScreen": [
+        "Comfy Fighter Z",
+        "Higgsfield Open Source Saga",
+        "github.com/dhaakon/comfy-fight-z",
+        "Shown example: no generated game audio or opening film"
+      ],
+      "visualDirection": "Finish on a strong gameplay pose and a calm branded end card. Show the repository URL long enough to read. Note that the shown two-fighter example has no generated game audio or opening film."
+    }
+  ]
+}

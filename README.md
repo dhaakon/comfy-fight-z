@@ -156,4 +156,6 @@ Serve the game over HTTP rather than double-clicking `index.html`. Share the com
 
 For [configuration, audio, automated exports, optional video, repairs and tests](comfyui/docs/advanced.md), use the advanced guide. The [asset contract](comfyui/docs/asset-contract.md) documents the mapped files and pose order.
 
+The [explainer video guide](comfyui/docs/explainer-video.md) includes the narration workflow, screen recorder and captioned video renderer.
+
 Shipped designs are fictional. Keep private photos, retired media, credentials and raw generation runs out of published source and screenshots. Earlier Git history can still contain older files; the current demo does not use them.

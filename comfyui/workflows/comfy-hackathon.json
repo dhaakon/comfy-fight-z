@@ -810,7 +810,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# Comfy Fighter Z\n## Invent fictional fighters. Build your game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Environment 1 supplies the title/select venue; slots 2 and 3 stay disabled until enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 56 image calls / 56 mapped assets (~$3.195). All three environments: 60 calls / 60 records (~$3.483). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing."
+        "# Comfy Fighter Z\n## Invent fictional fighters. Build your game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Environment 1 supplies the title/select venue; slots 2 and 3 stay disabled until enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 56 image calls / 56 mapped assets (about $3.195). All three environments: 60 calls / 60 records (about $3.483). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing."
       ]
     },
     {
