@@ -12,7 +12,8 @@
   let selected = [0, 1], stageIndex = 0, galleryEntries = [], cutin = null, selectedTab = 'arena', pickingSlot = 0;
   let audioEnabled = false, audioInteracted = false, music = null, musicId = null;
   let introScene = null, introVoice = null, impactFrames = 0;
-  let openingActive = false, openingStarted = false;
+  let openingActive = false, openingStarted = false, network = null;
+  let networkRole = null, networkSide = null, networkMatchId = null;
   const fighterRenderer = window.FighterAnim?.createRenderer();
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const fallbackTaglines = {
@@ -24,7 +25,7 @@
   // Read-only snapshot for move tuning and automated browser checks.
   window.FighterDebug = Object.freeze({
     snapshot: () => state ? JSON.parse(JSON.stringify(state)) : null,
-    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', introSlot: introScene?.slot ?? null, controls: 'arrows-asdf', humanPlayers: 1, stageId: manifest.stages[stageIndex]?.id })
+    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', introSlot: introScene?.slot ?? null, controls: 'arrows-asdf', humanPlayers: network?.active && !state?.cpu ? 2 : 1, stageId: manifest.stages[stageIndex]?.id, network: network?.active ? { role: networkRole, side: networkSide, matchId: networkMatchId, phase: network.room.phase, connected: network.client.ready, paused: !!network.room.paused } : null })
   });
   const controls = [
     { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyF: 'special' }, {}
@@ -91,6 +92,7 @@
   }
   function enterSaga() {
     if ($('title-start').disabled) return;
+    if (network?.active) network.leave();
     setScene('selection');
     engageAudio(); $('title-screen').hidden = true; $('selection-screen').hidden = false; $('fight-screen').hidden = true;
     $('controls-panel').hidden = false; $('touch-panel').hidden = true; setMusic('menu_music');
@@ -109,7 +111,7 @@
     introScene = { slot, elapsed: 0, duration: Math.max(2800, Math.min(7500, duration * 1000 + 600)), actor: { ...state.fighters[slot], x: 300, y: 0, facing: 1 } };
     setScene('intro');
     const panel = $('intro-screen'); panel.hidden = false; panel.dataset.slot = String(slot); panel.classList.toggle('long-name', fighter.name.length > 14);
-    panel.style.setProperty('--intro-accent', fighter.color || (slot ? '#2edbc8' : '#ffd23f'));
+    panel.style.setProperty('--intro-accent', fighter.color || (slot ? '#7894a5' : '#c4a25e'));
     panel.classList.remove('arriving'); void panel.offsetWidth; panel.classList.add('arriving');
     $('intro-slot').textContent = slot ? 'THE CHALLENGER ANSWERS' : 'PLAYER ONE ENTERS';
     $('intro-number').textContent = slot ? '02' : '01'; $('intro-name').textContent = fighter.name;
@@ -123,11 +125,12 @@
     if (music) music.volume = .1;
     introVoice = playSound(voiceId, .85);
   }
-  function finishIntroduction() {
+  function finishIntroduction(skip = true) {
     if (!introScene) return;
     clearIntro(); keys.clear(); pendingKeys.clear(); Object.keys(touch).forEach(key => delete touch[key]); accumulator = 0;
     setScene('fight');
-    $('versus-overlay').hidden = false; $('pause-button').hidden = false; $('touch-panel').hidden = false;
+    $('versus-overlay').hidden = false; $('pause-button').hidden = !!network?.active; $('touch-panel').hidden = network?.active && networkRole === 'projection';
+    if (network?.active) network.introDone(!!skip);
     canvas.focus();
   }
   function updateIntroduction(milliseconds) {
@@ -139,7 +142,7 @@
       fighterRenderer.draw(introContext, introScene.actor, fighterData(introScene.slot), art, state, { ground: 575, height: 480, reducedMotion: reducedMotion.matches, introFrame: introScene.elapsed * .06 });
     }
     if (introScene.elapsed >= introScene.duration) {
-      if (introScene.slot === 0) showIntroduction(1); else finishIntroduction();
+      if (introScene.slot === 0) showIntroduction(1); else finishIntroduction(false);
     }
   }
   function chooseFighter(index) {
@@ -172,7 +175,7 @@
     $('fighter-cards').replaceChildren();
     selected.forEach((index, slot) => {
       const f = manifest.fighters[index], card = document.createElement('article');
-      card.className = 'fighter-card'; card.style.setProperty('--accent', f.color || (slot ? '#2edbc8' : '#ffd23f'));
+      card.className = 'fighter-card'; card.style.setProperty('--accent', f.color || (slot ? '#7894a5' : '#c4a25e'));
       const frame = document.createElement('div'); frame.className = 'fighter-art';
       const source = portraitSource(f, true), generated = generatedPortrait(f);
       if (source) { const img = document.createElement('img'); img.src = source; img.alt = f.name; img.classList.toggle('reference', !generated); frame.append(img); }
@@ -213,7 +216,7 @@
     const numberWord = count => ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'][count] || String(count);
     const arenaCount = `${numberWord(manifest.stages.length)} ${manifest.stages.length === 1 ? 'ARENA' : 'ARENAS'}`;
     const stageSummary = manifest.stages.length === 1 && stage.id === 'yard' && stage.name === 'The Yard' ? 'ONE YARD' : arenaCount;
-    $('title-roster-summary').textContent = `SINGLE PLAYER · ${numberWord(manifest.fighters.length)} ${manifest.fighters.length === 1 ? 'FIGHTER' : 'FIGHTERS'} · ${stageSummary}`;
+    $('title-roster-summary').textContent = `${window.CFZ_CONFIG?.multiplayer ? 'LOCAL / ONLINE' : 'SINGLE PLAYER'} · ${numberWord(manifest.fighters.length)} ${manifest.fighters.length === 1 ? 'FIGHTER' : 'FIGHTERS'} · ${stageSummary}`;
     $('selection-eyebrow').textContent = `ONE NIGHT. ${arenaCount}. YOUR FIGHTERS.`;
     $('stage-art-status').textContent = art(stage.src) ? manifest.stages.length > 1 ? `${manifest.stages.length} PLAYABLE ENVIRONMENTS` : 'ONE PLAYABLE ARENA' : background ? 'SOURCE REFERENCE / ANIME STAGE PENDING' : 'STAGE ART PENDING';
     if (background) $('stage-thumb').style.backgroundImage = 'url("' + background.src + '")';
@@ -253,19 +256,25 @@
     });
   }
   function start() {
+    if (network?.active) { network.rematch(); return; }
+    beginMatch(E.create(selected.map(i => manifest.fighters[i].id), { cpu: true }), 'SINGLE PLAYER / VS CPU');
+  }
+  function beginMatch(nextState, label) {
     engageAudio();
     clearIntro();
-    state = E.create(selected.map(i => manifest.fighters[i].id), { cpu: true });
+    state = nextState;
     paused = false; keys.clear(); pendingKeys.clear(); cutin = null; accumulator = 0; impactFrames = 0;
     $('title-screen').hidden = true; $('selection-screen').hidden = true; $('fight-screen').hidden = false; $('touch-panel').hidden = true;
     $('match-overlay').hidden = true; $('pause-overlay').hidden = true; $('pause-button').hidden = true;
     $('versus-overlay').hidden = true; $('versus-one').textContent = fighterData(0).name; $('versus-two').textContent = fighterData(1).name;
-    $('arena-label').textContent = 'SINGLE PLAYER / VS CPU';
+    $('arena-label').textContent = label;
+    $('versus-overlay').querySelectorAll('div > span')[1].textContent = state.cpu ? 'CPU CHALLENGER' : 'PLAYER TWO';
     $('match-status').textContent = 'First to two rounds. Hold back to block.';
     const stage = manifest.stages[stageIndex];
     setMusic(manifest.audio?.[`${stage.id}_music`] ? `${stage.id}_music` : 'yard_music'); showIntroduction(0); $('intro-skip').focus();
   }
   function reset() {
+    if (network?.active) { network.open(); return; }
     clearIntro();
     state = null; paused = false; keys.clear(); pendingKeys.clear(); cutin = null;
     setScene('selection');
@@ -277,6 +286,7 @@
   }
   function pause(value = !paused) {
     if (!state || state.phase === 'matchover') return;
+    if (network?.active) { if (value) network.open(); else network.close(); return; }
     paused = value; keys.clear(); pendingKeys.clear(); Object.keys(touch).forEach(k => delete touch[k]);
     $('pause-overlay').hidden = !paused;
     if (paused) { music?.pause(); introVoice?.pause(); } else refreshAudio();
@@ -339,19 +349,19 @@
   }
   function hud() {
     const fighters = state?.fighters || [E.create().fighters[0], E.create().fighters[1]];
-    ctx.fillStyle = '#0e1b22b8'; ctx.fillRect(0, 0, 960, 88);
+    ctx.fillStyle = '#1b2024e8'; ctx.fillRect(0, 0, 960, 88);
     fighters.forEach((f, slot) => {
-      const data = fighterData(slot), x = slot ? 550 : 55, width = 355, color = slot ? '#2edbc8' : '#ffd23f';
-      ctx.textAlign = slot ? 'right' : 'left'; ctx.fillStyle = '#eeeee5'; ctx.font = 'bold 17px Arial'; ctx.fillText(data.name.toUpperCase(), slot ? 905 : 55, 26);
-      ctx.fillStyle = '#17282c'; ctx.fillRect(x, 37, width, 19); ctx.fillStyle = color;
+      const data = fighterData(slot), x = slot ? 550 : 55, width = 355, color = slot ? '#7894a5' : '#c4a25e';
+      ctx.textAlign = slot ? 'right' : 'left'; ctx.fillStyle = '#ece8dc'; ctx.font = 'bold 17px Arial'; ctx.fillText(data.name.toUpperCase(), slot ? 905 : 55, 26);
+      ctx.fillStyle = '#303632'; ctx.fillRect(x, 37, width, 19); ctx.fillStyle = color;
       ctx.fillRect(slot ? x + width * (1 - f.hp / 100) : x, 37, width * f.hp / 100, 19);
       ctx.fillStyle = '#ffffff44'; ctx.fillRect(slot ? x + width * (1 - f.hp / 100) : x, 37, width * f.hp / 100, 3);
-      ctx.fillStyle = '#0d1e24'; ctx.fillRect(x, 64, width, 5); ctx.fillStyle = color; ctx.fillRect(slot ? x + width * (1 - f.energy / 100) : x, 64, width * f.energy / 100, 5);
+      ctx.fillStyle = '#171b1f'; ctx.fillRect(x, 64, width, 5); ctx.fillStyle = color; ctx.fillRect(slot ? x + width * (1 - f.energy / 100) : x, 64, width * f.energy / 100, 5);
       for (let i = 0; i < 2; i++) { ctx.fillStyle = f.wins > i ? color : '#506061'; ctx.beginPath(); ctx.arc(slot ? x + width - i * 13 : x + i * 13, 79, 3, 0, 7); ctx.fill(); }
       const portrait = art(portraitSource(data)); if (portrait) { ctx.save(); ctx.beginPath(); ctx.rect(slot ? 914 : 8, 16, 37, 43); ctx.clip(); cover(portrait, slot ? 914 : 8, 16, 37, 43); ctx.restore(); }
     });
-    ctx.textAlign = 'center'; ctx.font = 'italic 46px Impact'; ctx.fillStyle = '#ffd23f'; ctx.fillText(Math.ceil((state?.time ?? 5940) / 60).toString().padStart(2, '0'), 480, 52);
-    ctx.font = '8px Arial'; ctx.fillStyle = '#afc0bd'; ctx.fillText('ROUND ' + (state?.round || 1), 480, 72);
+    ctx.textAlign = 'center'; ctx.font = 'italic 46px Impact'; ctx.fillStyle = '#c4a25e'; ctx.fillText(Math.ceil((state?.time ?? 5940) / 60).toString().padStart(2, '0'), 480, 52);
+    ctx.font = '8px Arial'; ctx.fillStyle = '#b5b2a8'; ctx.fillText('ROUND ' + (state?.round || 1), 480, 72);
   }
   function render() {
     ctx.clearRect(0, 0, 960, 540); ctx.save();
@@ -381,49 +391,88 @@
         const img = art(assetSource(fighterData(cutin.slot).cutin));
         if (img) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#101b20cc'; ctx.fillRect(0, 125, 960, 110); cover(img, cutin.slot ? 480 : 0, 125, 480, 110); ctx.restore(); }
         const special = fighterData(cutin.slot).specialMove?.name;
-        if (special) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#130b27db'; ctx.fillRect(0, 220, 960, 42); ctx.textAlign = 'center'; ctx.font = 'italic 30px Impact'; ctx.fillStyle = cutin.slot ? '#2edbc8' : '#ffd23f'; ctx.fillText(special.toUpperCase() + '!', 480, 250); ctx.restore(); }
+        if (special) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#151719eb'; ctx.fillRect(0, 220, 960, 42); ctx.textAlign = 'center'; ctx.font = 'italic 30px Impact'; ctx.fillStyle = cutin.slot ? '#7894a5' : '#c4a25e'; ctx.fillText(special.toUpperCase() + '!', 480, 250); ctx.restore(); }
       }
     }
     ctx.restore(); hud();
     if (!state && ui('logo')) { const img = ui('logo'); ctx.drawImage(img, 380, 92, 200, Math.min(95, 200 * img.height / img.width)); }
     if (state && ['intro', 'roundover'].includes(state.phase)) {
-      ctx.textAlign = 'center'; ctx.font = 'italic 76px Impact'; ctx.lineWidth = 7; ctx.strokeStyle = '#17282d'; ctx.strokeText(state.message, 480, 260); ctx.fillStyle = '#ffd23f'; ctx.fillText(state.message, 480, 260);
+      ctx.textAlign = 'center'; ctx.font = 'italic 76px Impact'; ctx.lineWidth = 7; ctx.strokeStyle = '#17282d'; ctx.strokeText(state.message, 480, 260); ctx.fillStyle = '#c4a25e'; ctx.fillText(state.message, 480, 260);
       ctx.font = 'bold 13px Arial'; ctx.fillStyle = '#eff3e9'; ctx.fillText(state.phase === 'intro' ? 'GET READY' : state.winner === null ? 'EVENLY MATCHED' : fighterData(state.winner).name.toUpperCase() + ' TAKES THE ROUND', 480, 293);
+    }
+  }
+  function readInput() {
+    const input = {};
+    for (const key of new Set([...keys, ...pendingKeys])) if (controls[0][key]) input[controls[0][key]] = true;
+    return Object.assign(input, touch);
+  }
+  function clearInput() { keys.clear(); pendingKeys.clear(); Object.keys(touch).forEach(key => delete touch[key]); }
+  function presentState(previousPhase, previousMoves, previousHealth) {
+    if (state.fighters.some((fighter, slot) => fighter.hp < previousHealth[slot] - 2)) impactFrames = 7;
+    if (previousPhase !== state.phase) {
+      if (state.phase === 'fight') playSound('ann_fight', .7);
+      if (state.phase === 'roundover') playSound('ann_ko', .7);
+      if (state.phase === 'matchover') playSound('ann_victory', .7);
+    }
+    if (state.frame > 50) $('versus-overlay').hidden = true;
+    state.fighters.forEach((f, slot) => {
+      if (f.move && f.move !== previousMoves[slot] && ['punch','kick','heavy','special'].includes(f.move)) {
+        playSound('sfx_' + (f.move === 'heavy' ? 'punch' : f.move), .45);
+        if (f.move === 'special') { playSound('fighter_' + fighterData(slot).id + '_special', .75); cutin = { slot, life: 35 }; }
+      }
+    });
+    if (state.effects.some(effect => effect.type === 'block' && effect.life === effect.maxLife)) playSound('sfx_block', .45);
+    if (state.phase === 'matchover' && $('match-overlay').hidden) {
+      const winner = state.fighters[0].wins > state.fighters[1].wins ? 0 : 1;
+      $('match-overlay').hidden = false; $('pause-button').hidden = true;
+      $('match-overlay').querySelector('h2').textContent = fighterData(winner).name.toUpperCase() + ' WINS';
+      $('match-overlay').querySelector('p:not(.eyebrow)').textContent = `${state.fighters[0].wins} ? ${state.fighters[1].wins} ? ${manifest.stages[stageIndex].name} has a champion.`;
+      $('rematch-button').textContent = network?.active ? 'REMATCH / READY UP ?' : 'RUN IT BACK ?';
+      $('match-status').textContent = network?.active ? 'Match complete. Both players can ready up in the session panel.' : 'Match complete. Play again or change your lineup.';
+    }
+  }
+  function receiveSnapshot(message) {
+    if (!network?.active || message.matchId !== networkMatchId || !message.state?.fighters || !state) return;
+    const next = message.state;
+    if (next.frame <= state.frame) return;
+    const previousPhase = state.phase, previousMoves = state.fighters.map(f => f.move), previousHealth = state.fighters.map(f => f.hp);
+    // Keep each rendered fighter object stable for pose transitions and animation trails.
+    const fighters = next.fighters.map((fighter, slot) => Object.assign(state.fighters[slot] || {}, fighter));
+    Object.assign(state, next, { fighters });
+    presentState(previousPhase, previousMoves, previousHealth);
+  }
+  function networkMatch(message, role, side, fresh) {
+    networkRole = role; networkSide = side; networkMatchId = message.matchId;
+    selected = message.fighters.map(id => Math.max(0, manifest.fighters.findIndex(fighter => fighter.id === id)));
+    stageIndex = Math.max(0, manifest.stages.findIndex(stage => stage.id === message.stage));
+    refreshCards();
+    beginMatch(message.state, role === 'projection' ? message.state.cpu ? 'PHONE CONTROLLER / VS CPU' : 'TWO PHONES / VERSUS' : 'ONLINE VERSUS / YOU ARE P' + (side + 1));
+    paused = !!network.room?.paused;
+    $('back-select').textContent = 'SESSION PANEL'; $('reset-button').textContent = 'SESSION / CONTROLLERS';
+    $('result-select').textContent = 'SESSION / CHANGE FIGHTER';
+    if (!message.introPending || !fresh && message.state.frame > 0) {
+      clearIntro(); setScene('fight'); $('versus-overlay').hidden = state.frame > 50;
+      $('touch-panel').hidden = role === 'projection';
+      presentState(null, [], state.fighters.map(f => f.hp));
     }
   }
   function frame(now) {
     const elapsed = Math.min(100, now - last); accumulator += elapsed; last = now;
     updateIntroduction(elapsed);
     while (accumulator >= 1000 / 60) {
-      if (state && !introScene && !paused && selectedTab === 'arena') {
-        const inputs = controls.map(map => { const input = {}; new Set([...keys, ...pendingKeys]).forEach(key => { if (map[key]) input[map[key]] = true; }); return input; }); Object.assign(inputs[0], touch);
-        const previousPhase = state.phase, previousMoves = state.fighters.map(f => f.move), previousHealth = state.fighters.map(f => f.hp);
-        E.tick(state, inputs);
-        if (state.fighters.some((fighter, slot) => fighter.hp < previousHealth[slot] - 2)) impactFrames = 7;
-        else if (impactFrames > 0) impactFrames--;
-        if (previousPhase !== state.phase) {
-          if (state.phase === 'fight') playSound('ann_fight', .7);
-          if (state.phase === 'roundover') playSound('ann_ko', .7);
-          if (state.phase === 'matchover') playSound('ann_victory', .7);
-        }
-        if (state.frame > 50) $('versus-overlay').hidden = true;
-        state.fighters.forEach((f, slot) => {
-          if (f.move && f.move !== previousMoves[slot] && ['punch','kick','heavy','special'].includes(f.move)) {
-            playSound('sfx_' + (f.move === 'heavy' ? 'punch' : f.move), .45);
-            if (f.move === 'special') playSound('fighter_' + fighterData(slot).id + '_special', .75);
-          }
-        });
-        if (state.effects.some(effect => effect.type === 'block' && effect.life === effect.maxLife)) playSound('sfx_block', .45);
+      if (network?.active) {
+        network.input(!introScene && !paused && selectedTab === 'arena' ? readInput() : {});
         pendingKeys.clear();
-        state.fighters.forEach((f, slot) => { if (f.move === 'special' && f.moveFrame === 1) cutin = { slot, life: 35 }; });
-        if (cutin) cutin.life--;
-        if (state.phase === 'matchover' && $('match-overlay').hidden) {
-          const winner = state.fighters[0].wins > state.fighters[1].wins ? 0 : 1;
-          $('match-overlay').hidden = false; $('pause-button').hidden = true;
-          const heading = $('match-overlay').querySelector('h2'); heading.textContent = fighterData(winner).name.toUpperCase() + ' WINS';
-          $('match-overlay').querySelector('p:not(.eyebrow)').textContent = `${state.fighters[0].wins} — ${state.fighters[1].wins} · ${manifest.stages[stageIndex].name} has a champion.`;
-          $('rematch-button').innerHTML = 'RUN IT BACK <span>→</span>'; $('match-status').textContent = 'Match complete. Play again or change your lineup.';
+      }
+      if (state && !introScene && !paused && selectedTab === 'arena') {
+        // Network matches only render server snapshots; no client prediction or CPU tick.
+        if (!network?.active) {
+          const previousPhase = state.phase, previousMoves = state.fighters.map(f => f.move), previousHealth = state.fighters.map(f => f.hp);
+          E.tick(state, [readInput(), {}]);
+          presentState(previousPhase, previousMoves, previousHealth); pendingKeys.clear();
         }
+        if (impactFrames > 0) impactFrames--;
+        if (cutin) cutin.life--;
       }
       accumulator -= 1000 / 60;
     }
@@ -461,7 +510,7 @@
     $('title-fighters').replaceChildren();
     manifest.fighters.forEach((fighter, index) => {
       const src = portraitSource(fighter, true); if (!src) return;
-      const image = document.createElement('img'); image.src = src; image.alt = ''; image.style.setProperty('--fighter-index', index); image.style.setProperty('--fighter-aura', fighter.color || '#ffd23f');
+      const image = document.createElement('img'); image.src = src; image.alt = ''; image.style.setProperty('--fighter-index', index); image.style.setProperty('--fighter-aura', fighter.color || '#c4a25e');
       $('title-fighters').append(image);
     });
     refreshCards(); renderGallery(); setMusic('menu_music');
@@ -497,7 +546,7 @@
       setScene(selectedTab === 'lab' ? 'lab' : introScene ? 'intro' : state ? 'fight' : !$('title-screen').hidden ? 'title' : 'selection');
     }));
     window.addEventListener('keydown', event => {
-      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(event.target.tagName)) return;
+      if (network?.dialog.open || ['INPUT', 'SELECT', 'TEXTAREA'].includes(event.target.tagName)) return;
       const interactiveTarget = !!event.target.closest('button, a, audio');
       if (openingActive) {
         if (!event.repeat && (event.code === 'Escape' || event.code === 'Space' && (!interactiveTarget || event.target.closest('#opening-skip')))) { event.preventDefault(); finishOpening(); }
@@ -518,13 +567,30 @@
       if (controls.some(map => map[event.code]) && state && !introScene && selectedTab === 'arena') { event.preventDefault(); keys.add(event.code); if (!event.repeat) pendingKeys.add(event.code); }
     });
     window.addEventListener('keyup', event => keys.delete(event.code));
-    window.addEventListener('blur', () => pause(true));
-    document.addEventListener('visibilitychange', () => { if (document.hidden) pause(true); });
+    window.addEventListener('blur', () => { clearInput(); if (!network?.active) pause(true); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { clearInput(); if (!network?.active) pause(true); } });
     document.querySelectorAll('[data-control]').forEach(button => {
       button.addEventListener('pointerdown', event => { event.preventDefault(); button.setPointerCapture(event.pointerId); touch[button.dataset.control] = true; });
       ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => button.addEventListener(type, () => { delete touch[button.dataset.control]; }));
     });
-    if (assetSource(manifest.openingVideo)) playOpening(false);
+    if (window.FighterMultiplayer) {
+      network = new window.FighterMultiplayer(manifest, {
+        unlock: engageAudio, clearInput,
+        idle: () => { if (openingActive) finishOpening(); showTitle(); },
+        focus: () => { if (state) canvas.focus({ preventScroll: true }); },
+        connection: connected => { if (!connected && state) { paused = true; clearInput(); music?.pause(); introVoice?.pause(); } },
+        room: (room, role, side) => {
+          networkRole = role; networkSide = side; paused = !!room.paused;
+          if (paused) { clearInput(); music?.pause(); introVoice?.pause(); } else if (state) refreshAudio();
+        },
+        match: networkMatch, snapshot: receiveSnapshot,
+        introComplete: () => { clearIntro(); clearInput(); setScene('fight'); $('versus-overlay').hidden = state?.frame > 50; $('touch-panel').hidden = networkRole === 'projection'; canvas.focus({ preventScroll: true }); },
+        end: () => { networkRole = null; networkSide = null; networkMatchId = null; clearInput();
+          $('back-select').textContent = '? CHARACTER SELECT'; $('reset-button').textContent = 'CHANGE FIGHTERS ?'; $('result-select').textContent = 'CHARACTER SELECT'; showTitle(); }
+      });
+      $('title-online').disabled = false; $('title-phones').disabled = false;
+    }
+    if (!network?.autoConnect() && assetSource(manifest.openingVideo)) playOpening(false);
     requestAnimationFrame(frame);
   }
   init();

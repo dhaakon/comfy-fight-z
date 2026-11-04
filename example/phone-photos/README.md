@@ -8,16 +8,16 @@ The original [included example](../README.md), its `example/bundle/` assets, and
 
 ## Watch, play, or download
 
-**[Watch the 2:00 narrated walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)** · **[Play the new game](https://comfy-fight-z.dhaakon.com/phone-photo-demo/)** · **[Download the game ZIP](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-game.zip)**
+**[Watch the 2:00 narrated walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)** · **[Play the new game](https://comfy-fight-z.dhaakon.com/phone-photo-demo/)** · **[Download the game ZIP](https://github.com/dhaakon/comfy-fight-z/releases/download/arcade-multiplayer-v1/comfy-fighter-z-phone-photo-arcade-game.zip)**
 
 [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.srt) · [Video poster](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.poster.jpg) · [Release page](https://github.com/dhaakon/comfy-fight-z/releases/tag/phone-photo-demo-v1)
 
-Download and extract the ZIP (about **198.6 MiB**). With Node.js 22 or newer installed, open a terminal inside the extracted folder containing `package.json` and run `npm start`. No dependency installation, ComfyUI server, cloud account or generation credits are needed to play.
+Download and extract the ZIP (about **199 MiB**). With Node.js 22 or newer installed, open a terminal inside the extracted folder containing `package.json` and run `npm start`. No dependency installation, ComfyUI server, cloud account or generation credits are needed to play.
 
 On Windows PowerShell:
 
 ```powershell
-Invoke-WebRequest -Uri "https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-game.zip" -OutFile "comfy-fighter-z-phone-photo-game.zip"
+Invoke-WebRequest -Uri "https://github.com/dhaakon/comfy-fight-z/releases/download/arcade-multiplayer-v1/comfy-fighter-z-phone-photo-arcade-game.zip" -OutFile "comfy-fighter-z-phone-photo-game.zip"
 Expand-Archive -LiteralPath "comfy-fighter-z-phone-photo-game.zip" -DestinationPath "comfy-fighter-z-phone-photo-game"
 Set-Location "comfy-fighter-z-phone-photo-game"
 npm start

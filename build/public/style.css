@@ -24,3 +24,163 @@ html,body{height:100%;overflow:hidden}body{min-width:320px;touch-action:manipula
 .battle-options .stage-selector:not([hidden]){display:flex;flex-direction:column;gap:6px;font-size:8px;font-weight:800;letter-spacing:1px;color:#b8a5cf;min-width:160px}.stage-selector select{max-width:210px;min-height:36px;background:#1d1133;border:1px solid #65487b;padding:8px;color:#f7f3ff;font-size:11px}@media(max-width:800px){.multiple-stages .battle-ready{bottom:55px;min-height:90px;padding:8px 10px}.multiple-stages .select-board{bottom:160px}.multiple-stages .stage-preview{display:none}.multiple-stages .battle-options{width:100%;flex-direction:row;align-items:flex-end;justify-content:space-between;gap:10px}.battle-options .stage-selector:not([hidden]){min-width:0;flex:1;font-size:7px}.stage-selector select{width:100%;max-width:none;font-size:10px}.multiple-stages .battle-options .primary{min-width:155px}}@media(max-width:900px) and (orientation:landscape){.multiple-stages .battle-ready{bottom:8px;min-height:64px}.multiple-stages .select-board{bottom:86px}.multiple-stages .stage-preview{display:none}.multiple-stages .battle-options{width:100%;justify-content:space-between}.battle-options .stage-selector:not([hidden]){min-width:0;flex:1}.stage-selector select{max-width:280px}}
 /* Repository access stays available without changing the arcade screen layout. */
 .repository-link{display:inline-flex;align-items:center;gap:5px;color:var(--teal);font-size:10px;font-weight:800;letter-spacing:1px;text-decoration:underline;text-underline-offset:4px;padding:7px 4px;white-space:nowrap}.repository-link:hover{color:var(--orange)}.title-repository{font-size:8px;padding:0;letter-spacing:1.3px}.title-bottom{align-items:center}@media(max-width:800px){.topbar .repository-link{font-size:8px;padding:7px 2px;letter-spacing:.5px}.title-repository{display:none}}@media(max-width:480px){.topbar .repository-link{font-size:7px;gap:3px;letter-spacing:0}}
+
+/* Cabinet palette: warm ink, paper, oxblood and steel. Presentation only;
+   generated fighters, sprite pixels and stage textures keep their own colors. */
+:root {
+  --ink: #151719;
+  --paper: #ece8dc;
+  --gold: #c4a25e;
+  --red: #ad453b;
+  --blue: #7894a5;
+  --bg: var(--ink);
+  --surface: #23272b;
+  --line: #555951;
+  --text: var(--paper);
+  --muted: #b5b2a8;
+  /* Compatibility names used by the existing arcade and controller UI. */
+  --orange: var(--gold);
+  --teal: var(--blue);
+  --pink: var(--red);
+  --purple: #46596c;
+}
+body { background: var(--bg); }
+.topbar { background: #151719f0; border: 1px solid #535750; }
+.nav-button { color: var(--muted); }
+.nav-button.active { color: var(--paper); border-bottom-color: var(--red); }
+.nav-button span, .repository-link { color: #b7c6cb; }
+.sound-button { background: #292d2f; border-color: #62655d; color: var(--paper); }
+.sound-button[aria-pressed=true] { color: var(--gold); border-color: var(--gold); }
+h1 { color: var(--paper); text-shadow: 3px 4px 0 var(--ink); }
+h1 em { color: var(--red); }
+select, .stage-selector select {
+  background: #24292d; border-color: #5d635f; color: var(--paper);
+}
+.primary {
+  background: var(--gold); color: #161817; border: 1px solid #e0c48b;
+  border-bottom: 4px solid #7c6138; box-shadow: 3px 3px 0 #0a0c0d;
+}
+.primary:hover { background: #d4b475; filter: none; transform: translateY(-1px); }
+.primary:active { transform: translateY(1px); box-shadow: 1px 1px 0 #0a0c0d; }
+button:disabled { cursor: not-allowed; }
+kbd { color: var(--paper); background: #303536; border-color: #62675f; }
+
+/* Keep the cast full color against a subdued illustrated title backdrop. */
+.title-screen { background: var(--ink); }
+.title-backdrop { filter: saturate(.18) contrast(1.08); opacity: .65; }
+.title-screen:after {
+  background: linear-gradient(#15171918 20%, #15171930 43%, #151719f7 88%);
+}
+.title-speed-lines { display: none; }
+.title-fighters img { filter: drop-shadow(5px 6px 0 #101314b0); }
+.title-copy h1 {
+  color: var(--paper); letter-spacing: .5px;
+  text-shadow: 3px 4px 0 #151719, 6px 7px 0 #8d743f;
+}
+.title-copy h1 em { color: #b54c41; text-shadow: 3px 4px 0 #151719, 6px 7px 0 #642e29; }
+.saga-subtitle { color: var(--paper); text-shadow: 2px 3px 0 #151719; }
+.title-start { animation: none; box-shadow: 4px 4px 0 #080a0c; }
+.title-hint { color: #c8c4b7; text-shadow: none; }
+.title-bottom { color: var(--muted); background: #151719c9; border-top: 1px solid #55595166; }
+.title-repository { color: #c9c1a9; }
+.opening-controls button { background: #151719ed; border-color: #676b61; color: var(--paper); }
+.opening-gate { background: #151719ed; }
+.opening-gate .text-button { color: var(--paper); }
+
+/* The selection board reads like a printed arcade panel, with P1/P2 rails. */
+.selection-screen { background-color: #262b2d; background-blend-mode: luminosity; }
+.selection-screen:before { background: #151719bc; }
+.select-heading h1 { text-shadow: 2px 3px 0 #0d0f11; }
+.generated-logo { filter: saturate(.25) drop-shadow(2px 3px 0 #151719); }
+.selection-title {
+  color: var(--paper); background: #8d3832;
+  border-top: 1px solid #b06350; border-bottom: 3px solid #442724;
+}
+.selection-title p { color: #e2d6c7; }
+.selection-title b { color: #c4a25e; }
+.selection-home { color: var(--paper); background: #572b27; border-color: #d09f86; }
+.fighter-card { background: #23272bcc; border: 1px solid #4c524e; }
+.fighter-card:first-child { border-top: 3px solid var(--gold); }
+.fighter-card:last-child { border-top: 3px solid var(--blue); }
+.fighter-card .fighter-art {
+  background: linear-gradient(120deg, #303537 0 49.7%, #24282a 50%);
+}
+.fighter-card .fighter-art img { filter: none; }
+.fighter-art:after { background: linear-gradient(transparent, #141719eb); }
+.fighter-card h3 { color: var(--paper); text-shadow: 2px 3px 0 #111416; }
+.fighter-nameplate .mini-tag { background: var(--gold); color: #151719; }
+.fighter-card:last-child .mini-tag { background: var(--blue); }
+.fighter-card-body { background: #1c2124; border-color: #4b524d; border-left-color: var(--gold); }
+.fighter-card:last-child .fighter-card-body { border-left-color: var(--blue); }
+.fighter-bio { color: #cbc8bd; }
+.move-title { color: var(--gold); }
+.fighter-card:last-child .move-title { color: #a8bec8; }
+.move-name { color: var(--paper); }
+.move-description { color: var(--muted); }
+.player-switch button { background: #262b2e; border-color: #555d58; color: var(--muted); }
+.player-switch button.active { background: #383126; }
+.player-switch button[data-pick-slot="1"].active { background: #293943; }
+.versus { color: var(--red); text-shadow: 2px 2px 0 #101314; }
+.fighter-tile {
+  background: #32393b; border-color: #777a70; clip-path: none;
+  transition: border-color .1s, transform .1s;
+}
+.fighter-tile img { filter: none; }
+.fighter-tile:after { background: linear-gradient(transparent 0%, #121719d9 67%); }
+.fighter-tile:hover { border-color: var(--paper); }
+.fighter-tile.picked-one { border-color: var(--gold); box-shadow: inset 0 0 0 2px var(--gold), 0 0 0 1px #151719; }
+.fighter-tile.picked-two { border-color: var(--blue); box-shadow: inset 0 0 0 2px var(--blue); }
+.fighter-tile .tile-name { color: var(--paper); text-shadow: 1px 2px 0 #101314; }
+.pick-badge { color: #151719; }
+.battle-ready { background: #202629f5; border-color: #62675e; border-left: 4px solid var(--red); }
+.stage-thumb { border-color: #949583; transform: none; }
+.stage-preview span { color: var(--muted); }
+.control-panel { background: #151719ee; color: var(--muted); border-top: 1px solid #555951; }
+.battle-options .stage-selector:not([hidden]) { color: var(--muted); }
+
+/* Entrances use one broad team-colored panel, without neon auras. */
+.fighter-intro { background: #191e21; }
+.intro-energy {
+  opacity: 1; transform: none;
+  background: linear-gradient(112deg, #66312e 0 39%, #b18f52 39% 39.4%, #242b2f 39.4% 100%);
+}
+.fighter-intro[data-slot='1'] .intro-energy {
+  transform: none;
+  background: linear-gradient(112deg, #304655 0 39%, #b18f52 39% 39.4%, #242b2f 39.4% 100%);
+}
+.intro-portrait, .intro-portrait canvas { filter: none; }
+.intro-number { color: #b9bdaf12; -webkit-text-stroke: 1px #b9bdaf22; }
+.intro-copy-block h2 {
+  color: var(--paper); -webkit-text-stroke-color: #171c1f;
+  text-shadow: 3px 4px 0 #101416;
+}
+.intro-copy-block .eyebrow, .intro-special { color: var(--gold); }
+.intro-copy-block blockquote { color: var(--paper); text-shadow: 1px 2px 0 #171c1f; }
+.intro-bottom { background: #151719f2; border-top: 1px solid #5b6056; }
+.intro-progress span.active { background: var(--gold); box-shadow: none; }
+.intro-progress span.complete { background: var(--paper); }
+.intro-bottom button { color: var(--paper); }
+.intro-bottom button span { color: var(--muted); }
+.versus-overlay { background: #151719f0; backdrop-filter: none; text-shadow: 2px 3px 0 #101315; }
+.versus-overlay>div:first-child { color: #d5bc82; }
+.versus-overlay>div:last-child { color: #acbfca; }
+.versus-overlay>b { color: var(--red); }
+.pause-overlay, .match-overlay { background: #151719ed; backdrop-filter: none; }
+.pause-overlay h2, .match-overlay h2 { color: var(--paper); text-shadow: 3px 4px 0 #7c3731; }
+.fight-heading button { color: var(--paper); background: #151719dd; border: 1px solid #666b60; }
+.pause-button { background: #1b2225e8; border-color: #a0a194; }
+.touch-controls button { color: var(--paper); background: #232a2de8; border-color: #8c9287; border-radius: 3px; }
+.touch-attacks button { color: var(--paper); border-color: #b19866; }
+.touch-attacks button[data-control=special] { background: #b39459e8; color: #151719; }
+.touch-controls button:active { background: #873f36; color: var(--paper); }
+.rotate-hint { color: var(--muted); }
+.coverage>div, .asset-card { background: var(--surface); }
+.asset-card .preview { background-color: #303638; }
+
+@media(max-width:800px) and (orientation:portrait) {
+  .intro-copy-block { background: #191e21ec; border-left: 3px solid var(--gold); padding-left: 14px; padding-right: 8px; }
+  .intro-portrait canvas { filter: none; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .fighter-tile:hover, .primary:hover { transform: none; }
+}

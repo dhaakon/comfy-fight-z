@@ -5,7 +5,7 @@ const { createHash } = require('node:crypto');
 const { verifiedExport } = require('./install-game.cjs');
 const { directoryTarget, isInside, sourceFile, runtimeSources } = require('./lib/runtime-validation.cjs');
 const ROOT = path.resolve(__dirname, '../..');
-const CODE = ['index.html', 'style.css', 'engine.js', 'anim.js', 'game.js', 'LICENSE'];
+const CODE = ['index.html', 'style.css', 'engine.js', 'anim.js', 'game.js', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.flac': 'audio/flac', '.mp4': 'video/mp4' };
 const digest = data => createHash('sha256').update(data).digest('hex');
 
@@ -19,7 +19,7 @@ function prepareStaticSite({ game, out } = {}) {
   const names = [...new Set([...CODE, 'assets/manifest.json', ...runtimeSources(source.manifest)])].sort();
   const files = names.map(name => {
     if (name.split('/').some(part => part.startsWith('.')) || /(?:^|\/)(?:sources|raw|builder|node_modules)(?:\/|$)/i.test(name)) throw new Error(`Unexpected deployment file: ${name}`);
-    const contentType = name === 'LICENSE' ? 'text/plain; charset=utf-8' : TYPES[path.extname(name).toLowerCase()];
+    const contentType = ['LICENSE', 'THIRD-PARTY-NOTICES.txt'].includes(name) ? 'text/plain; charset=utf-8' : TYPES[path.extname(name).toLowerCase()];
     if (!contentType || !CODE.includes(name) && !name.startsWith('assets/')) throw new Error(`Unsupported deployment file: ${name}`);
     const file = sourceFile(source.source, name), bytes = fs.readFileSync(file);
     return { path: name, source: file, bytes: bytes.length, sha256: digest(bytes), contentType };

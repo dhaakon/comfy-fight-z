@@ -31,6 +31,7 @@
     "example": "node example/run.cjs",
     "example:build": "node example/run.cjs",
     "example:prepare": "node example/prepare.cjs",
-    "example:package": "node build/tools/package-example.cjs"
+    "example:package": "node build/tools/package-example.cjs",
+    "bundle:server": "node build/tools/bundle-server.cjs"
   }
 }

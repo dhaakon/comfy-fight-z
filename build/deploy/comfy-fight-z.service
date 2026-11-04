@@ -1,0 +1,31 @@
+[Unit]
+Description=Comfy Fighter Z multiplayer and phone controllers
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/comfy-fight-z/current
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=8095
+Environment=PUBLIC_URL=https://comfy-fight-z.dhaakon.com/
+Environment=PUBLIC_ORIGINS=https://comfy-fight-z.dhaakon.com
+Environment=GAME_ROOT=/var/www/comfy-fight-z.dhaakon.com/current
+Environment="GAME_MOUNTS={\"/\":\".\",\"/phone-photo-demo/\":\"phone-photo-demo\"}"
+Environment=SERVE_STATIC=0
+Environment=TRUST_PROXY=1
+ExecStart=/usr/bin/node /opt/comfy-fight-z/current/start-server.cjs
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

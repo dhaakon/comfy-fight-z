@@ -3,7 +3,7 @@ import { segmentSheet } from './sheet-layout.mjs';
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
 const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'stage', 'ui', 'effects']);
 const MAX_BYTES = 512 * 1024 * 1024;
-const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'style.css', 'LICENSE'];
+const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'style.css', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
 const REQUIRED_POSES = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win', 'stance2', 'crouch', 'sweep', 'launcher', 'jump', 'airkick', 'hpunch', 'dash', 'tumble', 'walk2', 'lkick', 'cjab', 'airpunch', 'throw', 'taunt', 'getup', 'powerup', 'entrance'];
 const encoder = new TextEncoder();
 const jsonBlob = value => new Blob([JSON.stringify(value, null, 2) + '\n'], { type: 'application/json' });
@@ -226,35 +226,6 @@ function customize(items, edits, label) {
   });
 }
 
-const SERVER = `const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
-const root=__dirname,types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.wav':'audio/wav','.mp3':'audio/mpeg','.ogg':'audio/ogg','.flac':'audio/flac','.mp4':'video/mp4'};
-const server=http.createServer((req,res)=>{
-  if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);return res.end();}
-  let p;try{p=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{res.writeHead(400);return res.end();}
-  const file=path.resolve(root,'.'+(p==='/'?'/index.html':p));
-  if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}
-  fs.stat(file,(err,st)=>{
-    if(err||!st.isFile()){res.writeHead(404);return res.end('Not found');}
-    const headers={'Content-Type':types[path.extname(file)]||'application/octet-stream','Content-Length':st.size,'Accept-Ranges':'bytes','X-Content-Type-Options':'nosniff'};
-    let start=0,end=st.size-1,status=200;
-    if(req.headers.range){
-      const range=/^bytes=([0-9]*)-([0-9]*)$/.exec(req.headers.range);
-      let valid=!!range&&!!(range[1]||range[2])&&st.size>0;
-      if(valid){
-        if(range[1]){start=Number(range[1]);end=range[2]?Number(range[2]):end;valid=Number.isSafeInteger(start)&&Number.isSafeInteger(end)&&start<st.size&&end>=start;end=Math.min(end,st.size-1);}
-        else{const suffix=Number(range[2]);valid=Number.isSafeInteger(suffix)&&suffix>0;start=Math.max(0,st.size-suffix);}
-      }
-      if(!valid){res.writeHead(416,{...headers,'Content-Length':0,'Content-Range':'bytes */'+st.size});return res.end();}
-      status=206;headers['Content-Range']='bytes '+start+'-'+end+'/'+st.size;headers['Content-Length']=end-start+1;
-    }
-    res.writeHead(status,headers);
-    if(req.method==='HEAD'||st.size===0)return res.end();
-    fs.createReadStream(file,{start,end}).on('error',()=>res.destroy()).pipe(res);
-  });
-});
-const port=Number(process.env.PORT||8080);server.listen(port,'127.0.0.1',()=>console.log('Game: http://127.0.0.1:'+port));
-`;
-
 export async function buildGame({ manifest: input, audioManifest: audioInput = null, videoManifest: videoInput = null, files, customization = {}, onProgress = () => {} }) {
   const source = validateManifest(input);
   const audioSource = audioInput ? validateAudioManifest(audioInput, source.game) : null;
@@ -399,8 +370,10 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   output.set('assets/source-manifest.json', jsonBlob({ schema: 'comfy-fighter-source-map/v1', root: '.', pathBase: 'game-package-root', sourceManifest: 'sources/assets.json', assets: accepted }));
   output.set('build-report.json', jsonBlob({ strict: !allow, sourceAssets: jobs.length, audioAssets: acceptedAudio.length, audioStatus: audioSource ? 'included' : 'not-supplied', openingVideo: runtime.openingVideo || null, built, missing: missing.map(j => j.id), warnings, requiresVisualReview: true }));
   output.set('package.json', jsonBlob({ name: 'custom-comfy-fighter', version: '1.0.0', license: 'MIT', private: true, scripts: { start: 'node start-server.cjs' }, engines: { node: '>=22' } }));
-  output.set('start-server.cjs', new Blob([SERVER], { type: 'text/javascript' }));
-  output.set('README.txt', new Blob([`${runtime.title}\n\nRun with Node.js 22 or later:\n  npm start\nThen open http://127.0.0.1:8080\nNo npm install is required. Or serve this folder with any static HTTP server.\nOpening index.html directly as file:// will not load the asset manifest.\n\nControls: One human fighter versus CPU. Arrow keys move, jump and crouch.\nA punch, S kick, D heavy strike, F special. Hold back to block. Escape pauses.\nSpace skips the opening film and fighter introductions. Use the fullscreen button to fill the display.\n\nassets/manifest.json maps all runtime art and sprite anchors.\nassets/source-manifest.json is a provenance report with paths relative to the game package root.\nsources/assets.json is the re-importable asset manifest; select the sources/ directory in the builder to use it again.\nsources/ contains original accepted artwork, including sprite sheets.\nbuild-report.json records missing/omitted images. Review generated poses and anchors before release.\n${warnings.length ? '\nPLACEHOLDER BUILD: ' + warnings.join('\n') : '\nAll selected source images were processed. Visual review is still required.'}\n`], { type: 'text/plain' }));
+  const serverResponse = await fetch(new URL('./runtime-server.cjs', import.meta.url));
+  if (!serverResponse.ok) throw new Error('Bundled multiplayer server is missing. Run npm run bundle:server in the repository.');
+  output.set('start-server.cjs', await serverResponse.blob());
+  output.set('README.txt', new Blob([`${runtime.title}\n\nRun with Node.js 22 or later:\n  npm start\nThen open http://127.0.0.1:8080\nNo npm install is required. The server prints a LAN address for phones on the same Wi-Fi.\nOnline Versus: create a room, share the invite, choose fighters and ready up.\nPhone Controllers: open the game at its LAN address on the shared display; scan one or two QR codes.\nA static HTTP host supports local play; online matches and phone pairing require this Node server.\nOpening index.html directly as file:// will not load the asset manifest.\n\nControls: Single-player versus CPU, online 1v1, or phone-controlled shared display. Arrow keys move, jump and crouch.\nA punch, S kick, D heavy strike, F special. Hold back to block. Escape pauses.\nSpace skips the opening film and fighter introductions. Use the fullscreen button to fill the display.\n\nassets/manifest.json maps all runtime art and sprite anchors.\nassets/source-manifest.json is a provenance report with paths relative to the game package root.\nsources/assets.json is the re-importable asset manifest; select the sources/ directory in the builder to use it again.\nsources/ contains original accepted artwork, including sprite sheets.\nbuild-report.json records missing/omitted images. Review generated poses and anchors before release.\n${warnings.length ? '\nPLACEHOLDER BUILD: ' + warnings.join('\n') : '\nAll selected source images were processed. Visual review is still required.'}\n`], { type: 'text/plain' }));
   onProgress({ done: total, total, message: `Ready: ${output.size} files` });
   return output;
 }

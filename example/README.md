@@ -18,6 +18,8 @@ Open **http://127.0.0.1:8080/**. The local build needs no ComfyUI server, API ke
 
 Choose one fighter against the CPU. **Arrow keys** move, jump, and crouch; **A** punches, **S** kicks, **D** uses a heavy strike, and **F** uses the special. The game fills the browser window; its fullscreen button enters native fullscreen.
 
+New builds also offer **ONLINE VERSUS** for an invited opponent and **PHONE CONTROLLERS** for one phone against the CPU or two phones on a shared display. Follow the [multiplayer and phone guide](../build/docs/multiplayer.md). For local phone play, open the server's printed **Phone / LAN** address on the display before creating the session.
+
 The example contains:
 
 - Six fictional fighters: Griddle, Rivet, Tempo, Nimbus, Switchback, and Brick.

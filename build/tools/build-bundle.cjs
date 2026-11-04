@@ -143,6 +143,7 @@ function extractStoredZip(bytes, destination) {
 }
 
 async function main(options) {
+  await require('./bundle-server.cjs').bundleServer();
   const bundle = fs.realpathSync(options.bundle), output = path.resolve(options.out);
   const comparable = value => process.platform === 'win32' ? value.toLowerCase() : value;
   const sourcePath = comparable(bundle), outputPath = comparable(output);
@@ -270,7 +271,7 @@ async function main(options) {
     await game.waitForFunction(() => window.FighterDebug.snapshot().fighters[1].x < 650);
     report.cpuSnapshot = await game.evaluate(() => window.FighterDebug.snapshot());
     // Verify human controls before the CPU reaches contact distance. Hit resolution
-    // itself is deterministic in the engine tests; the public game is always vs CPU.
+    // itself is deterministic in the engine tests; local play defaults to CPU.
     await game.click('#back-select'); await game.click('#start-button');
     await game.click('#intro-skip');
     await game.waitForFunction(() => window.FighterDebug.snapshot()?.phase === 'fight');

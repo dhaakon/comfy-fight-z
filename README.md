@@ -2,9 +2,11 @@
 
 Create an anime fighting game with your own fictional cast. ComfyUI generates the artwork; the browser builder turns its asset folder into a playable game directory or ZIP.
 
-The default game has six fighters, one backyard arena called **The Yard**, and one human player versus the CPU. Each fighter has 27 poses, selection art, an introduction and a special move.
+The default game has six fighters, one backyard arena called **The Yard**, and one human player versus the CPU. Each fighter has 27 poses, selection art, an introduction and a special move. New builds also include **Online Versus** and **Phone Controllers** for a shared TV, with a restrained arcade palette of charcoal, ivory, oxblood, steel blue and gold.
 
 **[Play the original included demo at comfy-fight-z.dhaakon.com](https://comfy-fight-z.dhaakon.com/)** — no installation required. Use arrow keys and ASDF on a keyboard, or the on-screen controls on mobile. The game's **GITHUB** link opens this repository.
+
+**Download the current multiplayer builds:** [included cast](https://github.com/dhaakon/comfy-fight-z/releases/download/arcade-multiplayer-v1/comfy-fighter-z-arcade-game.zip) ? [fictional phone-photo cast](https://github.com/dhaakon/comfy-fight-z/releases/download/arcade-multiplayer-v1/comfy-fighter-z-phone-photo-arcade-game.zip). Both include the Node server and need no dependency installation.
 
 ## Phone snapshots to a new game — 2:00 walkthrough
 
@@ -12,11 +14,11 @@ The default game has six fighters, one backyard arena called **The Yard**, and o
 
 [![Watch seven fictional phone snapshots become Comfy Fighter Z](comfyui/docs/images/15-phone-photo-explainer.jpg)](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)
 
-**[Watch the 2:00 walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)** · **[Play the new photo-to-game demo](https://comfy-fight-z.dhaakon.com/phone-photo-demo/)** · **[Download its game ZIP](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-game.zip)**
+**[Watch the 2:00 walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)** · **[Play the new photo-to-game demo](https://comfy-fight-z.dhaakon.com/phone-photo-demo/)** · **[Download the current game ZIP](https://github.com/dhaakon/comfy-fight-z/releases/download/arcade-multiplayer-v1/comfy-fighter-z-phone-photo-arcade-game.zip)**
 
 ComfyUI invents six adults and a backyard as realistic phone snapshots, then uses those seven uploaded images to create **six anime fighters, The Yard, 162 poses and 22 game-audio clips**. No real-person photos or earlier game artwork are inputs. The narrated walkthrough shows generation, visual review, the builder and gameplay.
 
-[Follow the photo-to-game guide](example/phone-photos/README.md) for the seven source PNGs, workflows and upload controls. The game ZIP (about **198.6 MiB**) includes a reusable `sources/` folder: extract the game, run `npm start`, or select `sources/` in this repository's builder to customize it. [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.srt).
+[Follow the photo-to-game guide](example/phone-photos/README.md) for the seven source PNGs, workflows and upload controls. The game ZIP (about **199 MiB**) includes a reusable `sources/` folder: extract the game, run `npm start`, or select `sources/` in this repository's builder to customize it. [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.srt).
 
 This new demo stays separate from the included `example/bundle/`, the original public game and `npm run example` below. Its reviewed generation used **61 image calls, 22 game-audio clips and 10 narration clips**, including five image repairs; the recorded estimate is **$4.30**, not a provider billing statement.
 
@@ -174,6 +176,20 @@ Open the printed URL, normally `http://127.0.0.1:8080/`. No `npm install`, Comfy
 
 Choose **ENTER THE SAGA**, your fighter and the CPU opponent, then **LET'S FIGHT**. Combat waits for the introductions to finish.
 
+### Play with a friend or use your phone
+
+On the title screen of a new build:
+
+| Mode | How to play |
+| --- | --- |
+| **ENTER THE SAGA** | Pick one fighter against the CPU. Arrow keys and ASDF remain the default controls. |
+| **ONLINE VERSUS** | Create a room, send its invite link to a friend, then both choose a fighter and select **READY TO FIGHT**. Each player uses their own game screen. |
+| **PHONE CONTROLLERS** | Open the game on a shared display, choose **One phone vs CPU** or **Two phones / versus**, and start the shared screen. Scan the player QR code on each phone, choose a fighter and ready up. |
+
+For phones on the same Wi-Fi, open the terminal's **Phone / LAN** address on the **display computer before creating the session**. A QR code made at `127.0.0.1` points each phone back to itself. Keep the display and controller pages open; switching away pauses the match. After a connection drops, the same tab can reconnect within 45 seconds.
+
+The exported Node server handles rooms and controllers without a dependency install. A static-only host supports the CPU game; multiplayer needs the Node server and a WebSocket-capable host. See [Multiplayer and phone setup](build/docs/multiplayer.md) for invitations, LAN setup, reconnection and hosting. Rebuild older exports to add these modes; no new artwork generation is required.
+
 ![All six fictional fighters in the included example](comfyui/docs/images/11-example-select.png)
 
 | Control | Action |
@@ -189,9 +205,9 @@ Choose **ENTER THE SAGA**, your fighter and the CPU opponent, then **LET'S FIGHT
 
 *Griddle versus Rivet in the included six-fighter game. Arrow keys and ASDF control your fighter; the opponent is the CPU.*
 
-Serve the game over HTTP rather than double-clicking `index.html`. Share the complete ZIP or host the exported folder on a static web server.
+Serve the game over HTTP rather than double-clicking `index.html`. Share the complete ZIP; its bundled server runs both the CPU game and multiplayer. A static web server can serve the CPU game alone.
 
-For a runtime-only public deployment, see the [static hosting guide](build/deploy/README.md). The live demo serves the game and its generated media; generation stays in your own ComfyUI workspace.
+For a public deployment with online matches and phone controllers, see the [hosting guide](build/deploy/README.md). The site serves the game and its generated media; generation stays in your own ComfyUI workspace.
 
 ## Where things live
 
