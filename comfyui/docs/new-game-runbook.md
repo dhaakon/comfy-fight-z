@@ -66,7 +66,16 @@ To redraw one image or clip:
 node build/tools/new-game.cjs reroll --run output/test-runs/<name>-<date> --node "Keystone | sheet C" --approve-usd 0.08
 ```
 
-`--node` is a node id or exact title from `workflow.api.json` (the review grid names the sheet). The command raises that node's `reroll` input (a seed offset every paid factory and media node accepts), prices the node plus everything downstream of it (sheets B–E follow sheet A, about $0.36; the cast ensemble and menu loop follow any fighter), refuses without a matching `--approve-usd`, then submits the whole workflow once: ComfyUI redraws only the changed nodes and serves the rest from its cache. Never change the project `seed`, which re-bills the entire game. Review again after each re-roll.
+`--node` is a node id or exact title from `workflow.api.json` (the review grid names the sheet). The command raises that node's `reroll` input (a seed offset every paid factory and media node accepts), prices the node plus everything downstream of it (sheets B–E follow sheet A, about $0.36; the cast ensemble and menu loop follow any fighter), refuses without a matching `--approve-usd`, then submits the whole workflow once: ComfyUI redraws only the changed nodes and serves the rest from its cache. This needs the server's cache to be warm (no ComfyUI restart since the run); on a cold cache it would re-bill the whole game, so do sheet re-rolls right after the run. Never change the project `seed`, which re-bills the entire game. Review again after each re-roll.
+
+For one derived image or clip — a portrait, hero, cut-in, ending, fight intro or select idle loop — use the cache-independent form:
+
+```
+node build/tools/new-game.cjs reroll-art --run output/test-runs/<name>-<date> --asset paxton_cutin --approve-usd 0.05      # one 1K image
+node build/tools/new-game.cjs reroll-art --run output/test-runs/<name>-<date> --asset marshall_intro --approve-usd 0.57   # keyframe + 4 s clip
+```
+
+It uploads the fighter's accepted identity (and the stage, for an intro) from the bundle to ComfyUI, rebuilds the character from the cast text with the free definition node, generates with an offset seed, and patches the record in `assets.json` or `video.json` itself. Do these after any whole-workflow re-roll, because the whole-workflow exporters rewrite the manifests from their own cached records.
 
 ## 5. Export and install
 

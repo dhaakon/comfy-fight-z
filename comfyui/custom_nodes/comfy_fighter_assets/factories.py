@@ -812,10 +812,10 @@ def _export(project, bundles, complete):
                 raise ValueError(f"Mapped image dimensions changed: {record['id']}")
         record.update(src=relative, sha256=digest, width=item["width"], height=item["height"]); records.append(record)
     if complete:
-        mappings = {name: {"kind": "ui"} for name in ["title", "select", "logo", "hud", "icons", "ensemble"]}
+        mappings = {name: {"kind": "ui"} for name in ["title", "select", "logo", "hud", "icons", "ensemble", "frame"]}
         mappings["combat_effects"] = {"kind": "effects", "poses": EFFECTS, "key": True}
-        # The title ensemble is optional startup art; the game falls back to the title background.
-        optional = {"ensemble"}
+        # The title ensemble and the menu frame are optional interface art; the game falls back to its built-in panels.
+        optional = {"ensemble", "frame"}
         for fighter in config["fighters"]:
             for suffix in ["source", "reference", *ALL_SHEETS, "portrait", "hero", "cutin", "ending"]:
                 expected_mapping = {"kind": "sprites" if suffix in ALL_SHEETS else suffix, "fighter": fighter["id"]}

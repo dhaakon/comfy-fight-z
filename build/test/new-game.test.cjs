@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createCanvas } = require('@napi-rs/canvas');
-const { parse, prepare, run, review, reroll, rerollPlan, exportGame, install, pipeline } = require('../tools/new-game.cjs');
+const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, exportGame, install, pipeline } = require('../tools/new-game.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const CAST = 'comfyui/casts/blue-wave-2026.json';
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -77,4 +77,18 @@ test('a re-roll prices the node and everything downstream of it before anything 
   assert.throws(() => rerollPlan(workflow, 'nope'), /exact title/);
   await assert.rejects(reroll({ run: out, node: 'Keystone | sheet A', approveUsd: '0.1' }), /about \$0\.36036; pass --approve-usd 0\.37/);
   assert.equal(read(path.join(directory, 'workflow.api.json'))[sheetA.id].inputs.reroll, undefined, 'a refused re-roll changes nothing');
+});
+
+test('a single-image redraw prices one derived image or clip and refuses without approval', async t => {
+  const out = freshRun(t), { directory } = prepare({ cast: CAST, out });
+  const workflow = read(path.join(directory, 'workflow.api.json'));
+  const cutin = artPlan(workflow, 'keystone_cutin'), intro = artPlan(workflow, 'keystone_intro'), idle = artPlan(workflow, 'keystone_idle');
+  assert.deepEqual([cutin.type, cutin.estimatedUSD, cutin.kind], ['CFZCharacterArt', 0.048048, 'cutin']);
+  assert.deepEqual([intro.type, intro.duration, intro.estimatedUSD], ['CFZIntroVideo', 4, 0.562848]);
+  assert.deepEqual([idle.type, idle.duration, idle.estimatedUSD], ['CFZSelectIdleVideo', 6, 0.820248]);
+  assert.equal(workflow[cutin.factory].inputs.character_id, 'keystone'); assert.ok(intro.environment);
+  assert.throws(() => artPlan(workflow, 'keystone_sheet'), /--asset must be/);
+  assert.throws(() => artPlan(workflow, 'nobody_cutin'), /No character factory/);
+  await assert.rejects(rerollArt({ run: out, asset: 'keystone_cutin', approveUsd: '0.01' }), /about \$0\.048048; pass --approve-usd 0\.05/);
+  assert.equal(pipeline(directory).artRerolls, undefined);
 });

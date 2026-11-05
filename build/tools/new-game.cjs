@@ -3,6 +3,7 @@
 //   node build/tools/new-game.cjs run     --run output/test-runs/<name> --approve-usd <amount> [--server http://127.0.0.1:8188] [--resume]
 //   node build/tools/new-game.cjs review  --run output/test-runs/<name>
 //   node build/tools/new-game.cjs reroll  --run output/test-runs/<name> --node <id or title> --approve-usd <amount>
+//   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle> --approve-usd <amount>
 //   node build/tools/new-game.cjs export  --run output/test-runs/<name> [--out output/exports/<name>]
 //   node build/tools/new-game.cjs install --run output/test-runs/<name> [--slot <id>]
 //   node build/tools/new-game.cjs status  --run output/test-runs/<name>
@@ -19,7 +20,7 @@ const now = () => new Date().toISOString();
 
 function parse(argv) {
   const [command, ...rest] = argv, options = {};
-  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node'];
+  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset'];
   for (let i = 0; i < rest.length; i++) {
     if (rest[i] === '--no-media') options.media = false;
     else if (rest[i] === '--no-audio') options.audio = false;
@@ -29,7 +30,7 @@ function parse(argv) {
   }
   return { command, options };
 }
-const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|export|install|status> ... (see the header of this file).';
+const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|export|install|status> ... (see the header of this file).';
 
 function runDirectory(options) {
   if (!options.run) throw new Error('Supply --run output/test-runs/<name>.');
@@ -96,6 +97,7 @@ async function review(options) {
   const directory = runDirectory(options), bundle = path.join(directory, 'bundle');
   if (!fs.existsSync(path.join(bundle, 'assets.json'))) throw new Error('No bundle/assets.json yet; run the generation first.');
   const { createCanvas, loadImage } = require('@napi-rs/canvas');
+  const { keyGreen } = require('./lib/assets.cjs');
   const { segmentSheet, UPRIGHT_POSES } = await import('../public/builder/sheet-layout.mjs');
   const assets = read(path.join(bundle, 'assets.json')), out = path.join(directory, 'review');
   fs.mkdirSync(out, { recursive: true });
@@ -104,12 +106,13 @@ async function review(options) {
     const sheets = assets.assets.filter(asset => asset.kind === 'sprites' && asset.fighter === fighter.id).sort((a, b) => SHEETS.indexOf(a.sheet) - SHEETS.indexOf(b.sheet));
     const cells = [];
     for (const sheet of sheets) {
+      // Generated sheets are chroma green; key it out the way the builder does before measuring silhouettes.
       const image = await loadImage(path.join(bundle, sheet.src)), canvas = createCanvas(image.width, image.height), ctx = canvas.getContext('2d');
-      ctx.drawImage(image, 0, 0);
+      ctx.drawImage(image, 0, 0); if (sheet.key !== false) keyGreen(canvas);
       let boxes;
       try { boxes = segmentSheet(ctx.getImageData(0, 0, image.width, image.height).data, image.width, image.height); }
       catch (error) { report.flags.push({ fighter: fighter.id, sheet: sheet.sheet, issue: error.message }); continue; }
-      sheet.poses.forEach((pose, i) => cells.push({ pose, sheet: sheet.sheet, image, box: boxes[i], width: image.width, height: image.height }));
+      sheet.poses.forEach((pose, i) => cells.push({ pose, sheet: sheet.sheet, image: canvas, box: boxes[i], width: image.width, height: image.height }));
     }
     const idle = cells.find(cell => cell.pose === 'idle'), size = 150, perRow = 9, rows = Math.ceil(cells.length / perRow);
     const canvas = createCanvas(perRow * size, Math.max(1, rows) * (size + 22)), ctx = canvas.getContext('2d');
@@ -231,12 +234,86 @@ async function reroll(options) {
   console.log(`Re-roll complete (${promptId}); paid nodes executed: ${entry.executed.join(', ') || 'none'}. Review again, then export to a fresh folder.`);
 }
 
+// Redraw one derived image or clip of a fighter without touching anything else: a small prompt reuses the cached
+// factory (same node ids and inputs), gives the new node a project copy with an offset seed, and patches the record.
+const ART_KINDS = { portrait: 'CFZCharacterArt', hero: 'CFZCharacterArt', cutin: 'CFZCharacterArt', ending: 'CFZCharacterArt', intro: 'CFZIntroVideo', idle: 'CFZSelectIdleVideo' };
+function artPlan(workflow, asset) {
+  const match = /^([a-z][a-z0-9_]*)_(portrait|hero|cutin|ending|intro|idle)$/.exec(asset || '');
+  if (!match) throw new Error('--asset must be <fighter>_<portrait|hero|cutin|ending|intro|idle>.');
+  const [, fighter, kind] = match;
+  const factory = Object.keys(workflow).find(id => workflow[id].class_type === 'CFZCharacterFactory' && workflow[id].inputs.character_id === fighter);
+  if (!factory) throw new Error(`No character factory for ${fighter} in workflow.api.json.`);
+  const project = Object.keys(workflow).find(id => workflow[id].class_type === 'CFZProjectSettings');
+  const environment = Object.keys(workflow).find(id => workflow[id].class_type === 'CFZEnvironmentFactory');
+  const original = Object.keys(workflow).find(id => workflow[id].class_type === ART_KINDS[kind] && workflow[id].inputs.character?.[0] === factory);
+  const duration = Number(original ? workflow[original].inputs.duration : kind === 'intro' ? 4 : 6);
+  const estimatedUSD = Number((kind === 'intro' || kind === 'idle' ? RATES.image1K + duration * RATES.videoSecond720p : RATES.image1K).toFixed(6));
+  return { fighter, kind, type: ART_KINDS[kind], factory, project, environment, duration, estimatedUSD };
+}
+async function rerollArt(options) {
+  const directory = runDirectory(options), bundle = path.join(directory, 'bundle'), workflow = read(path.join(directory, 'workflow.api.json'));
+  const planned = artPlan(workflow, options.asset), approved = Number(options.approveUsd);
+  if (!Number.isFinite(approved) || approved < planned.estimatedUSD) throw new Error(`Redrawing ${options.asset} costs about $${planned.estimatedUSD}; pass --approve-usd ${Math.ceil(planned.estimatedUSD * 100) / 100} (or more) once authorized.`);
+  const server = (options.server || 'http://127.0.0.1:8188').replace(/\/$/, '');
+  const state = pipeline(directory), count = (state.artRerolls || []).filter(entry => entry.asset === options.asset).length + 1;
+  // The accepted identity (and the stage, for an intro) come from the bundle's own files uploaded to ComfyUI's input
+  // folder, and the character from a free definition node, so the redraw never depends on the server's cache.
+  const assets = read(path.join(bundle, 'assets.json')), factory = workflow[planned.factory], project = workflow[planned.project];
+  const upload = async record => {
+    if (!record) throw new Error('The bundle lacks the reference image this redraw needs.');
+    const name = path.basename(record.src), form = new FormData();
+    form.append('image', new Blob([fs.readFileSync(path.join(bundle, record.src))], { type: 'image/png' }), name); form.append('subfolder', 'cfz-redraw'); form.append('overwrite', 'true');
+    const response = await fetch(`${server}/upload/image`, { method: 'POST', body: form });
+    if (!response.ok) throw new Error(`ComfyUI refused the reference upload (${response.status}).`);
+    const info = await response.json(); return `${info.subfolder ? info.subfolder + '/' : ''}${info.name}`;
+  };
+  const definition = Object.fromEntries(['name', 'description', 'special_name', 'special_description', 'intro_tagline', 'color', 'character_id', 'fighting_style', 'super_name', 'super_description', 'win_quote', 'ending', 'role'].filter(key => factory.inputs[key] !== undefined).map(key => [key, factory.inputs[key]]));
+  const prompt = {
+    project: { class_type: 'CFZProjectSettings', inputs: { ...project.inputs, seed: (Number(project.inputs.seed) + count * 1000) % 2 ** 32 }, _meta: { title: `Project settings | redraw ${options.asset} #${count}` } },
+    character: { class_type: 'CFZCharacterDefinition', inputs: definition, _meta: { title: `Character | ${planned.fighter}` } },
+    reference: { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.id === `${planned.fighter}_reference`)) }, _meta: { title: 'Accepted identity reference' } }
+  };
+  const inputs = { project: ['project', 0], character: ['character', 0], reference: ['reference', 0] };
+  if (planned.kind === 'intro') { prompt.stage = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.kind === 'stage')) }, _meta: { title: 'Accepted stage' } }; inputs.stage_reference = ['stage', 0]; }
+  if (planned.kind === 'intro' || planned.kind === 'idle') inputs.duration = String(planned.duration); else inputs.kind = planned.kind;
+  prompt.redraw = { class_type: planned.type, inputs, _meta: { title: `Redraw ${options.asset} #${count}` } };
+  prompt.keep = { class_type: 'PreviewAny', inputs: { source: ['redraw', 0] }, _meta: { title: 'keep' } };
+  const missing = await missingNodes(prompt, server);
+  if (missing.length) throw new Error(`The running ComfyUI lacks ${missing.join(', ')}.`);
+  const file = path.join(directory, `redraw-${options.asset}-${count}.api.json`); fs.writeFileSync(file, JSON.stringify(prompt, null, 2) + '\n');
+  const { submit, outcome } = require('../../comfyui/tools/run-sequential.cjs');
+  const before = new Set(fs.readdirSync(path.join(bundle, 'raw')));
+  const entry = { at: now(), asset: options.asset, attempt: count, estimatedUSD: planned.estimatedUSD, approvedUSD: approved, prompt: path.basename(file) };
+  state.artRerolls = [...(state.artRerolls || []), entry]; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
+  console.log(`Redrawing ${options.asset} (attempt ${count}, about $${planned.estimatedUSD}) from the bundle's accepted identity; nothing else is touched.`);
+  const promptId = submit(file), result = await outcome(server, promptId, 30 * 60000);
+  entry.promptId = promptId; entry.ok = result.ok;
+  if (!result.ok) { fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n'); throw new Error(`Redraw failed: ${result.error?.exception_type || ''}: ${result.error?.exception_message || 'unknown error'}`); }
+  // Point the manifest at the new file; the exporter is not rerun, so nothing else in the bundle changes.
+  const prefix = planned.kind === 'intro' || planned.kind === 'idle' ? `${planned.kind}-${planned.fighter}-` : `${planned.fighter}_${planned.kind}-`;
+  const produced = fs.readdirSync(path.join(bundle, 'raw')).filter(name => name.startsWith(prefix) && !before.has(name));
+  if (produced.length !== 1) throw new Error(`Expected one new ${prefix}* file, found ${produced.length}.`);
+  const target = path.join(bundle, 'raw', produced[0]), digest = require('node:crypto').createHash('sha256').update(fs.readFileSync(target)).digest('hex');
+  if (planned.kind === 'intro' || planned.kind === 'idle') {
+    const videoFile = path.join(bundle, 'video.json'), video = read(videoFile), list = planned.kind === 'intro' ? video.fighterIntros : video.selectIdles;
+    const record = list?.find(item => item.fighter === planned.fighter); if (!record) throw new Error(`video.json has no ${planned.kind} record for ${planned.fighter}.`);
+    Object.assign(record, { src: `raw/${produced[0]}`, sha256: digest }); fs.writeFileSync(videoFile, JSON.stringify(video, null, 2) + '\n');
+  } else {
+    const { loadImage } = require('@napi-rs/canvas'), image = await loadImage(fs.readFileSync(target));
+    const assetsFile = path.join(bundle, 'assets.json'), assets = read(assetsFile), record = assets.assets.find(item => item.id === options.asset);
+    if (!record) throw new Error(`assets.json has no record ${options.asset}.`);
+    Object.assign(record, { src: `raw/${produced[0]}`, sha256: digest, width: image.width, height: image.height }); fs.writeFileSync(assetsFile, JSON.stringify(assets, null, 2) + '\n');
+  }
+  entry.file = `raw/${produced[0]}`; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
+  console.log(`Redrew ${options.asset} → ${entry.file}. Review again, then export to a fresh folder.`);
+}
+
 async function main(argv) {
   const { command, options } = parse(argv);
-  const commands = { prepare, run, reroll, review, export: exportGame, install, status };
+  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, review, export: exportGame, install, status };
   if (!commands[command]) throw new Error(USAGE);
   await commands[command](options);
 }
 
 if (require.main === module) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
-module.exports = { parse, prepare, run, review, reroll, rerollPlan, exportGame, install, pipeline, missingNodes };
+module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, exportGame, install, pipeline, missingNodes };

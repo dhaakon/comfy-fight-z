@@ -432,8 +432,9 @@ class CFZSaveAudio(io.ComfyNode):
         destination = _inside(directory, relative)
         if not destination.is_file() or destination.read_bytes() != content:
             _atomic_write(destination, content)
-        record.update(src=relative, sha256=digest, sampleRate=rate, channels=int(samples.shape[1]),
-                      duration=samples.shape[2] / rate, _root=str(directory))
+        # The written clip is the conditioned one (silence trimmed), so its length is what the manifest must carry.
+        record.update(src=relative, sha256=digest, sampleRate=rate, channels=int(clip.shape[1]),
+                      duration=clip.shape[0] / rate, _root=str(directory))
         return io.NodeOutput(record)
 
 
