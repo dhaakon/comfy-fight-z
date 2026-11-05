@@ -65,6 +65,8 @@ def _project(project):
     directory = _root_path(project.get("root_directory"))
     if project.get("model") not in MODELS:
         raise ValueError("Choose a supported native cloud image model")
+    if project.get("video_model", VIDEO_MODELS[0]) not in VIDEO_MODELS or project.get("video_resolution", VIDEO_RESOLUTIONS[0]) not in VIDEO_RESOLUTIONS:
+        raise ValueError("Choose a supported cloud video model and resolution")
     return directory
 
 
@@ -206,6 +208,11 @@ def _description(project, character):
             "Keep one consistent complete character, recognizable hair, outfit and accessories. Exactly one of each accessory.")
 
 
+VIDEO_MODELS = ["LTX-2.5 (Fast)", "Seedance 1.5 Pro"]
+VIDEO_RESOLUTIONS = ["720p", "1080p"]
+SEEDANCE_MODEL = "seedance-1-5-pro-251215"
+
+
 def _reroll_input():
     return io.Int.Input("reroll", default=0, min=0, max=99, optional=True, advanced=True,
                         tooltip="Raise to redraw this node's images and clips with fresh seeds; every other node stays cached and unbilled.")
@@ -226,14 +233,18 @@ class CFZProjectSettings(io.ComfyNode):
                     io.String.Input("ui_style", default="Bold anime arcade tournament interface, midnight blue, vivid yellow, cyan and magenta; clear areas for readable game controls.", multiline=True, advanced=True),
                     io.String.Input("stage_style", default=DEFAULT_STAGE_STYLE, multiline=True, advanced=True),
                     io.Combo.Input("model", options=MODELS, default=MODELS[0], advanced=True),
-                    io.Int.Input("seed", default=42, min=0, max=2 ** 64 - 1, advanced=True)],
+                    io.Int.Input("seed", default=42, min=0, max=2 ** 64 - 1, advanced=True),
+                    io.Combo.Input("video_model", options=VIDEO_MODELS, default=VIDEO_MODELS[0], optional=True, advanced=True,
+                                   tooltip="Cloud video model for every clip: LTX-2.5 Fast (720p, $0.1287/s) or Seedance 1.5 Pro (720p about $0.026/s, 1080p about $0.059/s; cleaner motion)."),
+                    io.Combo.Input("video_resolution", options=VIDEO_RESOLUTIONS, default=VIDEO_RESOLUTIONS[0], optional=True, advanced=True,
+                                   tooltip="Clip resolution for Seedance; LTX-2.5 Fast always renders 720p.")],
             outputs=[Project.Output(display_name="project")])
 
     @classmethod
-    def execute(cls, root_directory, title, subtitle, style, ui_style, stage_style, model, seed):
+    def execute(cls, root_directory, title, subtitle, style, ui_style, stage_style, model, seed, video_model=VIDEO_MODELS[0], video_resolution=VIDEO_RESOLUTIONS[0]):
         project = {"_type": "CFZ_PROJECT", "root_directory": str(_root_path(root_directory)), "title": _text(title, "Game title", True),
                    "subtitle": _text(subtitle, "Subtitle"), "style": _text(style, "Art style"), "ui_style": _text(ui_style, "UI style"),
-                   "stage_style": _text(stage_style, "Stage style"), "model": model, "seed": seed}
+                   "stage_style": _text(stage_style, "Stage style"), "model": model, "seed": seed, "video_model": video_model, "video_resolution": video_resolution}
         _project(project)
         if not isinstance(seed, int) or not 0 <= seed < 2 ** 64:
             raise ValueError("Seed must be an unsigned 64-bit integer")
@@ -496,8 +507,16 @@ ANIMATION_STYLE = ("Hand-drawn 2D cel animation in the style of a late-1990s sho
                    "flat cel shading, high-energy action with radial speed lines, impact frames and glowing aura effects.")
 
 
-def _animate(graph, prompt, first_frame, duration, seed, last_frame=None, resolution="1280x720"):
-    inputs = {"image": first_frame, "model": VIDEO_MODEL, "model.duration": duration, "model.resolution": resolution,
+def _animate(graph, project, prompt, first_frame, duration, seed, last_frame=None, portrait=False):
+    """One silent clip from a first frame (and optionally a last frame for a seamless loop) on the project's video model."""
+    if project.get("video_model", VIDEO_MODELS[0]) == "Seedance 1.5 Pro":
+        inputs = {"model": SEEDANCE_MODEL, "prompt": prompt, "resolution": project.get("video_resolution", VIDEO_RESOLUTIONS[0]),
+                  "aspect_ratio": "9:16" if portrait else "16:9", "duration": int(duration), "generate_audio": False,
+                  "seed": seed % 2147483648, "camera_fixed": False, "watermark": False}
+        if last_frame is not None:
+            return graph.node("ByteDanceFirstLastFrameNode", first_frame=first_frame, last_frame=last_frame, **inputs)
+        return graph.node("ByteDanceImageToVideoNode", image=first_frame, **inputs)
+    inputs = {"image": first_frame, "model": VIDEO_MODEL, "model.duration": str(duration), "model.resolution": "720x1280" if portrait else "1280x720",
               "model.fps": "24", "model.generate_audio": False, "prompt": prompt, "seed": seed % 4294967296}
     if last_frame is not None:
         inputs["last_frame"] = last_frame
@@ -566,7 +585,7 @@ class CFZTitleVideo(io.ComfyNode):
                   "The fighters break apart and trade a lightning-fast flurry of punches and kicks with afterimages and radial speed lines, "
                   "energy shockwaves ripple outward, sparks and debris fly, the camera shakes, then they slam back together into the exact opening clash. "
                   "Fast dynamic camera with a brief impact freeze, no cuts to other scenes. Keep every face, body, outfit and color unchanged. No new people, text or logos.")
-        video = _animate(graph, prompt, title_image, duration, project["seed"] + 90, last_frame=title_image)
+        video = _animate(graph, project, prompt, title_image, duration, project["seed"] + 90, last_frame=title_image)
         return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": "title"}), expand=graph.finalize())
 
 
@@ -588,7 +607,7 @@ class CFZSelectVideo(io.ComfyNode):
         prompt = (ANIMATION_STYLE + " Seamless looping character-select backdrop animation. Use the supplied image as the exact first and last frame. "
                   "Arena lights flicker and sweep, embers and sparks drift upward, banners and loose debris stir in a hot wind, heat shimmer rises from the floor "
                   "and the camera drifts slowly with gentle parallax before returning to the opening framing. No people, no new objects, no text or logos.")
-        video = _animate(graph, prompt, select_image, duration, project["seed"] + 95, last_frame=select_image)
+        video = _animate(graph, project, prompt, select_image, duration, project["seed"] + 95, last_frame=select_image)
         return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": "select"}), expand=graph.finalize())
 
 
@@ -615,7 +634,7 @@ class CFZSelectIdleVideo(io.ComfyNode):
                   f"{character['name']} stays on the spot but never still: bouncing lightly on the toes, a quick shadow-boxing jab and a hop back into the guard, "
                   "fists flexing, a confident nod toward the viewer, hair and clothing whipping in a gust, then settles exactly into the opening pose. "
                   "Fixed camera, no cuts, no other people, no text or logos, no speech.")
-        video = _animate(graph, prompt, keyframe.out(0), duration, project["seed"] + 85, last_frame=keyframe.out(0), resolution="720x1280")
+        video = _animate(graph, project, prompt, keyframe.out(0), duration, project["seed"] + 85, last_frame=keyframe.out(0), portrait=True)
         return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": f"idle-{character['id']}", "fighter": character["id"]}), expand=graph.finalize())
 
 
@@ -644,7 +663,7 @@ class CFZIntroVideo(io.ComfyNode):
                   f"one explosive signature strike that shows {character['specialMove']['name']}, then a hard stop into a fighting stance facing right with a final flare of power. "
                   "Fast dynamic camera: a quick whip-pan and a dramatic low-angle push-in with a brief impact freeze, no cuts to other scenes. "
                   "Keep the same face, body, outfit and colors throughout and the arena unchanged. No other people, no text or logos, no speech.")
-        video = _animate(graph, prompt, keyframe.out(0), duration, project["seed"] + 80)
+        video = _animate(graph, project, prompt, keyframe.out(0), duration, project["seed"] + 80)
         return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": f"intro-{character['id']}", "fighter": character["id"]}), expand=graph.finalize())
 
 

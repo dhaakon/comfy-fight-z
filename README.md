@@ -150,7 +150,7 @@ It covers two fighters in The Yard: all game art, the startup image, the menu vi
 **Make a whole new game from a cast file.** Describe a cast once (`comfyui/casts/blue-wave-2026.json` is the reference: six invented hometown champions and one arena) and let the pipeline do the rest. Each step is one command, only `run` spends credits, and it refuses without an explicit approval at or above the prepared estimate:
 
 ```sh
-node build/tools/new-game.cjs prepare --cast comfyui/casts/blue-wave-2026.json --out output/test-runs/blue-wave   # free: workflow + estimate (about $15.6 with videos and audio)
+node build/tools/new-game.cjs prepare --cast comfyui/casts/blue-wave-2026.json --out output/test-runs/blue-wave   # free: workflow + estimate (about $10.3 with Seedance 1.5 Pro clips and audio)
 node build/tools/new-game.cjs run     --run output/test-runs/blue-wave --approve-usd 16                               # paid: one node at a time
 node build/tools/new-game.cjs review  --run output/test-runs/blue-wave                                                # contact sheets + flags to read
 node build/tools/new-game.cjs reroll  --run output/test-runs/blue-wave --node "Keystone | sheet C" --approve-usd 0.08 # redraw one node, cache keeps the rest

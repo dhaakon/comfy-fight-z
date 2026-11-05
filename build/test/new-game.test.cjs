@@ -72,7 +72,7 @@ test('a re-roll prices the node and everything downstream of it before anything 
   assert.equal(sheetA.paid.length, 5, 'sheets B-E reference sheet A'); assert.equal(sheetA.estimatedUSD, 0.36036);
   assert.equal(sheetC.paid.length, 1); assert.equal(sheetC.estimatedUSD, 0.072072);
   const factory = rerollPlan(workflow, 'Character 1 | Keystone');
-  assert.ok(factory.paid.length >= 1 + 5 + 2 + 2, 'the factory, its sheets, intro, idle, ensemble and menu loop'); assert.ok(factory.estimatedUSD > 3);
+  assert.ok(factory.paid.length >= 1 + 5 + 2 + 2, 'the factory, its sheets, intro, idle, ensemble and menu loop'); assert.ok(factory.estimatedUSD > 1.5 && factory.estimatedUSD < 3, 'Seedance clips are cheaper than LTX');
   assert.throws(() => rerollPlan(workflow, 'Export video.json'), /cannot be re-rolled/);
   assert.throws(() => rerollPlan(workflow, 'nope'), /exact title/);
   await assert.rejects(reroll({ run: out, node: 'Keystone | sheet A', approveUsd: '0.1' }), /about \$0\.36036; pass --approve-usd 0\.37/);
@@ -84,8 +84,13 @@ test('a single-image redraw prices one derived image or clip and refuses without
   const workflow = read(path.join(directory, 'workflow.api.json'));
   const cutin = artPlan(workflow, 'keystone_cutin'), intro = artPlan(workflow, 'keystone_intro'), idle = artPlan(workflow, 'keystone_idle');
   assert.deepEqual([cutin.type, cutin.estimatedUSD, cutin.kind], ['CFZCharacterArt', 0.048048, 'cutin']);
-  assert.deepEqual([intro.type, intro.duration, intro.estimatedUSD], ['CFZIntroVideo', 4, 0.562848]);
-  assert.deepEqual([idle.type, idle.duration, idle.estimatedUSD], ['CFZSelectIdleVideo', 6, 0.820248]);
+  // The cast runs Seedance 1.5 Pro at 1080p ($0.059/s) plus one 1K keyframe per fighter clip.
+  assert.deepEqual([intro.type, intro.duration, intro.estimatedUSD, intro.video.model], ['CFZIntroVideo', 4, 0.284048, 'Seedance 1.5 Pro']);
+  assert.deepEqual([idle.type, idle.duration, idle.estimatedUSD], ['CFZSelectIdleVideo', 6, 0.402048]);
+  const title = artPlan(workflow, 'title_video'), select = artPlan(workflow, 'select_video', { videoModel: 'LTX-2.5 (Fast)' });
+  assert.deepEqual([title.type, title.fighter, title.duration, title.estimatedUSD], ['CFZTitleVideo', null, 8, 0.472]);
+  assert.deepEqual([select.type, select.estimatedUSD, select.video.model, select.video.resolution], ['CFZSelectVideo', 1.0296, 'LTX-2.5 (Fast)', '1080p'], 'LTX renders 720p whatever the resolution says, at its own rate');
+  assert.throws(() => artPlan(workflow, 'title_video', { videoResolution: '4k' }), /Unsupported video model or resolution/);
   assert.equal(workflow[cutin.factory].inputs.character_id, 'keystone'); assert.ok(intro.environment);
   assert.throws(() => artPlan(workflow, 'keystone_sheet'), /--asset must be/);
   assert.throws(() => artPlan(workflow, 'nobody_cutin'), /No character factory/);

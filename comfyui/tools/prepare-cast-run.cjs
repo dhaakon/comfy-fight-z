@@ -8,13 +8,13 @@
 // for the shared art direction and the sheet layout; see comfyui/docs/new-game-runbook.md.
 const fs = require('node:fs');
 const path = require('node:path');
-const { graphBuilder, characterValues, environmentValues, projectValues, attachExporter, attachMedia, mediaCounts, factoryCounts } = require('./prepare-factory-workflows.cjs');
+const { graphBuilder, characterValues, environmentValues, projectValues, attachExporter, attachMedia, mediaCounts, factoryCounts, videoRate, VIDEO_RATES } = require('./prepare-factory-workflows.cjs');
 const { makeAudioJobs, makeAudioGraph, attachAudioGraph, INTRO_VOICES } = require('./prepare-audio-workflows.cjs');
 const { apiPrompt } = require('./prepare-arcade-expansion.cjs');
 const { directoryTarget } = require('../../build/tools/lib/runtime-validation.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8'));
-const RATES = Object.freeze({ image1K: .048048, image2K: .072072, videoSecond720p: .1287, musicSecond: .0025, effectMinute: .14, speechThousandCharacters: .1144 });
+const RATES = Object.freeze({ image1K: .048048, image2K: .072072, video: VIDEO_RATES, musicSecond: .0025, effectMinute: .14, speechThousandCharacters: .1144 });
 const SHEETS = ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE'];
 const STYLES = ['balanced', 'grappler', 'speed', 'zoner', 'trickster', 'power', 'boss'];
 const INHERITED = ['style', 'uiStyle', 'stageStyle', 'model', 'sheets', 'extraSheets'];
@@ -38,6 +38,7 @@ function validateCast(config) {
   if (!text(config.title, 2, 40)) fail('title must be 2-40 characters');
   if (config.subtitle !== undefined && !text(config.subtitle, 0, 60)) fail('subtitle must be at most 60 characters');
   for (const key of ['style', 'uiStyle', 'stageStyle', 'model']) if (!text(config[key], 8)) fail(`${key} is missing (set it or extend comfyui/config/factory.json)`);
+  try { videoRate(config); } catch (error) { fail(`${error.message} (videoModel: ${Object.keys(VIDEO_RATES).join(' | ')}; videoResolution: 720p | 1080p)`); }
   const layout = read('comfyui/config/game.json');
   if (JSON.stringify(config.sheets) !== JSON.stringify(layout.sheets)) fail('sheets must match comfyui/config/game.json (the 27 required poses)');
   if (JSON.stringify(config.extraSheets) !== JSON.stringify(layout.extraSheets)) fail('extraSheets must match comfyui/config/game.json (the 18 arcade poses)');
@@ -114,19 +115,19 @@ function buildCast(config, bundleRoot, { seed = 42, media = true, audio = true, 
   b.graph.nodes.forEach((node, index) => { node.order = index; });
   // Paid calls: per fighter a text source, identity, portrait, hero, cut-in and ending (1K) and five 2K sheets;
   // per arena a 2K source and stage; six 1K interface images and the 2K effects atlas; then the startup media.
-  const art = factoryCounts(game, true), startup = media ? mediaCounts(game) : { oneK: 0, twoK: 0, clips: 0, videoSeconds: 0, mappedAssets: 0 };
+  const art = factoryCounts(game, true), startup = media ? mediaCounts(game) : { oneK: 0, twoK: 0, clips: 0, videoSeconds: 0, mappedAssets: 0, videoUSD: 0 };
   const oneK = art.oneK + startup.oneK, twoK = art.twoK + startup.twoK;
   const musicSeconds = jobs.filter(job => job.category === 'music').reduce((sum, job) => sum + job.duration, 0);
   const effectsSeconds = jobs.filter(job => job.category === 'sfx').reduce((sum, job) => sum + job.duration, 0);
   const voiceCharacters = jobs.filter(job => job.category === 'voice').reduce((sum, job) => sum + job.prompt.length, 0);
-  const imageUSD = round(oneK * RATES.image1K + twoK * RATES.image2K), videoUSD = round(startup.videoSeconds * RATES.videoSecond720p);
+  const imageUSD = round(oneK * RATES.image1K + twoK * RATES.image2K), videoUSD = startup.videoUSD;
   const audioUSD = round(musicSeconds * RATES.musicSecond + effectsSeconds * RATES.effectMinute / 60 + voiceCharacters * RATES.speechThousandCharacters / 1000);
   const plan = {
     schema: 'comfy-fighter-cast-plan/v1', cloudOnly: true, generationSubmitted: false, requiresSpendingAuthorization: true,
     title: config.title, subtitle: config.subtitle || '', fighters: fighters.map(f => f.id), stages: stages.map(s => s.id), bundle: bundleRoot,
     source: 'Fresh text-only fictional designs; no image files loaded.',
     images: { paidImages: oneK + twoK, oneK, twoK, mappedAssets: art.mappedAssets + startup.mappedAssets, estimatedUSD: imageUSD },
-    videos: media ? { clips: startup.clips, seconds: startup.videoSeconds, model: 'LTX-2.5 (Fast)', resolution: '1280x720 / 720x1280', estimatedUSD: videoUSD } : null,
+    videos: media ? { clips: startup.clips, seconds: startup.videoSeconds, model: startup.videoModel, resolution: startup.videoResolution, ratePerSecond: startup.videoRate, estimatedUSD: videoUSD } : null,
     audio: audio ? { clips: jobs.length, musicSeconds, effectsSeconds, voiceCharacters, estimatedUSD: audioUSD } : null,
     total: { estimatedUSD: round(imageUSD + videoUSD + audioUSD) }, rates: RATES, runtimePoses: fighters.length * 45,
     next: ['Validate workflow.api.json against the running ComfyUI (every CFZ node must be installed).',

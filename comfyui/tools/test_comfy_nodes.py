@@ -195,6 +195,15 @@ check("ensemble is saved as the ui/ensemble asset", any(json.loads(node["inputs"
 menu = expanded(fx.CFZTitleVideo.execute(project, ["15", 1], "8"))
 (_, loop), = of(menu, "LtxApi25ImageToVideo")
 check("menu video loops the ensemble as first and last frame", loop["inputs"]["image"] == ["15", 1] and loop["inputs"]["last_frame"] == ["15", 1] and loop["inputs"]["model.duration"] == "8")
+seedance_project = {**project, "video_model": "Seedance 1.5 Pro", "video_resolution": "1080p"}
+sd_intro = expanded(fx.CFZIntroVideo.execute(seedance_project, plain, ["5", 1], ["7", 1], "4"))
+(_, sd), = of(sd_intro, "ByteDanceImageToVideoNode")
+check("Seedance intro uses the 1.5 Pro image-to-video node at 1080p 16:9 for 4 s without audio",
+      sd["inputs"]["model"] == "seedance-1-5-pro-251215" and sd["inputs"]["resolution"] == "1080p" and sd["inputs"]["aspect_ratio"] == "16:9"
+      and sd["inputs"]["duration"] == 4 and sd["inputs"]["generate_audio"] is False and not of(sd_intro, "LtxApi25ImageToVideo"))
+sd_idle = expanded(fx.CFZSelectIdleVideo.execute(seedance_project, plain, ["5", 1], "6"))
+(_, sd_loop), = of(sd_idle, "ByteDanceFirstLastFrameNode")
+check("Seedance idle loop uses first-last-frame at 9:16", sd_loop["inputs"]["aspect_ratio"] == "9:16" and sd_loop["inputs"]["first_frame"] == sd_loop["inputs"]["last_frame"] and sd_loop["inputs"]["duration"] == 6)
 # Every other node that passes one reference through _cloud keeps exactly that one image.
 for label, output in (("sprite sheet", fx.CFZSpriteSheet.execute(project, plain, ["5", 1], "sheetD")),
                       ("character art", fx.CFZCharacterArt.execute(project, plain, ["5", 1], "ending"))):

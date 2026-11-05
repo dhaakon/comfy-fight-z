@@ -25,6 +25,7 @@ Copy `comfyui/casts/blue-wave-2026.json` and edit it. A cast file is `"castSchem
 
 - `extends`: `comfyui/config/factory.json` supplies the art direction (`style`, `uiStyle`, `stageStyle`), the cloud model and the two sheet layouts; override any of the three style strings to re-theme the whole game.
 - `id` (the default install slot), `title` (2–40 characters, shown on the title screen), `subtitle`.
+- `videoModel` and `videoResolution`: `"Seedance 1.5 Pro"` at `"1080p"` (about $0.059/s; the reference casts use it — clean, on-model motion) or `"720p"` ($0.026/s), or `"LTX-2.5 (Fast)"` (always 720p, $0.1287/s, the template default; smears on fast motion). The project node carries the choice, so every clip node follows it.
 - `fighters` (2–8): `id` (`[a-z][a-z0-9_]{1,23}`), `name`, `color` (`#rrggbb`), `description` (80–1600 characters, the full visual design: build, face, skin, hair, every garment with colors, "no hat/props/lettering", the silhouette), `specialMove {name, description}` (the projectile leaves the forward hand so the engine can launch it), optional `superMove`, `introTagline`, `introVoice` (one of the stock voices in `comfyui/tools/prepare-audio-workflows.cjs`), `style` (`balanced`, `grappler`, `speed`, `zoner`, `trickster`, `power`; `boss` with `"boss": true` for at most one final boss), `winQuote`, `ending`.
 - `stages` (1–3): `id`, `name`, `description` (80+ characters, the fighting plane at 82 percent of the height, everything behind it).
 
@@ -38,9 +39,9 @@ Satire casts are the one exception: `"publicFigures": true` plus a `fullName` pe
 node build/tools/new-game.cjs prepare --cast comfyui/casts/<name>.json --out output/test-runs/<name>-<date>
 ```
 
-Writes `workflow.json` (open it in ComfyUI to inspect), `workflow.api.json` (what runs), `plan.json` (the estimate), `cast.json` (the merged configuration) and `pipeline.json` (the step log). The estimate for six fighters and one arena with everything is about **$15.6**: 81 images ($4.68), 14 silent LTX clips / 76 s ($9.78), 89 audio clips ($1.15). `--no-media` drops the ensemble, menu loop, select loop, intros and idle loops (still art is used instead, ≈ $5.8); `--no-audio` drops the music, calls, effects and voices.
+Writes `workflow.json` (open it in ComfyUI to inspect), `workflow.api.json` (what runs), `plan.json` (the estimate), `cast.json` (the merged configuration) and `pipeline.json` (the step log). The estimate for six fighters and one arena with everything is about **$10.3** with Seedance 1.5 Pro at 1080p: 81 images ($4.68), 14 silent clips / 76 s ($4.48), 89 audio clips ($1.15); the same run on LTX-2.5 Fast is about $15.6 ($9.78 of video). `--no-media` drops the ensemble, menu loop, select loop, intros and idle loops (still art is used instead, ≈ $5.8); `--no-audio` drops the music, calls, effects and voices.
 
-Formula (list prices in `plan.rates`): per fighter 6 × 1K + 5 × 2K images, per arena 2 × 2K, shared art 6 × 1K + 1 × 2K; media adds 2 × 1K per fighter, one 2K ensemble, 8 s + 8 s loops and 4 s + 6 s per fighter at $0.1287/s.
+Formula (list prices in `plan.rates`): per fighter 6 × 1K + 5 × 2K images, per arena 2 × 2K, shared art 6 × 1K + 1 × 2K; media adds 2 × 1K per fighter, one 2K ensemble, 8 s + 8 s loops and 4 s + 6 s per fighter at the video model's per-second rate.
 
 ## 3. Run (paid, explicit approval)
 
@@ -75,7 +76,7 @@ node build/tools/new-game.cjs reroll-art --run output/test-runs/<name>-<date> --
 node build/tools/new-game.cjs reroll-art --run output/test-runs/<name>-<date> --asset marshall_intro --approve-usd 0.57   # keyframe + 4 s clip
 ```
 
-It uploads the fighter's accepted identity (and the stage, for an intro) from the bundle to ComfyUI, rebuilds the character from the cast text with the free definition node, generates with an offset seed, and patches the record in `assets.json` or `video.json` itself. Do these after any whole-workflow re-roll, because the whole-workflow exporters rewrite the manifests from their own cached records.
+It uploads the fighter's accepted identity (and the stage, for an intro) from the bundle to ComfyUI, rebuilds the character from the cast text with the free definition node, generates with an offset seed, and patches the record in `assets.json` or `video.json` itself. `--asset title_video` and `--asset select_video` redraw the menu loops from the accepted ensemble and select art the same way. `--video-model` / `--video-resolution` override the run's project settings for that clip (this is how a run made on LTX moves its clips to Seedance). Do these after any whole-workflow re-roll, because the whole-workflow exporters rewrite the manifests from their own cached records.
 
 ## 5. Export and install
 

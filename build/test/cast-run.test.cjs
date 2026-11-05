@@ -31,8 +31,8 @@ test('the six-fighter cast run prices every image, the startup media and the aud
   assert.equal(project.inputs.root_directory, root); assert.equal(project.inputs.seed, 9); assert.equal(project.inputs.subtitle, 'Blue Wave Saga');
   assert.ok(project.inputs.style.includes('hometown champions'));
   assert.deepEqual(plan.images, { paidImages: 81, oneK: 48, twoK: 33, mappedAssets: 76, estimatedUSD: 4.68468 });
-  assert.deepEqual([plan.videos.clips, plan.videos.seconds, plan.audio.clips], [14, 76, 89]);
-  assert.equal(plan.total.estimatedUSD, 15.615426); assert.equal(plan.generationSubmitted, false); assert.equal(plan.runtimePoses, 270);
+  assert.deepEqual([plan.videos.clips, plan.videos.seconds, plan.videos.model, plan.videos.resolution, plan.videos.estimatedUSD, plan.audio.clips], [14, 76, 'Seedance 1.5 Pro', '1080p', 4.484, 89]);
+  assert.equal(plan.total.estimatedUSD, 10.318226); assert.equal(plan.generationSubmitted, false); assert.equal(plan.runtimePoses, 270);
   assert.deepEqual(plan.fighters, ['keystone', 'cheddar', 'saguaro', 'beacon', 'bluebonnet', 'sunflower']); assert.deepEqual(plan.stages, ['statehouse']);
   assert.equal(game.fighters.length, 6);
   assert.equal(workflow.nodes.filter(node => node.type !== 'MarkdownNote').length, Object.keys(prompt).length);
@@ -47,6 +47,9 @@ test('media and audio can be left out and the plan prices only what remains', ()
   assert.equal(images.plan.total.estimatedUSD, 4.036032);
   const stills = buildCast(cast, root, { media: false });
   assert.equal(stills.plan.audio.clips, 89); assert.equal(stills.plan.total.estimatedUSD, 5.185578);
+  const ltx = buildCast({ ...cast, videoModel: 'LTX-2.5 (Fast)', videoResolution: '720p' }, root);
+  assert.equal(ltx.plan.videos.estimatedUSD, 9.7812); assert.equal(ltx.plan.total.estimatedUSD, 15.615426);
+  assert.throws(() => validateCast({ ...cast, videoModel: 'Sora' }), /Unsupported video model/);
 });
 
 test('cast validation rejects what the factory or the game cannot use', () => {
@@ -84,7 +87,7 @@ test('a satire cast caricatures named public figures from text only and prices t
   assert.ok(cast.fighters.every(f => f.fullName && f.race && !f.sourceImage && !f.sourceInput && f.description.includes('caricature')));
   assert.match(cast.about, /no photographs, voices or other media of the real people/);
   const { plan } = buildCast(cast, root);
-  assert.equal(plan.total.estimatedUSD, 15.610392); assert.equal(plan.images.paidImages, 81);
+  assert.equal(plan.total.estimatedUSD, 10.313192); assert.equal(plan.images.paidImages, 81);
   const plain = JSON.parse(JSON.stringify(cast)); delete plain.publicFigures;
   assert.throws(() => validateCast(plain), /fighters are invented/);
   const anonymous = JSON.parse(JSON.stringify(cast)); delete anonymous.fighters[0].fullName;

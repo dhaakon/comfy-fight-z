@@ -3,7 +3,7 @@
 //   node build/tools/new-game.cjs run     --run output/test-runs/<name> --approve-usd <amount> [--server http://127.0.0.1:8188] [--resume]
 //   node build/tools/new-game.cjs review  --run output/test-runs/<name>
 //   node build/tools/new-game.cjs reroll  --run output/test-runs/<name> --node <id or title> --approve-usd <amount>
-//   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle> --approve-usd <amount>
+//   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle>|title_video|select_video --approve-usd <amount> [--video-model <name>] [--video-resolution 720p|1080p]
 //   node build/tools/new-game.cjs export  --run output/test-runs/<name> [--out output/exports/<name>]
 //   node build/tools/new-game.cjs install --run output/test-runs/<name> [--slot <id>]
 //   node build/tools/new-game.cjs status  --run output/test-runs/<name>
@@ -20,7 +20,7 @@ const now = () => new Date().toISOString();
 
 function parse(argv) {
   const [command, ...rest] = argv, options = {};
-  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset'];
+  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution'];
   for (let i = 0; i < rest.length; i++) {
     if (rest[i] === '--no-media') options.media = false;
     else if (rest[i] === '--no-audio') options.audio = false;
@@ -189,17 +189,24 @@ function status(options) {
 
 // What one re-rolled node costs: the node itself plus every paid node downstream of it (sheets B-E follow sheet A,
 // the ensemble and the menu loop follow any fighter). Rates are list prices from the cast plan.
-const RATES = { image1K: .048048, image2K: .072072, videoSecond720p: .1287 };
+const RATES = { image1K: .048048, image2K: .072072 };
+const { VIDEO_RATES } = require('../../comfyui/tools/prepare-factory-workflows.cjs');
+function videoSettings(workflow, overrides = {}) {
+  const project = Object.values(workflow).find(node => node.class_type === 'CFZProjectSettings')?.inputs || {};
+  const model = overrides.videoModel || project.video_model || 'LTX-2.5 (Fast)', resolution = overrides.videoResolution || project.video_resolution || '720p', rate = VIDEO_RATES[model]?.[resolution];
+  if (!rate) throw new Error(`Unsupported video model or resolution: ${model} ${resolution} (models: ${Object.keys(VIDEO_RATES).join(', ')}; resolutions: 720p, 1080p).`);
+  return { model, resolution, rate };
+}
 const REROLL = {
   CFZSpriteSheet: () => RATES.image2K,
   CFZCharacterFactory: () => 6 * RATES.image1K,
   CFZEnvironmentFactory: () => 2 * RATES.image2K,
   CFZSharedArtFactory: () => 6 * RATES.image1K + RATES.image2K,
   CFZTitleArt: () => RATES.image2K,
-  CFZTitleVideo: node => Number(node.inputs.duration || 8) * RATES.videoSecond720p,
-  CFZSelectVideo: node => Number(node.inputs.duration || 8) * RATES.videoSecond720p,
-  CFZSelectIdleVideo: node => RATES.image1K + Number(node.inputs.duration || 6) * RATES.videoSecond720p,
-  CFZIntroVideo: node => RATES.image1K + Number(node.inputs.duration || 4) * RATES.videoSecond720p
+  CFZTitleVideo: (node, rate) => Number(node.inputs.duration || 8) * rate,
+  CFZSelectVideo: (node, rate) => Number(node.inputs.duration || 8) * rate,
+  CFZSelectIdleVideo: (node, rate) => RATES.image1K + Number(node.inputs.duration || 6) * rate,
+  CFZIntroVideo: (node, rate) => RATES.image1K + Number(node.inputs.duration || 4) * rate
 };
 function rerollPlan(workflow, target) {
   const id = workflow[target] ? target : Object.keys(workflow).find(key => workflow[key]._meta?.title === target);
@@ -209,8 +216,9 @@ function rerollPlan(workflow, target) {
   const affected = new Set([id]);
   for (const key of affected) for (const child of consumers(key)) affected.add(child);
   const paid = [...affected].filter(key => REROLL[workflow[key].class_type]);
-  const estimatedUSD = Number(paid.reduce((sum, key) => sum + REROLL[workflow[key].class_type](workflow[key]), 0).toFixed(6));
-  return { id, title: workflow[id]._meta?.title || workflow[id].class_type, paid, estimatedUSD };
+  const video = videoSettings(workflow);
+  const estimatedUSD = Number(paid.reduce((sum, key) => sum + REROLL[workflow[key].class_type](workflow[key], video.rate), 0).toFixed(6));
+  return { id, title: workflow[id]._meta?.title || workflow[id].class_type, paid, estimatedUSD, video };
 }
 
 async function reroll(options) {
@@ -236,23 +244,24 @@ async function reroll(options) {
 
 // Redraw one derived image or clip of a fighter without touching anything else: a small prompt reuses the cached
 // factory (same node ids and inputs), gives the new node a project copy with an offset seed, and patches the record.
-const ART_KINDS = { portrait: 'CFZCharacterArt', hero: 'CFZCharacterArt', cutin: 'CFZCharacterArt', ending: 'CFZCharacterArt', intro: 'CFZIntroVideo', idle: 'CFZSelectIdleVideo' };
-function artPlan(workflow, asset) {
-  const match = /^([a-z][a-z0-9_]*)_(portrait|hero|cutin|ending|intro|idle)$/.exec(asset || '');
-  if (!match) throw new Error('--asset must be <fighter>_<portrait|hero|cutin|ending|intro|idle>.');
-  const [, fighter, kind] = match;
-  const factory = Object.keys(workflow).find(id => workflow[id].class_type === 'CFZCharacterFactory' && workflow[id].inputs.character_id === fighter);
-  if (!factory) throw new Error(`No character factory for ${fighter} in workflow.api.json.`);
+const ART_KINDS = { portrait: 'CFZCharacterArt', hero: 'CFZCharacterArt', cutin: 'CFZCharacterArt', ending: 'CFZCharacterArt', intro: 'CFZIntroVideo', idle: 'CFZSelectIdleVideo', title: 'CFZTitleVideo', select: 'CFZSelectVideo' };
+function artPlan(workflow, asset, overrides = {}) {
+  const match = /^(?:([a-z][a-z0-9_]*)_(portrait|hero|cutin|ending|intro|idle)|(title|select)_video)$/.exec(asset || '');
+  if (!match) throw new Error('--asset must be <fighter>_<portrait|hero|cutin|ending|intro|idle>, title_video or select_video.');
+  const fighter = match[1] || null, kind = match[2] || match[3], video = videoSettings(workflow, overrides);
   const project = Object.keys(workflow).find(id => workflow[id].class_type === 'CFZProjectSettings');
   const environment = Object.keys(workflow).find(id => workflow[id].class_type === 'CFZEnvironmentFactory');
-  const original = Object.keys(workflow).find(id => workflow[id].class_type === ART_KINDS[kind] && workflow[id].inputs.character?.[0] === factory);
-  const duration = Number(original ? workflow[original].inputs.duration : kind === 'intro' ? 4 : 6);
-  const estimatedUSD = Number((kind === 'intro' || kind === 'idle' ? RATES.image1K + duration * RATES.videoSecond720p : RATES.image1K).toFixed(6));
-  return { fighter, kind, type: ART_KINDS[kind], factory, project, environment, duration, estimatedUSD };
+  const factory = fighter ? Object.keys(workflow).find(id => workflow[id].class_type === 'CFZCharacterFactory' && workflow[id].inputs.character_id === fighter) : null;
+  if (fighter && !factory) throw new Error(`No character factory for ${fighter} in workflow.api.json.`);
+  const original = Object.keys(workflow).find(id => workflow[id].class_type === ART_KINDS[kind] && (!fighter || workflow[id].inputs.character?.[0] === factory));
+  const duration = Number(original ? workflow[original].inputs.duration : kind === 'intro' ? 4 : kind === 'idle' ? 6 : 8);
+  const clip = ['intro', 'idle', 'title', 'select'].includes(kind);
+  const estimatedUSD = Number((clip ? (fighter ? RATES.image1K : 0) + duration * video.rate : RATES.image1K).toFixed(6));
+  return { fighter, kind, type: ART_KINDS[kind], factory, project, environment, duration, clip, video, estimatedUSD };
 }
 async function rerollArt(options) {
   const directory = runDirectory(options), bundle = path.join(directory, 'bundle'), workflow = read(path.join(directory, 'workflow.api.json'));
-  const planned = artPlan(workflow, options.asset), approved = Number(options.approveUsd);
+  const planned = artPlan(workflow, options.asset, { videoModel: options.videoModel, videoResolution: options.videoResolution }), approved = Number(options.approveUsd);
   if (!Number.isFinite(approved) || approved < planned.estimatedUSD) throw new Error(`Redrawing ${options.asset} costs about $${planned.estimatedUSD}; pass --approve-usd ${Math.ceil(planned.estimatedUSD * 100) / 100} (or more) once authorized.`);
   const server = (options.server || 'http://127.0.0.1:8188').replace(/\/$/, '');
   const state = pipeline(directory), count = (state.artRerolls || []).filter(entry => entry.asset === options.asset).length + 1;
@@ -267,15 +276,23 @@ async function rerollArt(options) {
     if (!response.ok) throw new Error(`ComfyUI refused the reference upload (${response.status}).`);
     const info = await response.json(); return `${info.subfolder ? info.subfolder + '/' : ''}${info.name}`;
   };
-  const definition = Object.fromEntries(['name', 'description', 'special_name', 'special_description', 'intro_tagline', 'color', 'character_id', 'fighting_style', 'super_name', 'super_description', 'win_quote', 'ending', 'role'].filter(key => factory.inputs[key] !== undefined).map(key => [key, factory.inputs[key]]));
   const prompt = {
-    project: { class_type: 'CFZProjectSettings', inputs: { ...project.inputs, seed: (Number(project.inputs.seed) + count * 1000) % 2 ** 32 }, _meta: { title: `Project settings | redraw ${options.asset} #${count}` } },
-    character: { class_type: 'CFZCharacterDefinition', inputs: definition, _meta: { title: `Character | ${planned.fighter}` } },
-    reference: { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.id === `${planned.fighter}_reference`)) }, _meta: { title: 'Accepted identity reference' } }
+    project: { class_type: 'CFZProjectSettings', inputs: { ...project.inputs, seed: (Number(project.inputs.seed) + count * 1000) % 2 ** 32, video_model: planned.video.model, video_resolution: planned.video.resolution }, _meta: { title: `Project settings | redraw ${options.asset} #${count}` } }
   };
-  const inputs = { project: ['project', 0], character: ['character', 0], reference: ['reference', 0] };
+  const inputs = { project: ['project', 0] };
+  if (planned.fighter) {
+    const definition = Object.fromEntries(['name', 'description', 'special_name', 'special_description', 'intro_tagline', 'color', 'character_id', 'fighting_style', 'super_name', 'super_description', 'win_quote', 'ending', 'role'].filter(key => factory.inputs[key] !== undefined).map(key => [key, factory.inputs[key]]));
+    prompt.character = { class_type: 'CFZCharacterDefinition', inputs: definition, _meta: { title: `Character | ${planned.fighter}` } };
+    prompt.reference = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.id === `${planned.fighter}_reference`)) }, _meta: { title: 'Accepted identity reference' } };
+    inputs.character = ['character', 0]; inputs.reference = ['reference', 0];
+  } else {
+    // The menu loops animate the accepted interface art: the cast ensemble or the select backdrop.
+    const source = planned.kind === 'title' ? 'ensemble' : 'select';
+    prompt.image = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.kind === 'ui' && item.id === source)) }, _meta: { title: `Accepted ${source} art` } };
+    inputs[planned.kind === 'title' ? 'title_image' : 'select_image'] = ['image', 0];
+  }
   if (planned.kind === 'intro') { prompt.stage = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.kind === 'stage')) }, _meta: { title: 'Accepted stage' } }; inputs.stage_reference = ['stage', 0]; }
-  if (planned.kind === 'intro' || planned.kind === 'idle') inputs.duration = String(planned.duration); else inputs.kind = planned.kind;
+  if (planned.clip) inputs.duration = String(planned.duration); else inputs.kind = planned.kind;
   prompt.redraw = { class_type: planned.type, inputs, _meta: { title: `Redraw ${options.asset} #${count}` } };
   prompt.keep = { class_type: 'PreviewAny', inputs: { source: ['redraw', 0] }, _meta: { title: 'keep' } };
   const missing = await missingNodes(prompt, server);
@@ -283,20 +300,23 @@ async function rerollArt(options) {
   const file = path.join(directory, `redraw-${options.asset}-${count}.api.json`); fs.writeFileSync(file, JSON.stringify(prompt, null, 2) + '\n');
   const { submit, outcome } = require('../../comfyui/tools/run-sequential.cjs');
   const before = new Set(fs.readdirSync(path.join(bundle, 'raw')));
-  const entry = { at: now(), asset: options.asset, attempt: count, estimatedUSD: planned.estimatedUSD, approvedUSD: approved, prompt: path.basename(file) };
+  const entry = { at: now(), asset: options.asset, attempt: count, estimatedUSD: planned.estimatedUSD, approvedUSD: approved, prompt: path.basename(file), ...(planned.clip ? { video: planned.video } : {}) };
   state.artRerolls = [...(state.artRerolls || []), entry]; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
   console.log(`Redrawing ${options.asset} (attempt ${count}, about $${planned.estimatedUSD}) from the bundle's accepted identity; nothing else is touched.`);
   const promptId = submit(file), result = await outcome(server, promptId, 30 * 60000);
   entry.promptId = promptId; entry.ok = result.ok;
   if (!result.ok) { fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n'); throw new Error(`Redraw failed: ${result.error?.exception_type || ''}: ${result.error?.exception_message || 'unknown error'}`); }
   // Point the manifest at the new file; the exporter is not rerun, so nothing else in the bundle changes.
-  const prefix = planned.kind === 'intro' || planned.kind === 'idle' ? `${planned.kind}-${planned.fighter}-` : `${planned.fighter}_${planned.kind}-`;
+  const prefix = !planned.fighter ? `${planned.kind}-` : planned.clip ? `${planned.kind}-${planned.fighter}-` : `${planned.fighter}_${planned.kind}-`;
   const produced = fs.readdirSync(path.join(bundle, 'raw')).filter(name => name.startsWith(prefix) && !before.has(name));
   if (produced.length !== 1) throw new Error(`Expected one new ${prefix}* file, found ${produced.length}.`);
   const target = path.join(bundle, 'raw', produced[0]), digest = require('node:crypto').createHash('sha256').update(fs.readFileSync(target)).digest('hex');
-  if (planned.kind === 'intro' || planned.kind === 'idle') {
-    const videoFile = path.join(bundle, 'video.json'), video = read(videoFile), list = planned.kind === 'intro' ? video.fighterIntros : video.selectIdles;
-    const record = list?.find(item => item.fighter === planned.fighter); if (!record) throw new Error(`video.json has no ${planned.kind} record for ${planned.fighter}.`);
+  if (planned.clip) {
+    const videoFile = path.join(bundle, 'video.json'), video = read(videoFile);
+    const record = planned.kind === 'title' ? video.titleVideo : planned.kind === 'select' ? video.selectVideo : (planned.kind === 'intro' ? video.fighterIntros : video.selectIdles)?.find(item => item.fighter === planned.fighter);
+    if (!record) throw new Error(`video.json has no ${planned.kind} record${planned.fighter ? ' for ' + planned.fighter : ''}.`);
+    const probe = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', target], { encoding: 'utf8', windowsHide: true });
+    const duration = Number(probe.stdout); if (Number.isFinite(duration) && duration > 0) record.duration = Number(duration.toFixed(3));
     Object.assign(record, { src: `raw/${produced[0]}`, sha256: digest }); fs.writeFileSync(videoFile, JSON.stringify(video, null, 2) + '\n');
   } else {
     const { loadImage } = require('@napi-rs/canvas'), image = await loadImage(fs.readFileSync(target));

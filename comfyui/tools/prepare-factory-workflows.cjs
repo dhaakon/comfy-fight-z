@@ -27,12 +27,21 @@ function factoryCounts(config, allEnvironments = false) {
 
 // Startup art and videos: the cast ensemble (2K), one 16:9 intro keyframe per fighter (1K) and silent
 // 720p LTX-2.5 Fast clips (an eight-second menu loop and four-second fight introductions).
-const LTX_720P_PER_SECOND = 0.1287, MENU_SECONDS = 8, SELECT_SECONDS = 8, INTRO_SECONDS = 4, IDLE_SECONDS = 6;
+// Per-second list prices of the cloud video models the project node offers; LTX always renders 720p.
+const VIDEO_RATES = Object.freeze({ 'LTX-2.5 (Fast)': { '720p': 0.1287, '1080p': 0.1287 }, 'Seedance 1.5 Pro': { '720p': 0.026, '1080p': 0.059 } });
+const DEFAULT_VIDEO_MODEL = 'LTX-2.5 (Fast)', DEFAULT_VIDEO_RESOLUTION = '720p';
+function videoRate(config = {}) {
+  const model = config.videoModel || DEFAULT_VIDEO_MODEL, resolution = config.videoResolution || DEFAULT_VIDEO_RESOLUTION, rate = VIDEO_RATES[model]?.[resolution];
+  if (!rate) throw new Error(`Unsupported video model or resolution: ${model} ${resolution}`);
+  return { model, resolution, rate };
+}
+const MENU_SECONDS = 8, SELECT_SECONDS = 8, INTRO_SECONDS = 4, IDLE_SECONDS = 6;
 function mediaCounts(config) {
   // Per fighter: an intro keyframe and clip plus a portrait idle keyframe and loop for the select screen.
   const fighters = config.fighters.length, oneK = fighters * 2, twoK = 1, videoSeconds = MENU_SECONDS + SELECT_SECONDS + fighters * (INTRO_SECONDS + IDLE_SECONDS);
-  return { paidImages: oneK + twoK, oneK, twoK, clips: 2 + fighters * 2, videoSeconds, mappedAssets: 1,
-    estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072 + videoSeconds * LTX_720P_PER_SECOND).toFixed(6)) };
+  const video = videoRate(config), videoUSD = Number((videoSeconds * video.rate).toFixed(6));
+  return { paidImages: oneK + twoK, oneK, twoK, clips: 2 + fighters * 2, videoSeconds, mappedAssets: 1, videoModel: video.model, videoResolution: video.resolution, videoRate: video.rate, videoUSD,
+    estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072 + videoUSD).toFixed(6)) };
 }
 
 function graphBuilder(title) {
@@ -98,7 +107,8 @@ function graphBuilder(title) {
 
 function projectValues(config, suffix = '') {
   return { root_directory: path.resolve(ROOT, config.assetRoot, suffix), title: config.title, subtitle: config.subtitle || '',
-    style: config.style, ui_style: config.uiStyle, stage_style: config.stageStyle, model: config.model, seed: 42 };
+    style: config.style, ui_style: config.uiStyle, stage_style: config.stageStyle, model: config.model, seed: 42,
+    video_model: config.videoModel || DEFAULT_VIDEO_MODEL, video_resolution: config.videoResolution || DEFAULT_VIDEO_RESOLUTION };
 }
 function arcadeValues(fighter) {
   return { fighting_style: fighter.style || 'balanced', super_name: fighter.superMove?.name || '', super_description: fighter.superMove?.description || '',
@@ -309,4 +319,4 @@ function prepareFactory() {
   console.log(`Prepared compact ${main.nodes.filter(node => node.type !== 'MarkdownNote').length}-node factory (six fighters, final boss, three environments, startup image and videos), four focused templates and matching builder downloads. No generation submitted.`);
 }
 if (require.main === module) prepareFactory();
-module.exports = { factoryCounts, mediaCounts, expansionCounts, attachMedia, graphBuilder, characterValues, environmentValues, projectValues, attachExporter, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };
+module.exports = { factoryCounts, mediaCounts, videoRate, VIDEO_RATES, expansionCounts, attachMedia, graphBuilder, characterValues, environmentValues, projectValues, attachExporter, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };

@@ -68,6 +68,34 @@
             "max": 18446744073709552000
           }
         ]
+      },
+      "optional": {
+        "video_model": [
+          "COMBO",
+          {
+            "advanced": true,
+            "default": "LTX-2.5 (Fast)",
+            "multiselect": false,
+            "options": [
+              "LTX-2.5 (Fast)",
+              "Seedance 1.5 Pro"
+            ],
+            "tooltip": "Cloud video model for every clip: LTX-2.5 Fast (720p, $0.1287/s) or Seedance 1.5 Pro (720p about $0.026/s, 1080p about $0.059/s; cleaner motion)."
+          }
+        ],
+        "video_resolution": [
+          "COMBO",
+          {
+            "advanced": true,
+            "default": "720p",
+            "multiselect": false,
+            "options": [
+              "720p",
+              "1080p"
+            ],
+            "tooltip": "Clip resolution for Seedance; LTX-2.5 Fast always renders 720p."
+          }
+        ]
       }
     },
     "input_order": {
@@ -80,6 +108,10 @@
         "stage_style",
         "model",
         "seed"
+      ],
+      "optional": [
+        "video_model",
+        "video_resolution"
       ]
     },
     "is_input_list": false,
