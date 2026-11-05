@@ -1,9 +1,12 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const args=process.argv.slice(2);
-if(args.length!==2||args[0]!=='--comfy-root')throw new Error('Usage: node comfyui/tools/install-comfy-nodes.cjs --comfy-root <actual ComfyUI directory containing main.py>');
+// ComfyUI Desktop installs started with --base-directory load custom nodes from that base folder
+// (for example Documents\ComfyUI), not from the source directory containing main.py.
+if(args.length!==2||!['--comfy-root','--base-directory'].includes(args[0]))throw new Error('Usage: node comfyui/tools/install-comfy-nodes.cjs --comfy-root <ComfyUI directory containing main.py> | --base-directory <ComfyUI Desktop base folder>');
 const root=fs.realpathSync(path.resolve(args[1]));
-if(!fs.existsSync(path.join(root,'main.py'))||!fs.existsSync(path.join(root,'nodes.py')))throw new Error('Not a ComfyUI source directory');
+if(args[0]==='--comfy-root'&&(!fs.existsSync(path.join(root,'main.py'))||!fs.existsSync(path.join(root,'nodes.py'))))throw new Error('Not a ComfyUI source directory');
+if(args[0]==='--base-directory'&&!['input','user','custom_nodes'].some(name=>fs.existsSync(path.join(root,name))))throw new Error('Not a ComfyUI base directory (expected input, user or custom_nodes)');
 const custom=path.join(root,'custom_nodes'),target=path.join(custom,'comfy_fighter_assets');
 fs.mkdirSync(custom,{recursive:true});
 if(fs.existsSync(target)&&fs.lstatSync(target).isSymbolicLink())throw new Error('Custom node destination must not be a symlink');

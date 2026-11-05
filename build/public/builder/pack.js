@@ -1,5 +1,5 @@
 // Browser-only asset compiler. It consumes accepted local images and never calls a model.
-import { segmentSheet } from './sheet-layout.mjs';
+import { segmentSheet, poseScales } from './sheet-layout.mjs';
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
 const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending', 'stage', 'ui', 'effects']);
 const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending'];
@@ -88,6 +88,8 @@ export function validateManifest(input) {
     if (asset.kind === 'sprites' || asset.kind === 'effects') {
       if (!Array.isArray(asset.poses) || asset.poses.length !== 9 || new Set(asset.poses).size !== 9 || asset.poses.some(p => !ID.test(p))) throw new Error(`${asset.id} needs exactly nine unique pose names.`);
       if (asset.kind === 'sprites' && asset.sheet && layouts[asset.sheet] && JSON.stringify(asset.poses) !== JSON.stringify(layouts[asset.sheet])) throw new Error(`${asset.id} pose order disagrees with the ${asset.sheet} layout.`);
+      // Reviewed correction: cells drawn facing the wrong way are flipped at build time.
+      if (asset.mirror !== undefined && (!Array.isArray(asset.mirror) || asset.mirror.some(p => !asset.poses.includes(p)))) throw new Error(`${asset.id} mirror must list poses from that sheet.`);
       claims.push(...asset.poses.map(p => asset.kind === 'sprites' ? `assets/fighters/${asset.fighter}_${p}.png` : `assets/effects/${p}.png`));
     } else claims.push(`${asset.kind}/${asset.fighter || asset.stage || asset.id}`);
     for (const claim of claims) {
@@ -130,7 +132,7 @@ export function validateVideoManifest(input, game = null) {
   catch { throw new Error('The video manifest is not valid JSON.'); }
   if (manifest?.schema !== 'comfy-fighter-video/v1' || manifest.root !== '.') throw new Error('Expected a comfy-fighter-video/v1 video.json with root ".".');
   const intros = manifest.fighterIntros ?? [];
-  if (!Array.isArray(intros) || intros.length > 64 || (!manifest.openingVideo && !manifest.titleVideo && !intros.length)) throw new Error('Video manifest needs an opening, animated title or fighter introduction videos.');
+  if (!Array.isArray(intros) || intros.length > 64 || (!manifest.openingVideo && !manifest.titleVideo && !manifest.selectVideo && !intros.length)) throw new Error('Video manifest needs an opening, animated title, select-screen or fighter introduction videos.');
   const paths = new Set(), fighters = new Set();
   const check = (video, label, limit) => {
     if (!video || typeof video !== 'object') throw new Error(`Invalid ${label}.`);
@@ -143,6 +145,7 @@ export function validateVideoManifest(input, game = null) {
   };
   if (manifest.openingVideo) { if (manifest.openingVideo.id !== 'opening') throw new Error('Invalid opening video ID.'); check(manifest.openingVideo, 'Opening video', 300); }
   if (manifest.titleVideo) { if (manifest.titleVideo.id !== 'title') throw new Error('Invalid title video ID.'); check(manifest.titleVideo, 'Title video', 300); }
+  if (manifest.selectVideo) { if (manifest.selectVideo.id !== 'select') throw new Error('Invalid select video ID.'); check(manifest.selectVideo, 'Select video', 300); }
   for (const video of intros) {
     if (!ID.test(video?.fighter || '') || video.id !== `intro-${video.fighter}` || fighters.has(video.fighter.toLowerCase())) throw new Error('Invalid or duplicate fighter intro.');
     if (game && !game.fighters.some(f => f.id === video.fighter)) throw new Error(`Unknown intro fighter: ${video.fighter}`);
@@ -168,10 +171,21 @@ async function decode(blob, label) {
 }
 function keyGreen(image) {
   const context = image.getContext('2d', { willReadFrequently: true }), pixels = context.getImageData(0, 0, image.width, image.height), d = pixels.data;
+  const { width, height } = image;
   for (let i = 0; i < d.length; i += 4) {
-    const spill = d[i + 1] - Math.max(d[i], d[i + 2]);
-    if (spill > 95) d[i + 3] = 0;
-    else if (spill > 28) { d[i + 3] = Math.round(d[i + 3] * (1 - (spill - 28) / 67)); d[i + 1] = Math.max(d[i], d[i + 2]); }
+    const limit = Math.max(d[i], d[i + 2]), spill = d[i + 1] - limit;
+    if (spill > 80) { d[i + 3] = 0; continue; }
+    if (spill > 22) d[i + 3] = Math.round(d[i + 3] * (1 - (spill - 22) / 58));
+    if (spill > 8) d[i + 1] = limit + 8;
+  }
+  // Edge pass: a translucent pixel beside two or more transparent neighbours is fringe, not ink.
+  const alpha = new Uint8ClampedArray(width * height);
+  for (let p = 0; p < alpha.length; p++) alpha[p] = d[p * 4 + 3];
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const p = y * width + x, a = alpha[p];
+    if (a === 0 || a === 255) continue;
+    const clear = (x > 0 && alpha[p - 1] === 0) + (x < width - 1 && alpha[p + 1] === 0) + (y > 0 && alpha[p - width] === 0) + (y < height - 1 && alpha[p + width] === 0);
+    if (clear >= 2) d[p * 4 + 3] = a < 110 ? 0 : Math.round(a * .6);
   }
   context.putImageData(pixels, 0, 0);
 }
@@ -184,11 +198,20 @@ function bounds(image) {
   if (right < 0) throw new Error('Empty artwork after chroma-key removal.');
   return { left, right, top, bottom, width: right - left + 1, height: bottom - top + 1 };
 }
-function sheetCells(image, job) {
+function mirrored(cell) {
+  const flipped = canvas(cell.canvas.width, cell.canvas.height), context = flipped.getContext('2d', { willReadFrequently: true });
+  context.translate(flipped.width, 0); context.scale(-1, 1); context.drawImage(cell.canvas, 0, 0);
+  return { canvas: flipped, bounds: bounds(flipped) };
+}
+// Fighter sheets keep their native resolution (up to 2100 px) so cels are downsampled, never upscaled; effects stay at 1260.
+function sheetCells(image, job, native = false) {
   if (image.width < 90 || image.height < 90 || Math.abs(image.width - image.height) / Math.max(image.width, image.height) > .02) throw new Error(`${job.id}: expected a square 3x3 sheet, at least 90 x 90 pixels.`);
   const cw = image.width / 3, ch = image.height / 3, result = new Map();
+  const mirror = cells => { for (const pose of job.mirror || []) if (cells.has(pose)) cells.set(pose, mirrored(cells.get(pose))); return cells; };
   if (job.key !== false) {
-    const sheet = canvas(1260, 1260 * image.height / image.width);
+    // Small sheets are still upsampled to 1260 so their bounds are measured as before.
+    const width = native ? Math.min(Math.max(image.width, 1260), 2100) : 1260;
+    const sheet = canvas(width, width * image.height / image.width);
     const context = sheet.getContext('2d', { willReadFrequently: true });
     context.drawImage(image, 0, 0, sheet.width, sheet.height); keyGreen(sheet);
     const cells = segmentSheet(context.getImageData(0, 0, sheet.width, sheet.height).data, sheet.width, sheet.height);
@@ -197,15 +220,16 @@ function sheetCells(image, job) {
       const data = ctx.createImageData(pixels.width, pixels.height); data.data.set(pixels.data); ctx.putImageData(data, 0, 0);
       result.set(job.poses[i], { canvas: cell, bounds: bounds(cell) });
     });
-    return result;
+    return mirror(result);
   }
+  const size = native ? Math.min(Math.max(cw, 420), 700) : 420;
   for (let i = 0; i < 9; i++) {
-    const cell = canvas(420, 420 * ch / cw);
+    const cell = canvas(size, size * ch / cw);
     cell.getContext('2d').drawImage(image, i % 3 * cw, Math.floor(i / 3) * ch, cw, ch, 0, 0, cell.width, cell.height);
     try { result.set(job.poses[i], { canvas: cell, bounds: bounds(cell) }); }
     catch (error) { throw new Error(`${job.id}/${job.poses[i]}: ${error.message}`); }
   }
-  return result;
+  return mirror(result);
 }
 async function exportCell(cell, scale) {
   const b = cell.bounds, x = Math.max(0, b.left - 4), y = Math.max(0, b.top - 4);
@@ -272,7 +296,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   const allow = customization.allowPlaceholders === true, missing = jobs.filter(job => !files.has(job.src)), warnings = [], output = new Map(), built = [];
   if (missing.length && !allow) throw new Error(`Missing ${missing.length} source image(s): ${missing.map(j => j.src).join(', ')}. Select the full asset root or explicitly allow placeholders.`);
   if (missing.length) warnings.push(`Missing artwork: ${missing.map(j => j.id).join(', ')}. The game uses labeled placeholders.`);
-  const videoJobs = [...(videoSource?.openingVideo ? [videoSource.openingVideo] : []), ...(videoSource?.titleVideo ? [videoSource.titleVideo] : []), ...(videoSource?.fighterIntros || []).filter(video => selectedFighters.has(video.fighter))];
+  const videoJobs = [...(videoSource?.openingVideo ? [videoSource.openingVideo] : []), ...(videoSource?.titleVideo ? [videoSource.titleVideo] : []), ...(videoSource?.selectVideo ? [videoSource.selectVideo] : []), ...(videoSource?.fighterIntros || []).filter(video => selectedFighters.has(video.fighter))];
   for (const video of videoJobs) if (!files.has(video.src)) throw new Error(`Missing video file: ${video.src}. Select the complete asset root.`);
   const unmapped = [];
   for (const fighter of runtime.fighters) {
@@ -301,6 +325,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
     const src = video.fighter ? `assets/video/intro-${video.fighter}.mp4` : `assets/video/${video.id}.mp4`;
     if (video.fighter) selectedFighters.get(video.fighter).introVideo = { ...video, src };
     else if (video.id === 'title') runtime.titleVideo = { ...video, src };
+    else if (video.id === 'select') runtime.selectVideo = { ...video, src };
     else runtime.openingVideo = { ...video, src };
     output.set(src, blob); output.set(`sources/${video.src}`, blob);
     done++;
@@ -324,7 +349,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
         (job.fighter ? selectedFighters.get(job.fighter) : selectedStages.get(job.stage)).sourceImage = src;
       } else if (job.kind === 'sprites') {
         const collection = allCells.get(job.fighter) || new Map();
-        for (const [pose, cell] of sheetCells(image, job)) collection.set(pose, cell);
+        for (const [pose, cell] of sheetCells(image, job, true)) collection.set(pose, { ...cell, sheet: job.sheet || job.id });
         allCells.set(job.fighter, collection);
       } else if (job.kind === 'effects') {
         const pending = [];
@@ -374,11 +399,11 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   for (const [fighterId, cells] of allCells) {
     const base = cells.get('idle') || cells.values().next().value;
     if (!cells.has('idle')) warnings.push(`${fighterId}: idle pose missing; scale uses the first available pose.`);
-    const scale = 400 / Math.max(1, base.bounds.height - 1);
+    const scale = 400 / Math.max(1, base.bounds.height - 1), corrections = poseScales(cells);
     try {
       const pending = [];
       for (const [pose, cell] of cells) {
-        const result = await exportCell(cell, scale), src = `assets/fighters/${fighterId}_${pose}.png`;
+        const result = await exportCell(cell, scale * (corrections.get(pose) || 1)), src = `assets/fighters/${fighterId}_${pose}.png`;
         pending.push({ pose, src, ...result });
       }
       for (const result of pending) { output.set(result.src, result.blob); selectedFighters.get(fighterId).poses[result.pose] = { src: result.src, ...result.meta }; }

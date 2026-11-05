@@ -7,10 +7,13 @@ const ROOT = path.resolve(__dirname, '../..');
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8'));
 const config = read('comfyui/config/factory.json');
 const functional = graph => graph.nodes.filter(n => n.type !== 'MarkdownNote');
+const SCHEMAS = read('comfyui/workflows/templates/compact-factory-schema.json');
 
 test('main factory has six fighters, a final boss, three environments and one complete mapped export', () => {
   const graph = makeFactoryGraph(config);
-  assert.equal(functional(graph).length, 13);
+  // 13 game-art nodes plus the startup ensemble, menu video, seven fight introductions and video.json.
+  assert.equal(functional(graph).length, 24);
+  assert.equal(functional(makeFactoryGraph(config, { media: false })).length, 13);
   const characters = graph.nodes.filter(n => n.type === 'CFZCharacterFactory');
   const environments = graph.nodes.filter(n => n.type === 'CFZEnvironmentFactory');
   assert.equal(characters.length, 7); assert.equal(environments.length, 3);
@@ -35,7 +38,19 @@ test('main factory has six fighters, a final boss, three environments and one co
     assert.equal(node.widgets_values_named.stage_id, config.stages[i].id);
   }
   const exporter = graph.nodes.find(n => n.type === 'CFZExportGameAssets');
-  assert.equal(exporter.inputs.filter(i => i.type === 'CFZ_BUNDLE').length, 11);
+  assert.equal(exporter.inputs.filter(i => i.type === 'CFZ_BUNDLE').length, 12, 'Eleven art bundles plus the startup ensemble');
+  const source = (node, name) => { const link = graph.links.find(l => l[0] === node.inputs.find(i => i.name === name).link); return link && [link[1], link[2]]; };
+  const ensemble = graph.nodes.find(n => n.type === 'CFZTitleArt'), menu = graph.nodes.find(n => n.type === 'CFZTitleVideo');
+  assert.deepEqual(source(ensemble, 'stage_reference'), [environments[0].id, 1]);
+  characters.forEach((character, i) => assert.deepEqual(source(ensemble, `fighter_${i + 1}`), [character.id, 1]));
+  assert.deepEqual(source(menu, 'title_image'), [ensemble.id, 1]); assert.equal(menu.widgets_values_named.duration, '8');
+  const intros = graph.nodes.filter(n => n.type === 'CFZIntroVideo');
+  assert.equal(intros.length, 7);
+  intros.forEach((intro, i) => { assert.deepEqual(source(intro, 'character'), [characters[i].id, 2]); assert.deepEqual(source(intro, 'reference'), [characters[i].id, 1]); assert.equal(intro.widgets_values_named.duration, '4'); });
+  const videos = graph.nodes.find(n => n.type === 'CFZExportVideos');
+  const select = graph.nodes.find(n => n.type === 'CFZSelectVideo'), sharedArt = graph.nodes.find(n => n.type === 'CFZSharedArtFactory');
+  assert.deepEqual(source(select, 'select_image'), [sharedArt.id, 1]); assert.equal(select.widgets_values_named.duration, '8');
+  assert.deepEqual(videos.inputs.filter(i => i.type === 'CFZ_VIDEO').map(i => source(videos, i.name)[0]), [menu.id, select.id, ...intros.map(n => n.id)]);
   const shared = graph.nodes.find(n => n.type === 'CFZSharedArtFactory');
   const stageLink = graph.links.find(l => l[0] === shared.inputs.find(i => i.name === 'stage_reference').link);
   assert.equal(stageLink[1], environments[0].id); assert.equal(stageLink[2], 1);
@@ -107,7 +122,8 @@ test('all generated sockets link consistently and named widgets match positional
     assert.deepEqual(graph, make(config));
     for (const node of functional(graph)) {
       if (node.type !== 'LoadImage') assert.deepEqual(node.widgets_values, Object.values(node.widgets_values_named));
-      for (const input of node.inputs) assert.ok(Number.isInteger(input.link), `${node.title}: missing ${input.name}`);
+      // Optional sockets (the ensemble's unused eighth fighter slot) may stay empty.
+      for (const input of node.inputs) if (!SCHEMAS[node.type]?.input.optional?.[input.name]) assert.ok(Number.isInteger(input.link), `${node.title}: missing ${input.name}`);
     }
     for (const [id,fromID,fromSlot,toID,toSlot,type] of graph.links) {
       const from = graph.nodes.find(n => n.id === fromID), to = graph.nodes.find(n => n.id === toID);

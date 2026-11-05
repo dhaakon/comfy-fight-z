@@ -24,6 +24,15 @@ function factoryCounts(config, allEnvironments = false) {
     oneK, twoK, estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072).toFixed(6)) };
 }
 
+// Startup art and videos: the cast ensemble (2K), one 16:9 intro keyframe per fighter (1K) and silent
+// 720p LTX-2.5 Fast clips (an eight-second menu loop and four-second fight introductions).
+const LTX_720P_PER_SECOND = 0.1287, MENU_SECONDS = 8, SELECT_SECONDS = 8, INTRO_SECONDS = 4;
+function mediaCounts(config) {
+  const fighters = config.fighters.length, oneK = fighters, twoK = 1, videoSeconds = MENU_SECONDS + SELECT_SECONDS + fighters * INTRO_SECONDS;
+  return { paidImages: oneK + twoK, oneK, twoK, clips: 2 + fighters, videoSeconds, mappedAssets: 1,
+    estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072 + videoSeconds * LTX_720P_PER_SECOND).toFixed(6)) };
+}
+
 function graphBuilder(title) {
   const hash = createHash('sha256').update(title).digest('hex');
   const graph = { id: `${hash.slice(0,8)}-${hash.slice(8,12)}-4${hash.slice(13,16)}-a${hash.slice(17,20)}-${hash.slice(20,32)}`,
@@ -111,7 +120,31 @@ function attachExporter(builder, project, bundles, pos, complete) {
   return exporter;
 }
 
-function makeFactoryGraph(config) {
+// The cast ensemble for the startup screen, its looping menu video and one fight introduction per
+// fighter, exported as video.json. Returns the ensemble node, whose bundle joins assets.json.
+function attachMedia(b, project, characters, fighters, stage, [x, y], shared = null) {
+  const title = b.node('CFZTitleArt', 'Startup image | cast ensemble', {}, [x, y], [440, 420]);
+  b.connect(project, 0, title, 'project'); b.connect(stage, 1, title, 'stage_reference');
+  characters.slice(0, 8).forEach((character, i) => b.connect(character, 1, title, `fighter_${i + 1}`));
+  const menu = b.node('CFZTitleVideo', 'Menu video | looping title animation', { duration: String(MENU_SECONDS) }, [x, y + 480], [440, 170]);
+  b.connect(project, 0, menu, 'project'); b.connect(title, 1, menu, 'title_image');
+  const intros = characters.map((character, i) => {
+    const intro = b.node('CFZIntroVideo', `Fight intro | ${fighters[i].name}`, { duration: String(INTRO_SECONDS) }, [x + 490, y + i * 230], [420, 200]);
+    b.connect(project, 0, intro, 'project'); b.connect(character, 2, intro, 'character');
+    b.connect(character, 1, intro, 'reference'); b.connect(stage, 1, intro, 'stage_reference');
+    return intro;
+  });
+  const select = shared ? b.node('CFZSelectVideo', 'Select video | looping roster backdrop', { duration: String(SELECT_SECONDS) }, [x, y + 680], [440, 170]) : null;
+  if (select) { b.connect(project, 0, select, 'project'); b.connect(shared, 1, select, 'select_image'); }
+  const clips = [menu, ...(select ? [select] : []), ...intros];
+  const exporter = b.node('CFZExportVideos', 'Export video.json', {}, [x, y + 880], [440, 230], clips.length);
+  b.connect(project, 0, exporter, 'project');
+  clips.forEach((video, i) => b.connect(video, 0, exporter, `videos.video_${i}`));
+  b.group('Startup image + menu and fight-intro videos', [x - 25, y - 75, 960, Math.max(1050, characters.length * 230 + 120)], '#6f4f7f');
+  return title;
+}
+
+function makeFactoryGraph(config, { media: withMedia = true } = {}) {
   // Six fighter slots, an optional seventh final-boss slot and three environment slots.
   const bosses = config.fighters.filter(f => f.boss).length;
   if (![6, 7].includes(config.fighters.length) || bosses !== config.fighters.length - 6 || (bosses && !config.fighters[6].boss) || config.stages.length !== 3) throw new Error('The main template has six character slots, one optional final-boss slot and three environment slots');
@@ -132,9 +165,10 @@ function makeFactoryGraph(config) {
   });
   const shared = b.node('CFZSharedArtFactory', 'Shared art | menus, logo, HUD + effects', {}, [1510, 620], [440, 160]);
   b.connect(project, 0, shared, 'project'); b.connect(environments[0], 1, shared, 'stage_reference'); bundles.push(shared);
+  if (withMedia) bundles.push(attachMedia(b, project, bundles.slice(0, config.fighters.length), config.fighters, environments[0], [2060, 120], shared));
   attachExporter(b, project, bundles, [1510, 970], true);
-  const count = factoryCounts(config), full = factoryCounts(config, true);
-  b.note(`# ${config.title}\n## Invent fictional fighters and a final boss. Build your arcade game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Six fighter slots plus one Final boss slot close Arcade mode. Environment 1 supplies the title/select venue; disable slots 2 and 3 to build a one-stage game. Each fighter's arcade art adds two in-between sheets (45 poses) and an ending illustration. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default ${count.paidImages} image calls / ${count.mappedAssets} mapped assets (about $${count.estimatedUSD.toFixed(3)}). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing.`, [-510, -260], [1940, 290]);
+  const count = factoryCounts(config), full = factoryCounts(config, true), media = withMedia ? mediaCounts(config) : { paidImages: 0, oneK: 0, twoK: 0, clips: 0, videoSeconds: 0, mappedAssets: 0, estimatedUSD: 0 };
+  b.note(`# ${config.title}\n## Invent fictional fighters and a final boss. Build your arcade game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Six fighter slots plus one Final boss slot close Arcade mode. Environment 1 supplies the title/select venue; disable slots 2 and 3 to build a one-stage game. Each fighter's arcade art adds two in-between sheets (45 poses) and an ending illustration. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default ${count.paidImages} image calls / ${count.mappedAssets} mapped assets (about $${count.estimatedUSD.toFixed(3)}). Source-reference generation is included when Invent is selected. ${withMedia ? `The startup image and videos add ${media.paidImages} image calls and ${media.clips} silent LTX clips (${media.videoSeconds} seconds), about $${media.estimatedUSD.toFixed(3)}. ` : ''}Audio is the separate comfy-audio.json. Opening this graph spends nothing.`, [-510, -260], [1940, 290]);
   b.note('## Before you run\n\n1. Install comfyui/custom_nodes/comfy_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials, supers, win quotes, endings and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 45 poses per fighter (27 required + 18 arcade in-betweens) before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet, one art image or one environment. The full native graph is under comfyui/workflows/advanced/.', [1510, 1470], [440, 440]);
   b.group('Six character factories + final boss', [-25, 45, 1470, 2460], '#4b6387');
   b.group('Three environment factories', [-25, 2525, 1470, 675], '#4b7f6d');
@@ -265,7 +299,7 @@ function prepareFactory() {
     workflow:'comfyui/workflows/comfy-hackathon.json', advancedWorkflow:'comfyui/workflows/advanced/full-image-graph.json',
     characterSlots:7, bossSlots:1, environmentSlots:3, defaults:factoryCounts(config), allEnvironments:factoryCounts(config,true), expansion:expansionCounts(config),
     templates:Object.keys(templates).map(name=>`comfyui/workflows/factory/${name}.json`) });
-  console.log('Prepared compact 13-node factory (six fighters, final boss, three environments), four focused templates and matching builder downloads. No generation submitted.');
+  console.log(`Prepared compact ${main.nodes.filter(node => node.type !== 'MarkdownNote').length}-node factory (six fighters, final boss, three environments, startup image and videos), four focused templates and matching builder downloads. No generation submitted.`);
 }
 if (require.main === module) prepareFactory();
-module.exports = { factoryCounts, expansionCounts, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };
+module.exports = { factoryCounts, mediaCounts, expansionCounts, attachMedia, graphBuilder, characterValues, environmentValues, projectValues, attachExporter, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };

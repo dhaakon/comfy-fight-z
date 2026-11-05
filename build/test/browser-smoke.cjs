@@ -81,9 +81,10 @@ async function skipOptionalOpening(page) {
     const introStart = await page.evaluate(() => window.FighterDebug.snapshot());
     assert.equal(introStart.frame, 0);
     await page.keyboard.down('ArrowRight'); await page.waitForTimeout(200); await page.keyboard.up('ArrowRight');
-    await page.waitForFunction(() => window.FighterDebug.presentation().introSlot === 1, null, { timeout: 10000 });
-    assert.ok((await page.locator('#intro-tagline').textContent()).includes(config.fighters[1].introTagline));
-    assert.equal(await page.locator('#intro-name').textContent(), config.fighters[1].name);
+    // Both fighters share one split-screen introduction.
+    assert.ok((await page.locator('#intro-tagline-2').textContent()).includes(config.fighters[1].introTagline));
+    assert.equal(await page.locator('#intro-name-2').textContent(), config.fighters[1].name);
+    assert.equal(await page.locator('.intro-half .intro-stage > *').count(), 2, 'Both fighters appear at once');
     const introEnd = await page.evaluate(() => window.FighterDebug.snapshot());
     assert.equal(introEnd.frame, introStart.frame, 'Introductions must freeze combat frames');
     assert.equal(introEnd.time, introStart.time, 'Introductions must freeze the round timer');
@@ -141,8 +142,7 @@ async function skipOptionalOpening(page) {
     }
     await tab(artPage, 'arena'); await artPage.click('#title-return'); await artPage.click('#title-versus'); await artPage.click('#start-button');
     assert.ok((await artPage.locator('#intro-tagline').textContent()).includes(synthetic.fighters[0].introTagline));
-    await artPage.waitForFunction(() => window.FighterDebug.presentation().introSlot === 1, null, { timeout: 10000 });
-    assert.ok((await artPage.locator('#intro-tagline').textContent()).includes(synthetic.fighters[1].introTagline));
+    assert.ok((await artPage.locator('#intro-tagline-2').textContent()).includes(synthetic.fighters[1].introTagline));
     assert.equal(await artPage.evaluate(() => window.FighterDebug.snapshot().frame), 0);
     // Let this match finish both introductions naturally; the first match exercised skip.
     await artPage.waitForFunction(() => window.FighterDebug.snapshot()?.phase === 'fight');

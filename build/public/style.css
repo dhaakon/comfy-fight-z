@@ -291,7 +291,7 @@ body[data-scene=title] .settings-open { position:fixed; right:16px; top:16px; }
 }
 @media(prefers-reduced-motion:reduce) { .fighter-tile:hover { transform:none; } }
 /* A single ComfyUI-composed scene is used for the included fictional cast. */
-.cfz-ensemble .title-backdrop { background-image:url('arcade/title-ensemble.webp') !important; background-size:cover; background-position:center center; opacity:1; filter:none; }
+.cfz-ensemble .title-backdrop { background-image:var(--ensemble-art, url('arcade/title-ensemble.webp')) !important; background-size:cover; background-position:center center; opacity:1; filter:none; }
 .cfz-ensemble .title-screen:after { background:linear-gradient(to bottom,transparent 38%,#11151820 54%,#111518ef 94%); }
 .cfz-ensemble .title-copy { justify-content:flex-end; padding-bottom:4vh; }
 .cfz-ensemble .arcade-logo:not([hidden]) { max-height:19vh; }
@@ -303,17 +303,66 @@ body[data-scene=title] .settings-open { position:fixed; right:16px; top:16px; }
   .cfz-ensemble .title-copy { padding-bottom:9vh; }
   .cfz-ensemble .arcade-logo:not([hidden]) { max-height:18vh; }
 }
-/* Optional generated fighter introduction: one full-motion plate under the name and tagline. */
-.intro-video { position:absolute; inset:0; z-index:0; display:block; width:100%; height:100%; object-fit:cover; background:#101416; }
-.fighter-intro.has-intro-video .intro-energy,.fighter-intro.has-intro-video .intro-number,.fighter-intro.has-intro-video .intro-portrait { display:none; }
-.fighter-intro.has-intro-video .intro-copy-block { left:0; right:0; top:auto; bottom:50px; padding:55px 5% 12px; background:linear-gradient(transparent,#111719e8); border:0; z-index:1; }
-.fighter-intro.has-intro-video .intro-copy-block h2 { font-size:clamp(36px,5vw,72px); }
-.fighter-intro.has-intro-video .intro-copy-block blockquote { margin:5px 0 0; max-width:75%; font-size:clamp(13px,1.5vw,20px); }
-.fighter-intro.has-intro-video .intro-bottom { background:#101416c9; border:0; }
-@media(max-width:800px) and (orientation:portrait) { .fighter-intro.has-intro-video .intro-copy-block { bottom:52px; padding:48px 5% 8px; background:linear-gradient(transparent,#111719ed); } .fighter-intro.has-intro-video .intro-copy-block blockquote { max-width:90%; } }
-/* Keep the tagline above the lower skip strip on video entrances. */
-.fighter-intro.has-intro-video .intro-copy-block { bottom:82px; }
-@media(max-width:800px) and (orientation:portrait) { .fighter-intro.has-intro-video .intro-copy-block { bottom:80px; } }
+/* Split-screen fight introduction: both fighters at once behind a diagonal brass slash and a VS burst.
+   Each half shows that fighter's generated clip, or the sprite entrance when there is none. */
+.fighter-intro { background:#101416; overflow:hidden; }
+.intro-half { position:absolute; inset:0; overflow:hidden; isolation:isolate; background:#191e21; }
+.intro-half[data-slot='0'] { clip-path:polygon(0 0, 56.6% 0, 42.6% 100%, 0 100%); }
+.intro-half[data-slot='1'] { clip-path:polygon(57.4% 0, 100% 0, 100% 100%, 43.4% 100%); }
+.intro-half .intro-video { position:absolute; top:0; bottom:0; left:0; width:62%; z-index:0; display:block; height:100%; object-fit:cover; object-position:42% 50%; background:#101416; }
+.intro-half[data-slot='1'] .intro-video { left:auto; right:0; transform:scaleX(-1); }
+.intro-rays { position:absolute; inset:-45%; z-index:1; pointer-events:none; opacity:.55; mix-blend-mode:screen;
+  background:repeating-conic-gradient(from 0deg at 50% 50%, transparent 0 7deg, color-mix(in srgb, var(--intro-accent), transparent 78%) 7deg 9deg);
+  animation:intro-rays 1.1s linear infinite; }
+.intro-half.has-video .intro-rays { opacity:.22; }
+.intro-half .intro-number { position:absolute; top:-3%; left:1%; right:auto; z-index:1; font:italic clamp(150px,26vw,420px) var(--display); line-height:1; color:#b9bdaf10; -webkit-text-stroke:1px #b9bdaf26; }
+.intro-half[data-slot='1'] .intro-number { left:auto; right:1%; }
+.intro-stage { position:absolute; top:5%; bottom:0; left:-3%; width:54%; z-index:2; display:flex; align-items:flex-end; justify-content:center; }
+.intro-half[data-slot='1'] .intro-stage { left:auto; right:-3%; }
+.intro-stage canvas, .intro-stage img { width:100%; height:100%; object-fit:contain; object-position:center bottom; }
+.intro-half[data-slot='1'] .intro-stage img { transform:scaleX(-1); }
+.intro-stage > span { font:italic 220px var(--display); color:var(--intro-accent); opacity:.3; }
+.intro-half.has-video .intro-stage, .intro-half.has-video .intro-number { display:none; }
+.intro-text { position:absolute; left:4%; bottom:84px; width:40%; z-index:3; text-align:left; }
+.intro-half[data-slot='1'] .intro-text { left:auto; right:4%; text-align:right; }
+.intro-text .eyebrow { margin:0 0 4px; font-size:9px; letter-spacing:3px; color:var(--gold); }
+.intro-text h2 { margin:0; font:italic clamp(34px,5.6vw,92px)/.9 var(--display); text-transform:uppercase; color:var(--paper); -webkit-text-stroke:1px #171c1f; paint-order:stroke fill; text-shadow:4px 5px 0 #101416, 7px 8px 0 var(--intro-accent); overflow-wrap:anywhere; }
+.intro-half.long-name .intro-text h2 { font-size:clamp(26px,4.2vw,66px); }
+.intro-text .intro-special { margin:10px 0 8px; font-family:var(--display); font-size:clamp(12px,1.5vw,22px); letter-spacing:2px; text-transform:uppercase; color:var(--gold); }
+.intro-text blockquote { margin:0; font-size:clamp(12px,1.4vw,19px); font-weight:750; font-style:italic; line-height:1.35; color:var(--paper); text-shadow:1px 2px 0 #171c1f; }
+.intro-slash { position:absolute; inset:0; z-index:4; pointer-events:none; }
+.intro-slash:before { content:''; position:absolute; inset:0; background:var(--gold); clip-path:polygon(57.6% 0, 56.4% 0, 42.4% 100%, 43.6% 100%); }
+.intro-slash b { position:absolute; left:50%; top:46%; transform:translate(-50%,-50%) rotate(-8deg); font:italic clamp(64px,9vw,150px)/1 var(--display); color:var(--paper); -webkit-text-stroke:2px #101416; paint-order:stroke fill; text-shadow:5px 7px 0 #a8322c, 0 0 40px #0009; }
+.fighter-intro .intro-bottom { z-index:6; background:#101416d9; border-top:1px solid #5b6056; }
+.fighter-intro .intro-progress span.active { background:var(--gold); }
+/* Entrance: halves crash in from each side, text slams down, the VS mark pops and a flash clears. */
+.fighter-intro.arriving .intro-half[data-slot='0'] { animation:intro-half-left .42s cubic-bezier(.2,.9,.3,1) both; }
+.fighter-intro.arriving .intro-half[data-slot='1'] { animation:intro-half-right .42s cubic-bezier(.2,.9,.3,1) both; }
+.fighter-intro.arriving .intro-text { animation:intro-text-slam .38s .32s cubic-bezier(.2,1.4,.4,1) both; }
+.fighter-intro.arriving .intro-slash b { animation:intro-vs-pop .45s .42s cubic-bezier(.2,1.6,.4,1) both; }
+.fighter-intro.arriving:after { content:''; position:absolute; inset:0; z-index:5; background:var(--paper); pointer-events:none; animation:intro-flash .5s .38s ease-out both; }
+@keyframes intro-rays { to { transform:rotate(9deg); } }
+@keyframes intro-half-left { from { transform:translateX(-100%); } to { transform:none; } }
+@keyframes intro-half-right { from { transform:translateX(100%); } to { transform:none; } }
+@keyframes intro-text-slam { from { transform:scale(1.7); opacity:0; } to { transform:none; opacity:1; } }
+@keyframes intro-vs-pop { from { transform:translate(-50%,-50%) rotate(-8deg) scale(3); opacity:0; } to { transform:translate(-50%,-50%) rotate(-8deg) scale(1); opacity:1; } }
+@keyframes intro-flash { from { opacity:.85; } to { opacity:0; } }
+@media(max-width:800px) and (orientation:portrait) {
+  .intro-half[data-slot='0'] { clip-path:polygon(0 0, 100% 0, 100% 45%, 0 53%); }
+  .intro-half[data-slot='1'] { clip-path:polygon(0 55%, 100% 47%, 100% 100%, 0 100%); }
+  .intro-slash:before { clip-path:polygon(0 52.4%, 100% 44.4%, 100% 45.6%, 0 53.6%); }
+  .intro-slash b { top:49%; }
+  .intro-stage { top:0; bottom:48%; left:30%; width:75%; }
+  .intro-half[data-slot='1'] .intro-stage { top:50%; bottom:0; left:auto; right:30%; }
+  .intro-text { bottom:auto; top:64px; width:60%; }
+  .intro-half .intro-video { width:100%; left:0; right:0; height:54%; object-position:42% 30%; }
+  .intro-half[data-slot='1'] .intro-video { top:auto; bottom:0; height:54%; }
+  .intro-half[data-slot='1'] .intro-text { top:auto; bottom:90px; }
+  .intro-half .intro-number { font-size:50vw; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .intro-rays, .fighter-intro.arriving .intro-half, .fighter-intro.arriving .intro-text, .fighter-intro.arriving .intro-slash b, .fighter-intro.arriving:after { animation:none; }
+}
 /* A moving title plate stays behind the game wordmark and controls. */
 .title-video { position:absolute; inset:0; z-index:-2; width:100%; height:100%; object-fit:cover; object-position:center; pointer-events:none; opacity:0; transition:opacity .24s linear; }
 .title-video-ready .title-video { opacity:1; }
@@ -432,3 +481,63 @@ body[data-scene=fight] .fight-heading,body[data-scene=intro] .fight-heading { to
 #fighter-grid .fighter-tile .tile-name { font-size:clamp(7px,calc(145cqw / var(--name-chars,8)),18px); white-space:nowrap; letter-spacing:0; }
 /* The VS screen takes focus so Enter advances it; it is not a control, so no focus ring. */
 .vs-screen:focus { outline: none; }
+/* Generated clips in the asset lab: muted, looping previews sized like the artwork. */
+.asset-card .preview video { max-width:100%; max-height:100%; background:#101314; }
+/* Looping select-screen plate behind the roster, with the still backdrop as the fallback. */
+.select-video { position:absolute; inset:0; z-index:-2; width:100%; height:100%; object-fit:cover; pointer-events:none; opacity:0; transition:opacity .24s linear; }
+.select-video-ready .select-video { opacity:1; }
+/* Each fighter card previews that fighter's introduction clip over the hero art. */
+.fighter-card .fighter-art { position:relative; }
+.fighter-card .fighter-art video.card-motion { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:40% 40%; z-index:0; background:transparent; filter:brightness(.5) saturate(1.15) blur(1px); }
+.fighter-card:last-child .fighter-art video.card-motion { transform:scaleX(-1); }
+.fighter-card .fighter-art img { z-index:1; }
+.fighter-card .fighter-nameplate { z-index:2; }
+@media(prefers-reduced-motion:reduce) { .select-video { transition:none; } }
+/* Menu motion: staggered entrances, button sheen and focus pops across the title, roster, VS and result screens.
+   Everything here is presentational; reduced-motion users get the static layout. */
+.title-copy h1 { animation:title-slam .65s cubic-bezier(.2,1.35,.4,1) both; }
+.title-copy .saga-subtitle { animation:menu-rise .45s .25s cubic-bezier(.2,.9,.3,1) both; }
+.title-start { animation:menu-rise .45s .4s cubic-bezier(.2,.9,.3,1) both, start-pulse 2.8s 1s ease-in-out infinite; position:relative; overflow:hidden; }
+.title-modes { animation:menu-rise .45s .5s cubic-bezier(.2,.9,.3,1) both; }
+.title-network-modes { animation:menu-rise .45s .6s cubic-bezier(.2,.9,.3,1) both; }
+.title-hint { animation:menu-rise .45s .7s cubic-bezier(.2,.9,.3,1) both, hint-blink 1.6s 1.2s steps(2, jump-none) infinite; }
+.title-bottom { animation:menu-fade .6s .8s both; }
+.title-start:after { content:''; position:absolute; top:-40%; bottom:-40%; left:-30%; width:28%; background:linear-gradient(100deg, transparent, #ffffff55, transparent); transform:skewX(-20deg); animation:button-sheen 3.2s 1.4s linear infinite; pointer-events:none; }
+.title-modes button, .title-network-modes button { transition:transform .12s cubic-bezier(.2,1.4,.4,1), background-color .12s, color .12s, box-shadow .12s; }
+.title-modes button:hover, .title-modes button:focus-visible, .title-network-modes button:hover, .title-network-modes button:focus-visible { transform:translateY(-2px) scale(1.06); box-shadow:0 6px 18px #0008; }
+.title-start:hover, .title-start:focus-visible { transform:scale(1.04); }
+/* Character select: cards slide in from their side, tiles pop on focus, the VS mark breathes. */
+.selection-screen:not([hidden]) .fighter-card:first-child { animation:card-left .42s cubic-bezier(.2,.9,.3,1) both; }
+.selection-screen:not([hidden]) .fighter-card:last-child { animation:card-right .42s .06s cubic-bezier(.2,.9,.3,1) both; }
+.selection-screen:not([hidden]) .roster-panel { animation:menu-rise .4s .15s cubic-bezier(.2,.9,.3,1) both; }
+.selection-screen:not([hidden]) .selection-title { animation:banner-sweep .5s cubic-bezier(.2,.9,.3,1) both; }
+.selection-screen:not([hidden]) .battle-ready { animation:menu-rise .4s .3s cubic-bezier(.2,.9,.3,1) both; }
+.fighter-tile { transition:transform .12s cubic-bezier(.2,1.4,.4,1), box-shadow .12s, filter .12s; }
+.fighter-tile:hover, .fighter-tile:focus-visible { transform:scale(1.07); z-index:2; box-shadow:0 8px 22px #000a; filter:brightness(1.12); }
+.fighter-tile.picked-one, .fighter-tile.picked-two { animation:tile-lock .22s cubic-bezier(.2,1.6,.4,1) both; }
+.player-switch .versus { animation:vs-breathe 1.6s ease-in-out infinite; display:inline-block; }
+.fighter-card h3 { animation:name-slam .35s .3s cubic-bezier(.2,1.4,.4,1) both; }
+.battle-options .primary { position:relative; overflow:hidden; }
+.battle-options .primary:after { content:''; position:absolute; top:-40%; bottom:-40%; left:-30%; width:28%; background:linear-gradient(100deg, transparent, #ffffff55, transparent); transform:skewX(-20deg); animation:button-sheen 3.2s 1s linear infinite; pointer-events:none; }
+/* VS screen and results: crash in, then settle. */
+.vs-screen:not([hidden]) .vs-left { animation:card-left .4s cubic-bezier(.2,.9,.3,1) both; }
+.vs-screen:not([hidden]) .vs-right { animation:card-right .4s cubic-bezier(.2,.9,.3,1) both; }
+.vs-screen:not([hidden]) .vs-mark { animation:intro-vs-pop .45s .3s cubic-bezier(.2,1.6,.4,1) both; transform-origin:center; }
+.vs-screen:not([hidden]) .vs-round { animation:menu-rise .4s .5s both; }
+.win-screen:not([hidden]) h2, .continue-screen:not([hidden]) h2, .gameover-screen:not([hidden]) h2, .match-overlay:not([hidden]) h2, .pause-overlay:not([hidden]) h2 { animation:title-slam .5s cubic-bezier(.2,1.35,.4,1) both; }
+.pause-overlay:not([hidden]) .text-button, .win-screen:not([hidden]) .text-button, .win-screen:not([hidden]) .primary { animation:menu-rise .35s .15s both; }
+@keyframes menu-rise { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+@keyframes menu-fade { from { opacity:0; } to { opacity:1; } }
+@keyframes hint-blink { 50% { opacity:.35; } }
+@keyframes button-sheen { 0% { left:-30%; } 35%, 100% { left:120%; } }
+@keyframes card-left { from { opacity:0; transform:translateX(-60px); } to { opacity:1; transform:none; } }
+@keyframes card-right { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:none; } }
+@keyframes banner-sweep { from { clip-path:inset(0 100% 0 0); } to { clip-path:inset(0 0 0 0); } }
+@keyframes tile-lock { from { transform:scale(1.18); } to { transform:scale(1); } }
+@keyframes vs-breathe { 50% { transform:scale(1.12); text-shadow:0 0 18px #ff356a88; } }
+@keyframes name-slam { from { transform:scale(1.5); opacity:0; } to { transform:none; opacity:1; } }
+@media(prefers-reduced-motion:reduce) {
+  .title-copy h1, .title-copy .saga-subtitle, .title-start, .title-modes, .title-network-modes, .title-hint, .title-bottom, .title-start:after, .battle-options .primary:after,
+  .selection-screen:not([hidden]) .fighter-card, .selection-screen:not([hidden]) .roster-panel, .selection-screen:not([hidden]) .selection-title, .selection-screen:not([hidden]) .battle-ready,
+  .fighter-tile, .player-switch .versus, .fighter-card h3, .vs-screen:not([hidden]) *, .win-screen:not([hidden]) *, .continue-screen:not([hidden]) *, .gameover-screen:not([hidden]) *, .match-overlay:not([hidden]) *, .pause-overlay:not([hidden]) * { animation:none !important; transition:none !important; }
+}

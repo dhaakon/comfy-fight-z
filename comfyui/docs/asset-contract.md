@@ -132,6 +132,10 @@ Stages should leave the central fight plane clear and put their ground line near
 
 ## Reviewing generated art
 
+The main template's **CFZ Export Videos** node writes `video.json` beside `assets.json`. It maps the looping menu video as `titleVideo`, the looping select-screen backdrop as `selectVideo` and one silent clip per fighter in `fighterIntros` (`intro-<fighter id>`), with hashed MP4 paths under `raw/`. The startup ensemble is an ordinary image record, `{"id": "ensemble", "kind": "ui"}`, mapped to runtime `ui.ensemble`. It is optional in a complete export, and the title screen shows it for any cast when present.
+
+A sprite-sheet record may carry `"mirror": ["run2"]`, a reviewed list of cells the builder flips horizontally because the model drew them facing left. The builder also normalizes every standing pose to the idle cel per sheet, because generated sheets drift in body scale.
+
 An optional `video.json` companion uses `{"schema":"comfy-fighter-video/v1","root":".","openingVideo":{"id":"opening","src":"raw/opening.mp4","duration":25,"sha256":"<64 hexadecimal characters>"}}`. The builder verifies the MP4 hash, preserves the source map/movie, and maps it to `assets/video/opening.mp4` under runtime `openingVideo`. Unrelated asset merges preserve this companion. Adoption copies the accepted H.264/AAC movie without re-encoding it. See [the video workflow](video-workflow.md) for preparing and verifying the exact 25-second opening.
 
 Before importing a full batch, inspect the raw sheets for exactly nine cells and the correct order. Verify the same character appears throughout, all faces point right, limbs are complete, and no pose spills into a neighboring cell. If a cell is wrong, regenerate that sheet using its individual workflow and the same accepted reference.

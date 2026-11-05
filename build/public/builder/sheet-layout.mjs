@@ -72,3 +72,30 @@ export function segmentSheet(data, width, height) {
   }
   return result;
 }
+
+// Poses drawn standing on both feet with no raised arm or attached effect; their body height should match the idle cel.
+export const UPRIGHT_POSES = new Set(['idle', 'stance2', 'walk', 'walk2', 'walk3', 'walk4', 'run', 'run2', 'backstep', 'block', 'punch', 'hpunch',
+  'kick', 'lkick', 'punchwind', 'kickwind', 'heavywind', 'blowback', 'throw', 'entrance', 'dizzy']);
+// Generated sheets drift in body scale from one image to the next. Each sheet is corrected by the median of
+// its upright poses against the idle cel, then every upright pose is trimmed to the idle height (within 12%),
+// so idle/stance and the walk cycle no longer pulse between cels. Other poses keep their own proportions.
+export function poseScales(cells) {
+  const idle = cells.get('idle');
+  if (!idle) return new Map();
+  const ratio = cell => cell.bounds.height / idle.bounds.height;
+  const median = list => { const sorted = [...list].sort((a, b) => a - b); return (sorted[(sorted.length - 1) >> 1] + sorted[sorted.length >> 1]) / 2; };
+  const bySheet = new Map();
+  for (const [pose, cell] of cells) if (UPRIGHT_POSES.has(pose)) bySheet.set(cell.sheet, [...(bySheet.get(cell.sheet) || []), ratio(cell)]);
+  // Other sheets are brought to the idle sheet's scale, so a single sheet is never rescaled as a whole.
+  const reference = bySheet.has(idle.sheet) ? median(bySheet.get(idle.sheet)) : 1;
+  const factors = new Map();
+  for (const [pose, cell] of cells) {
+    let factor = bySheet.has(cell.sheet) ? reference / median(bySheet.get(cell.sheet)) : 1;
+    if (UPRIGHT_POSES.has(pose)) factor /= Math.min(1.12, Math.max(.88, ratio(cell) * factor));
+    factors.set(pose, factor);
+  }
+  // The idle cel stays exactly at the fighter's reference height; everything else is relative to it.
+  const base = factors.get('idle') || 1;
+  for (const [pose, factor] of factors) factors.set(pose, factor / base);
+  return factors;
+}

@@ -73,7 +73,7 @@ function buildRun(config, directory, runName, seed = 20261103) {
     item.sourceMode = 'Upload reference'; item.sourceInput = byId.get(item.id)?.uploadFilename || ''; item.sourceImage = '';
     delete item.photoPrompt;
   }
-  const game = buildCombinedGame(factory, factory.assetRoot, { seed: seed + 1000 });
+  const game = buildCombinedGame(factory, factory.assetRoot, { seed: seed + 1000, media: false });
   game.workflow.extra.cfzPhonePhotoDemo = { phase: 2, sourcePolicy: 'Upload only the seven outputs from this run\'s text-only phase 1', uploadFilenames: references.map(job => job.uploadFilename) };
   delete game.workflow.extra.cfzExample;
   const notes = game.workflow.nodes.filter(node => node.type === 'MarkdownNote');

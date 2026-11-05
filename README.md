@@ -10,7 +10,7 @@ The **?** button opens settings, controls, fullscreen, sound, the asset gallery 
 
 ### Generate title and menu artwork
 
-The included cast's title screen is one generated ensemble illustration. To make your own, open [`comfyui/workflows/ensemble-title.json`](comfyui/workflows/ensemble-title.json), upload six fictional character design images into the six **Load Image** nodes and edit the prompt. The template is muted until you select images and unmute its nodes. The included example uses fictional images from `example/bundle/raw/*_hero.webp`; the workflow uses one paid cloud image call. Review the result for all six characters before using it. Its default output is in the ComfyUI output folder under `comfy-fighter-z/ensemble-title-20261104/`.
+The title screen shows one generated illustration of the whole cast. The main workflow's **CFZ Title Ensemble Art** node makes it for any cast, from each fighter's identity and the first arena. It is saved in the bundle as the `ensemble` image, and **CFZ Menu Video** animates it into the looping menu video (see [step 3](#3-generate-your-artwork)). To redraw only the included cast's picture from existing art, open [`comfyui/workflows/ensemble-title.json`](comfyui/workflows/ensemble-title.json), upload six fictional character design images into the six **Load Image** nodes and edit the prompt. The template is muted until you select images and unmute its nodes. The included example uses fictional images from `example/bundle/raw/*_hero.webp`; the workflow uses one paid cloud image call. Review the result for all six characters before using it. Its default output is in the ComfyUI output folder under `comfy-fighter-z/ensemble-title-20261104/`.
 
 Open [`comfyui/workflows/arcade-title-and-menu.json`](comfyui/workflows/arcade-title-and-menu.json) in ComfyUI. Its four cloud image nodes generate a fictional yard title background, a selection background, a menu frame and an isolated green-background logo. Edit the prompts, game title and output prefixes before running. This workflow has four paid image calls; check the current cost in ComfyUI before generating.
 
@@ -87,7 +87,7 @@ npm run nodes:install -- --comfy-root "C:\path\to\your\ComfyUI"
 npm run workflows
 ```
 
-On macOS/Linux, replace the path with your absolute ComfyUI directory. It must contain **`main.py` and `nodes.py`**—not this game's `comfyui/` folder.
+On macOS/Linux, replace the path with your absolute ComfyUI directory. It must contain **`main.py` and `nodes.py`**—not this game's `comfyui/` folder. ComfyUI Desktop installs keep custom nodes in their base folder (usually `Documents\ComfyUI`) instead; for those, pass `--base-directory` with that folder, for example `npm run nodes:install -- --base-directory "C:\Users\you\Documents\ComfyUI"`.
 
 Restart ComfyUI, reload its editor, then open **`comfyui/workflows/comfy-hackathon.json`**. You can also download this workflow from the builder. Enable **Nodes 2.0** for the interface shown here; that setting changes the renderer and does not install missing nodes.
 
@@ -97,7 +97,15 @@ The tested setup is ComfyUI 0.43.2 with frontend 1.57.4. See [Comfy's Partner-no
 
 ![Main Comfy Fighter Z asset workflow](comfyui/docs/images/01-factory-overview.png)
 
-The main workflow contains Project Settings, six Character Factories, a **Final boss** factory, three Environment Factories, Shared Art and one final exporter.
+The main workflow contains Project Settings, six Character Factories, a **Final boss** factory, three Environment Factories, Shared Art and the art exporter. Generated sheets drift in body scale, so the builder normalizes every standing pose to the idle cel per sheet; a reviewed sheet record can also list cells to flip in `"mirror": ["run2"]` when the model drew them facing the wrong way. It also generates the startup screen and videos:
+
+- **CFZ Title Ensemble Art**: one key illustration of the cast caught mid-battle in the arena, shown behind the title menu.
+- **CFZ Menu Video**: an eight-second silent loop of that picture, with the fighters trading a flurry of blows before slamming back into the opening clash.
+- **CFZ Select Video**: an eight-second silent loop of the character-select backdrop (lights, embers, camera drift). Each fighter card also plays that fighter's introduction clip.
+- **CFZ Fighter Intro Video**: one four-second, Dragon Ball Z-style clip per fighter (aura burst, dash, signature strike). Both fighters' clips play together on a split screen before the fight.
+- **CFZ Export Videos**: writes `video.json` beside `assets.json`.
+
+If a clip is missing or can't play, the game falls back to the still image and the animated sprite entrance.
 
 1. In **Project Settings**, set `root_directory` to a **fresh absolute folder**, such as `C:\games\comfy-fight-z\output\test-runs\my-game\bundle`. This is where ComfyUI writes the bundle; use a path on the ComfyUI server's machine.
 2. Edit each character's name, description, special move and introduction tagline. The optional arcade fields set the fighting style, super move, win quote and ending text. Choose **Final boss** as the `role` for at most one character; Arcade mode hides that character from selection and saves them for the last match. Keep each `character_id` unique and stable.
@@ -122,10 +130,17 @@ Descriptions guide the artwork. The fighting style selects each character's spec
 | Six invented fighters + final boss + three arenas, 45 poses each | 89 | $5.29 |
 | The same cast with The Yard only | 85 | $5.00 |
 | Classic set: six fighters + The Yard, 27 poses, no boss or endings | 56 | $3.20 |
+| Startup image and videos for seven fighters (8 images + 9 silent LTX clips, 44 seconds) | 8 | $6.07 |
 
-Each fighter costs 11 image calls with arcade art (source, identity, five sheets, portrait, hero, cut-in, ending), or 8 for the classic 27-pose set. To build the classic set, disable `include_arcade_art`, delete the boss factory and disable the extra arenas. Estimates use recorded November 3, 2026 rates; actual billing may vary. Audio, video and repairs cost extra. Running generation spends credits; opening or editing a workflow does not. If an agent submits it for you, approve the specific batch first.
+Each fighter costs 11 image calls with arcade art (source, identity, five sheets, portrait, hero, cut-in, ending), or 8 for the classic 27-pose set. The startup media add one intro keyframe and one four-second 720p clip per fighter (about $0.56), plus the ensemble, its eight-second loop and the eight-second select-screen loop (about $2.13). To build the classic set, disable `include_arcade_art`, delete the boss factory and disable the extra arenas. Estimates use recorded November 3, 2026 rates; actual billing may vary. Audio, video and repairs cost extra. Running generation spends credits; opening or editing a workflow does not. If an agent submits it for you, approve the specific batch first.
 
-For a smaller two-fighter trial, follow the [30-image test](comfyui/docs/advanced.md#try-a-smaller-generation-first).
+**Try everything with two fighters first.** This command prepares one priced workflow and submits nothing:
+
+```sh
+node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/my-duo
+```
+
+It covers two fighters in The Yard: all game art, the startup image, the menu video, two fight intros and 61 audio clips. That is 33 images, 4 clips and 61 audio clips, about **$5.99** (a run with six-second intros on November 4, 2026 billed $5.79). Run its `workflow.api.json` with the sequential runner described above, then export `bundle/` in step 4.
 
 The completed folder contains:
 
@@ -201,7 +216,11 @@ The run keeps the six reviewed identities. It copies their accepted reference im
 
 4. Load the merged folder in the builder ([step 4](#4-export-your-game)), or export it from the command line with `npm run build:bundle` ([advanced guide](comfyui/docs/advanced.md#export-from-the-command-line)).
 
-### Optional: LTX fighter introductions
+### Optional: add videos to an existing bundle
+
+The main template generates the menu video and fight intros. To add clips to a bundle you already have, use the templates and helpers below.
+
+#### Fighter introductions
 
 Use [`ltx-intro-single.json`](comfyui/workflows/ltx-intro-single.json) for one fighter, or [`ltx-intro-six-fighters.json`](comfyui/workflows/ltx-intro-six-fighters.json) for a six-fighter batch. Both use the cloud LTX 2.5 Fast node to create eight-second 720p clips. The templates are muted: upload a fresh, complete 16:9 first-frame image for each fighter, edit the action prompts, and unmute the nodes before running. Use fictional character designs for the public demo. Review the current cloud cost in ComfyUI; the six-clip November 2026 node estimate was $6.18. Generated videos are silent; the game plays the existing character tagline separately.
 
@@ -213,7 +232,7 @@ node build/tools/assemble-fighter-intros.cjs --bundle /absolute/path/to/bundle -
 
 The tool checks H.264 compatibility and an approximately eight-second duration, copies the media, and writes `video.json` with hashes and fighter mappings. Add `--fighters griddle,rivet` to include only selected clips. It never submits a model call or replaces the source bundle. Open the new bundle in the builder and export normally. During play, the two videos run before the round with combat frozen; Space skips them. If a clip cannot load, the existing animated sprite intro remains available. The checked-in `example/bundle` remains a free, offline example without generated videos.
 
-### Optional: animated title and opening
+#### Animated title and opening
 
 Open [`ltx-title-animation.json`](comfyui/workflows/ltx-title-animation.json) for a looping title and [`ltx-opening-animation.json`](comfyui/workflows/ltx-opening-animation.json) for a short startup film. Each takes a single 16:9 reference image and uses one paid LTX 2.5 Fast cloud call to generate a silent eight-second 720p video. The title workflow uses the same first and last reference frame to help the loop. Both templates are muted until you upload an image and unmute the nodes. Use fictional artwork for a public demo and review the complete videos before building.
 

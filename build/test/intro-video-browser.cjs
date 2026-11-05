@@ -35,6 +35,8 @@ const originalManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/mani
       return route.continue();
     });
     const manifest = structuredClone(originalManifest);
+    // Only the clips under test are mapped, whatever the export root ships.
+    manifest.fighters.forEach(fighter => delete fighter.introVideo);
     for (const [index, clip] of Object.entries(clips)) manifest.fighters[Number(index)].introVideo = clip;
     await page.route('**/assets/manifest.json', route => route.fulfill({ json: manifest }));
     await page.route('**/assets/video/**', route => opts.missing ? route.fulfill({ status: 404, body: '' }) : route.fulfill({ body: fixture, contentType: 'video/mp4' }));
@@ -60,10 +62,11 @@ const originalManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/mani
     assert.equal(await page.evaluate(() => FighterDebug.snapshot().frame), 0);
     await page.click('#settings-close');
     await page.waitForFunction(() => !document.querySelector('#intro-video').paused);
-    await page.waitForFunction(() => FighterDebug.presentation().introSlot === 1, null, { timeout: 12000 });
-    if (process.env.CFZ_INTRO_FIXTURE) assert.ok(Date.now() - started >= 7600, 'Eight-second clip should play through rather than being cut short');
-    await page.waitForFunction(() => FighterDebug.presentation().introMedia === 'video');
+    // Both clips play side by side on one screen.
+    await page.waitForFunction(() => FighterDebug.presentation().introHalves?.every(media => media === 'video'), null, { timeout: 12000 });
+    assert.equal(await page.locator('#intro-video-2').isVisible(), true);
     assert.equal(await page.evaluate(() => FighterDebug.snapshot().frame), 0);
+    if (process.env.CFZ_INTRO_FIXTURE) { await page.waitForTimeout(7600 - (Date.now() - started)); assert.equal(await page.evaluate(() => FighterDebug.presentation().screen), 'intro', 'Eight-second clips play through rather than being cut short'); }
     await page.click('#intro-skip');
     await page.waitForFunction(() => FighterDebug.snapshot().phase === 'fight');
     assert.equal(await page.locator('#intro-video').evaluate(v => v.paused && !v.hasAttribute('src')), true);

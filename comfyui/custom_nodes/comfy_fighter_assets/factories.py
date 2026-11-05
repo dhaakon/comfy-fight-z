@@ -1,12 +1,14 @@
 """Small V3 factory nodes that expand the installed native cloud image node."""
 import hashlib
+from io import BytesIO
 import json
 from pathlib import Path
 import re
 
+import av
 import folder_paths
 from PIL import Image
-from comfy_api.latest import io, ui
+from comfy_api.latest import Types, io, ui
 from comfy_execution.graph_utils import GraphBuilder
 
 from . import SHEETS, EXTRA_SHEETS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
@@ -178,8 +180,12 @@ def _cloud(graph, project, prompt, reference=None, aspect="1:1", resolution="1K"
     inputs = {"prompt": prompt, "model": project["model"], "model.aspect_ratio": aspect, "model.resolution": resolution,
               "model.thinking_level": "MINIMAL", "seed": (project["seed"] + offset) % (2 ** 64),
               "response_modalities": "IMAGE", "system_prompt": SYSTEM_PROMPT}
-    if reference is not None:
-        inputs["model.images.image_1"] = reference
+    # One reference link, or a list of them (the ensemble and intro keyframes combine fighters and an arena).
+    # A single link is itself a [node_id, output] pair, so it must not be unpacked as a list of images.
+    single = reference is None or (isinstance(reference, (list, tuple)) and len(reference) == 2 and isinstance(reference[0], str) and isinstance(reference[1], int))
+    references = [image for image in ([reference] if single else reference) if image is not None]
+    for index, image in enumerate(references, 1):
+        inputs[f"model.images.image_{index}"] = image
     return graph.node("GeminiNanoBanana2V2", **inputs)
 
 
@@ -430,13 +436,14 @@ class CFZSharedArtFactory(io.ComfyNode):
     def define_schema(cls):
         return io.Schema(node_id="CFZSharedArtFactory", display_name="CFZ Shared Game Art", category="Comfy Fighter Z",
             description="PAID cloud generation: six images (title, selection, logo, HUD, icons and nine combat effects). Connect the stage image from an ENABLED environment factory as the reference.",
-            inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True)], outputs=[Bundle.Output(display_name="bundle")], enable_expand=True, is_api_node=True)
+            inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True)],
+            outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="select_image")], enable_expand=True, is_api_node=True)
 
     @classmethod
     def execute(cls, project, stage_reference):
         if stage_reference is None:
             raise ValueError("Shared game art requires the stage image from an enabled environment factory")
-        _project(project); graph = GraphBuilder(); members = _members(); assets = []
+        _project(project); graph = GraphBuilder(); members = _members(); assets = []; select_image = None
         jobs = [
             ("title", "16:9", "Dramatic game-title background based on the venue, animated energy and speed lines. No people or readable text; leave center space for the title overlay."),
             ("select", "16:9", "Character-selection backdrop based on the venue, subdued tournament lighting. No portraits, text, boxes or controls; leave central space for six fighter cards."),
@@ -449,12 +456,221 @@ class CFZSharedArtFactory(io.ComfyNode):
             # These two isolated assets carry their complete visual style in their own prompt.
             full_prompt = prompt if identity in {"logo", "icons"} else project["ui_style"] + "\n" + prompt
             generated = _cloud(graph, project, full_prompt, stage_reference if identity in {"title", "select"} else None, aspect, offset=40 + index)
+            if identity == "select":
+                select_image = generated.out(0)
             assets.append(_save(graph, project, generated.out(0), {"id": identity, "kind": "ui", "key": identity in {"logo", "hud", "icons"}}, members))
         prompt = (project["style"] + "\nSquare 3x3 sheet of nine separate fighting-game effects in exact row-major order: " + ", ".join(EFFECTS) + ". "
                   "Each effect stays completely inside its cell with clear empty padding, no people or body parts. Compact impact bursts, shields and energy shapes. " + KEY)
         effect = _cloud(graph, project, prompt, None, "1:1", "2K", 49)
         assets.append(_save(graph, project, effect.out(0), {"id": "combat_effects", "kind": "effects", "poses": EFFECTS, "key": True}, members))
-        return io.NodeOutput(_collect(graph, project, members, assets), expand=graph.finalize())
+        return io.NodeOutput(_collect(graph, project, members, assets), select_image, expand=graph.finalize())
+
+
+# Startup art and videos: a cast ensemble for the title screen, its looping menu animation and one
+# introduction clip per fighter. Clips are silent 720p LTX videos; voices and music stay game audio.
+VideoRecord = io.Custom("CFZ_VIDEO")
+VIDEO_MODEL = "LTX-2.5 (Fast)"
+ANIMATION_STYLE = ("Hand-drawn 2D cel animation in the style of a late-1990s shonen battle anime and arcade fighting game: bold clean ink, "
+                   "flat cel shading, high-energy action with radial speed lines, impact frames and glowing aura effects.")
+
+
+def _animate(graph, prompt, first_frame, duration, seed, last_frame=None):
+    inputs = {"image": first_frame, "model": VIDEO_MODEL, "model.duration": duration, "model.resolution": "1280x720",
+              "model.fps": "24", "model.generate_audio": False, "prompt": prompt, "seed": seed % 4294967296}
+    if last_frame is not None:
+        inputs["last_frame"] = last_frame
+    return graph.node("LtxApi25ImageToVideo", **inputs)
+
+
+def _video_record(value):
+    identity = _slug(value.get("id"), "Video id"); record = {"id": identity}
+    if "fighter" in value:
+        record["fighter"] = _slug(value["fighter"], "Video fighter")
+        if identity != f"intro-{record['fighter']}":
+            raise ValueError("Fighter introduction videos use the ID intro-<fighter id>")
+    elif identity not in {"title", "select", "opening"}:
+        raise ValueError("A video is the title loop, the select loop, the opening or intro-<fighter id>")
+    return record
+
+
+def _save_video(graph, project, video, metadata):
+    return graph.node("CFZSaveVideo", project=project, video=video, asset_json=json.dumps(metadata)).out(0)
+
+
+class CFZTitleArt(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        fighters = [io.Image.Input(f"fighter_{index}", raw_link=True, optional=True) for index in range(1, 9)]
+        return io.Schema(node_id="CFZTitleArt", display_name="CFZ Title Ensemble Art", category="Comfy Fighter Z",
+            description="PAID cloud generation: one 2K startup-screen illustration of the cast together in the arena. Connect each character factory's identity image (up to eight) and the stage image. The game shows it behind the title menu, and CFZ Menu Video animates it.",
+            inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True), *fighters],
+            outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="title_image")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, stage_reference, **fighters):
+        _project(project)
+        references = [fighters[name] for name in (f"fighter_{index}" for index in range(1, 9)) if fighters.get(name) is not None]
+        if not references or stage_reference is None:
+            raise ValueError("Connect at least one fighter identity image and the stage image from an enabled environment")
+        graph = GraphBuilder(); members = _members(); count = len(references)
+        prompt = (project["ui_style"] + f"\nOne wide 16:9 arcade title-screen key illustration of exactly {count} fighter{'s' if count > 1 else ''} caught mid-battle: "
+                  f"one fighter from each of the first {count} reference image{'s' if count > 1 else ''}, in the arena from the last reference image. "
+                  "Dramatic low camera angle and strong foreshortening: the fighters lunge, leap and strike toward each other across the upper two thirds of the frame, "
+                  "fists and energy colliding in a bright shockwave with radial speed lines, flying debris and glowing auras, like a shonen battle-anime key visual. "
+                  "Each fighter keeps the same face, hair, body, outfit, accessories and colors as their reference. "
+                  "Keep the lower-middle third calm and uncluttered for the game logo and menu. No other people, no text, letters, logos, borders or interface.")
+        generated = _cloud(graph, project, prompt, [*references, stage_reference], "16:9", "2K", offset=60)
+        asset = _save(graph, project, generated.out(0), {"id": "ensemble", "kind": "ui", "key": False}, members)
+        return io.NodeOutput(_collect(graph, project, members, [asset]), generated.out(0), expand=graph.finalize())
+
+
+class CFZTitleVideo(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZTitleVideo", display_name="CFZ Menu Video", category="Comfy Fighter Z",
+            description="PAID cloud generation: one silent 720p LTX clip that loops the title ensemble behind the game menu; the same image is its first and last frame. Still art remains when motion is unavailable or reduced.",
+            inputs=[Project.Input("project"), io.Image.Input("title_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8")],
+            outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, title_image, duration="8"):
+        _project(project)
+        if title_image is None:
+            raise ValueError("Connect the title image from CFZ Title Ensemble Art")
+        graph = GraphBuilder()
+        prompt = (ANIMATION_STYLE + " Seamless looping title-menu animation. Use the supplied image as the exact first and last frame. "
+                  "The fighters break apart and trade a lightning-fast flurry of punches and kicks with afterimages and radial speed lines, "
+                  "energy shockwaves ripple outward, sparks and debris fly, the camera shakes, then they slam back together into the exact opening clash. "
+                  "Fast dynamic camera with a brief impact freeze, no cuts to other scenes. Keep every face, body, outfit and color unchanged. No new people, text or logos.")
+        video = _animate(graph, prompt, title_image, duration, project["seed"] + 90, last_frame=title_image)
+        return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": "title"}), expand=graph.finalize())
+
+
+class CFZSelectVideo(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZSelectVideo", display_name="CFZ Select Video", category="Comfy Fighter Z",
+            description="PAID cloud generation: one silent 720p LTX loop of the character-select backdrop (lights, embers, camera drift), played behind the roster. The still backdrop stays as the fallback.",
+            inputs=[Project.Input("project"), io.Image.Input("select_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8")],
+            outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, select_image, duration="8"):
+        _project(project)
+        if select_image is None:
+            raise ValueError("Connect the select backdrop image from CFZ Shared Art")
+        graph = GraphBuilder()
+        prompt = (ANIMATION_STYLE + " Seamless looping character-select backdrop animation. Use the supplied image as the exact first and last frame. "
+                  "Arena lights flicker and sweep, embers and sparks drift upward, banners and loose debris stir in a hot wind, heat shimmer rises from the floor "
+                  "and the camera drifts slowly with gentle parallax before returning to the opening framing. No people, no new objects, no text or logos.")
+        video = _animate(graph, prompt, select_image, duration, project["seed"] + 95, last_frame=select_image)
+        return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": "select"}), expand=graph.finalize())
+
+
+class CFZIntroVideo(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZIntroVideo", display_name="CFZ Fighter Intro Video", category="Comfy Fighter Z",
+            description="PAID cloud generation: one 1K 16:9 keyframe of the fighter in the arena, then one silent 720p LTX introduction clip played before fights. Voices stay separate; the sprite entrance remains the fallback.",
+            inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True), io.Image.Input("stage_reference", raw_link=True),
+                    io.Combo.Input("duration", options=["4", "6", "8"], default="4")],
+            outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, character, reference, stage_reference, duration="4"):
+        _project(project); character = _checked_character(character)
+        if reference is None or stage_reference is None:
+            raise ValueError("Connect the fighter's identity image and the stage image")
+        graph = GraphBuilder()
+        keyframe = _cloud(graph, project, _description(project, character) + "\nOne wide 16:9 cinematic opening frame for this fighter's arcade introduction. "
+                          "The same character from the first reference image stands full body slightly left of center in the arena from the second reference image, facing RIGHT, "
+                          "in a confident ready stance with the complete head, hands and shoes and generous padding. Flat side-on camera at waist height on a level floor. "
+                          "No other people, no text, logos or interface.", [reference, stage_reference], "16:9", "1K", offset=70)
+        prompt = (ANIMATION_STYLE + f" Use the supplied image as the exact first frame. {character['name']} explodes into an arcade fighter introduction: "
+                  f"a sudden burst of energy aura with radial speed lines, a lightning-fast dash toward the camera with afterimages, "
+                  f"one explosive signature strike that shows {character['specialMove']['name']}, then a hard stop into a fighting stance facing right with a final flare of power. "
+                  "Fast dynamic camera: a quick whip-pan and a dramatic low-angle push-in with a brief impact freeze, no cuts to other scenes. "
+                  "Keep the same face, body, outfit and colors throughout and the arena unchanged. No other people, no text or logos, no speech.")
+        video = _animate(graph, prompt, keyframe.out(0), duration, project["seed"] + 80)
+        return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": f"intro-{character['id']}", "fighter": character["id"]}), expand=graph.finalize())
+
+
+class CFZSaveVideo(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZSaveVideo", display_name="CFZ Save Mapped Video (internal)", category="Comfy Fighter Z/internal",
+                         inputs=[Project.Input("project"), io.Video.Input("video"), io.String.Input("asset_json")], outputs=[VideoRecord.Output(display_name="video_asset")])
+
+    @classmethod
+    def fingerprint_inputs(cls, **kwargs):
+        return float("nan")
+
+    @classmethod
+    def execute(cls, project, video, asset_json):
+        directory = _project(project); record = _video_record(_json_object(asset_json, "asset_json"))
+        buffer = BytesIO()
+        video.save_to(buffer, format=Types.VideoContainer.MP4, codec=Types.VideoCodec.H264)
+        return io.NodeOutput(_store_video(directory, record, buffer.getvalue()))
+
+
+def _store_video(directory, record, content):
+    """Write an MP4 under raw/ with a content-hash name and return its mapped record."""
+    if not content:
+        raise ValueError(f"Generated video is empty: {record['id']}")
+    with av.open(BytesIO(content)) as container:
+        if not container.streams.video:
+            raise ValueError(f"Generated file has no video stream: {record['id']}")
+        stream = container.streams.video[0]
+        duration = container.duration / av.time_base if container.duration else float(stream.duration * stream.time_base)
+        has_audio = len(container.streams.audio) > 0
+    if not 0 < duration <= 300:
+        raise ValueError(f"Generated video duration is out of range: {record['id']}")
+    digest = hashlib.sha256(content).hexdigest(); relative = f"raw/{record['id']}-{digest[:16]}.mp4"
+    destination = _inside(directory, relative)
+    if not destination.is_file() or destination.read_bytes() != content:
+        _atomic_write(destination, content)
+    return {**record, "src": relative, "duration": round(float(duration), 3), "sha256": digest, "hasAudio": has_audio, "_root": str(directory)}
+
+
+class CFZExportVideos(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZExportVideos", display_name="CFZ Export Videos", category="Comfy Fighter Z",
+            description="Writes video.json beside assets.json: the looping menu video and each fighter's introduction. The builder plays them and falls back to still art and sprite entrances when a clip is missing.",
+            inputs=[Project.Input("project"), io.Autogrow.Input("videos", template=io.Autogrow.TemplatePrefix(VideoRecord.Input("video"), prefix="video_", min=1, max=20))],
+            outputs=[io.String.Output(display_name="manifest_path")], is_output_node=True)
+
+    @classmethod
+    def fingerprint_inputs(cls, **kwargs):
+        return float("nan")
+
+    @classmethod
+    def execute(cls, project, videos):
+        path, preview = _export_videos(_project(project), videos.values())
+        return io.NodeOutput(path, ui=preview)
+
+
+def _export_videos(directory, items):
+    manifest = {"schema": "comfy-fighter-video/v1", "root": "."}; intros = []; seen = set()
+    for item in items:
+        if not isinstance(item, dict) or item.get("_root") != str(directory):
+            raise ValueError("Every video must be saved under the same CFZ Project Settings root")
+        record = {**_video_record(item), **{key: item[key] for key in ("src", "duration", "sha256", "hasAudio")}}
+        file = _inside(directory, record["src"])
+        if not file.is_file() or hashlib.sha256(file.read_bytes()).hexdigest() != record["sha256"]:
+            raise ValueError(f"Saved video is missing or changed: {record['id']}")
+        if record["id"] in seen:
+            raise ValueError(f"Duplicate video: {record['id']}")
+        seen.add(record["id"])
+        if "fighter" in record:
+            intros.append(record)
+        else:
+            manifest[f"{record['id']}Video"] = record
+    if intros:
+        manifest["fighterIntros"] = intros
+    destination = _inside(directory, "video.json")
+    _atomic_write(destination, (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+    return str(destination), ui.PreviewText(str(destination))
 
 
 class CFZSaveMappedAsset(io.ComfyNode):
@@ -541,9 +757,10 @@ def _export(project, bundles, complete):
                 raise ValueError(f"Mapped image dimensions changed: {record['id']}")
         record.update(src=relative, sha256=digest, width=item["width"], height=item["height"]); records.append(record)
     if complete:
-        mappings = {name: {"kind": "ui"} for name in ["title", "select", "logo", "hud", "icons"]}
+        mappings = {name: {"kind": "ui"} for name in ["title", "select", "logo", "hud", "icons", "ensemble"]}
         mappings["combat_effects"] = {"kind": "effects", "poses": EFFECTS, "key": True}
-        optional = set()
+        # The title ensemble is optional startup art; the game falls back to the title background.
+        optional = {"ensemble"}
         for fighter in config["fighters"]:
             for suffix in ["source", "reference", *ALL_SHEETS, "portrait", "hero", "cutin", "ending"]:
                 expected_mapping = {"kind": "sprites" if suffix in ALL_SHEETS else suffix, "fighter": fighter["id"]}
@@ -616,4 +833,4 @@ class CFZExportAssetPatch(io.ComfyNode):
 
 
 FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZCharacterArt, CFZEnvironmentFactory,
-                 CFZSharedArtFactory, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]
+                 CFZSharedArtFactory, CFZTitleArt, CFZTitleVideo, CFZSelectVideo, CFZIntroVideo, CFZSaveVideo, CFZExportVideos, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]

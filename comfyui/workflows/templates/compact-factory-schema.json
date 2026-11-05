@@ -877,22 +877,26 @@
     },
     "is_input_list": false,
     "output": [
-      "CFZ_BUNDLE"
+      "CFZ_BUNDLE",
+      "IMAGE"
     ],
     "output_is_list": [
+      false,
       false
     ],
     "output_name": [
-      "bundle"
+      "bundle",
+      "select_image"
     ],
     "output_tooltips": [
+      null,
       null
     ],
     "output_matchtypes": null,
     "name": "CFZSharedArtFactory",
     "display_name": "CFZ Shared Game Art",
     "description": "PAID cloud generation: six images (title, selection, logo, HUD, icons and nine combat effects). Connect the stage image from an ENABLED environment factory as the reference.",
-    "python_module": null,
+    "python_module": "custom_nodes.comfy_fighter_assets",
     "category": "Comfy Fighter Z",
     "output_node": false,
     "deprecated": false,
@@ -1336,6 +1340,514 @@
     "display_name": "CFZ Character Art",
     "description": "PAID cloud generation: exactly one 1K portrait, hero, cut-in or arcade ending illustration from an accepted identity reference. Use it to add ending art to an existing fighter or to repair one image.",
     "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZTitleArt": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "stage_reference": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ]
+      },
+      "optional": {
+        "fighter_1": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "fighter_2": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "fighter_3": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "fighter_4": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "fighter_5": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "fighter_6": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "fighter_7": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "fighter_8": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "stage_reference"
+      ],
+      "optional": [
+        "fighter_1",
+        "fighter_2",
+        "fighter_3",
+        "fighter_4",
+        "fighter_5",
+        "fighter_6",
+        "fighter_7",
+        "fighter_8"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "bundle",
+      "title_image"
+    ],
+    "output_tooltips": [
+      null,
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZTitleArt",
+    "display_name": "CFZ Title Ensemble Art",
+    "description": "PAID cloud generation: one 2K startup-screen illustration of the cast together in the arena. Connect each character factory's identity image (up to eight) and the stage image. The game shows it behind the title menu, and CFZ Menu Video animates it.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZTitleVideo": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "title_image": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "duration": [
+          "COMBO",
+          {
+            "default": "8",
+            "multiselect": false,
+            "options": [
+              "6",
+              "8",
+              "10"
+            ]
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "title_image",
+        "duration"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_VIDEO"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "video_asset"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZTitleVideo",
+    "display_name": "CFZ Menu Video",
+    "description": "PAID cloud generation: one silent 720p LTX clip that loops the title ensemble behind the game menu; the same image is its first and last frame. Still art remains when motion is unavailable or reduced.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZIntroVideo": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "character": [
+          "CFZ_CHARACTER",
+          {}
+        ],
+        "reference": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "stage_reference": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "duration": [
+          "COMBO",
+          {
+            "default": "4",
+            "multiselect": false,
+            "options": [
+              "4",
+              "6",
+              "8"
+            ]
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "character",
+        "reference",
+        "stage_reference",
+        "duration"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_VIDEO"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "video_asset"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZIntroVideo",
+    "display_name": "CFZ Fighter Intro Video",
+    "description": "PAID cloud generation: one 1K 16:9 keyframe of the fighter in the arena, then one silent 720p LTX introduction clip played before fights. Voices stay separate; the sprite entrance remains the fallback.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZSaveVideo": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "video": [
+          "VIDEO",
+          {}
+        ],
+        "asset_json": [
+          "STRING",
+          {
+            "multiline": false
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "video",
+        "asset_json"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_VIDEO"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "video_asset"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZSaveVideo",
+    "display_name": "CFZ Save Mapped Video (internal)",
+    "description": "",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z/internal",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZExportVideos": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "videos": [
+          "COMFY_AUTOGROW_V3",
+          {
+            "template": {
+              "input": {
+                "required": {
+                  "video": [
+                    "CFZ_VIDEO",
+                    {}
+                  ]
+                }
+              },
+              "prefix": "video_",
+              "min": 1,
+              "max": 20
+            }
+          }
+        ]
+      },
+      "hidden": {
+        "prompt": [
+          "PROMPT"
+        ],
+        "extra_pnginfo": [
+          "EXTRA_PNGINFO"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "videos"
+      ],
+      "hidden": [
+        "prompt",
+        "extra_pnginfo"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "STRING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "manifest_path"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZExportVideos",
+    "display_name": "CFZ Export Videos",
+    "description": "Writes video.json beside assets.json: the looping menu video and each fighter's introduction. The builder plays them and falls back to still art and sprite entrances when a clip is missing.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": true,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZSelectVideo": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "select_image": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "duration": [
+          "COMBO",
+          {
+            "default": "8",
+            "multiselect": false,
+            "options": [
+              "6",
+              "8",
+              "10"
+            ]
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "select_image",
+        "duration"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_VIDEO"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "video_asset"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZSelectVideo",
+    "display_name": "CFZ Select Video",
+    "description": "PAID cloud generation: one silent 720p LTX loop of the character-select backdrop (lights, embers, camera drift), played behind the roster. The still backdrop stays as the fallback.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
     "category": "Comfy Fighter Z",
     "output_node": false,
     "deprecated": false,

@@ -13,7 +13,6 @@
   let audioEnabled = false, audioInteracted = false, music = null, musicId = null;
   let introScene = null, introVoice = null;
   let openingActive = false, openingStarted = false, network = null;
-  let titleVideoFailed = false, titleVideoPending = false, titleVideoAttempt = 0, titleVideoTimer = null;
   let networkRole = null, networkSide = null, networkMatchId = null;
   const fighterRenderer = window.FighterAnim?.createRenderer();
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -46,7 +45,7 @@
   window.FighterDebug = Object.freeze({
     ...debugHooks,
     snapshot: () => state ? JSON.parse(JSON.stringify(state)) : null,
-    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', titleMedia: $('title-screen').classList.contains('title-video-ready') ? 'video' : 'image', introSlot: introScene?.slot ?? null, introMedia: introScene?.media || null, controls: 'arrows-asdf', mode, overlay: overlay?.type || null, arcade: arcade ? { index: arcade.index, ladder: arcade.ladder.map(i => manifest.fighters[i].id), score: arcade.score, continues: arcade.continues } : null, gamepads: gamepads().length, humanPlayers: network?.active && !state?.cpu || mode === 'versus' && state && !state.cpu ? 2 : 1, stageId: manifest.stages[stageIndex]?.id, network: network?.active ? { role: networkRole, side: networkSide, matchId: networkMatchId, phase: network.room.phase, connected: network.client.ready, paused: !!network.room.paused } : null })
+    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', titleMedia: $('title-screen').classList.contains('title-video-ready') ? 'video' : 'image', introSlot: introScene ? 0 : null, introMedia: introMedia(), introHalves: introScene?.halves.map(half => half.media) || null, controls: 'arrows-asdf', mode, overlay: overlay?.type || null, arcade: arcade ? { index: arcade.index, ladder: arcade.ladder.map(i => manifest.fighters[i].id), score: arcade.score, continues: arcade.continues } : null, gamepads: gamepads().length, humanPlayers: network?.active && !state?.cpu || mode === 'versus' && state && !state.cpu ? 2 : 1, stageId: manifest.stages[stageIndex]?.id, network: network?.active ? { role: networkRole, side: networkSide, matchId: networkMatchId, phase: network.room.phase, connected: network.client.ready, paused: !!network.room.paused } : null })
   });
   const controls = [
     { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyF: 'special', KeyG: 'taunt' }, {}
@@ -73,28 +72,39 @@
   }
   const profiles = () => Object.fromEntries(manifest.fighters.map(f => [f.id, { style: f.style, boss: f.boss === true }]));
   const audioId = (...ids) => ids.find(id => id && manifest.audio?.[id]);
-  function setScene(scene) { document.body.dataset.scene = scene; }
+  function setScene(scene) {
+    document.body.dataset.scene = scene;
+    document.querySelectorAll('.card-motion').forEach(clip => { if (scene === 'selection') clip.play().catch(() => {}); else clip.pause(); });
+  }
   function art(src) { return typeof src === 'string' ? images.get(src) : null; }
   function assetSource(value) { return typeof value === 'string' ? value : value?.src; }
-  function titleMotionWanted() {
-    return !openingActive && selectedTab === 'arena' && !$('title-screen').hidden && !document.hidden && !reducedMotion.matches && !$('settings-dialog').open && !network?.dialog?.open;
+  const menuMotionWanted = screenId => !openingActive && selectedTab === 'arena' && !$(screenId).hidden && !document.hidden && !reducedMotion.matches && !$('settings-dialog').open && !network?.dialog?.open;
+  const titleMotionWanted = () => menuMotionWanted('title-screen');
+  // A silent looping video plate behind a menu screen. The still artwork stays underneath as the fallback
+  // and comes back whenever the clip stalls, fails, or motion is not wanted.
+  function createMotionPlate(videoId, screenId, key, wanted) {
+    const video = $(videoId), screen = $(screenId), readyClass = `${videoId}-ready`;
+    let failed = false, pending = false, attempt = 0, timer = null;
+    const stop = () => { attempt++; pending = false; clearTimeout(timer); timer = null; video.pause(); video.hidden = true; screen.classList.remove(readyClass); };
+    const fail = () => { failed = true; stop(); };
+    const watch = () => { clearTimeout(timer); const current = attempt; timer = setTimeout(() => { if (current === attempt && wanted() && !screen.classList.contains(readyClass)) fail(); }, 4000); };
+    video.addEventListener('playing', () => { if (wanted()) { clearTimeout(timer); timer = null; screen.classList.add(readyClass); } else stop(); });
+    video.addEventListener('error', () => { if (wanted()) fail(); });
+    video.addEventListener('waiting', () => { if (wanted()) watch(); });
+    function sync() {
+      const src = assetSource(manifest[key]);
+      if (!wanted()) { if (!video.paused || !video.hidden || pending) stop(); return; }
+      if (failed || !src || !/^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(src) || !video.canPlayType('video/mp4')) return;
+      if (!video.hasAttribute('src')) { video.muted = true; video.playsInline = true; video.loop = true; video.src = src; }
+      if (pending || !video.paused) return;
+      video.hidden = false; pending = true; ++attempt; watch();
+      const current = attempt;
+      video.play().then(() => { if (current === attempt) pending = false; }).catch(() => { if (current === attempt && wanted()) fail(); });
+    }
+    return { sync, stop };
   }
-  function stopTitleMotion() {
-    const video = $('title-video');
-    titleVideoAttempt++; titleVideoPending = false; clearTimeout(titleVideoTimer); titleVideoTimer = null;
-    video.pause(); video.hidden = true; $('title-screen').classList.remove('title-video-ready');
-  }
-  function failTitleMotion() { titleVideoFailed = true; stopTitleMotion(); }
-  function syncTitleMotion() {
-    const video = $('title-video'), src = assetSource(manifest.titleVideo);
-    if (!titleMotionWanted()) { if (!video.paused || !video.hidden || titleVideoPending) stopTitleMotion(); return; }
-    if (titleVideoFailed || !src || !/^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(src) || !video.canPlayType('video/mp4')) return;
-    if (!video.hasAttribute('src')) { video.muted = true; video.playsInline = true; video.loop = true; video.src = src; }
-    if (titleVideoPending || !video.paused) return;
-    video.hidden = false; titleVideoPending = true; const attempt = ++titleVideoAttempt;
-    clearTimeout(titleVideoTimer); titleVideoTimer = setTimeout(() => { if (attempt === titleVideoAttempt && titleMotionWanted() && !$('title-screen').classList.contains('title-video-ready')) failTitleMotion(); }, 4000);
-    video.play().then(() => { if (attempt === titleVideoAttempt) titleVideoPending = false; }).catch(() => { if (attempt === titleVideoAttempt && titleMotionWanted()) failTitleMotion(); });
-  }
+  const titleMotion = createMotionPlate('title-video', 'title-screen', 'titleVideo', titleMotionWanted);
+  const selectMotion = createMotionPlate('select-video', 'selection-screen', 'selectVideo', () => menuMotionWanted('selection-screen'));
   function ui(name) { return art(assetSource(manifest.ui?.[name])); }
   function fighterData(slot) { return manifest.fighters[selected[slot]]; }
   function portraitSource(f, hero = false) { return [hero && f.hero, f.portrait, f.hero, f.sourceImage].map(assetSource).find(src => art(src)); }
@@ -156,31 +166,43 @@
     if (!audioEnabled) { music?.pause(); introVoice?.pause(); activeSounds.forEach(sound => sound.pause()); activeSounds.clear(); }
     else if (!paused) {
       music?.play().catch(() => {});
-      if (introScene && introScene.media !== 'loading') {
-        const voiceId = 'fighter_' + fighterData(introScene.slot).id + '_intro';
-        const voiceDuration = Number(manifest.audio?.[voiceId]?.duration) || Number(introVoice?.duration);
-        const voiceFinished = Number.isFinite(voiceDuration) && voiceDuration > 0 && introScene.elapsed >= voiceDuration * 1000;
-        if (!voiceFinished && !introVoice) introVoice = playSound(voiceId, .85);
-        if (!voiceFinished && introVoice) {
+      if (introScene && introMedia() !== 'loading') {
+        // Resume the voice that should be speaking at this point of the scene.
+        const line = currentVoiceLine();
+        if (line && !introVoice) { introVoice = playSound(line.id, .85); introScene.spoken = line; }
+        if (line && introVoice) {
           const voice = introVoice;
-          try { voice.currentTime = introScene.elapsed / 1000; } catch (_) { /* A stream may not be seekable yet. */ }
+          try { voice.currentTime = (introScene.elapsed - line.start) / 1000; } catch (_) { /* A stream may not be seekable yet. */ }
           activeSounds.add(voice); voice.play().catch(() => activeSounds.delete(voice));
         }
       }
     }
   }
   function engageAudio() { if (!audioInteracted) { audioEnabled = true; audioInteracted = true; refreshAudio(); } }
-  function clearIntroVideo() {
-    const video = $('intro-video');
+  const introHalves = () => [...$('intro-screen').querySelectorAll('.intro-half')];
+  const introVideo = slot => $(slot ? 'intro-video-2' : 'intro-video');
+  function clearIntroVideo(slot) {
+    const video = introVideo(slot);
     video.onplaying = video.onerror = video.onended = null;
     video.pause(); video.removeAttribute('src'); video.load(); video.hidden = true;
-    $('intro-screen').classList.remove('has-intro-video');
+    introHalves()[slot].classList.remove('has-video');
   }
   function clearIntro() {
     introVoice?.pause(); if (introVoice) activeSounds.delete(introVoice);
-    clearIntroVideo();
+    clearIntroVideo(0); clearIntroVideo(1);
     introVoice = null; introScene = null; $('intro-screen').hidden = true;
     if (music) music.volume = musicLevel();
+  }
+  // Combined media state of both halves: loading until every clip has decided, video if any clip plays.
+  function introMedia() {
+    if (!introScene) return null;
+    const media = introScene.halves.map(half => half.media);
+    return media.includes('loading') ? 'loading' : media.includes('video') ? 'video' : 'sprite';
+  }
+  // Voice lines play one after the other; the scene timeline says whose turn it is.
+  function currentVoiceLine() {
+    if (!introScene) return null;
+    return introScene.voices.find(line => introScene.elapsed >= line.start && introScene.elapsed < line.end) || null;
   }
   // The final boss waits at the end of Arcade mode; other modes may pick them.
   const selectable = index => !(mode === 'arcade' && manifest.fighters[index]?.boss);
@@ -234,48 +256,62 @@
     $('staff-roll').hidden = true;
     overlay = null;
   }
-  function showIntroduction(slot) {
+  // Both fighters are introduced at once on a split screen. Each half plays that fighter's clip,
+  // or the sprite entrance when no clip is mapped or it fails. Combat stays frozen until it ends.
+  function showIntroduction(speakers = 'both') {
     introVoice?.pause(); if (introVoice) activeSounds.delete(introVoice);
-    introVoice = null; clearIntroVideo();
-    const fighter = fighterData(slot), voiceId = 'fighter_' + fighter.id + '_intro';
-    const duration = Number(manifest.audio?.[voiceId]?.duration) || 2.8;
-    const fallbackDuration = Math.max(2800, Math.min(7500, duration * 1000 + 600));
-    introScene = { slot, elapsed: 0, duration: fallbackDuration, fallbackDuration, media: 'sprite', actor: { ...state.fighters[slot], x: 300, y: 0, facing: 1 } };
-    setScene('intro');
-    const panel = $('intro-screen'); panel.hidden = false; panel.dataset.slot = String(slot); panel.classList.toggle('long-name', fighter.name.length > 14);
-    panel.style.setProperty('--intro-accent', fighter.color || (slot ? '#7894a5' : '#c4a25e'));
+    introVoice = null;
+    const panel = $('intro-screen'); panel.hidden = false;
     panel.classList.remove('arriving'); void panel.offsetWidth; panel.classList.add('arriving');
-    $('intro-slot').textContent = slot ? 'THE CHALLENGER ANSWERS' : 'PLAYER ONE ENTERS';
-    $('intro-number').textContent = slot ? '02' : '01'; $('intro-name').textContent = fighter.name;
-    $('intro-special').textContent = fighter.specialMove?.name || 'A NEW CHALLENGER';
-    $('intro-tagline').textContent = '“' + (fighter.introTagline || fallbackTaglines[fighter.id] || 'This fight is mine.') + '”';
-    const portrait = $('intro-portrait'), src = portraitSource(fighter, true); portrait.replaceChildren();
-    if (fighterRenderer && art(fighter.poses?.idle?.src)) { const actor = document.createElement('canvas'); actor.id = 'intro-actor'; actor.width = 600; actor.height = 600; actor.setAttribute('aria-label', fighter.name + ' entrance animation'); portrait.append(actor); }
-    else if (src) { const img = document.createElement('img'); img.src = src; img.alt = fighter.name; portrait.append(img); }
-    else { const emblem = document.createElement('span'); emblem.textContent = fighter.name.slice(0, 1); portrait.append(emblem); }
-    panel.querySelectorAll('.intro-progress span').forEach((mark, index) => { mark.classList.toggle('active', index === slot); mark.classList.toggle('complete', index < slot); });
+    const scene = { elapsed: 0, duration: 0, halves: [], voices: [], spoken: null };
+    let voiceStart = 0;
+    [0, 1].forEach(slot => {
+      clearIntroVideo(slot);
+      const fighter = fighterData(slot), voiceId = 'fighter_' + fighter.id + '_intro', half = introHalves()[slot];
+      const voiceDuration = Number(manifest.audio?.[voiceId]?.duration) || 2.8;
+      const speaks = speakers === 'both' || (speakers === 'challenger' ? slot === 1 : slot === 0);
+      if (speaks) { scene.voices.push({ id: voiceId, start: voiceStart, end: voiceStart + voiceDuration * 1000 }); voiceStart += voiceDuration * 1000 + 250; }
+      half.classList.toggle('long-name', fighter.name.length > 14);
+      half.style.setProperty('--intro-accent', fighter.color || (slot ? '#7894a5' : '#c4a25e'));
+      $(slot ? 'intro-name-2' : 'intro-name').textContent = fighter.name;
+      $(slot ? 'intro-special-2' : 'intro-special').textContent = fighter.specialMove?.name || 'A NEW CHALLENGER';
+      $(slot ? 'intro-tagline-2' : 'intro-tagline').textContent = '“' + (fighter.introTagline || fallbackTaglines[fighter.id] || 'This fight is mine.') + '”';
+      $(slot ? 'intro-slot-2' : 'intro-slot').textContent = slot ? (state.cpu ? 'THE CHALLENGER ANSWERS' : 'PLAYER TWO ENTERS') : 'PLAYER ONE ENTERS';
+      const stage = $(slot ? 'intro-portrait-2' : 'intro-portrait'), src = portraitSource(fighter, true); stage.replaceChildren();
+      if (fighterRenderer && art(fighter.poses?.idle?.src)) { const actor = document.createElement('canvas'); actor.className = 'intro-actor'; if (!slot) actor.id = 'intro-actor'; actor.width = 600; actor.height = 600; actor.setAttribute('aria-label', fighter.name + ' entrance animation'); stage.append(actor); }
+      else if (src) { const img = document.createElement('img'); img.src = src; img.alt = fighter.name; stage.append(img); }
+      else { const emblem = document.createElement('span'); emblem.textContent = fighter.name.slice(0, 1); stage.append(emblem); }
+      const entry = { slot, media: 'sprite', loadElapsed: 0, stallElapsed: 0, actor: { ...state.fighters[slot], x: 300, y: 0, facing: slot ? -1 : 1 } };
+      scene.halves.push(entry);
+      const clip = fighter.introVideo, videoSrc = assetSource(clip), video = introVideo(slot);
+      // Intro media is a local exported asset, never an arbitrary remote URL.
+      const safeClip = typeof videoSrc === 'string' && /^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(videoSrc) && video.canPlayType('video/mp4');
+      if (!safeClip) return;
+      entry.media = 'loading';
+      entry.clipDuration = Math.max(1000, Math.min(12000, (Number(clip.duration) || 8) * 1000));
+      const useFallback = () => {
+        if (introScene !== scene || entry.media === 'sprite') return;
+        clearIntroVideo(slot); entry.media = 'sprite';
+      };
+      video.onplaying = () => {
+        if (introScene !== scene) return;
+        if (paused || selectedTab !== 'arena') { video.pause(); return; }
+        entry.media = 'video'; video.hidden = false; half.classList.add('has-video');
+      };
+      video.onerror = useFallback;
+      video.muted = true; video.playsInline = true; video.loop = true; video.src = videoSrc;
+      video.play().catch(useFallback);
+    });
+    // The scene lasts for the longer clip or the last voice line, whichever is later; clips loop meanwhile.
+    const voiced = Math.max(2800, Math.min(9000, (scene.voices[scene.voices.length - 1]?.end || 0) + 300));
+    scene.duration = Math.max(voiced, ...scene.halves.map(half => half.clipDuration || 0));
+    introScene = scene;
+    setScene('intro');
     if (music) music.volume = musicLevel() * .3;
-    const scene = introScene, clip = fighter.introVideo, videoSrc = assetSource(clip), video = $('intro-video');
-    // Intro media is a local exported asset, never an arbitrary remote URL.
-    const safeClip = typeof videoSrc === 'string' && /^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(videoSrc) && video.canPlayType('video/mp4');
-    if (!safeClip) { introVoice = playSound(voiceId, .85); return; }
-    const startVoice = () => { if (introScene === scene && !introVoice) introVoice = playSound(voiceId, .85); };
-    const useFallback = () => {
-      if (introScene !== scene || scene.media === 'sprite') return;
-      clearIntroVideo(); scene.media = 'sprite'; scene.elapsed = 0; scene.duration = scene.fallbackDuration;
-      startVoice();
-    };
-    scene.media = 'loading'; scene.loadElapsed = 0;
-    scene.duration = Math.max(1000, Math.min(12000, (Number(clip.duration) || 8) * 1000));
-    video.onplaying = () => {
-      if (introScene !== scene) return;
-      if (paused || selectedTab !== 'arena') { video.pause(); return; }
-      scene.media = 'video'; video.hidden = false; panel.classList.add('has-intro-video'); startVoice();
-    };
-    video.onerror = useFallback;
-    video.onended = () => { if (introScene === scene && scene.media === 'video') scene.elapsed = scene.duration; };
-    video.muted = true; video.playsInline = true; video.src = videoSrc;
-    video.play().catch(useFallback);
+    // Sprite-only scenes speak at once; clips start the voice when they begin playing.
+    const first = currentVoiceLine();
+    if (first && introMedia() !== 'loading') { introVoice = playSound(first.id, .85); scene.spoken = first; }
+    panel.querySelectorAll('.intro-progress span').forEach(mark => mark.classList.add('active'));
   }
   function finishIntroduction(skip = true) {
     if (!introScene) return;
@@ -287,32 +323,37 @@
   }
   function updateIntroduction(milliseconds) {
     if (!introScene) return;
-    const video = $('intro-video');
-    if (paused || selectedTab !== 'arena') { if (!video.paused) video.pause(); return; }
-    if (introScene.media === 'loading') {
-      introScene.loadElapsed += milliseconds;
-      if (introScene.loadElapsed >= 3000) { video.onerror?.(); }
-      else if (video.paused && !video.error) { const scene = introScene; video.play().catch(() => { if (introScene === scene) video.onerror?.(); }); }
-      return;
-    }
-    if (introScene.media === 'video') {
-      if (video.paused && !video.ended) { const scene = introScene; video.play().catch(() => { if (introScene === scene) video.onerror?.(); }); }
-      if (video.readyState < 2 || video.seeking) {
-        introScene.stallElapsed = (introScene.stallElapsed || 0) + milliseconds;
-        if (introScene.stallElapsed >= 3000) video.onerror?.();
-        return;
+    if (paused || selectedTab !== 'arena') { [0, 1].forEach(slot => { const video = introVideo(slot); if (!video.paused) video.pause(); }); return; }
+    const scene = introScene;
+    let waiting = false;
+    for (const half of scene.halves) {
+      const video = introVideo(half.slot);
+      if (half.media === 'loading') {
+        half.loadElapsed += milliseconds;
+        if (half.loadElapsed >= 3000) video.onerror?.();
+        else if (video.paused && !video.error) video.play().catch(() => { if (introScene === scene) video.onerror?.(); });
+        waiting = true;
+      } else if (half.media === 'video') {
+        if (video.paused) video.play().catch(() => { if (introScene === scene) video.onerror?.(); });
+        if (video.readyState < 2 || video.seeking) {
+          half.stallElapsed += milliseconds;
+          if (half.stallElapsed >= 3000) video.onerror?.();
+          waiting = true;
+        } else half.stallElapsed = 0;
       }
-      introScene.stallElapsed = 0;
     }
-    introScene.elapsed += milliseconds;
-    const actor = $('intro-actor');
-    if (actor) {
+    if (introScene !== scene || waiting) return;
+    scene.elapsed += milliseconds;
+    // Voices take turns: start the next line when the timeline reaches it.
+    const line = currentVoiceLine();
+    if (line && line !== scene.spoken) { introVoice?.pause(); if (introVoice) activeSounds.delete(introVoice); introVoice = playSound(line.id, .85); scene.spoken = line; }
+    for (const half of scene.halves) {
+      const actor = $(half.slot ? 'intro-portrait-2' : 'intro-portrait').querySelector('canvas');
+      if (!actor) continue;
       const introContext = actor.getContext('2d'); introContext.clearRect(0, 0, 600, 600);
-      fighterRenderer.draw(introContext, introScene.actor, fighterData(introScene.slot), art, state, { ground: 575, height: 480, reducedMotion: reducedMotion.matches, introFrame: introScene.elapsed * .06 });
+      fighterRenderer.draw(introContext, half.actor, fighterData(half.slot), art, state, { ground: 575, height: 480, reducedMotion: reducedMotion.matches, introFrame: scene.elapsed * .06 });
     }
-    if (introScene.elapsed >= introScene.duration) {
-      if (introScene.slot === 0) showIntroduction(1); else finishIntroduction(false);
-    }
+    if (scene.elapsed >= scene.duration) finishIntroduction(false);
   }
   function chooseFighter(index) {
     selected[pickingSlot] = index; $(pickingSlot ? 'fighter-two' : 'fighter-one').value = index;
@@ -335,6 +376,10 @@
     Object.entries(manifest.ui || {}).forEach(([name, src]) => entries.push({ group: 'ui', name, src: assetSource(src), info: 'Interface artwork' }));
     Object.entries(manifest.effects || {}).forEach(([name, meta]) => entries.push({ group: 'effects', name, src: assetSource(meta), info: 'Combat effect' }));
     Object.entries(manifest.audio || {}).forEach(([name, item]) => entries.push({ group: 'audio', name: name.replaceAll('_', ' '), src: assetSource(item), info: item.category || 'Generated audio' }));
+    // Generated clips: the menu loop, an optional opening and each fighter's introduction.
+    const clip = (name, video, info) => { if (assetSource(video)) entries.push({ group: 'video', name, src: assetSource(video), info: `${info} · ${Math.round(video.duration || 0)} s` }); };
+    clip('Menu loop', manifest.titleVideo, 'Title and menu animation'); clip('Select loop', manifest.selectVideo, 'Character-select animation'); clip('Opening', manifest.openingVideo, 'Startup film');
+    manifest.fighters.forEach(f => clip(`${f.name} / introduction`, f.introVideo, 'Fight introduction'));
     return entries;
   }
   function setBackground(element, image) {
@@ -359,6 +404,12 @@
       const frame = document.createElement('div'); frame.className = 'fighter-art';
       const source = portraitSource(f, true), generated = generatedPortrait(f);
       if (source) { const img = document.createElement('img'); img.src = source; img.alt = f.name; img.classList.toggle('reference', !generated); frame.append(img); }
+      // The fighter's introduction clip previews on the card; the hero art stays underneath as the fallback.
+      const motion = assetSource(f.introVideo);
+      if (generated && typeof motion === 'string' && /^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(motion) && !reducedMotion.matches) {
+        const clip = document.createElement('video'); clip.className = 'card-motion'; clip.muted = true; clip.loop = true; clip.playsInline = true; clip.autoplay = true; clip.preload = 'metadata';
+        clip.setAttribute('aria-hidden', 'true'); clip.onerror = () => clip.remove(); clip.src = motion; frame.append(clip);
+      }
       else { const placeholder = document.createElement('div'); placeholder.className = 'fallback-portrait'; placeholder.textContent = String(index + 1).padStart(2, '0'); frame.append(placeholder); }
       const plate = document.createElement('div'); plate.className = 'fighter-nameplate';
       const tag = document.createElement('span'); tag.className = 'mini-tag'; tag.textContent = slot ? `${mode === 'versus' ? '2P' : mode === 'training' ? 'DUMMY' : 'CPU'} / ${STYLE_LABELS[f.style] || 'CHALLENGER'}` : `1P / ${STYLE_LABELS[f.style] || 'YOUR FIGHTER'}`;
@@ -427,7 +478,8 @@
       [galleryEntries.filter(e => e.group === 'fighters' && art(e.src)).length, 'FIGHTER POSES'],
       [galleryEntries.filter(e => e.group === 'portraits' && art(e.src)).length, 'CHARACTER ART'],
       [galleryEntries.filter(e => e.group === 'stages' && art(e.src)).length, 'STAGES'],
-      [galleryEntries.filter(e => ['ui', 'effects'].includes(e.group) && art(e.src)).length, 'UI + EFFECTS']
+      [galleryEntries.filter(e => ['ui', 'effects'].includes(e.group) && art(e.src)).length, 'UI + EFFECTS'],
+      [galleryEntries.filter(e => e.group === 'video').length, 'VIDEOS']
     ];
     $('coverage').replaceChildren();
     counts.forEach(([count, label]) => { const box = document.createElement('div'), num = document.createElement('strong'), text = document.createElement('span'); num.textContent = String(count).padStart(2, '0'); text.textContent = label; box.append(num, text); $('coverage').append(box); });
@@ -443,6 +495,7 @@
       const card = document.createElement('article'); card.className = 'asset-card';
       const preview = document.createElement('div'); preview.className = 'preview';
       if (entry.group === 'audio') { const player = document.createElement('audio'); player.controls = true; player.preload = 'none'; player.src = entry.src; player.setAttribute('aria-label', entry.name); preview.append(player); }
+      else if (entry.group === 'video') { const player = document.createElement('video'); player.controls = true; player.muted = true; player.loop = true; player.playsInline = true; player.preload = 'metadata'; player.src = entry.src; player.setAttribute('aria-label', entry.name); preview.append(player); }
       else if (art(entry.src)) { const img = document.createElement('img'); img.src = entry.src; img.alt = entry.name; img.loading = 'lazy'; preview.append(img); }
       else preview.textContent = 'Image unavailable';
       const meta = document.createElement('div'); meta.className = 'meta';
@@ -507,7 +560,7 @@
     if (intros === false || mode === 'training') {
       setScene('fight'); $('pause-button').hidden = !!network?.active || mode === 'demo'; $('touch-panel').hidden = mode === 'demo';
       canvas.focus({ preventScroll: true });
-    } else { showIntroduction(intros === 'challenger' ? 1 : 0); $('intro-skip').focus(); }
+    } else { showIntroduction(intros); $('intro-skip').focus(); }
   }
   // Arcade: a shuffled ladder of every rival, then the final boss in the last arena.
   function buildLadder(player) {
@@ -962,6 +1015,10 @@
     }
   }
   function render() {
+    const density = Math.min(3, Math.max(1, (canvas.clientWidth || 960) * Math.min(window.devicePixelRatio || 1, 3) / 960));
+    const backing = Math.round(960 * density);
+    if (canvas.width !== backing) { canvas.width = backing; canvas.height = Math.round(540 * density); }
+    ctx.setTransform(density, 0, 0, density, 0, 0); ctx.imageSmoothingQuality = 'high';
     ctx.clearRect(0, 0, 960, 540);
     const preview = E.create(selected.map(i => manifest.fighters[i].id)), fighters = state?.fighters || preview.fighters;
     updateCamera(fighters, !state);
@@ -1157,7 +1214,7 @@
   }
   function frame(now) {
     const elapsed = Math.min(100, now - last); accumulator += elapsed; last = now;
-    syncTitleMotion();
+    titleMotion.sync(); selectMotion.sync();
     updateIntroduction(elapsed);
     pollPads();
     // Attract mode starts after a quiet minute on the title screen.
@@ -1208,6 +1265,8 @@
     // The ensemble title art shows the six included heroes; the final boss does not change that cast.
     const heroes = manifest.fighters.filter(f => !f.boss);
     const includedCast = heroes.length === 6 && heroes.every(f => demoCast[f.id] && f.description?.startsWith(demoCast[f.id]));
+    const heroCount = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT'][heroes.length] || String(heroes.length);
+    $('title-eyebrow').textContent = `${heroCount} ${heroes.length === 1 ? 'CHALLENGER' : 'CHALLENGERS'}. ONE OPEN SOURCE SHOWDOWN.`;
     document.body.classList.toggle('cfz-arcade-art', document.title.trim().toLowerCase() === 'comfy fighter z');
     document.body.classList.toggle('cfz-ensemble', includedCast && document.body.classList.contains('cfz-arcade-art'));
     $('arcade-logo').hidden = !document.body.classList.contains('cfz-arcade-art');
@@ -1222,13 +1281,16 @@
     document.body.classList.toggle('multiple-stages', manifest.stages.length > 1);
     galleryEntries = findEntries();
     const references = [...manifest.fighters.filter(f => !f.hero && !f.portrait), ...manifest.stages.filter(s => !s.src)].map(item => assetSource(item.sourceImage)).filter(Boolean);
-    await Promise.all([...galleryEntries.filter(e => e.group !== 'audio').map(e => e.src), ...references].map(imageLoad));
-    $('asset-count').textContent = galleryEntries.filter(e => e.group !== 'audio' && art(e.src)).length;
+    await Promise.all([...galleryEntries.filter(e => !['audio', 'video'].includes(e.group)).map(e => e.src), ...references].map(imageLoad));
+    $('asset-count').textContent = galleryEntries.filter(e => !['audio', 'video'].includes(e.group) && art(e.src)).length;
     setBackground($('selection-screen'), ui('select'));
     setBackground($('select-heading'), ui('title'));
     if (ui('logo')) { $('generated-logo').src = ui('logo').src; $('generated-logo').hidden = false; $('edition-stamp').hidden = true; }
     const titleArt = ui('title') || art(manifest.stages[0].src);
     if (titleArt) $('title-backdrop').style.backgroundImage = `url("${titleArt.src}")`;
+    // A generated cast ensemble (CFZ Title Ensemble Art) is the startup image for any roster.
+    const ensemble = ui('ensemble');
+    if (ensemble) { $('title-backdrop').style.setProperty('--ensemble-art', `url("${ensemble.src}")`); document.body.classList.add('cfz-ensemble'); }
     // The included cast uses one composed illustration, rather than layered portraits.
     $('title-fighters').replaceChildren();
     refreshCards(); renderGallery(); setMusic('menu_music');
@@ -1237,9 +1299,6 @@
     $('opening-skip').addEventListener('click', finishOpening); $('opening-continue').addEventListener('click', finishOpening);
     $('opening-play').addEventListener('click', () => playOpening(true)); $('opening-replay').addEventListener('click', () => playOpening(audioEnabled));
     $('opening-video').addEventListener('ended', finishOpening); $('opening-video').addEventListener('error', finishOpening);
-    $('title-video').addEventListener('playing', () => { if (titleMotionWanted()) { clearTimeout(titleVideoTimer); titleVideoTimer = null; $('title-screen').classList.add('title-video-ready'); } else stopTitleMotion(); });
-    $('title-video').addEventListener('error', () => { if (titleMotionWanted()) failTitleMotion(); });
-    $('title-video').addEventListener('waiting', () => { if (!titleMotionWanted()) return; clearTimeout(titleVideoTimer); const attempt = titleVideoAttempt; titleVideoTimer = setTimeout(() => { if (attempt === titleVideoAttempt && titleMotionWanted()) failTitleMotion(); }, 4000); });
     $('opening-sound').addEventListener('click', () => {
       audioEnabled = $('opening-video').muted; audioInteracted = true; refreshAudio();
       $('opening-sound').textContent = audioEnabled ? 'SOUND ON' : 'ENABLE SOUND'; $('opening-video').play().catch(() => { $('opening-gate').hidden = false; });
@@ -1359,7 +1418,7 @@
     window.addEventListener('keyup', event => keys.delete(event.code));
     window.addEventListener('blur', () => { clearInput(); if (!network?.active) pause(true); });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) { clearInput(); if (!network?.active) pause(true); stopTitleMotion(); if (openingActive) $('opening-video').pause(); }
+      if (document.hidden) { clearInput(); if (!network?.active) pause(true); titleMotion.stop(); selectMotion.stop(); if (openingActive) $('opening-video').pause(); }
       else if (openingActive) $('opening-video').play().catch(() => { if (openingActive) $('opening-gate').hidden = false; });
     });
     document.querySelectorAll('[data-control]').forEach(button => {

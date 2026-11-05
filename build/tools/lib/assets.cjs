@@ -54,19 +54,26 @@ function readProject(root = DEFAULT_ROOT) {
   return { root, config, plan };
 }
 
-function keyGreen(canvas) {
-  const context = canvas.getContext('2d');
-  const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < pixels.data.length; i += 4) {
-    const d = pixels.data, spill = d[i + 1] - Math.max(d[i], d[i + 2]);
-    if (spill > 95) d[i + 3] = 0;
-    else if (spill > 28) {
-      d[i + 3] = Math.round(d[i + 3] * (1 - (spill - 28) / 67));
-      d[i + 1] = Math.max(d[i], d[i + 2]);
-    }
+function keyGreen(image) {
+  // Mirrors the browser builder (public/builder/pack.js).
+  const context = image.getContext('2d', { willReadFrequently: true }), pixels = context.getImageData(0, 0, image.width, image.height), d = pixels.data;
+  const { width, height } = image;
+  for (let i = 0; i < d.length; i += 4) {
+    const limit = Math.max(d[i], d[i + 2]), spill = d[i + 1] - limit;
+    if (spill > 80) { d[i + 3] = 0; continue; }
+    if (spill > 22) d[i + 3] = Math.round(d[i + 3] * (1 - (spill - 22) / 58));
+    if (spill > 8) d[i + 1] = limit + 8;
+  }
+  // Edge pass: a translucent pixel beside two or more transparent neighbours is fringe, not ink.
+  const alpha = new Uint8ClampedArray(width * height);
+  for (let p = 0; p < alpha.length; p++) alpha[p] = d[p * 4 + 3];
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const p = y * width + x, a = alpha[p];
+    if (a === 0 || a === 255) continue;
+    const clear = (x > 0 && alpha[p - 1] === 0) + (x < width - 1 && alpha[p + 1] === 0) + (y > 0 && alpha[p - width] === 0) + (y < height - 1 && alpha[p + width] === 0);
+    if (clear >= 2) d[p * 4 + 3] = a < 110 ? 0 : Math.round(a * .6);
   }
   context.putImageData(pixels, 0, 0);
-  return canvas;
 }
 
 function bounds(canvas) {
@@ -83,8 +90,15 @@ function bounds(canvas) {
   return { left, right, top, bottom, width: right - left + 1, height: bottom - top + 1 };
 }
 
-async function sheetCells(file, poses, keyed = true) {
+function mirrored(cell) {
+  const flipped = createCanvas(cell.canvas.width, cell.canvas.height), context = flipped.getContext('2d');
+  context.translate(flipped.width, 0); context.scale(-1, 1); context.drawImage(cell.canvas, 0, 0);
+  return { canvas: flipped, bounds: bounds(flipped) };
+}
+// Mirrors the browser builder: fighter sheets keep native resolution (up to 2100 px); `mirror` lists cells to flip.
+async function sheetCells(file, poses, keyed = true, { native = false, mirror = [] } = {}) {
   const image = await loadImage(file);
+  const flip = out => { for (const pose of mirror) if (out[pose]) out[pose] = mirrored(out[pose]); return out; };
   if (image.width < 90 || image.height < 90) throw new Error(`Sheet too small: ${file}`);
   if (Math.abs(image.width - image.height) / Math.max(image.width, image.height) > 0.02) {
     throw new Error(`Expected a square 3x3 sheet (within 2%); received ${image.width}x${image.height}: ${file}`);
@@ -93,7 +107,8 @@ async function sheetCells(file, poses, keyed = true) {
   const out = {};
   if (keyed) {
     const { segmentSheet } = await import('../../public/builder/sheet-layout.mjs');
-    const sheet = createCanvas(1260, Math.round(1260 * image.height / image.width)), ctx = sheet.getContext('2d');
+    const width = native ? Math.min(Math.max(image.width, 1260), 2100) : 1260;
+    const sheet = createCanvas(width, Math.round(width * image.height / image.width)), ctx = sheet.getContext('2d');
     ctx.drawImage(image, 0, 0, sheet.width, sheet.height); keyGreen(sheet);
     let cells;
     try { cells = segmentSheet(ctx.getImageData(0, 0, sheet.width, sheet.height).data, sheet.width, sheet.height); }
@@ -103,17 +118,18 @@ async function sheetCells(file, poses, keyed = true) {
       const data = context.createImageData(pixels.width, pixels.height); data.data.set(pixels.data); context.putImageData(data, 0, 0);
       out[poses[i]] = { canvas, bounds: bounds(canvas) };
     });
-    return out;
+    return flip(out);
   }
+  const size = native ? Math.min(Math.max(cw, 420), 700) : 420;
   for (let i = 0; i < 9; i++) {
     // Normalize resolution before applying the fighter's shared body scale.
-    const canvas = createCanvas(420, Math.round(420 * ch / cw));
+    const canvas = createCanvas(size, Math.round(size * ch / cw));
     canvas.getContext('2d').drawImage(image, (i % 3) * cw, Math.floor(i / 3) * ch,
       cw, ch, 0, 0, canvas.width, canvas.height);
     try { out[poses[i]] = { canvas, bounds: bounds(canvas) }; }
     catch (error) { throw new Error(`${path.basename(file)} / ${poses[i]}: ${error.message}`); }
   }
-  return out;
+  return flip(out);
 }
 
 async function saveCanvas(canvas, destination) {
@@ -237,10 +253,10 @@ async function buildAssets({ root = DEFAULT_ROOT, strict = false } = {}) {
     }
     for (const job of present.filter(j => j.kind === 'sprites')) {
       const collection = spriteCells.get(job.fighter) || {};
-      const cells = await sheetCells(inside(root, job.output), job.poses, job.key !== false);
+      const cells = await sheetCells(inside(root, job.output), job.poses, job.key !== false, { native: true, mirror: job.mirror || [] });
       for (const [pose, cell] of Object.entries(cells)) {
         if (collection[pose]) throw new Error(`Duplicate pose ${job.fighter}/${pose}`);
-        collection[pose] = cell;
+        collection[pose] = { ...cell, sheet: job.sheet || job.id };
       }
       spriteCells.set(job.fighter, collection);
       report.built.push(job.id);
@@ -249,9 +265,10 @@ async function buildAssets({ root = DEFAULT_ROOT, strict = false } = {}) {
       if (!cells.idle) report.warnings.push(`${fighterId}: idle unavailable; using first pose as scale reference until idle is imported.`);
       const baseline = cells.idle || Object.values(cells)[0];
       const scale = 400 / Math.max(1, baseline.bounds.height - 1);
+      const { poseScales } = await import('../../public/builder/sheet-layout.mjs'), corrections = poseScales(new Map(Object.entries(cells)));
       for (const [pose, cell] of Object.entries(cells)) {
         const src = `assets/fighters/${fighterId}_${pose}.webp`;
-        fighters.get(fighterId).poses[pose] = { src, ...await exportCell(cell, scale, inside(staging, src)) };
+        fighters.get(fighterId).poses[pose] = { src, ...await exportCell(cell, scale * (corrections.get(pose) || 1), inside(staging, src)) };
       }
     }
     for (const job of present.filter(j => j.kind !== 'sprites')) {

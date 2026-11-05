@@ -74,7 +74,7 @@ async function prepare({configPath='comfyui/config/fictional-demo.json',out=DEFA
   const config=read(configPath),runRoot=path.resolve(ROOT,out);
   if(!runRoot.startsWith(ROOT+path.sep))throw new Error('Use a run directory inside this project.');
   const prices=await priceBadges(),references=referenceJobs(config),{factory,game}=configsForRun(config,runRoot);
-  const refGraph=makeReferencesGraph(config),factoryGraph=makeFactoryGraph(factory),audioJobs=fictionalAudioJobs(game);
+  const refGraph=makeReferencesGraph(config),factoryGraph=makeFactoryGraph(factory,{media:false}),audioJobs=fictionalAudioJobs(game);
   const templates={music:read('comfyui/workflows/templates/cloud-music.json'),sfx:read('comfyui/workflows/templates/cloud-sfx.json'),voice:read('comfyui/workflows/templates/cloud-voice.json')};
   const audioGraph=makeAudioGraph(audioJobs,game,templates,{rootDirectory:path.join(runRoot,'bundle'),title:'Comfy Fighter Z: fictional demo audio'});
   for(const node of audioGraph.nodes)if(node.type==='MarkdownNote')node.widgets_values=node.widgets_values.map(text=>text.replace('it does not imitate the photographed person','it does not imitate any real person'));

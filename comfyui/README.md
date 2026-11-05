@@ -4,7 +4,7 @@ This folder contains the recipes and inputs used to generate Comfy Fighter Z ass
 
 | Path | Purpose |
 | --- | --- |
-| `workflows/comfy-hackathon.json` | Main factory: six characters, a final boss, three environments, shared art and mapped `assets.json` |
+| `workflows/comfy-hackathon.json` | Main factory: six characters, a final boss, three environments, shared art, the startup ensemble, menu video and fight intros, writing `assets.json` and `video.json` |
 | `workflows/comfy-audio.json` | Music, effects, announcer and fighter voices; 99 clips mapped by `audio.json` |
 | `workflows/comfy-opening.json` | Optional 25-second Seedance opening, preceded by seven text-only fictional reference generations |
 | `workflows/simple-image-generation.json` | Small cloud image example |
@@ -27,6 +27,8 @@ npm run nodes:install -- --comfy-root "C:\path\to\ComfyUI"
 Workflow preparation writes recipes and matching browser downloads without calling a model. After installing the custom pack, restart ComfyUI and reload the editor. Open `comfyui/workflows/comfy-hackathon.json` with Nodes 2.0 enabled. Set its output root to a new absolute folder under `output/test-runs/` and use that same root for companion audio.
 
 The default Invent fictional reference mode ignores the image selector and creates every source from text. The full arcade cast needs 89 paid image calls (85 with The Yard only): six fighters and the final boss with 45 poses and ending art each, plus three arenas. Explicit Upload mode needs 79 (77). The classic 27-pose set without a boss or endings needs 56. All three environments are enabled by default. No earlier photographs or character sheets are default inputs.
+
+The startup ensemble, looping menu video and one fight introduction per fighter add 8 image calls and 9 silent 720p LTX clips, including the select-screen loop (about $6.07 for seven fighters). `node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/<fresh>` prepares a cheaper complete two-fighter run that includes audio (about $5.99).
 
 To add the arcade material to an accepted classic bundle without redrawing its fighters, run `npm run workflows:expansion -- --base example/bundle --out output/test-runs/<fresh>`. It prepares 33 image calls and the 99-clip audio set, and submits nothing.
 

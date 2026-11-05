@@ -220,6 +220,11 @@ async function main(options) {
       assert.deepEqual(archiveFiles.get(runtime.titleVideo.src), archiveFiles.get(`sources/${video.titleVideo.src}`), 'Animated title bytes are preserved');
       report.titleVideo = runtime.titleVideo; report.checks.push('animated title manifest and original media retained');
     }
+    if (video?.selectVideo) {
+      assert.ok(runtime.selectVideo?.src && archiveFiles.has(runtime.selectVideo.src), 'Select-screen video is mapped into the standalone game');
+      assert.deepEqual(archiveFiles.get(runtime.selectVideo.src), archiveFiles.get(`sources/${video.selectVideo.src}`), 'Select-screen video bytes are preserved');
+      report.selectVideo = runtime.selectVideo; report.checks.push('select-screen video manifest and original media retained');
+    }
     for (const intro of video?.fighterIntros || []) {
       const target = runtime.fighters.find(fighter => fighter.id === intro.fighter)?.introVideo;
       assert.ok(target?.src && archiveFiles.has(target.src), `Introduction video is mapped: ${intro.fighter}`);
@@ -292,6 +297,10 @@ async function main(options) {
       report.checks.push(`${report.audioCount} exported audio files decoded in browser`);
     }
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().screen), 'title');
+    if (runtime.ui.ensemble) {
+      assert.ok(await game.evaluate(() => document.body.classList.contains('cfz-ensemble') && getComputedStyle(document.getElementById('title-backdrop')).backgroundImage.includes('url(')), 'Generated ensemble is the startup image');
+      report.checks.push('generated cast ensemble shown on the title screen');
+    }
     await game.screenshot({ path: path.join(output, 'game-title.png'), fullPage: true }); report.screenshots.push('game-title.png');
     await game.click('#title-start');
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().screen), 'selection');
@@ -326,6 +335,13 @@ async function main(options) {
     await game.click('#settings-open'); await game.click('[data-tab="lab"]'); await game.click('#settings-open'); await game.selectOption('#lab-filter', 'fighters'); await game.click('#settings-close');
     assert.equal(await game.locator('.asset-card img').count(), poseCount);
     await game.screenshot({ path: path.join(output, 'sprite-gallery.png'), fullPage: true }); report.screenshots.push('sprite-gallery.png');
+    const clipCount = [video?.titleVideo, video?.selectVideo, video?.openingVideo].filter(Boolean).length + (video?.fighterIntros?.length || 0);
+    if (clipCount) {
+      await game.click('#settings-open'); await game.selectOption('#lab-filter', 'video'); await game.click('#settings-close');
+      assert.equal(await game.locator('.asset-card video').count(), clipCount, 'Asset lab lists every generated video');
+      await game.screenshot({ path: path.join(output, 'video-gallery.png'), fullPage: true }); report.screenshots.push('video-gallery.png');
+      report.checks.push(`asset lab lists ${clipCount} generated videos`);
+    }
     assert.deepEqual(failedRequests, []); assert.deepEqual(report.browserErrors, []);
     report.checks.push('exported standalone server started', 'all runtime images loaded with no placeholders', 'title enters character selection', 'fighter introduction freezes combat and can be skipped', 'CPU movement', 'single human arrow movement and D heavy attack', 'sprite gallery contains every fighter pose', 'no browser page errors or failed runtime requests');
     report.status = 'passed'; report.finishedAt = new Date().toISOString(); saveReport();

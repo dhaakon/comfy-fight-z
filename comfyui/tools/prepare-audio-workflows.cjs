@@ -154,4 +154,40 @@ function prepareAudio() {
   console.log(`Prepared ${jobs.length} cloud audio jobs. Estimated $${estimatedUSD.toFixed(3)}; no generation submitted.`);
 }
 if (require.main === module) prepareAudio();
-module.exports = { makeAudioJobs, makeAudioGraph, audioRecord, prepareAudio };
+// Merge an audio graph into an image workflow: its asset root follows the workflow's Project
+// Settings (one output folder for assets.json and audio.json) and each cloud node gets its own seed.
+function attachAudioGraph(workflow, project, audio, { seed }) {
+  const audioRoot = audio.nodes.find(node => node.type === 'CFZAssetRoot');
+  const audioConfig = JSON.parse(audioRoot.widgets_values[1]);
+  delete audioConfig.assetRoot;
+  audioRoot.type = 'CFZProjectAudioRoot';
+  audioRoot.title = 'Audio follows the same Project Settings folder';
+  audioRoot.properties = { 'Node name for S&R': audioRoot.type };
+  audioRoot.inputs = [{ name: 'project', type: 'CFZ_PROJECT', link: null }];
+  audioRoot.widgets_values_named = { audio_config: JSON.stringify(audioConfig, null, 2) };
+  audioRoot.widgets_values = Object.values(audioRoot.widgets_values_named);
+  for (const node of audio.nodes) {
+    if (node.type === 'CFZSaveAudio') node.widgets_values_named = { asset_json: node.widgets_values[0] };
+    if (node.widgets_values_named && 'seed' in node.widgets_values_named) {
+      node.widgets_values_named.seed = seed + node.id;
+      node.widgets_values = Object.values(node.widgets_values_named);
+    }
+  }
+  const nodeOffset = workflow.last_node_id, linkOffset = workflow.last_link_id;
+  for (const node of audio.nodes) {
+    node.id += nodeOffset;
+    for (const input of node.inputs || []) if (input.link !== null) input.link += linkOffset;
+    for (const output of node.outputs || []) if (Array.isArray(output.links)) output.links = output.links.map(link => link + linkOffset);
+  }
+  for (const link of audio.links) { link[0] += linkOffset; link[1] += nodeOffset; link[3] += nodeOffset; }
+  workflow.nodes.push(...audio.nodes);
+  workflow.links.push(...audio.links);
+  workflow.last_node_id = Math.max(...workflow.nodes.map(node => node.id));
+  workflow.last_link_id = Math.max(...workflow.links.map(link => link[0]));
+  const rootLink = ++workflow.last_link_id;
+  project.outputs[0].links.push(rootLink); audioRoot.inputs[0].link = rootLink;
+  workflow.links.push([rootLink, project.id, 0, audioRoot.id, 0, 'CFZ_PROJECT']);
+  return audioRoot;
+}
+
+module.exports = { attachAudioGraph, makeAudioJobs, makeAudioGraph, audioRecord, prepareAudio };

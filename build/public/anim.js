@@ -54,9 +54,11 @@
       result.phase = f.pose === 'block' ? 'guard' : 'hit';
       const reaction = f.crouching ? pick('hitlow', 'hit') : f.heavyHit ? pick('hitheavy', 'hit') : 'hit';
       result.pose = f.launched ? f.y > 0 ? 'tumble' : f.stun > 5 ? 'down' : 'getup' : f.pose === 'block' ? f.crouching ? pick('crouchblock', 'crouch') : 'block' : f.stun <= 3 ? 'stance2' : reaction;
-      result.dx = -(f.pose === 'block' ? 4 : 12) * Math.min(1, f.stun / 12);
-      result.rotation = f.launched && f.y > 0 ? clamp(-f.vy * .025, -.28, .28) : -.025 * Math.min(1, f.stun / 12);
-      result.sx = f.pose === 'block' ? 1.025 : .97; result.sy = f.pose === 'block' ? .98 : 1.02;
+      // Impact: a sharp shove and squash on the first frames of the reaction.
+      const impact = f.pose === 'block' ? 0 : Math.max(0, 1 - (f.hitAge || 0) / 3);
+      result.dx = -(f.pose === 'block' ? 5 : 14 + 6 * impact) * Math.min(1, f.stun / 10);
+      result.rotation = f.launched && f.y > 0 ? clamp(-f.vy * .025, -.28, .28) : -.03 * Math.min(1, f.stun / 10);
+      result.sx = f.pose === 'block' ? 1.03 : .96 - .06 * impact; result.sy = f.pose === 'block' ? .98 : 1.03 + .06 * impact;
       result.flash = f.pose === 'block' ? 0 : Math.max(0, 1 - (f.hitAge || 0) / 5);
       result.trail = !!f.launched && f.y > 0;
     } else if (f.move === 'taunt') {
@@ -75,16 +77,19 @@
       if (f.move === 'super') result.pose = t < 4 ? 'stance2' : t < move.startup ? 'powerup' : recovery < .6 ? pick('super', 'special') : recovery < .85 ? 'punch' : 'stance2';
       else if (SHOTS.has(f.move)) result.pose = t < 4 ? 'stance2' : t < move.startup ? 'powerup' : recovery < .55 ? 'special' : recovery < .82 ? 'punch' : 'stance2';
       else if (['blowback', 'gcBlowback'].includes(f.move) && t >= move.startup && recovery < .45) result.pose = pick('blowback', 'hpunch');
-      else result.pose = t < move.startup * .5 ? sequence[0] : t < move.startup ? sequence[1] : recovery < .3 ? sequence[2] : recovery < .75 ? sequence[1] : sequence[0];
+      // The contact cel holds through half the recovery, passes the return cel briefly, then snaps to the stance.
+      else result.pose = t < move.startup * .4 ? sequence[0] : t < move.startup ? sequence[1] : recovery < .5 ? sequence[2] : recovery < .8 ? sequence[1] : sequence[0];
       const strength = ['heavy', 'rising', 'rush', 'armorRush', 'blowback', 'gcBlowback'].includes(f.move) ? 1.35 : SHOTS.has(f.move) ? .7 : 1;
       if (result.phase === 'anticipation') {
-        const wind = Math.sin(clamp(t / move.startup, 0, 1) * Math.PI / 2);
-        // Keep the painted body near the collision position: pose art already
-        // contains its own wind-up and reach.
-        result.dx = -2 * strength * wind; result.sx = 1 - .015 * wind; result.sy = 1 + .008 * wind; result.rotation = -.008 * wind;
+        // A fast coil in the first frames, held until release. Pose art already
+        // contains its own wind-up and reach, so the body stays near the collision position.
+        const wind = clamp(t / Math.max(1, move.startup * .4), 0, 1);
+        result.dx = -3 * strength * wind; result.sx = 1 - .05 * wind; result.sy = 1 + .035 * wind; result.rotation = -.02 * wind;
       } else {
-        const drive = result.phase === 'contact' ? 1 : Math.pow(1 - recovery, 2);
-        result.dx = 3 * strength * drive; result.sx = 1 + .018 * drive; result.sy = 1 - .012 * drive; result.rotation = .009 * strength * drive;
+        // Pop on the first contact frames, then settle with a cubic ease.
+        const pop = result.phase === 'contact' ? Math.max(0, 1 - (t - move.startup) / 3) : 0;
+        const drive = result.phase === 'contact' ? 1 : Math.pow(1 - recovery, 3);
+        result.dx = 3 * strength * drive; result.sx = 1 + (.03 + .07 * pop) * drive; result.sy = 1 - (.02 + .05 * pop) * drive; result.rotation = .012 * strength * drive;
       }
       result.trail = (['heavy', 'special', 'super', 'rising', 'rush', 'armorRush', 'rekka', 'blowback'].includes(f.move) || f.moveVariant === 'air') && (result.phase === 'contact' || result.phase === 'recovery' && recovery < .2);
     } else if (f.dash > 0) {
@@ -92,10 +97,10 @@
       result.phase = 'dash'; result.pose = pick('backstep', 'jump'); result.trail = true;
       result.rotation = .04 * f.dashDir * f.facing;
     } else if (f.running) {
-      result.phase = 'run'; result.pose = [pick('run', 'dash'), pick('run2', 'dash')][Math.floor(beat / 5) % 2]; result.trail = true;
+      result.phase = 'run'; result.pose = [pick('run', 'dash'), pick('run2', 'dash')][Math.floor(beat / 4) % 2]; result.trail = true;
       result.rotation = .03;
     } else if (f.jumpSquat > 0) {
-      result.phase = 'jumpsquat'; result.pose = 'crouch'; result.sx = 1.04; result.sy = .93;
+      result.phase = 'jumpsquat'; result.pose = 'crouch'; result.sx = 1.08; result.sy = .88;
     } else if (f.y > 0) {
       result.phase = 'air';
       result.pose = f.vy < -2 && has('jumpfall') ? 'jumpfall' : Math.abs(f.vy) < 4 ? 'entrance' : 'jump';
@@ -103,7 +108,7 @@
       result.rotation = clamp((f.vx || 0) * f.facing * .008, -.03, .03);
     } else if (f.landFrames > 0) {
       result.phase = 'landing'; result.pose = f.landFrames > 3 ? 'crouch' : 'stance2';
-      result.sx = 1 + .065 * f.landFrames / 6; result.sy = 1 - .09 * f.landFrames / 6;
+      result.sx = 1 + .1 * f.landFrames / 6; result.sy = 1 - .13 * f.landFrames / 6;
     } else if (f.crouching || f.pose === 'crouch') {
       result.phase = 'crouch'; result.pose = f.guard ? pick('crouchblock', 'crouch') : 'crouch'; result.sy = 1 + Math.sin(beat / 15) * .005;
     } else if (f.guard) {
@@ -111,7 +116,7 @@
       // the simulation says a hit will be blocked, even if velocity is nonzero.
       result.phase = 'guard'; result.pose = 'block'; result.sy = .99;
     } else if (Math.abs(f.vx || 0) > .1) {
-      result.phase = 'walk'; result.pose = ['walk', pick('walk3', 'stance2'), 'walk2', pick('walk4', 'stance2')][Math.floor(beat / 6) % 4];
+      result.phase = 'walk'; result.pose = ['walk', pick('walk3', 'stance2'), 'walk2', pick('walk4', 'stance2')][Math.floor(beat / 5) % 4];
       // The walk poses have individual foot anchors. Translating the entire
       // sprite upward on every step made both feet visibly float off the floor.
       result.dy = 0;

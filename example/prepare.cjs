@@ -2,12 +2,12 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { createHash, randomInt } = require('node:crypto');
-const { makeFactoryGraph, factoryCounts } = require('../comfyui/tools/prepare-factory-workflows.cjs');
-const { makeAudioJobs, makeAudioGraph } = require('../comfyui/tools/prepare-audio-workflows.cjs');
+const { makeFactoryGraph, factoryCounts, mediaCounts } = require('../comfyui/tools/prepare-factory-workflows.cjs');
+const { makeAudioJobs, makeAudioGraph, attachAudioGraph } = require('../comfyui/tools/prepare-audio-workflows.cjs');
 const { assertPlainDirectory } = require('../comfyui/tools/prepare-explainer.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const PLACEHOLDER = '__CFZ_EXAMPLE_BUNDLE_ROOT__';
-const RATES = Object.freeze({ image1K: .048048, image2K: .072072, musicSecond: .0025, effectMinute: .14, speechThousandCharacters: .1144 });
+const RATES = Object.freeze({ image1K: .048048, image2K: .072072, videoSecond720p: .1287, musicSecond: .0025, effectMinute: .14, speechThousandCharacters: .1144 });
 const read = filename => JSON.parse(fs.readFileSync(filename, 'utf8'));
 const write = (filename, value) => fs.writeFileSync(filename, JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
 const round = number => Number(number.toFixed(9));
@@ -56,49 +56,20 @@ function buildExample(input, bundleRoot, options = {}) {
 
 // Composition is reusable after a caller validates its own reference policy.
 // The public example wrapper above continues to require text-only sources.
-function buildCombinedGame(input, bundleRoot, { seed = 20261103, preparedAt = new Date().toISOString() } = {}) {
+function buildCombinedGame(input, bundleRoot, { seed = 20261103, preparedAt = new Date().toISOString(), media: withMedia = true } = {}) {
   if (!Number.isSafeInteger(seed) || seed < 0) throw new Error('Seed must be a nonnegative safe integer.');
   const config = structuredClone(input);
   config.assetRoot = bundleRoot;
   const game = { ...config, stages: config.stages.filter(stage => stage.enabled) };
-  const jobs = makeAudioJobs(game), image = factoryCounts(config);
+  const jobs = makeAudioJobs(game), image = factoryCounts(config), media = withMedia ? mediaCounts(config) : { paidImages: 0, oneK: 0, twoK: 0, clips: 0, videoSeconds: 0, mappedAssets: 0, estimatedUSD: 0 };
   const templates = Object.fromEntries(['music', 'sfx', 'voice'].map(key => [key, read(path.join(ROOT, `comfyui/workflows/templates/cloud-${key}.json`))]));
-  const workflow = makeFactoryGraph(config);
+  const workflow = makeFactoryGraph(config, { media: withMedia });
   const project = workflow.nodes.find(node => node.type === 'CFZProjectSettings');
   project.widgets_values_named.root_directory = bundleRoot;
   project.widgets_values_named.seed = seed;
   project.widgets_values = Object.values(project.widgets_values_named);
   const audio = makeAudioGraph(jobs, game, templates, { rootDirectory: bundleRoot, title: 'Complete example: music, calls, effects and fighter introductions' });
-  const audioRoot = audio.nodes.find(node => node.type === 'CFZAssetRoot');
-  const audioConfig = JSON.parse(audioRoot.widgets_values[1]);
-  delete audioConfig.assetRoot;
-  audioRoot.type = 'CFZProjectAudioRoot';
-  audioRoot.title = 'Audio follows the same Project Settings folder';
-  audioRoot.properties = { 'Node name for S&R': audioRoot.type };
-  audioRoot.inputs = [{ name: 'project', type: 'CFZ_PROJECT', link: null }];
-  audioRoot.widgets_values_named = { audio_config: JSON.stringify(audioConfig, null, 2) };
-  audioRoot.widgets_values = Object.values(audioRoot.widgets_values_named);
-  for (const node of audio.nodes) {
-    if (node.type === 'CFZSaveAudio') node.widgets_values_named = { asset_json: node.widgets_values[0] };
-    if (node.widgets_values_named && 'seed' in node.widgets_values_named) {
-      node.widgets_values_named.seed = seed + node.id;
-      node.widgets_values = Object.values(node.widgets_values_named);
-    }
-  }
-  const nodeOffset = workflow.last_node_id, linkOffset = workflow.last_link_id;
-  for (const node of audio.nodes) {
-    node.id += nodeOffset;
-    for (const input of node.inputs || []) if (input.link !== null) input.link += linkOffset;
-    for (const output of node.outputs || []) if (Array.isArray(output.links)) output.links = output.links.map(link => link + linkOffset);
-  }
-  for (const link of audio.links) { link[0] += linkOffset; link[1] += nodeOffset; link[3] += nodeOffset; }
-  workflow.nodes.push(...audio.nodes);
-  workflow.links.push(...audio.links);
-  workflow.last_node_id = Math.max(...workflow.nodes.map(node => node.id));
-  workflow.last_link_id = Math.max(...workflow.links.map(link => link[0]));
-  const rootLink = ++workflow.last_link_id;
-  project.outputs[0].links.push(rootLink); audioRoot.inputs[0].link = rootLink;
-  workflow.links.push([rootLink, project.id, 0, audioRoot.id, 0, 'CFZ_PROJECT']);
+  const audioRoot = attachAudioGraph(workflow, project, audio, { seed });
 
   // Keep the six character factories at the left; audio rows are grouped by use.
   audioRoot.pos = [2220, 140]; audioRoot.size = [450, 390];
@@ -120,18 +91,18 @@ function buildCombinedGame(input, bundleRoot, { seed = 20261103, preparedAt = ne
   const musicSeconds = jobs.filter(job => job.category === 'music').reduce((sum, job) => sum + job.duration, 0);
   const effectsSeconds = jobs.filter(job => job.category === 'sfx').reduce((sum, job) => sum + job.duration, 0);
   const audioCost = round(musicSeconds * RATES.musicSecond + effectsSeconds * RATES.effectMinute / 60 + voiceCharacters * RATES.speechThousandCharacters / 1000);
-  const total = round(image.estimatedUSD + audioCost);
+  const total = round(image.estimatedUSD + media.estimatedUSD + audioCost);
   const notes = workflow.nodes.filter(node => node.type === 'MarkdownNote');
   const poseCount = Object.values({ ...config.sheets, ...(config.extraSheets || {}) }).flat().length;
   const counts = category => jobs.filter(job => job.category === category).length;
-  notes[0].widgets_values = [`# Comfy Fighter Z: complete arcade example\n\nONE WORKFLOW: ${image.paidImages} fresh cloud images + ${jobs.length} cloud audio clips, estimated $${total.toFixed(2)}. Six fictional fighters plus a final boss, ${config.fighters.length * poseCount} poses, ${game.stages.length} arenas, ending art, menu art, UI/effects, music, announcer calls and fighter voices. No external image files, real photos, local model weights or opening film.\n\nRun node example/prepare.cjs --out output/example/<fresh-name> to fill your local output folder, then open that run's workflow.json. Edit example/config.json and prepare a new run to keep image and audio descriptions synchronized. Validate and approve the exact cloud spend before queueing. No automatic paid retries.`];
-  notes[1].widgets_values = ['## One shared output folder\n\nProject Settings supplies the folder to both exporters. The run writes bundle/assets.json, bundle/audio.json and their raw/ media. All three arenas are enabled; The Yard also supplies the title and select venue.\n\nReview every fighter sheet and audition the audio. The builder loads the complete bundle and exports a strict self-contained game. A graph is a recipe, not generated artwork.'];
+  notes[0].widgets_values = [`# Comfy Fighter Z: complete arcade example\n\nONE WORKFLOW: ${image.paidImages + media.paidImages} fresh cloud images${withMedia ? `, ${media.clips} silent LTX clips` : ''} and ${jobs.length} cloud audio clips, estimated $${total.toFixed(2)}. Six fictional fighters plus a final boss, ${config.fighters.length * poseCount} poses, ${game.stages.length} arenas, ending art, menu art, UI/effects, ${withMedia ? 'a cast ensemble for the startup screen, a looping menu video, one fight introduction per fighter, ' : ''}music, announcer calls and fighter voices. No external image files, real photos, local model weights or opening film.\n\nRun node example/prepare.cjs --out output/example/<fresh-name> to fill your local output folder, then open that run's workflow.json. Edit example/config.json and prepare a new run to keep image and audio descriptions synchronized. Validate and approve the exact cloud spend before queueing. No automatic paid retries.`];
+  notes[1].widgets_values = [`## One shared output folder\n\nProject Settings supplies the folder to every exporter. The run writes bundle/assets.json, bundle/audio.json${withMedia ? ', bundle/video.json' : ''} and their raw/ media. All three arenas are enabled; The Yard also supplies the title and select venue.\n\nReview every fighter sheet and audition the audio. The builder loads the complete bundle and exports a strict self-contained game. A graph is a recipe, not generated artwork.`];
   notes[2].widgets_values = [`# Included audio: ${jobs.length} clips\n\n${counts('music')} music tracks (Sonilo), ${counts('sfx')} effects (ElevenLabs SFX) and ${counts('voice')} announcer and fighter lines (Eleven v4 stock voices). The audio root is linked to Project Settings; there is no second directory to edit.\n\nAudio source files are PCM WAVs. audio.json is exported after all tracks finish. Costs are estimates; actual billing varies.`];
   notes[2].pos = [2220, -270]; notes[2].size = [3550, 290];
   workflow.groups.push({ id: 4, title: 'Complete audio: music, impacts, calls and introductions', bounding: [2190, 65, 3610, 4730], color: '#745b88', font_size: 26, flags: {} });
   workflow.nodes.forEach((node, index) => node.order = index);
   workflow.extra.ds = { scale: .19, offset: [580, 350] };
-  workflow.extra.cfzExample = { schema: 'comfy-fighter-example/v1', paidImages: image.paidImages, paidAudioClips: jobs.length, assetRoot: bundleRoot };
+  workflow.extra.cfzExample = { schema: 'comfy-fighter-example/v1', paidImages: image.paidImages + media.paidImages, paidVideoClips: media.clips, paidAudioClips: jobs.length, assetRoot: bundleRoot };
   const digest = createHash('sha256').update(`comfy-fighter-example:${bundleRoot}:${seed}`).digest('hex');
   workflow.id = `${digest.slice(0, 8)}-${digest.slice(8, 12)}-4${digest.slice(13, 16)}-a${digest.slice(17, 20)}-${digest.slice(20, 32)}`;
   const prompt = makeApiPrompt(workflow);
@@ -140,14 +111,15 @@ function buildCombinedGame(input, bundleRoot, { seed = 20261103, preparedAt = ne
     cloudOnly: true, generationSubmitted: false, requiresSpendingAuthorization: true, automaticPaidRetries: 0,
     source: 'All source references are invented from text inside this workflow. No uploaded photos or earlier media are loaded.',
     fighters: config.fighters.map(fighter => fighter.id), enabledStages: game.stages.map(stage => stage.id), disabledStages: config.stages.filter(stage => !stage.enabled).map(stage => stage.id),
-    expectedAssets: image.mappedAssets, expectedAudio: jobs.length, runtimePoses: config.fighters.length * poseCount,
+    expectedAssets: image.mappedAssets + media.mappedAssets, expectedAudio: jobs.length, expectedVideos: media.clips, runtimePoses: config.fighters.length * poseCount,
     image: { ...image, model: config.model, thinkingLevel: 'MINIMAL' },
+    media: { ...media, model: 'LTX-2.5 (Fast)', resolution: '1280x720' },
     audio: { paidClips: jobs.length, musicClips: counts('music'), musicSeconds, effectsClips: counts('sfx'), effectsSeconds, voiceClips: counts('voice'), voiceCharacters, estimatedUSD: audioCost },
-    total: { paidImages: image.paidImages, paidAudioClips: jobs.length, estimatedUSD: total }, rates: RATES,
+    total: { paidImages: image.paidImages + media.paidImages, paidVideoClips: media.clips, paidAudioClips: jobs.length, estimatedUSD: total }, rates: RATES,
     priceStatus: 'Snapshot estimate; live price check not requested. Validate current pricing before a paid submission.',
-    estimateNote: 'Installed ComfyUI price badges; actual provider billing may vary. No paid retries or video generation included.',
+    estimateNote: 'Installed ComfyUI price badges; actual provider billing may vary. No paid retries included.',
     workflow: 'workflow.json', apiWorkflow: 'workflow.api.json', bundle: bundleRoot,
-    manifests: ['bundle/assets.json', 'bundle/audio.json'], audioIds: jobs.map(job => job.id),
+    manifests: ['bundle/assets.json', 'bundle/audio.json', ...(withMedia ? ['bundle/video.json'] : [])], audioIds: jobs.map(job => job.id),
     audioJobs: jobs.map(job => ({ ...job, billedCharacters: job.category === 'voice' ? job.prompt.length : undefined }))
   };
   return { workflow, prompt, plan, config };
