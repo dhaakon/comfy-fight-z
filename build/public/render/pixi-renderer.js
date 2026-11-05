@@ -322,7 +322,7 @@ void main() {
       sparks.clear();
       app.renderer.render(app.stage);
       // HUD, callouts, cut-in and training read-outs on the overlay canvas.
-      if (state && frame.mode === 'training' && frame.training?.boxes) screen.drawHitboxes();
+      if (state && (frame.debugBoxes || (frame.mode === 'training' && frame.training?.boxes))) screen.drawHitboxes();
       screen.drawScreen(fighters);
     }
     function reset() { screen.reset(); for (const entry of slots) { entry.history = null; entry.clock = -1; } motion.particles.length = 0; motion.bursts.length = 0; motion.flashAlpha = 0; flash.alpha = 0; shaker.rotation = 0; Object.assign(impact, { aberration: 0, blur: 0, ring: -1, ringStrength: 0, invert: 0, desaturate: 0 }); shaker.filters = null; stageLayer.filters = null; }

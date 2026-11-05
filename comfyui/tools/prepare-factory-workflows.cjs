@@ -19,8 +19,9 @@ function factoryCounts(config, allEnvironments = false) {
   const stages = environments.length;
   const inventedCharacters=config.fighters.filter(item=>item.sourceMode==='Invent fictional reference').length;
   const inventedEnvironments=environments.filter(item=>item.sourceMode==='Invent fictional reference').length;
-  const oneK = fighters * (extras ? 5 : 4) + 5 + inventedCharacters, twoK = fighters * (extras ? 5 : 3) + stages + 1 + inventedEnvironments;
-  return { paidImages: oneK + twoK, sourceSaves: fighters + stages, mappedAssets: fighters * (extras ? 11 : 8) + stages * 2 + 6,
+  // Shared art: title, select, logo, HUD, icons and the menu frame at 1K, plus the 2K effects sheet.
+  const oneK = fighters * (extras ? 5 : 4) + 6 + inventedCharacters, twoK = fighters * (extras ? 5 : 3) + stages + 1 + inventedEnvironments;
+  return { paidImages: oneK + twoK, sourceSaves: fighters + stages, mappedAssets: fighters * (extras ? 11 : 8) + stages * 2 + 7,
     oneK, twoK, estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072).toFixed(6)) };
 }
 

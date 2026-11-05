@@ -7,6 +7,21 @@
   // The stage scrolls: it is wider than one 960-unit screen, and a screen lock
   // keeps both fighters on camera. The renderer follows their midpoint.
   const SCREEN_W = 960, WIDTH = 1440, GROUND = 438, INPUT_BUFFER = 8, WALL = 50, BODY_GAP = 64;
+  // Fighters are drawn 225 px tall from their idle cel; painted reaches are measured at that height.
+  const SPRITE_HEIGHT = 225;
+  // Painted reach of every cel in game pixels, from the pose metadata the builder writes (width minus anchor).
+  function artReaches(poses) {
+    const idle = poses?.idle; if (!idle?.bh) return null;
+    const scale = SPRITE_HEIGHT / idle.bh, out = {};
+    for (const [name, meta] of Object.entries(poses)) if (meta && meta.w > 0 && meta.ax >= 0) out[name] = Math.round((meta.w - meta.ax) * scale);
+    return out;
+  }
+  // A move's hit reach: the cel's painted reach less a fist's width, kept within 80-125% of the move's base reach.
+  function reachOf(f, move) {
+    const painted = f.reaches?.[move.pose];
+    if (!move.reach || !painted) return move.reach;
+    return Math.round(Math.max(move.reach * .8, Math.min(move.reach * 1.25, painted - 10)));
+  }
   const MAX_DIST = SCREEN_W - 2 * WALL - 40;
   const WALK_FORWARD = 4.6, WALK_BACK = 3.8, RUN_SPEED = 8.2, AIR_SPEED = 4.2, CANCEL_WINDOW = 9;
   const MOTION_WINDOW = 16, DASH_TAP = 12, JUGGLE_LIMIT = 4, JUMP_SQUAT = 4;
@@ -77,7 +92,7 @@
   const styleOf = f => STYLES[f.style] || STYLES.balanced;
   function moveData(f) { return VARIANTS[f.moveVariant]?.[f.move] || MOVES[f.move]; }
   function fighter(id, slot, profile = {}) {
-    return { id, slot, style: STYLES[profile.style] ? profile.style : 'balanced', boss: !!profile.boss,
+    return { id, slot, style: STYLES[profile.style] ? profile.style : 'balanced', boss: !!profile.boss, reaches: profile.reaches || null,
       x: WIDTH / 2 + (slot ? 190 : -190), y: 0, vy: 0, vx: 0, facing: slot ? -1 : 1,
       hp: 100, energy: 0, stocks: 0, wins: 0, pose: 'idle', move: null, moveFrame: 0,
       moveVariant: 'standing', landFrames: 0, launched: false, hitAge: 99, airVX: 0,
@@ -528,7 +543,7 @@
           if (PROJECTILE_MOVES.has(f.move)) { launchProjectiles(state, f, slot, move); f.hitDone = true; }
           else if (f.move === 'throw' || move.grab) {
             f.hitDone = true;
-            const reachable = hittable(other) && other.y === 0 && Math.abs(other.x - f.x) < move.reach && (move.grab || !other.stun);
+            const reachable = hittable(other) && other.y === 0 && Math.abs(other.x - f.x) < reachOf(f, move) && (move.grab || !other.stun);
             // Pressing heavy within seven frames of the throw escapes it, even if that press started an attack.
             if (reachable && f.move === 'throw' && (state.frame - other.pressAt.heavy <= 7 || pressedTogether(other, 'punch', 'kick'))) {
               // Pressing heavy as the throw lands escapes it.
@@ -550,7 +565,7 @@
       gainEnergy(f, .035);
     });
     const contacts = strikes.filter(({ source, target, move, direction }) =>
-      hittable(target) && (target.x - source.x) * direction >= 0 && Math.abs(source.x - target.x) < move.reach && Math.abs(source.y - target.y) < (move.air ? 140 : 90));
+      hittable(target) && (target.x - source.x) * direction >= 0 && Math.abs(source.x - target.x) < reachOf(source, move) && Math.abs(source.y - target.y) < (move.air ? 140 : 90));
     // Resolve contacts together so equal-timing attacks trade fairly on either side.
     for (const { source, target, move, direction } of contacts) {
       const data = source.move === 'rekka' && source.rekka === 3 ? { ...move, damage: 11, knockdown: true } : move;
@@ -615,7 +630,8 @@
     let hit = null;
     if (move && move.reach && f.moveFrame >= move.startup && f.moveFrame < move.startup + move.active) {
       const low = move.height === 'low', y = f.y + (low ? 10 : move.air ? 70 : 100);
-      hit = [f.facing === 1 ? f.x : f.x - move.reach, y, move.reach, low ? 50 : 70];
+      const reach = reachOf(f, move);
+      hit = [f.facing === 1 ? f.x : f.x - reach, y, reach, low ? 50 : 70];
     }
     return { hurt, hit };
   }
@@ -634,5 +650,5 @@
       { name: 'Taunt', input: 'G', note: 'Drains the opponent’s power gauge' }
     ];
   }
-  return { WIDTH, SCREEN_W, GROUND, WALL, MAX_DIST, BAR, STOCK_MAX, MOVES, VARIANTS, STYLES, DEFAULTS, moveData, create, tick, resetRound, comboScale, boxes, moveList };
+  return { WIDTH, SCREEN_W, GROUND, WALL, MAX_DIST, BAR, STOCK_MAX, MOVES, VARIANTS, STYLES, DEFAULTS, moveData, create, tick, resetRound, comboScale, boxes, moveList , SPRITE_HEIGHT, artReaches, reachOf };
 });

@@ -124,7 +124,8 @@ function makeAudioGraph(jobs, config, templates, { rootDirectory, title = 'Comfy
     if (job.category === 'music') {
       generation.widgets_values_named = { prompt: job.prompt, duration: job.duration, seed: 42, control_after_generate: 'fixed' };
     } else if (job.category === 'sfx') {
-      generation.widgets_values_named = { text: job.prompt, model: 'eleven_sfx_v2', 'model.duration': job.duration, 'model.loop': false, 'model.prompt_influence': 0.5, output_format: 'mp3_44100_192' };
+      // Effects lean harder on the prompt and are asked for dry, close-miked transients so they cut through the mix.
+      generation.widgets_values_named = { text: job.category === 'sfx' ? `Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. ${job.prompt}` : job.prompt, model: 'eleven_sfx_v2', 'model.duration': job.duration, 'model.loop': false, 'model.prompt_influence': job.category === 'sfx' ? 0.75 : 0.5, output_format: 'mp3_44100_192' };
     } else {
       generation.widgets_values_named = { text: job.prompt, stability: 0.45, apply_text_normalization: 'auto', model: 'eleven_v4', 'model.similarity_boost': 0.75, language_code: 'en', seed: 42, control_after_generate: 'fixed', output_format: 'mp3_44100_192' };
       connect(voiceFor(job), generation, generation.inputs.findIndex(input => input.name === 'voice'), 'ELEVENLABS_VOICE');

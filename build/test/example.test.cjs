@@ -57,7 +57,7 @@ test('example CLI has free-build defaults and explicit output/install choices', 
 test('bundled example verifies every image/audio digest and all seven complete pose maps', async t => {
   const item = fixture(t), result = await verifyBundle(item.bundle);
   assert.equal(result.contract.name, 'arcade');
-  assert.equal(result.entries.length, 89 + 99); assert.equal(result.poseCount, 7 * 45);
+  assert.equal(result.entries.length, 89 + 1 + 99); assert.equal(result.poseCount, 7 * 45);
   fs.appendFileSync(path.join(item.bundle, item.manifest.assets[0].src), 'altered');
   await assert.rejects(verifyBundle(item.bundle), /integrity check failed/);
 });
@@ -65,7 +65,7 @@ test('bundled example verifies every image/audio digest and all seven complete p
 test('the reviewed classic six-fighter release still verifies exactly, and cannot pass as half an arcade bundle', async t => {
   const item = fixture(t, { classic: true }), result = await verifyBundle(item.bundle);
   assert.equal(result.contract.name, 'classic');
-  assert.equal(result.entries.length, 56 + 22); assert.equal(result.poseCount, 6 * 27);
+  assert.equal(result.entries.length, 56 + 1 + 22); assert.equal(result.poseCount, 6 * 27);
   // Declaring the arcade layout without its boss, arenas, extra sheets and voices is rejected.
   item.manifest.game.extraSheets = config.extraSheets; write(path.join(item.bundle, 'assets.json'), item.manifest);
   await assert.rejects(verifyBundle(item.bundle), /complete arcade example requires 7/);

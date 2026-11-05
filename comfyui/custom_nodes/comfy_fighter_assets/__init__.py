@@ -357,6 +357,38 @@ def _audio_metadata(value, config):
     return result
 
 
+def _condition_audio(clip, rate, category):
+    """Trim leading and trailing silence, peak-normalize to -1 dBFS and, for effects, add a little presence.
+
+    Generated effects arrive at uneven levels with dead air; this keeps every clip crisp and comparable."""
+    if clip.size == 0:
+        return clip
+    peak = float(np.max(np.abs(clip)))
+    if peak < 1e-6:
+        return clip
+    if category in ("sfx", "voice"):
+        loud = np.max(np.abs(clip), axis=1) > peak * 10 ** (-50 / 20)
+        where = np.flatnonzero(loud)
+        start = max(0, int(where[0]) - int(rate * 0.005)); end = min(clip.shape[0], int(where[-1]) + int(rate * 0.04))
+        clip = clip[start:end]
+    if category == "sfx":
+        # High shelf, +4 dB above 3 kHz (RBJ biquad), then a soft clip to keep transients from hard-clipping.
+        a_gain = 10 ** (4 / 40); w0 = 2 * np.pi * 3000 / rate; alpha = np.sin(w0) / 2 * np.sqrt((a_gain + 1 / a_gain) * (1 / 0.9 - 1) + 2)
+        cos = np.cos(w0); s = 2 * np.sqrt(a_gain) * alpha
+        b0 = a_gain * ((a_gain + 1) + (a_gain - 1) * cos + s); b1 = -2 * a_gain * ((a_gain - 1) + (a_gain + 1) * cos); b2 = a_gain * ((a_gain + 1) + (a_gain - 1) * cos - s)
+        a0 = (a_gain + 1) - (a_gain - 1) * cos + s; a1 = 2 * ((a_gain - 1) - (a_gain + 1) * cos); a2 = (a_gain + 1) - (a_gain - 1) * cos - s
+        b = np.array([b0, b1, b2]) / a0; a = np.array([1.0, a1 / a0, a2 / a0])
+        out = np.zeros_like(clip)
+        for channel in range(clip.shape[1]):
+            x = clip[:, channel]; y = out[:, channel]; x1 = x2 = y1 = y2 = 0.0
+            for i in range(x.shape[0]):
+                v = b[0] * x[i] + b[1] * x1 + b[2] * x2 - a[1] * y1 - a[2] * y2
+                x2, x1, y2, y1 = x1, x[i], y1, v; y[i] = v
+        clip = np.tanh(out * 1.2) / np.tanh(1.2)
+    peak = float(np.max(np.abs(clip)))
+    return clip * (10 ** (-1 / 20) / peak) if peak > 0 else clip
+
+
 class CFZSaveAudio(io.ComfyNode):
     @classmethod
     def define_schema(cls):
@@ -386,7 +418,8 @@ class CFZSaveAudio(io.ComfyNode):
             raise ValueError("Audio requires one mono/stereo clip, up to 360 seconds")
         if not np.isfinite(samples).all():
             raise ValueError("Audio contains nonfinite samples")
-        pcm = np.rint(np.clip(samples[0].T, -1.0, 1.0) * 32767).astype("<i2")
+        clip = _condition_audio(samples[0].T.astype(np.float64), rate, record.get("category"))
+        pcm = np.rint(np.clip(clip, -1.0, 1.0) * 32767).astype("<i2")
         encoded = byte_io.BytesIO()
         with wave.open(encoded, "wb") as output:
             output.setnchannels(samples.shape[1])

@@ -5,7 +5,7 @@
 <div class="app">
   <header class="topbar">
     <a class="brand" href="./" aria-label="Comfy Fighter Z home"><span class="brand-mark">CF<span>Z</span></span><span class="brand-name">COMFY FIGHTER Z<small>HIGGSFIELD OPEN SOURCE SAGA</small></span></a>
-    <button id="settings-open" class="settings-open" aria-label="Open help and settings" title="Help and settings">?</button>
+    <button id="settings-open" class="settings-open" aria-label="Open help and settings" title="Help and settings"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3H9l-.3 2.9a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L4.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1L9 21h6l.3-2.9a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5L19.4 13Zm-7.4 2.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg></button>
 
   </header>
   <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
@@ -15,6 +15,7 @@
       <label>DIFFICULTY <select id="opt-difficulty"><option value="1">1 · EASIEST</option><option value="2">2</option><option value="3">3</option><option value="4">4 · NORMAL</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8 · HARDEST</option></select></label>
       <label>ROUNDS <select id="opt-rounds"><option value="1">1 ROUND</option><option value="2">BEST OF 3</option><option value="3">BEST OF 5</option></select></label>
       <label>TIMER <select id="opt-time"><option value="99">99</option><option value="60">60</option><option value="30">30</option><option value="0">∞</option></select></label>
+      <label>DEBUG <select id="opt-debug"><option value="off">OFF</option><option value="boxes">COLLISION BOXES</option></select></label>
       <label>DISPLAY <select id="opt-display"><option value="clean">CLEAN</option><option value="scanlines">ARCADE SCANLINES</option><option value="crt">CRT MONITOR</option></select></label>
       <label>MUSIC <input id="opt-music" type="range" min="0" max="100" step="5"></label>
       <label>EFFECTS <input id="opt-sfx" type="range" min="0" max="100" step="5"></label>

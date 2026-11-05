@@ -2118,7 +2118,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# REVIEW TEMPLATE: generation is disabled\n\nRun `npm run example:prepare -- --out output/example/<fresh-name>` to create a runnable copy with your local output folder. Open that run's workflow.json. The template deliberately mutes every functional node so opening or queueing an unresolved example cannot start cloud work.\n\n# Comfy Fighter Z: complete arcade example\n\nONE WORKFLOW: 104 fresh cloud images, 16 silent LTX clips and 99 cloud audio clips, estimated $18.86. Six fictional fighters plus a final boss, 315 poses, 3 arenas, ending art, menu art, UI/effects, a cast ensemble for the startup screen, a looping menu video, one fight introduction per fighter, music, announcer calls and fighter voices. No external image files, real photos, local model weights or opening film.\n\nRun node example/prepare.cjs --out output/example/<fresh-name> to fill your local output folder, then open that run's workflow.json. Edit example/config.json and prepare a new run to keep image and audio descriptions synchronized. Validate and approve the exact cloud spend before queueing. No automatic paid retries."
+        "# REVIEW TEMPLATE: generation is disabled\n\nRun `npm run example:prepare -- --out output/example/<fresh-name>` to create a runnable copy with your local output folder. Open that run's workflow.json. The template deliberately mutes every functional node so opening or queueing an unresolved example cannot start cloud work.\n\n# Comfy Fighter Z: complete arcade example\n\nONE WORKFLOW: 105 fresh cloud images, 16 silent LTX clips and 99 cloud audio clips, estimated $18.91. Six fictional fighters plus a final boss, 315 poses, 3 arenas, ending art, menu art, UI/effects, a cast ensemble for the startup screen, a looping menu video, one fight introduction per fighter, music, announcer calls and fighter voices. No external image files, real photos, local model weights or opening film.\n\nRun node example/prepare.cjs --out output/example/<fresh-name> to fill your local output folder, then open that run's workflow.json. Edit example/config.json and prepare a new run to keep image and audio descriptions synchronized. Validate and approve the exact cloud spend before queueing. No automatic paid retries."
       ]
     },
     {
@@ -5947,19 +5947,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated stylized anime fighting-game light punch impact: fast airy swoosh then a sharp solid thwack and tiny energy snap. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated stylized anime fighting-game light punch impact: fast airy swoosh then a sharp solid thwack and tiny energy snap. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.6,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated stylized anime fighting-game light punch impact: fast airy swoosh then a sharp solid thwack and tiny energy snap. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated stylized anime fighting-game light punch impact: fast airy swoosh then a sharp solid thwack and tiny energy snap. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.6,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6042,19 +6042,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated arcade fighting-game medium kick impact: short fast swish followed by a punchy slam with a crisp crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated arcade fighting-game medium kick impact: short fast swish followed by a punchy slam with a crisp crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.8,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated arcade fighting-game medium kick impact: short fast swish followed by a punchy slam with a crisp crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated arcade fighting-game medium kick impact: short fast swish followed by a punchy slam with a crisp crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.8,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6137,19 +6137,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated heavy arcade fighting-game strike: deep whoomp, bone-rattling bass slam and a short crunchy crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated heavy arcade fighting-game strike: deep whoomp, bone-rattling bass slam and a short crunchy crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         1,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated heavy arcade fighting-game strike: deep whoomp, bone-rattling bass slam and a short crunchy crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated heavy arcade fighting-game strike: deep whoomp, bone-rattling bass slam and a short crunchy crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 1,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6232,19 +6232,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.6,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.6,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6327,19 +6327,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         1.2,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 1.2,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6422,19 +6422,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated energy-ball impact in an arcade fighting game: crackling burst, bright shatter and a quick electric fizzle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated energy-ball impact in an arcade fighting game: crackling burst, bright shatter and a quick electric fizzle. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.9,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated energy-ball impact in an arcade fighting game: crackling burst, bright shatter and a quick electric fizzle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated energy-ball impact in an arcade fighting game: crackling burst, bright shatter and a quick electric fizzle. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.9,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6517,19 +6517,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated quick light air whoosh of a fast punch missing its target. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated quick light air whoosh of a fast punch missing its target. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.5,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated quick light air whoosh of a fast punch missing its target. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated quick light air whoosh of a fast punch missing its target. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.5,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6612,19 +6612,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated heavy swinging whoosh of a big kick missing its target, low and airy. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated heavy swinging whoosh of a big kick missing its target, low and airy. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.6,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated heavy swinging whoosh of a big kick missing its target, low and airy. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated heavy swinging whoosh of a big kick missing its target, low and airy. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.6,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6707,19 +6707,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated light springy hop sound of a fighter leaving the ground: sneaker scuff and short air puff. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated light springy hop sound of a fighter leaving the ground: sneaker scuff and short air puff. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.5,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated light springy hop sound of a fighter leaving the ground: sneaker scuff and short air puff. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated light springy hop sound of a fighter leaving the ground: sneaker scuff and short air puff. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.5,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6802,19 +6802,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated fighter landing on a hard patio: firm double footstep thud with tiny dust scatter. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated fighter landing on a hard patio: firm double footstep thud with tiny dust scatter. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.5,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated fighter landing on a hard patio: firm double footstep thud with tiny dust scatter. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated fighter landing on a hard patio: firm double footstep thud with tiny dust scatter. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.5,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6897,19 +6897,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated quick dash in an arcade fighting game: rapid scuffing footsteps and a short rushing whoosh. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated quick dash in an arcade fighting game: rapid scuffing footsteps and a short rushing whoosh. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.6,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated quick dash in an arcade fighting game: rapid scuffing footsteps and a short rushing whoosh. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated quick dash in an arcade fighting game: rapid scuffing footsteps and a short rushing whoosh. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.6,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -6992,19 +6992,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated fighting-game throw: cloth grab rustle, heave whoosh and a heavy body slam on the ground. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated fighting-game throw: cloth grab rustle, heave whoosh and a heavy body slam on the ground. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         1,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated fighting-game throw: cloth grab rustle, heave whoosh and a heavy body slam on the ground. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated fighting-game throw: cloth grab rustle, heave whoosh and a heavy body slam on the ground. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 1,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -7087,19 +7087,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated super-move activation flash: dramatic rising energy charge, bright shimmering chime and a deep impact boom. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated super-move activation flash: dramatic rising energy charge, bright shimmering chime and a deep impact boom. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         1.6,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated super-move activation flash: dramatic rising energy charge, bright shimmering chime and a deep impact boom. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated super-move activation flash: dramatic rising energy charge, bright shimmering chime and a deep impact boom. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 1.6,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -7182,19 +7182,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated final knockout blow in an arcade fighting game: massive impact boom with a short reverberant echo tail. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated final knockout blow in an arcade fighting game: massive impact boom with a short reverberant echo tail. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         1.6,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated final knockout blow in an arcade fighting game: massive impact boom with a short reverberant echo tail. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated final knockout blow in an arcade fighting game: massive impact boom with a short reverberant echo tail. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 1.6,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -7277,19 +7277,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated counter-hit accent: bright sharp metallic clang with a quick sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated counter-hit accent: bright sharp metallic clang with a quick sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.6,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated counter-hit accent: bright sharp metallic clang with a quick sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated counter-hit accent: bright sharp metallic clang with a quick sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.6,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -7372,19 +7372,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated cartoon dizzy daze: light swirling chirps and twinkling stars circling. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated cartoon dizzy daze: light swirling chirps and twinkling stars circling. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         1.2,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated cartoon dizzy daze: light swirling chirps and twinkling stars circling. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated cartoon dizzy daze: light swirling chirps and twinkling stars circling. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 1.2,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -7467,19 +7467,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated crisp retro arcade menu cursor tick, short and clean. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated crisp retro arcade menu cursor tick, short and clean. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.5,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated crisp retro arcade menu cursor tick, short and clean. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated crisp retro arcade menu cursor tick, short and clean. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.5,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -7562,19 +7562,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated retro arcade menu confirm: punchy bright chord stab with a short sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated retro arcade menu confirm: punchy bright chord stab with a short sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.6,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated retro arcade menu confirm: punchy bright chord stab with a short sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated retro arcade menu confirm: punchy bright chord stab with a short sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.6,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -7657,19 +7657,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated retro arcade menu cancel: short soft descending blip. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated retro arcade menu cancel: short soft descending blip. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.5,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated retro arcade menu cancel: short soft descending blip. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated retro arcade menu cancel: short soft descending blip. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.5,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -7752,19 +7752,19 @@
         "ver": "0.14.1"
       },
       "widgets_values": [
-        "One isolated urgent digital timer warning beep, single short tone. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated urgent digital timer warning beep, single short tone. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "eleven_sfx_v2",
         0.5,
         false,
-        0.5,
+        0.75,
         "mp3_44100_192"
       ],
       "widgets_values_named": {
-        "text": "One isolated urgent digital timer warning beep, single short tone. Immediate attack, short clean decay. No voice, no music, no ambience.",
+        "text": "Crisp, punchy, dry, close-miked, no reverb, no music, single short 16-bit arcade fighting-game sound effect. One isolated urgent digital timer warning beep, single short tone. Immediate attack, short clean decay. No voice, no music, no ambience.",
         "model": "eleven_sfx_v2",
         "model.duration": 0.5,
         "model.loop": false,
-        "model.prompt_influence": 0.5,
+        "model.prompt_influence": 0.75,
         "output_format": "mp3_44100_192"
       },
       "color": "#432",
@@ -17242,7 +17242,7 @@
     },
     "cfzExample": {
       "schema": "comfy-fighter-example/v1",
-      "paidImages": 104,
+      "paidImages": 105,
       "paidVideoClips": 16,
       "paidAudioClips": 99,
       "assetRoot": "__CFZ_EXAMPLE_BUNDLE_ROOT__",

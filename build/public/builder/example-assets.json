@@ -1321,6 +1321,12 @@
       "src": "raw/icons.png"
     },
     {
+      "id": "frame",
+      "kind": "ui",
+      "key": true,
+      "src": "raw/frame.png"
+    },
+    {
       "id": "combat_effects",
       "kind": "effects",
       "poses": [

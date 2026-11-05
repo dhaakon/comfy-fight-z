@@ -30,7 +30,7 @@
     set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) { /* Private windows may block storage. */ } }
   };
   const OPTIONS_KEY = 'cfz-options-v1', SCORES_KEY = 'cfz-hiscores-v1';
-  const DEFAULT_OPTIONS = { difficulty: 4, rounds: 2, time: 99, display: 'clean', music: 60, sfx: 80, voice: 90 };
+  const DEFAULT_OPTIONS = { debug: 'off', difficulty: 4, rounds: 2, time: 99, display: 'clean', music: 60, sfx: 80, voice: 90 };
   const options = { ...DEFAULT_OPTIONS, ...storage.get(OPTIONS_KEY, {}) };
   // Modes: arcade ladder (default single player), local versus, training, network sessions and attract demo.
   let mode = 'arcade', arcade = null, overlay = null, demo = null, idleTime = 0, goFrames = 0, lastIntroCall = null, continueTimer = null;
@@ -73,7 +73,7 @@
     if (mode === 'versus') return slot ? (list.length >= 2 ? list[1] : list[0]) : (list.length >= 2 ? list[0] : null);
     return slot ? null : list[0];
   }
-  const profiles = () => Object.fromEntries(manifest.fighters.map(f => [f.id, { style: f.style, boss: f.boss === true }]));
+  const profiles = () => Object.fromEntries(manifest.fighters.map(f => [f.id, { style: f.style, boss: f.boss === true, reaches: E.artReaches(f.poses) }]));
   const audioId = (...ids) => ids.find(id => id && manifest.audio?.[id]);
   function setScene(scene) {
     document.body.dataset.scene = scene;
@@ -413,7 +413,7 @@
       if (generated && typeof motion === 'string' && /^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(motion)) {
         const clip = document.createElement('video'); clip.className = idle ? 'card-motion card-idle' : 'card-motion'; clip.muted = true; clip.playsInline = true; clip.autoplay = true; clip.preload = 'auto';
         clip.setAttribute('aria-hidden', 'true'); clip.onerror = () => clip.remove();
-        if (idle) { clip.loop = false; clip.onended = () => setTimeout(() => { if (clip.isConnected && !$('selection-screen').hidden) { clip.currentTime = 0; clip.play().catch(() => {}); } }, 650); }
+        if (idle) { clip.playbackRate = 1.25; clip.loop = false; clip.onended = () => setTimeout(() => { if (clip.isConnected && !$('selection-screen').hidden) { clip.currentTime = 0; clip.play().catch(() => {}); } }, 400); }
         else clip.loop = true;
         clip.src = motion; frame.append(clip);
       }
@@ -813,7 +813,7 @@
   const arena = window.CFZArena.create({ canvas, hud: $('arena-hud'), engine: E, deps: { art, assetSource, ui, fighterData, portraitSource } });
   function resetView() { arena.reset(); }
   function render() {
-    arena.draw({ state, manifest, stageIndex, selected, mode, arcade, training, cutin, goFrames, fighterRenderer, reducedMotion: reducedMotion.matches, bestScore: storage.get(SCORES_KEY, [])[0]?.score || 0 });
+    arena.draw({ state, manifest, stageIndex, selected, mode, arcade, training, cutin, goFrames, fighterRenderer, reducedMotion: reducedMotion.matches, debugBoxes: options.debug === 'boxes', bestScore: storage.get(SCORES_KEY, [])[0]?.score || 0 });
     // The last ten seconds tick once per second; the renderer itself makes no sound.
     if (state && mode !== 'training' && state.options?.roundTime !== 0 && state.phase === 'fight' && state.time % 60 === 59 && Math.ceil(state.time / 60) <= 10) playSound('sfx_timer', .35);
   }
@@ -1002,9 +1002,12 @@
     const includedCast = heroes.length === 6 && heroes.every(f => demoCast[f.id] && f.description?.startsWith(demoCast[f.id]));
     const heroCount = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT'][heroes.length] || String(heroes.length);
     $('title-eyebrow').textContent = `${heroCount} ${heroes.length === 1 ? 'CHALLENGER' : 'CHALLENGERS'}. ONE OPEN SOURCE SHOWDOWN.`;
-    document.body.classList.toggle('cfz-arcade-art', document.title.trim().toLowerCase() === 'comfy fighter z');
+    const generatedUi = !!(ui('select') && ui('title'));
+    document.body.classList.toggle('cfz-arcade-art', document.title.trim().toLowerCase() === 'comfy fighter z' && !generatedUi);
+    if (ui('logo')) { $('arcade-logo').src = ui('logo').src; $('arcade-logo').hidden = false; }
+    if (ui('frame')) { document.body.style.setProperty('--menu-frame', `url("${ui('frame').src}")`); document.body.classList.add('cfz-frame'); }
     document.body.classList.toggle('cfz-ensemble', includedCast && document.body.classList.contains('cfz-arcade-art'));
-    $('arcade-logo').hidden = !document.body.classList.contains('cfz-arcade-art');
+    if (!ui('logo')) $('arcade-logo').hidden = !document.body.classList.contains('cfz-arcade-art');
     const titleWords = document.title.split(' '), lastWord = titleWords.pop(); $('game-title').textContent = titleWords.join(' ').toUpperCase() + ' ';
     const emph = document.createElement('em'); emph.textContent = lastWord.toUpperCase(); $('game-title').append(emph);
     $('title-wordmark').textContent = titleWords.join(' ').toUpperCase() + ' ';
@@ -1077,11 +1080,11 @@
     $('train-reset').addEventListener('click', () => { resetTraining(); closeTrainingPanel(); });
     $('train-close').addEventListener('click', closeTrainingPanel);
     // Persisted options: difficulty, rounds, timer, display filter and the three volume buses.
-    const optionInputs = { 'opt-difficulty': 'difficulty', 'opt-rounds': 'rounds', 'opt-time': 'time', 'opt-display': 'display', 'opt-music': 'music', 'opt-sfx': 'sfx', 'opt-voice': 'voice' };
+    const optionInputs = { 'opt-difficulty': 'difficulty', 'opt-rounds': 'rounds', 'opt-time': 'time', 'opt-display': 'display', 'opt-debug': 'debug', 'opt-music': 'music', 'opt-sfx': 'sfx', 'opt-voice': 'voice' };
     for (const [id, key] of Object.entries(optionInputs)) {
       $(id).value = String(options[key]);
       $(id).addEventListener(id.startsWith('opt-m') || id === 'opt-sfx' || id === 'opt-voice' ? 'input' : 'change', event => {
-        options[key] = key === 'display' ? event.target.value : Number(event.target.value);
+        options[key] = key === 'display' || key === 'debug' ? event.target.value : Number(event.target.value);
         storage.set(OPTIONS_KEY, options); applyOptions();
         if (key === 'sfx') playSound('sfx_menu_move', .6);
       });

@@ -6,7 +6,7 @@
     const ctx = canvas.getContext('2d');
     const { art, assetSource, ui, fighterData, portraitSource } = deps;
     const reducedMotion = { matches: false };
-    let state = null, manifest = null, stageIndex = 0, selected = [0, 1], mode = 'arcade', arcade = null, training = {}, cutin = null, goFrames = 0, fighterRenderer = null, bestScore = 0;
+    let state = null, manifest = null, stageIndex = 0, selected = [0, 1], mode = 'arcade', arcade = null, training = {}, cutin = null, goFrames = 0, fighterRenderer = null, bestScore = 0, debugBoxes = false;
   function cover(image, x, y, w, h) {
     const s = Math.max(w / image.width, h / image.height), sw = w / s, sh = h / s;
     ctx.drawImage(image, (image.width - sw) / 2, (image.height - sh) / 2, sw, sh, x, y, w, h);
@@ -137,14 +137,23 @@
     ctx.restore();
   }
   function hitboxes() {
-    if (mode !== 'training' || !training.boxes || !state) return;
+    if (!(debugBoxes || (mode === 'training' && training.boxes)) || !state) return;
     ctx.save(); ctx.lineWidth = 2;
-    for (const f of state.fighters) {
-      const { hurt, hit } = E.boxes(f);
+    state.fighters.forEach((f, slot) => {
+      const { hurt, hit } = E.boxes(f), ground = E.GROUND - f.y;
+      // Anchor, facing arrow and the painted extents of the current cel (yellow) against the boxes.
+      const poses = fighterData(slot).poses || {}, meta = poses[f.pose] || poses.idle, scale = poses.idle?.bh ? E.SPRITE_HEIGHT / poses.idle.bh : 0;
+      if (meta && scale) {
+        const front = (meta.w - meta.ax) * scale, back = meta.ax * scale, top = ground - (meta.bh || meta.h) * scale;
+        ctx.strokeStyle = '#f4d692'; ctx.setLineDash([4, 3]); ctx.strokeRect(f.facing === 1 ? f.x - back : f.x - front, top, front + back, ground - top); ctx.setLineDash([]);
+      }
+      ctx.fillStyle = '#f4d692'; ctx.beginPath(); ctx.arc(f.x, ground, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(f.x + f.facing * 10, ground - 214); ctx.lineTo(f.x + f.facing * 34, ground - 206); ctx.lineTo(f.x + f.facing * 10, ground - 198); ctx.closePath(); ctx.fill();
+      ctx.font = 'bold 11px Consolas, monospace'; ctx.textAlign = 'center'; ctx.fillText(`${f.pose}${f.move ? '/' + f.move : ''} ${f.facing > 0 ? '→' : '←'}`, f.x, ground - 222);
       ctx.strokeStyle = f.invulnerable ? '#f5ead2' : '#5f9fd9'; ctx.fillStyle = '#5f9fd922';
       ctx.fillRect(hurt[0], E.GROUND - hurt[1] - hurt[3], hurt[2], hurt[3]); ctx.strokeRect(hurt[0], E.GROUND - hurt[1] - hurt[3], hurt[2], hurt[3]);
       if (hit) { ctx.strokeStyle = '#e0544a'; ctx.fillStyle = '#e0544a33'; ctx.fillRect(hit[0], E.GROUND - hit[1] - hit[3], hit[2], hit[3]); ctx.strokeRect(hit[0], E.GROUND - hit[1] - hit[3], hit[2], hit[3]); }
-    }
+    });
     ctx.restore();
   }
   // Presentation-only camera: follows the fighters' midpoint across the wider
@@ -228,7 +237,7 @@
   // Reads the frame the caller already tracks, sizes the canvas to the device and clears it. Nothing here mutates game state.
   function beginFrame(frame) {
     ({ state, manifest, stageIndex, selected, mode, arcade, training, cutin, goFrames, fighterRenderer, bestScore } = frame);
-    reducedMotion.matches = !!frame.reducedMotion;
+    reducedMotion.matches = !!frame.reducedMotion; debugBoxes = !!frame.debugBoxes;
     const density = Math.min(3, Math.max(1, (canvas.clientWidth || 960) * Math.min(root.devicePixelRatio || 1, 3) / 960));
     const backing = Math.round(960 * density);
     if (canvas.width !== backing) { canvas.width = backing; canvas.height = Math.round(540 * density); }

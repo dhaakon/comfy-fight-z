@@ -50,7 +50,7 @@ function createGameServer(options = {}) {
       throw new Error('Every game mount needs a runtime manifest with unique fighter and stage IDs.');
     if (typeof engine.create !== 'function' || typeof engine.tick !== 'function') throw new Error('Game mount engine must expose create() and tick().');
     // Fighting styles travel with the runtime manifest so online matches use each fighter's moveset.
-    const profiles = Object.fromEntries(fighters.map(f => [f.id, { style: f.style, boss: f.boss }]));
+    const profiles = Object.fromEntries((manifest.fighters || []).map(f => [f.id, { style: f.style, boss: f.boss === true, reaches: engine.artReaches ? engine.artReaches(f.poses) : null }]));
     return { basePath: basePath(mount), root: gameRoot, engine, profiles, catalog: { fighters, stages }, fighters: new Set(fighters.map(f => f.id)), stages: new Set(stages.map(s => s.id)) };
   }).sort((a, b) => b.basePath.length - a.basePath.length);
   if (!mounts.length) throw new Error('Configure at least one game mount.');

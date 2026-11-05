@@ -2,8 +2,8 @@
   "model": "Gemini Nano Banana 2.1",
   "cloudOnly": true,
   "paid": true,
-  "paidGenerations": 89,
-  "mappedAssets": 89,
+  "paidGenerations": 90,
+  "mappedAssets": 90,
   "sourceReferences": [
     {
       "id": "griddle_source",
@@ -669,6 +669,12 @@
       "kind": "ui",
       "workflow": "comfyui/workflows/jobs/icons.json",
       "output": "output/assets/generated/raw/icons.png"
+    },
+    {
+      "id": "frame",
+      "kind": "ui",
+      "workflow": "comfyui/workflows/jobs/frame.json",
+      "output": "output/assets/generated/raw/frame.png"
     },
     {
       "id": "combat_effects",

@@ -55,7 +55,8 @@ function buildDuo(config, fighterIds, bundleRoot, { seed = 42 } = {}) {
   // Paid calls: per fighter a text source, identity, portrait, hero, cut-in and ending (1K) and five 2K sheets;
   // the arena source and stage (2K); five 1K interface images and the 2K effects atlas; then the startup media.
   const media = mediaCounts(game);
-  const oneK = fighters.length * 6 + 5 + media.oneK, twoK = fighters.length * 5 + 2 + 1 + media.twoK;
+  // Per fighter: six 1K images (source, identity, portrait, cut-in... ) and five 2K sheets; shared art is six 1K images plus the 2K effects sheet.
+  const oneK = fighters.length * 6 + 6 + media.oneK, twoK = fighters.length * 5 + 2 + 1 + media.twoK;
   const musicSeconds = jobs.filter(job => job.category === 'music').reduce((sum, job) => sum + job.duration, 0);
   const effectsSeconds = jobs.filter(job => job.category === 'sfx').reduce((sum, job) => sum + job.duration, 0);
   const voiceCharacters = jobs.filter(job => job.category === 'voice').reduce((sum, job) => sum + job.prompt.length, 0);
@@ -64,7 +65,7 @@ function buildDuo(config, fighterIds, bundleRoot, { seed = 42 } = {}) {
   const plan = {
     schema: 'comfy-fighter-duo-plan/v1', cloudOnly: true, generationSubmitted: false, requiresSpendingAuthorization: true,
     fighters: fighters.map(f => f.id), stage: stage.id, bundle: bundleRoot, source: 'Fresh text-only fictional designs; no image files loaded.',
-    images: { paidImages: oneK + twoK, oneK, twoK, mappedAssets: fighters.length * 11 + 2 + 6 + 1, estimatedUSD: imageUSD },
+    images: { paidImages: oneK + twoK, oneK, twoK, mappedAssets: fighters.length * 11 + 2 + 7 + 1, estimatedUSD: imageUSD },
     videos: { clips: media.clips, seconds: media.videoSeconds, model: 'LTX-2.5 (Fast)', resolution: '1280x720', estimatedUSD: videoUSD },
     audio: { clips: jobs.length, musicSeconds, effectsSeconds, voiceCharacters, estimatedUSD: audioUSD },
     total: { estimatedUSD: round(imageUSD + videoUSD + audioUSD) }, rates: RATES, runtimePoses: fighters.length * 45,

@@ -451,6 +451,7 @@ class CFZSharedArtFactory(io.ComfyNode):
         jobs = [
             ("title", "16:9", "Dramatic game-title background based on the venue, animated energy and speed lines. No people or readable text; leave center space for the title overlay."),
             ("select", "16:9", "Character-selection backdrop based on the venue, subdued tournament lighting. No portraits, text, boxes or controls; leave central space for six fighter cards."),
+            ("frame", "16:9", "ASSET TYPE: one isolated interface panel frame, not a scene. A rectangular arcade options-panel border filling the image edge to edge: riveted brass edges, charcoal inner band and thin deep-red trim with small corner ornaments. The entire interior is empty flat chroma green. No text, icons, figures or scenery. " + KEY),
             ("logo", "3:2", f"ASSET TYPE: one isolated typographic logo, not a scene or game screenshot. Render only the exact words {project['title']} as one centered arcade wordmark. Electric gold and white italic beveled lettering, thick black ink outline, restrained cyan and magenta edge accents, oversized final Z. Keep every letter complete with at least 12 percent empty padding. The entire background is perfectly uniform chroma green RGB(0,255,0). No people, faces, bodies, fighters, scenery, buildings, floors, health bars, interface mockups, subtitle, other words, numbers, frames or watermark."),
             ("hud", "16:9", "Thin cyan left and magenta right top-edge accents with yellow trim. All interior and fighting areas are empty flat chroma green. No text, numbers, character portraits or fake health bars. " + KEY.replace("borders or ", "")),
             ("icons", "1:1", "ASSET TYPE: one isolated geometric interface icon, not a scene or game screenshot. Render only a compact centered energy crest made of exactly three small linked rectangular workflow nodes and one central lightning bolt. Clean gold, white, cyan and magenta shapes with crisp black ink outlines and simple cel shading. Keep the complete emblem inside the central 70 percent of the canvas. The entire background is perfectly uniform chroma green RGB(0,255,0). No people, faces, bodies, fighters, scenery, buildings, floors, weapons, clothing, health bars, interface mockups, words, numbers, frames or watermark."),
@@ -458,11 +459,13 @@ class CFZSharedArtFactory(io.ComfyNode):
         for index, (identity, aspect, prompt) in enumerate(jobs):
             # Scene-oriented UI styles can turn a logo or icon into a game illustration.
             # These two isolated assets carry their complete visual style in their own prompt.
-            full_prompt = prompt if identity in {"logo", "icons"} else project["ui_style"] + "\n" + prompt
+            full_prompt = prompt if identity in {"logo", "icons", "frame"} else project["ui_style"] + "\n" + prompt
             generated = _cloud(graph, project, full_prompt, stage_reference if identity in {"title", "select"} else None, aspect, offset=40 + index)
+            if identity == "frame":
+                full_prompt = prompt  # the frame carries its own isolated-asset style, like the logo and icons
             if identity == "select":
                 select_image = generated.out(0)
-            assets.append(_save(graph, project, generated.out(0), {"id": identity, "kind": "ui", "key": identity in {"logo", "hud", "icons"}}, members))
+            assets.append(_save(graph, project, generated.out(0), {"id": identity, "kind": "ui", "key": identity in {"logo", "hud", "icons", "frame"}}, members))
         prompt = (project["style"] + "\nSquare 3x3 sheet of nine separate fighting-game effects in exact row-major order: " + ", ".join(EFFECTS) + ". "
                   "Each effect stays completely inside its cell with clear empty padding, no people or body parts. Compact impact bursts, shields and energy shapes. " + KEY)
         effect = _cloud(graph, project, prompt, None, "1:1", "2K", 49)
@@ -590,8 +593,9 @@ class CFZSelectIdleVideo(io.ComfyNode):
                           "centered with clear space above the head and below the shoes, on a dark neutral tournament-floor backdrop lit by one soft spotlight. "
                           "Same face, hair, body, outfit, accessories and colors as the reference. No other people, no text, logos or interface.", [reference], "9:16", "1K", offset=75)
         prompt = (ANIMATION_STYLE + " Seamless looping character-select idle animation. Use the supplied image as the exact first and last frame. "
-                  f"{character['name']} holds the ready stance in place: slow breathing, weight shifting from foot to foot, fists flexing, a small head turn, "
-                  "hair and clothing stirring in a light breeze, then returns exactly to the opening pose. Fixed camera, no cuts, no other people, no text or logos, no speech.")
+                  f"{character['name']} stays on the spot but never still: bouncing lightly on the toes, a quick shadow-boxing jab and a hop back into the guard, "
+                  "fists flexing, a confident nod toward the viewer, hair and clothing whipping in a gust, then settles exactly into the opening pose. "
+                  "Fixed camera, no cuts, no other people, no text or logos, no speech.")
         video = _animate(graph, prompt, keyframe.out(0), duration, project["seed"] + 85, last_frame=keyframe.out(0), resolution="720x1280")
         return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": f"idle-{character['id']}", "fighter": character["id"]}), expand=graph.finalize())
 

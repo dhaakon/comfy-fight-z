@@ -62,7 +62,7 @@ function runtimeSources(manifest, { config, plan, strict = false } = {}) {
       else if (job.kind === 'ending') present = owner?.endingArt;
       else if (job.kind === 'sprites') present = job.poses.every(pose => owner?.poses?.[pose]);
       else if (job.kind === 'stage') present = owner?.src;
-      else if (job.kind === 'ui') present = manifest.ui?.[job.id];
+      else if (job.kind === 'ui') present = manifest.ui?.[job.id] || job.id === 'frame'; // the menu frame is optional: earlier releases predate it
       else if (job.kind === 'effects') present = job.poses.every(pose => manifest.effects?.[pose]?.src);
       if (!present) throw new Error(`Strict runtime asset mapping is missing: ${job.id}`);
     }

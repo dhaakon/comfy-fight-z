@@ -1420,6 +1420,15 @@
       "workflow": "comfyui/workflows/jobs/icons.json"
     },
     {
+      "id": "frame",
+      "kind": "ui",
+      "key": true,
+      "aspect": "16:9",
+      "prompt": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nASSET TYPE: one isolated interface panel frame, not a scene. A rectangular arcade options-panel border filling the image edge to edge: riveted brass edges, charcoal inner band and thin deep-red trim with small corner ornaments. The entire interior is empty flat chroma green. No text, icons, figures or scenery.",
+      "output": "output/assets/generated/raw/frame.png",
+      "workflow": "comfyui/workflows/jobs/frame.json"
+    },
+    {
       "id": "combat_effects",
       "kind": "effects",
       "key": true,

@@ -94,11 +94,11 @@ test('Comfy Fighter Z preserves six fighters, a final boss, three source environ
   assert.equal(config.title,'Comfy Fighter Z'); assert.equal(config.fighters.length,7);
   assert.deepEqual(config.fighters.filter(f=>f.boss).map(f=>f.id),['bylaw']);
   assert.deepEqual(config.stages.map(s=>s.id),['yard','rooftop','arcade']);
-  assert.equal(jobs.length,89); assert.equal(jobs.filter(j=>j.kind==='source').length,10);
+  assert.equal(jobs.length,90); assert.equal(jobs.filter(j=>j.kind==='source').length,10);
   assert.equal(jobs.filter(j=>j.kind==='ending').length,7);
-  assert.equal(graph.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,89);
+  assert.equal(graph.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,90);
   assert.equal(graph.nodes.filter(n=>n.type==='LoadImage').length,0);
-  assert.equal(graph.nodes.filter(n=>n.type!=='MarkdownNote').length,180);
+  assert.equal(graph.nodes.filter(n=>n.type!=='MarkdownNote').length,182);
   for (const item of [...config.fighters,...config.stages]) {
     const source=jobs.find(j=>j.id===`${item.id}_source`);
     assert.equal(source.sourceImage,undefined); assert.equal(source.sourceInput,undefined);

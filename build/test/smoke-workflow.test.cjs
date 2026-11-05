@@ -24,7 +24,7 @@ test('smoke graph budgets a complete text-only two-fighter game without changing
   assert.deepEqual(workflow.nodes.map(node => node.type), ['CFZProjectSettings', 'CFZCharacterFactory', 'CFZCharacterFactory', 'CFZEnvironmentFactory', 'CFZSharedArtFactory', 'CFZExportGameAssets']);
   const count = factoryCounts({ ...config, fighters: config.fighters.slice(0, 2), stages: config.stages.filter(stage => stage.enabled).slice(0, 1) });
   for (const key of ['paidImages', 'mappedAssets', 'oneK', 'twoK', 'estimatedUSD']) assert.equal(plan[key], count[key], key);
-  assert.equal(plan.paidImages, 30); assert.equal(plan.runtimePoses, 90); assert.equal(plan.estimatedUSD, 1.753752);
+  assert.equal(plan.paidImages, 31); assert.equal(plan.runtimePoses, 90); assert.equal(plan.estimatedUSD, 1.8018);
   assert.equal(plan.generationSubmitted, false); assert.equal(plan.paidRetries, 0);
   for (const node of workflow.nodes.filter(node => ['CFZCharacterFactory', 'CFZEnvironmentFactory'].includes(node.type))) {
     assert.equal(node.widgets_values_named.image, '');

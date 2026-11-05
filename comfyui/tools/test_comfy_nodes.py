@@ -205,7 +205,7 @@ arena_source = next(node_id for node_id, node in of(arena, "GeminiNanoBanana2V2"
 check("invented arena: the stage uses its generated source", any(node["inputs"].get("model.images.image_1") == [arena_source, 0] for _, node in of(arena, "GeminiNanoBanana2V2")))
 shared_art = expanded(fx.CFZSharedArtFactory.execute(project, ["7", 1]))
 check("shared art: only title and select use the arena", sorted(json.dumps(node["inputs"].get("model.images.image_1")) for _, node in of(shared_art, "GeminiNanoBanana2V2"))
-      == sorted([json.dumps(["7", 1])] * 2 + ["null"] * 4))
+      == sorted([json.dumps(["7", 1])] * 2 + ["null"] * 5))
 reference = expanded(fx.CFZFictionalReference.execute(project, "An invented fighter.", "2:3", "1K"))
 check("fictional reference is text-only", all("model.images.image_1" not in node["inputs"] for _, node in of(reference, "GeminiNanoBanana2V2")))
 print("\n%d failure(s)" % len(failures))

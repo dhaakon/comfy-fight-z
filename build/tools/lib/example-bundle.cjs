@@ -32,7 +32,9 @@ async function verifyBundle(directory, { packaged = true } = {}) {
   const manifest = validateManifest(read(sourceFile(directory, 'assets.json')));
   const audio = validateAudioManifest(read(sourceFile(directory, 'audio.json')), manifest.game);
   const contract = contractFor(manifest.game);
-  if (manifest.cloudOnly !== true || manifest.game.fighters.length !== contract.fighters || manifest.game.stages.length !== contract.stages || manifest.assets.length !== contract.images || audio.assets.length !== contract.audio)
+  // The generated menu frame (ui/frame) is a later addition; a release may carry it on top of its contract.
+  const images = manifest.assets.length - (manifest.assets.some(asset => asset.kind === 'ui' && asset.id === 'frame') ? 1 : 0);
+  if (manifest.cloudOnly !== true || manifest.game.fighters.length !== contract.fighters || manifest.game.stages.length !== contract.stages || images !== contract.images || audio.assets.length !== contract.audio)
     throw new Error(`The complete ${contract.name} example requires ${contract.fighters} fictional fighters, ${contract.stages} arena(s), ${contract.images} generated images and ${contract.audio} audio clips.`);
   if (manifest.game.fighters.filter(fighter => fighter.boss).length !== contract.bosses) throw new Error(`The complete ${contract.name} example requires ${contract.bosses} final boss(es).`);
   const required = Object.values(manifest.game.sheets || {}).flat(), poses = [...required, ...Object.values(manifest.game.extraSheets || {}).flat()];
@@ -57,7 +59,7 @@ async function verifyBundle(directory, { packaged = true } = {}) {
   let provenance;
   if (packaged) {
     provenance = read(sourceFile(directory, 'provenance.json'));
-    if (provenance.schema !== 'comfy-fighter-example-provenance/v1' || provenance.imageEncoding !== 'lossless WebP; decoded RGBA pixels verified' || provenance.images?.length !== contract.images || provenance.audio?.length !== contract.audio) throw new Error('The reviewed example provenance record is missing or incomplete.');
+    if (provenance.schema !== 'comfy-fighter-example-provenance/v1' || provenance.imageEncoding !== 'lossless WebP; decoded RGBA pixels verified' || provenance.images?.length !== manifest.assets.length || provenance.audio?.length !== contract.audio) throw new Error('The reviewed example provenance record is missing or incomplete.');
     for (const entry of entries) {
       const records = entry.record.kind === 'audio' ? provenance.audio : provenance.images;
       const evidence = records.find(item => item.id === entry.record.id);

@@ -1,11 +1,11 @@
 {
   "id": "dfd9437b-4c8f-4b21-a97e-f54db335f6a8",
   "revision": 0,
-  "last_node_id": 181,
-  "last_link_id": 343,
+  "last_node_id": 183,
+  "last_link_id": 346,
   "nodes": [
     {
-      "id": 180,
+      "id": 182,
       "type": "CFZAssetRoot",
       "title": "1. Set your asset output root",
       "pos": [
@@ -25,96 +25,97 @@
           "name": "root",
           "type": "CFZ_ROOT",
           "links": [
-            165,
             166,
-            168,
-            170,
-            172,
-            174,
-            176,
-            178,
-            180,
-            182,
-            184,
-            186,
-            188,
-            190,
-            192,
-            194,
-            196,
-            198,
-            200,
-            202,
-            204,
-            206,
-            208,
-            210,
-            212,
-            214,
-            216,
-            218,
-            220,
-            222,
-            224,
-            226,
-            228,
-            230,
-            232,
-            234,
-            236,
-            238,
-            240,
-            242,
-            244,
-            246,
-            248,
-            250,
-            252,
-            254,
-            256,
-            258,
-            260,
-            262,
-            264,
-            266,
-            268,
-            270,
-            272,
-            274,
-            276,
-            278,
-            280,
-            282,
-            284,
-            286,
-            288,
-            290,
-            292,
-            294,
-            296,
-            298,
-            300,
-            302,
-            304,
-            306,
-            308,
-            310,
-            312,
-            314,
-            316,
-            318,
-            320,
-            322,
-            324,
-            326,
-            328,
-            330,
-            332,
-            334,
-            336,
-            338,
-            340,
-            342
+            167,
+            169,
+            171,
+            173,
+            175,
+            177,
+            179,
+            181,
+            183,
+            185,
+            187,
+            189,
+            191,
+            193,
+            195,
+            197,
+            199,
+            201,
+            203,
+            205,
+            207,
+            209,
+            211,
+            213,
+            215,
+            217,
+            219,
+            221,
+            223,
+            225,
+            227,
+            229,
+            231,
+            233,
+            235,
+            237,
+            239,
+            241,
+            243,
+            245,
+            247,
+            249,
+            251,
+            253,
+            255,
+            257,
+            259,
+            261,
+            263,
+            265,
+            267,
+            269,
+            271,
+            273,
+            275,
+            277,
+            279,
+            281,
+            283,
+            285,
+            287,
+            289,
+            291,
+            293,
+            295,
+            297,
+            299,
+            301,
+            303,
+            305,
+            307,
+            309,
+            311,
+            313,
+            315,
+            317,
+            319,
+            321,
+            323,
+            325,
+            327,
+            329,
+            331,
+            333,
+            335,
+            337,
+            339,
+            341,
+            343,
+            345
           ]
         }
       ],
@@ -123,7 +124,7 @@
       },
       "widgets_values": [
         "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\output\\assets\\generated\\comfy-fighter-z",
-        "{\n  \"factorySchema\": \"comfy-fighter-factory/v1\",\n  \"demoSource\": \"fictional-text-only\",\n  \"title\": \"Comfy Fighter Z\",\n  \"subtitle\": \"Higgsfield Open Source Saga\",\n  \"assetRoot\": \"output/assets/generated/comfy-fighter-z\",\n  \"model\": \"Gemini Nano Banana 2.1\",\n  \"style\": \"Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\",\n  \"uiStyle\": \"Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\",\n  \"stageStyle\": \"Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.\",\n  \"fighters\": [\n    {\n      \"id\": \"griddle\",\n      \"name\": \"Griddle\",\n      \"color\": \"#ff8b3d\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Sizzle Burst\",\n        \"description\": \"Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\"\n      },\n      \"introTagline\": \"The grill is hot. Your winning streak is toast.\",\n      \"introVoice\": \"Brian (male, american)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighting-game character, with no image inputs and no resemblance to a real person or existing character. Griddle is a cheerful barbecue dad in his late forties: short broad powerful build, round face, warm brown skin, bald head, compact triangular auburn beard. Brick-red sleeveless utility apron ending above the knees over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs, dark brown ankle boots. No hat or handheld props. Full-body three-quarter side view facing RIGHT, relaxed boxing guard, visible friendly face, separated arms and legs, complete hands and shoes. Original 1990s shonen anime model art, bold ink and clean two-tone cel shading. One figure only, centered with generous padding, flat uniform chroma green RGB(0,255,0) background; no green on the character, shadows, lettering, labels, logos, grid, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/griddle.png\",\n      \"sampleSourceInput\": \"cfz-demo-griddle.png\",\n      \"style\": \"grappler\",\n      \"superMove\": {\n        \"name\": \"Five-Alarm Cookout\",\n        \"description\": \"Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave.\"\n      },\n      \"winQuote\": \"Well done. Just how I like my steaks, and my opponents.\",\n      \"ending\": \"With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.\"\n    },\n    {\n      \"id\": \"rivet\",\n      \"name\": \"Rivet\",\n      \"color\": \"#58c7ff\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.\",\n      \"specialMove\": {\n        \"name\": \"Magnet Crash\",\n        \"description\": \"Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms.\"\n      },\n      \"introTagline\": \"I fix everything. Your stance is next.\",\n      \"introVoice\": \"Adam (male, american)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighting-game character entirely from text, with no real-person or franchise reference. Rivet is a workshop dad in his early fifties: tall muscular build, deep umber skin, long angular face, short tightly curled silver hair and an assertive half-smile. Indigo mechanic jumpsuit with sleeves rolled to elbows, wide copper belt, compact copper forearm bracers and steel-gray work boots. No hanging tools, goggles, hat or writing. Full-body three-quarter side view facing RIGHT, grounded open-hand fighting guard, clear separated limbs, complete visible hands and both shoes. Original 1990s shonen anime model art with bold black ink and clean two-tone cel shading. Exactly one figure centered with generous padding on flat uniform chroma green RGB(0,255,0); no green clothing, floor shadows, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/rivet.png\",\n      \"sampleSourceInput\": \"cfz-demo-rivet.png\",\n      \"style\": \"balanced\",\n      \"superMove\": {\n        \"name\": \"Full Overhaul\",\n        \"description\": \"Rivet snaps both copper bracers together and drives one palm toward the right, firing a tight cyan magnetic spiral with copper fragments orbiting its core. Keep the spiral compact near the palm in sprite art.\"\n      },\n      \"winQuote\": \"Tightened every loose bolt. You were the last one.\",\n      \"ending\": \"Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner.\"\n    },\n    {\n      \"id\": \"tempo\",\n      \"name\": \"Tempo\",\n      \"color\": \"#f46bc4\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.\",\n      \"specialMove\": {\n        \"name\": \"Beat Drop\",\n        \"description\": \"Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering.\"\n      },\n      \"introTagline\": \"Keep up with the beat, or take a seat.\",\n      \"introVoice\": \"River (neutral, american)\",\n      \"referencePrompt\": \"Create one entirely fictional adult anime fighter from text only; do not use or resemble a real person or existing character. Tempo is a music-teacher parent in their late thirties with a compact athletic build, light olive skin, a heart-shaped face, short swept coral-red pixie hair and expressive dark eyebrows. Cropped magenta track jacket, plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers, simple violet padded wristbands and small rounded headphones resting snugly at the collar with no cable. Full-body three-quarter side view facing RIGHT in an upright kickboxing guard. Show exactly one complete figure with separated limbs, both hands and both shoes, generous outer padding and a clear silhouette. Original 1990s battle-anime model art, strong economical black ink and two-tone cel shading. Flat uniform chroma green RGB(0,255,0) background; no green costume details, ground shadow, instruments, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/tempo.png\",\n      \"sampleSourceInput\": \"cfz-demo-tempo.png\",\n      \"style\": \"speed\",\n      \"superMove\": {\n        \"name\": \"Encore Fortissimo\",\n        \"description\": \"Tempo spins into a forward kick toward the right that releases a large magenta-and-violet sound shockwave of three concentric rings. Keep the rings close to the kicking foot in sprite art.\"\n      },\n      \"winQuote\": \"You were off-beat from the very first round.\",\n      \"ending\": \"Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune.\"\n    },\n    {\n      \"id\": \"nimbus\",\n      \"name\": \"Nimbus\",\n      \"color\": \"#b99cff\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.\",\n      \"specialMove\": {\n        \"name\": \"Cloudburst Palm\",\n        \"description\": \"Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot.\"\n      },\n      \"introTagline\": \"I raised a garden. I can handle a little thunder.\",\n      \"introVoice\": \"Jessica (female, american)\",\n      \"referencePrompt\": \"Generate one wholly fictional adult anime fighting-game character from text, with no photo input and no real-person likeness. Nimbus is a community-garden mom in her mid forties: medium-height sturdy build, golden-brown skin, square kind face, thick cream-colored braid tucked into a short loop at the back of the head and a determined smile. Plum-purple short-sleeve work coveralls, broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No hat, plants, watering can, loose trailing fabric or writing. Full-body three-quarter side view facing RIGHT, calm balanced open-hand martial-arts guard, both arms separated from torso and both complete boots visible. Original hand-drawn 1990s shonen anime model art, bold ink and clear two-tone cel shadows. Exactly one centered figure with ample padding on a flat uniform chroma green RGB(0,255,0) background. No green on the character, ground shadows, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/nimbus.png\",\n      \"sampleSourceInput\": \"cfz-demo-nimbus.png\",\n      \"style\": \"zoner\",\n      \"superMove\": {\n        \"name\": \"Thunderhead Bloom\",\n        \"description\": \"Nimbus raises both open palms toward the right and launches a dense lavender storm cloud crackling with pale blue lightning. Keep the cloud compact and attached to her palms in sprite art.\"\n      },\n      \"winQuote\": \"Storms pass. Gardens grow. You lost.\",\n      \"ending\": \"Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own.\"\n    },\n    {\n      \"id\": \"switchback\",\n      \"name\": \"Switchback\",\n      \"color\": \"#ffd44d\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Express Pulse\",\n        \"description\": \"Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.\"\n      },\n      \"introTagline\": \"School run complete. Express knockout incoming.\",\n      \"introVoice\": \"Charlie (male, australian)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighter from text alone, unrelated to any real person or franchise character. Switchback is a bicycle-courier dad in his early forties: tall lean build, cool dark-brown skin, narrow expressive face, shaved head and a thin silver eyebrow notch. Smooth amber bicycle helmet with fully open face and no visor, bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bike, bag, loose straps, glasses or logos. Full-body three-quarter side view facing RIGHT, springy forward-leaning boxing guard, clear separated limbs and complete visible shoes and fingers. Original 1990s shonen anime model art with bold black ink, clean two-tone shading and a simple readable silhouette. Exactly one centered figure, generous padding, flat uniform chroma green RGB(0,255,0) background. No green costume pieces, shadows, text, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/switchback.png\",\n      \"sampleSourceInput\": \"cfz-demo-switchback.png\",\n      \"style\": \"trickster\",\n      \"superMove\": {\n        \"name\": \"Rush Hour Relay\",\n        \"description\": \"Switchback bursts forward in a blur of short golden streaks and finishes with a sharp palm strike toward the right that releases a long golden arrow pulse. Keep the streaks hugging his body in sprite art.\"\n      },\n      \"winQuote\": \"Delivered. No signature required.\",\n      \"ending\": \"Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner.\"\n    },\n    {\n      \"id\": \"brick\",\n      \"name\": \"Brick\",\n      \"color\": \"#ff6677\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Foundation Break\",\n        \"description\": \"Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell.\"\n      },\n      \"introTagline\": \"I built this block. Now hold your ground.\",\n      \"introVoice\": \"Daniel (male, british)\",\n      \"referencePrompt\": \"Create one wholly invented adult anime fighting-game character from text only, without any real-person photo, likeness or existing franchise design. Brick is a neighborhood caretaker granddad in his early sixties: very tall square heavyweight build, pale freckled skin, broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Sleeveless rose-red quilted work vest over a fitted charcoal shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or writing. Full-body three-quarter side view facing RIGHT in a wide upright wrestling guard; warm stubborn grin, clear separated hands and legs, complete visible boots. Original 1990s shonen battle-anime model art with bold black ink and strong two-tone cel shading. Exactly one centered figure with generous padding on flat uniform chroma green RGB(0,255,0). No green clothing, floor shadow, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/brick.png\",\n      \"sampleSourceInput\": \"cfz-demo-brick.png\",\n      \"style\": \"power\",\n      \"superMove\": {\n        \"name\": \"Load-Bearing Avalanche\",\n        \"description\": \"Brick slams both wrapped fists down and sends a massive rose-red pressure wave edged in pale gold rolling along the ground toward the right. Keep the wave compact near his fists in sprite art.\"\n      },\n      \"winQuote\": \"Built to last. You were not.\",\n      \"ending\": \"Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin.\"\n    },\n    {\n      \"id\": \"bylaw\",\n      \"name\": \"Baron Bylaw\",\n      \"color\": \"#d4a72c\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Ordinance Orb\",\n        \"description\": \"Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell.\"\n      },\n      \"superMove\": {\n        \"name\": \"Final Notice\",\n        \"description\": \"Baron Bylaw raises his golden gauntlet overhead and hurls a towering wall of golden light edged in burgundy toward the right. Keep the light attached to the gauntlet in sprite art.\"\n      },\n      \"introTagline\": \"This tournament is now in violation. Prepare for enforcement.\",\n      \"introVoice\": \"George (male, british)\",\n      \"style\": \"boss\",\n      \"boss\": true,\n      \"winQuote\": \"Appeal denied. Permanently.\",\n      \"ending\": \"The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighting-game boss character entirely from text, with no real-person or franchise reference. Baron Bylaw is an imposing neighborhood-association president in his late fifties: very tall broad-shouldered build, light olive skin, sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Charcoal double-breasted coat with gold piping ending at mid-thigh over a burgundy vest, white high-collared shirt, charcoal trousers, polished black knee boots and one ornate golden gauntlet on the right forearm and hand. No hat, cape, props, lettering or insignia. Full-body three-quarter side view facing RIGHT in a commanding upright fighting guard with the gauntlet raised, clearly separated limbs, complete hands and both boots. Original 1990s shonen anime model art with bold black ink and clean two-tone cel shading. Exactly one figure centered with generous padding on flat uniform chroma green RGB(0,255,0); no green clothing, floor shadows, text, logos, grids, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/bylaw.png\",\n      \"sampleSourceInput\": \"cfz-demo-bylaw.png\"\n    }\n  ],\n  \"stages\": [\n    {\n      \"id\": \"yard\",\n      \"name\": \"The Yard\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.\",\n      \"referencePrompt\": \"Create an entirely fictional environment from text only: The Yard, a cheerful neighborhood backyard tournament arena at golden hour. Wide 16:9 side-on fighting-game camera, broad warm terracotta patio across the foreground with an unobstructed horizontal fighting line at 82 percent image height. Behind the fight plane: low cream picket fence, red garden shed, soft rounded distant hills, a tiny barbecue well away from the arena and simple overhead string lights. Original 1990s hand-painted anime background, clean architectural ink and rich warm cel-shaded light. This is an invented location, not a recreation of a real venue. No people, portraits, readable signs, brands, logos, floor markings or emblems. Natural scenery fills all four edges without decorative borders, speed lines, vignette, panels or letterboxing.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/levels/yard.png\",\n      \"sampleSourceInput\": \"cfz-demo-yard.png\"\n    },\n    {\n      \"id\": \"rooftop\",\n      \"name\": \"Sunset Rooftop\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.\",\n      \"referencePrompt\": \"Generate a wholly invented environment from text alone: Sunset Rooftop, a community-center roof arena in an imaginary town. Wide 16:9 side-on fighting-game view, flat unobstructed blue-gray deck with horizontal fighting line at 82 percent image height. Far behind the fight plane are a low coral parapet, two compact solar-panel arrays and one round water tank. An original low-rise skyline and peach sunset clouds form the background; no recognizable city landmarks. Hand-painted 1990s anime background, economical ink, warm coral and violet light, clean cel-shaded surfaces. No people, real venue reference, readable signs, logos, floor symbols, furniture in the fight plane, speed lines, graphic borders, vignette, panels or letterboxing. Fill all four edges with natural scenery.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/levels/rooftop.png\",\n      \"sampleSourceInput\": \"cfz-demo-rooftop.png\"\n    },\n    {\n      \"id\": \"arcade\",\n      \"name\": \"Midnight Arcade\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.\",\n      \"referencePrompt\": \"Create one fictional environment using text only: Midnight Arcade, an imaginary neighborhood amusement room after closing. Wide 16:9 side-on fighting-game camera with a large empty dark-plum rubber floor and a horizontal fighting line at 82 percent image height. Chunky generic arcade cabinets sit against the rear wall far behind the arena, glowing cyan and pink; include square acoustic ceiling tiles and one rounded purple ticket counter behind the action. Cabinet screens contain only abstract color shapes, with no words, recognizable games or copied trademarks. Original 1990s hand-painted anime background, bold simple geometry and rich neon cel shading. No people, real venue recreation, brands, signs, lettering, floor emblems, foreground obstacles, graphic borders, speed lines, vignette or letterboxing. Natural architecture fills every edge.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/levels/arcade.png\",\n      \"sampleSourceInput\": \"cfz-demo-arcade.png\"\n    }\n  ],\n  \"sheets\": {\n    \"sheet\": [\n      \"idle\",\n      \"walk\",\n      \"punch\",\n      \"kick\",\n      \"block\",\n      \"hit\",\n      \"special\",\n      \"down\",\n      \"win\"\n    ],\n    \"sheetB\": [\n      \"stance2\",\n      \"crouch\",\n      \"sweep\",\n      \"launcher\",\n      \"jump\",\n      \"airkick\",\n      \"hpunch\",\n      \"dash\",\n      \"tumble\"\n    ],\n    \"sheetC\": [\n      \"walk2\",\n      \"lkick\",\n      \"cjab\",\n      \"airpunch\",\n      \"throw\",\n      \"taunt\",\n      \"getup\",\n      \"powerup\",\n      \"entrance\"\n    ]\n  },\n  \"extraSheets\": {\n    \"sheetD\": [\n      \"walk3\",\n      \"walk4\",\n      \"run\",\n      \"run2\",\n      \"backstep\",\n      \"jumpfall\",\n      \"crouchblock\",\n      \"hitlow\",\n      \"hitheavy\"\n    ],\n    \"sheetE\": [\n      \"punchwind\",\n      \"kickwind\",\n      \"heavywind\",\n      \"roll\",\n      \"blowback\",\n      \"super\",\n      \"dizzy\",\n      \"win2\",\n      \"lose\"\n    ]\n  },\n  \"expectedAssets\": [\n    \"griddle_source\",\n    \"griddle_reference\",\n    \"griddle_sheet\",\n    \"griddle_sheetB\",\n    \"griddle_sheetC\",\n    \"griddle_sheetD\",\n    \"griddle_sheetE\",\n    \"griddle_portrait\",\n    \"griddle_hero\",\n    \"griddle_cutin\",\n    \"griddle_ending\",\n    \"rivet_source\",\n    \"rivet_reference\",\n    \"rivet_sheet\",\n    \"rivet_sheetB\",\n    \"rivet_sheetC\",\n    \"rivet_sheetD\",\n    \"rivet_sheetE\",\n    \"rivet_portrait\",\n    \"rivet_hero\",\n    \"rivet_cutin\",\n    \"rivet_ending\",\n    \"tempo_source\",\n    \"tempo_reference\",\n    \"tempo_sheet\",\n    \"tempo_sheetB\",\n    \"tempo_sheetC\",\n    \"tempo_sheetD\",\n    \"tempo_sheetE\",\n    \"tempo_portrait\",\n    \"tempo_hero\",\n    \"tempo_cutin\",\n    \"tempo_ending\",\n    \"nimbus_source\",\n    \"nimbus_reference\",\n    \"nimbus_sheet\",\n    \"nimbus_sheetB\",\n    \"nimbus_sheetC\",\n    \"nimbus_sheetD\",\n    \"nimbus_sheetE\",\n    \"nimbus_portrait\",\n    \"nimbus_hero\",\n    \"nimbus_cutin\",\n    \"nimbus_ending\",\n    \"switchback_source\",\n    \"switchback_reference\",\n    \"switchback_sheet\",\n    \"switchback_sheetB\",\n    \"switchback_sheetC\",\n    \"switchback_sheetD\",\n    \"switchback_sheetE\",\n    \"switchback_portrait\",\n    \"switchback_hero\",\n    \"switchback_cutin\",\n    \"switchback_ending\",\n    \"brick_source\",\n    \"brick_reference\",\n    \"brick_sheet\",\n    \"brick_sheetB\",\n    \"brick_sheetC\",\n    \"brick_sheetD\",\n    \"brick_sheetE\",\n    \"brick_portrait\",\n    \"brick_hero\",\n    \"brick_cutin\",\n    \"brick_ending\",\n    \"bylaw_source\",\n    \"bylaw_reference\",\n    \"bylaw_sheet\",\n    \"bylaw_sheetB\",\n    \"bylaw_sheetC\",\n    \"bylaw_sheetD\",\n    \"bylaw_sheetE\",\n    \"bylaw_portrait\",\n    \"bylaw_hero\",\n    \"bylaw_cutin\",\n    \"bylaw_ending\",\n    \"yard_source\",\n    \"yard\",\n    \"rooftop_source\",\n    \"rooftop\",\n    \"arcade_source\",\n    \"arcade\",\n    \"title\",\n    \"select\",\n    \"logo\",\n    \"hud\",\n    \"icons\",\n    \"combat_effects\"\n  ]\n}"
+        "{\n  \"factorySchema\": \"comfy-fighter-factory/v1\",\n  \"demoSource\": \"fictional-text-only\",\n  \"title\": \"Comfy Fighter Z\",\n  \"subtitle\": \"Higgsfield Open Source Saga\",\n  \"assetRoot\": \"output/assets/generated/comfy-fighter-z\",\n  \"model\": \"Gemini Nano Banana 2.1\",\n  \"style\": \"Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\",\n  \"uiStyle\": \"Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\",\n  \"stageStyle\": \"Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.\",\n  \"fighters\": [\n    {\n      \"id\": \"griddle\",\n      \"name\": \"Griddle\",\n      \"color\": \"#ff8b3d\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Sizzle Burst\",\n        \"description\": \"Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\"\n      },\n      \"introTagline\": \"The grill is hot. Your winning streak is toast.\",\n      \"introVoice\": \"Brian (male, american)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighting-game character, with no image inputs and no resemblance to a real person or existing character. Griddle is a cheerful barbecue dad in his late forties: short broad powerful build, round face, warm brown skin, bald head, compact triangular auburn beard. Brick-red sleeveless utility apron ending above the knees over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs, dark brown ankle boots. No hat or handheld props. Full-body three-quarter side view facing RIGHT, relaxed boxing guard, visible friendly face, separated arms and legs, complete hands and shoes. Original 1990s shonen anime model art, bold ink and clean two-tone cel shading. One figure only, centered with generous padding, flat uniform chroma green RGB(0,255,0) background; no green on the character, shadows, lettering, labels, logos, grid, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/griddle.png\",\n      \"sampleSourceInput\": \"cfz-demo-griddle.png\",\n      \"style\": \"grappler\",\n      \"superMove\": {\n        \"name\": \"Five-Alarm Cookout\",\n        \"description\": \"Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave.\"\n      },\n      \"winQuote\": \"Well done. Just how I like my steaks, and my opponents.\",\n      \"ending\": \"With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.\"\n    },\n    {\n      \"id\": \"rivet\",\n      \"name\": \"Rivet\",\n      \"color\": \"#58c7ff\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.\",\n      \"specialMove\": {\n        \"name\": \"Magnet Crash\",\n        \"description\": \"Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms.\"\n      },\n      \"introTagline\": \"I fix everything. Your stance is next.\",\n      \"introVoice\": \"Adam (male, american)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighting-game character entirely from text, with no real-person or franchise reference. Rivet is a workshop dad in his early fifties: tall muscular build, deep umber skin, long angular face, short tightly curled silver hair and an assertive half-smile. Indigo mechanic jumpsuit with sleeves rolled to elbows, wide copper belt, compact copper forearm bracers and steel-gray work boots. No hanging tools, goggles, hat or writing. Full-body three-quarter side view facing RIGHT, grounded open-hand fighting guard, clear separated limbs, complete visible hands and both shoes. Original 1990s shonen anime model art with bold black ink and clean two-tone cel shading. Exactly one figure centered with generous padding on flat uniform chroma green RGB(0,255,0); no green clothing, floor shadows, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/rivet.png\",\n      \"sampleSourceInput\": \"cfz-demo-rivet.png\",\n      \"style\": \"balanced\",\n      \"superMove\": {\n        \"name\": \"Full Overhaul\",\n        \"description\": \"Rivet snaps both copper bracers together and drives one palm toward the right, firing a tight cyan magnetic spiral with copper fragments orbiting its core. Keep the spiral compact near the palm in sprite art.\"\n      },\n      \"winQuote\": \"Tightened every loose bolt. You were the last one.\",\n      \"ending\": \"Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner.\"\n    },\n    {\n      \"id\": \"tempo\",\n      \"name\": \"Tempo\",\n      \"color\": \"#f46bc4\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.\",\n      \"specialMove\": {\n        \"name\": \"Beat Drop\",\n        \"description\": \"Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering.\"\n      },\n      \"introTagline\": \"Keep up with the beat, or take a seat.\",\n      \"introVoice\": \"River (neutral, american)\",\n      \"referencePrompt\": \"Create one entirely fictional adult anime fighter from text only; do not use or resemble a real person or existing character. Tempo is a music-teacher parent in their late thirties with a compact athletic build, light olive skin, a heart-shaped face, short swept coral-red pixie hair and expressive dark eyebrows. Cropped magenta track jacket, plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers, simple violet padded wristbands and small rounded headphones resting snugly at the collar with no cable. Full-body three-quarter side view facing RIGHT in an upright kickboxing guard. Show exactly one complete figure with separated limbs, both hands and both shoes, generous outer padding and a clear silhouette. Original 1990s battle-anime model art, strong economical black ink and two-tone cel shading. Flat uniform chroma green RGB(0,255,0) background; no green costume details, ground shadow, instruments, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/tempo.png\",\n      \"sampleSourceInput\": \"cfz-demo-tempo.png\",\n      \"style\": \"speed\",\n      \"superMove\": {\n        \"name\": \"Encore Fortissimo\",\n        \"description\": \"Tempo spins into a forward kick toward the right that releases a large magenta-and-violet sound shockwave of three concentric rings. Keep the rings close to the kicking foot in sprite art.\"\n      },\n      \"winQuote\": \"You were off-beat from the very first round.\",\n      \"ending\": \"Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune.\"\n    },\n    {\n      \"id\": \"nimbus\",\n      \"name\": \"Nimbus\",\n      \"color\": \"#b99cff\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.\",\n      \"specialMove\": {\n        \"name\": \"Cloudburst Palm\",\n        \"description\": \"Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot.\"\n      },\n      \"introTagline\": \"I raised a garden. I can handle a little thunder.\",\n      \"introVoice\": \"Jessica (female, american)\",\n      \"referencePrompt\": \"Generate one wholly fictional adult anime fighting-game character from text, with no photo input and no real-person likeness. Nimbus is a community-garden mom in her mid forties: medium-height sturdy build, golden-brown skin, square kind face, thick cream-colored braid tucked into a short loop at the back of the head and a determined smile. Plum-purple short-sleeve work coveralls, broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No hat, plants, watering can, loose trailing fabric or writing. Full-body three-quarter side view facing RIGHT, calm balanced open-hand martial-arts guard, both arms separated from torso and both complete boots visible. Original hand-drawn 1990s shonen anime model art, bold ink and clear two-tone cel shadows. Exactly one centered figure with ample padding on a flat uniform chroma green RGB(0,255,0) background. No green on the character, ground shadows, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/nimbus.png\",\n      \"sampleSourceInput\": \"cfz-demo-nimbus.png\",\n      \"style\": \"zoner\",\n      \"superMove\": {\n        \"name\": \"Thunderhead Bloom\",\n        \"description\": \"Nimbus raises both open palms toward the right and launches a dense lavender storm cloud crackling with pale blue lightning. Keep the cloud compact and attached to her palms in sprite art.\"\n      },\n      \"winQuote\": \"Storms pass. Gardens grow. You lost.\",\n      \"ending\": \"Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own.\"\n    },\n    {\n      \"id\": \"switchback\",\n      \"name\": \"Switchback\",\n      \"color\": \"#ffd44d\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Express Pulse\",\n        \"description\": \"Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.\"\n      },\n      \"introTagline\": \"School run complete. Express knockout incoming.\",\n      \"introVoice\": \"Charlie (male, australian)\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighter from text alone, unrelated to any real person or franchise character. Switchback is a bicycle-courier dad in his early forties: tall lean build, cool dark-brown skin, narrow expressive face, shaved head and a thin silver eyebrow notch. Smooth amber bicycle helmet with fully open face and no visor, bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bike, bag, loose straps, glasses or logos. Full-body three-quarter side view facing RIGHT, springy forward-leaning boxing guard, clear separated limbs and complete visible shoes and fingers. Original 1990s shonen anime model art with bold black ink, clean two-tone shading and a simple readable silhouette. Exactly one centered figure, generous padding, flat uniform chroma green RGB(0,255,0) background. No green costume pieces, shadows, text, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/switchback.png\",\n      \"sampleSourceInput\": \"cfz-demo-switchback.png\",\n      \"style\": \"trickster\",\n      \"superMove\": {\n        \"name\": \"Rush Hour Relay\",\n        \"description\": \"Switchback bursts forward in a blur of short golden streaks and finishes with a sharp palm strike toward the right that releases a long golden arrow pulse. Keep the streaks hugging his body in sprite art.\"\n      },\n      \"winQuote\": \"Delivered. No signature required.\",\n      \"ending\": \"Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner.\"\n    },\n    {\n      \"id\": \"brick\",\n      \"name\": \"Brick\",\n      \"color\": \"#ff6677\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Foundation Break\",\n        \"description\": \"Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell.\"\n      },\n      \"introTagline\": \"I built this block. Now hold your ground.\",\n      \"introVoice\": \"Daniel (male, british)\",\n      \"referencePrompt\": \"Create one wholly invented adult anime fighting-game character from text only, without any real-person photo, likeness or existing franchise design. Brick is a neighborhood caretaker granddad in his early sixties: very tall square heavyweight build, pale freckled skin, broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Sleeveless rose-red quilted work vest over a fitted charcoal shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or writing. Full-body three-quarter side view facing RIGHT in a wide upright wrestling guard; warm stubborn grin, clear separated hands and legs, complete visible boots. Original 1990s shonen battle-anime model art with bold black ink and strong two-tone cel shading. Exactly one centered figure with generous padding on flat uniform chroma green RGB(0,255,0). No green clothing, floor shadow, text, logos, grids, panels or watermark.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/brick.png\",\n      \"sampleSourceInput\": \"cfz-demo-brick.png\",\n      \"style\": \"power\",\n      \"superMove\": {\n        \"name\": \"Load-Bearing Avalanche\",\n        \"description\": \"Brick slams both wrapped fists down and sends a massive rose-red pressure wave edged in pale gold rolling along the ground toward the right. Keep the wave compact near his fists in sprite art.\"\n      },\n      \"winQuote\": \"Built to last. You were not.\",\n      \"ending\": \"Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin.\"\n    },\n    {\n      \"id\": \"bylaw\",\n      \"name\": \"Baron Bylaw\",\n      \"color\": \"#d4a72c\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.\",\n      \"specialMove\": {\n        \"name\": \"Ordinance Orb\",\n        \"description\": \"Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell.\"\n      },\n      \"superMove\": {\n        \"name\": \"Final Notice\",\n        \"description\": \"Baron Bylaw raises his golden gauntlet overhead and hurls a towering wall of golden light edged in burgundy toward the right. Keep the light attached to the gauntlet in sprite art.\"\n      },\n      \"introTagline\": \"This tournament is now in violation. Prepare for enforcement.\",\n      \"introVoice\": \"George (male, british)\",\n      \"style\": \"boss\",\n      \"boss\": true,\n      \"winQuote\": \"Appeal denied. Permanently.\",\n      \"ending\": \"The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.\",\n      \"referencePrompt\": \"Create one original fictional adult anime fighting-game boss character entirely from text, with no real-person or franchise reference. Baron Bylaw is an imposing neighborhood-association president in his late fifties: very tall broad-shouldered build, light olive skin, sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Charcoal double-breasted coat with gold piping ending at mid-thigh over a burgundy vest, white high-collared shirt, charcoal trousers, polished black knee boots and one ornate golden gauntlet on the right forearm and hand. No hat, cape, props, lettering or insignia. Full-body three-quarter side view facing RIGHT in a commanding upright fighting guard with the gauntlet raised, clearly separated limbs, complete hands and both boots. Original 1990s shonen anime model art with bold black ink and clean two-tone cel shading. Exactly one figure centered with generous padding on flat uniform chroma green RGB(0,255,0); no green clothing, floor shadows, text, logos, grids, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/characters/bylaw.png\",\n      \"sampleSourceInput\": \"cfz-demo-bylaw.png\"\n    }\n  ],\n  \"stages\": [\n    {\n      \"id\": \"yard\",\n      \"name\": \"The Yard\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.\",\n      \"referencePrompt\": \"Create an entirely fictional environment from text only: The Yard, a cheerful neighborhood backyard tournament arena at golden hour. Wide 16:9 side-on fighting-game camera, broad warm terracotta patio across the foreground with an unobstructed horizontal fighting line at 82 percent image height. Behind the fight plane: low cream picket fence, red garden shed, soft rounded distant hills, a tiny barbecue well away from the arena and simple overhead string lights. Original 1990s hand-painted anime background, clean architectural ink and rich warm cel-shaded light. This is an invented location, not a recreation of a real venue. No people, portraits, readable signs, brands, logos, floor markings or emblems. Natural scenery fills all four edges without decorative borders, speed lines, vignette, panels or letterboxing.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/levels/yard.png\",\n      \"sampleSourceInput\": \"cfz-demo-yard.png\"\n    },\n    {\n      \"id\": \"rooftop\",\n      \"name\": \"Sunset Rooftop\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.\",\n      \"referencePrompt\": \"Generate a wholly invented environment from text alone: Sunset Rooftop, a community-center roof arena in an imaginary town. Wide 16:9 side-on fighting-game view, flat unobstructed blue-gray deck with horizontal fighting line at 82 percent image height. Far behind the fight plane are a low coral parapet, two compact solar-panel arrays and one round water tank. An original low-rise skyline and peach sunset clouds form the background; no recognizable city landmarks. Hand-painted 1990s anime background, economical ink, warm coral and violet light, clean cel-shaded surfaces. No people, real venue reference, readable signs, logos, floor symbols, furniture in the fight plane, speed lines, graphic borders, vignette, panels or letterboxing. Fill all four edges with natural scenery.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/levels/rooftop.png\",\n      \"sampleSourceInput\": \"cfz-demo-rooftop.png\"\n    },\n    {\n      \"id\": \"arcade\",\n      \"name\": \"Midnight Arcade\",\n      \"sourceImage\": \"\",\n      \"sourceInput\": \"\",\n      \"enabled\": true,\n      \"description\": \"A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.\",\n      \"referencePrompt\": \"Create one fictional environment using text only: Midnight Arcade, an imaginary neighborhood amusement room after closing. Wide 16:9 side-on fighting-game camera with a large empty dark-plum rubber floor and a horizontal fighting line at 82 percent image height. Chunky generic arcade cabinets sit against the rear wall far behind the arena, glowing cyan and pink; include square acoustic ceiling tiles and one rounded purple ticket counter behind the action. Cabinet screens contain only abstract color shapes, with no words, recognizable games or copied trademarks. Original 1990s hand-painted anime background, bold simple geometry and rich neon cel shading. No people, real venue recreation, brands, signs, lettering, floor emblems, foreground obstacles, graphic borders, speed lines, vignette or letterboxing. Natural architecture fills every edge.\",\n      \"sourceMode\": \"Invent fictional reference\",\n      \"sampleSourceImage\": \"comfyui/ref/demo/levels/arcade.png\",\n      \"sampleSourceInput\": \"cfz-demo-arcade.png\"\n    }\n  ],\n  \"sheets\": {\n    \"sheet\": [\n      \"idle\",\n      \"walk\",\n      \"punch\",\n      \"kick\",\n      \"block\",\n      \"hit\",\n      \"special\",\n      \"down\",\n      \"win\"\n    ],\n    \"sheetB\": [\n      \"stance2\",\n      \"crouch\",\n      \"sweep\",\n      \"launcher\",\n      \"jump\",\n      \"airkick\",\n      \"hpunch\",\n      \"dash\",\n      \"tumble\"\n    ],\n    \"sheetC\": [\n      \"walk2\",\n      \"lkick\",\n      \"cjab\",\n      \"airpunch\",\n      \"throw\",\n      \"taunt\",\n      \"getup\",\n      \"powerup\",\n      \"entrance\"\n    ]\n  },\n  \"extraSheets\": {\n    \"sheetD\": [\n      \"walk3\",\n      \"walk4\",\n      \"run\",\n      \"run2\",\n      \"backstep\",\n      \"jumpfall\",\n      \"crouchblock\",\n      \"hitlow\",\n      \"hitheavy\"\n    ],\n    \"sheetE\": [\n      \"punchwind\",\n      \"kickwind\",\n      \"heavywind\",\n      \"roll\",\n      \"blowback\",\n      \"super\",\n      \"dizzy\",\n      \"win2\",\n      \"lose\"\n    ]\n  },\n  \"expectedAssets\": [\n    \"griddle_source\",\n    \"griddle_reference\",\n    \"griddle_sheet\",\n    \"griddle_sheetB\",\n    \"griddle_sheetC\",\n    \"griddle_sheetD\",\n    \"griddle_sheetE\",\n    \"griddle_portrait\",\n    \"griddle_hero\",\n    \"griddle_cutin\",\n    \"griddle_ending\",\n    \"rivet_source\",\n    \"rivet_reference\",\n    \"rivet_sheet\",\n    \"rivet_sheetB\",\n    \"rivet_sheetC\",\n    \"rivet_sheetD\",\n    \"rivet_sheetE\",\n    \"rivet_portrait\",\n    \"rivet_hero\",\n    \"rivet_cutin\",\n    \"rivet_ending\",\n    \"tempo_source\",\n    \"tempo_reference\",\n    \"tempo_sheet\",\n    \"tempo_sheetB\",\n    \"tempo_sheetC\",\n    \"tempo_sheetD\",\n    \"tempo_sheetE\",\n    \"tempo_portrait\",\n    \"tempo_hero\",\n    \"tempo_cutin\",\n    \"tempo_ending\",\n    \"nimbus_source\",\n    \"nimbus_reference\",\n    \"nimbus_sheet\",\n    \"nimbus_sheetB\",\n    \"nimbus_sheetC\",\n    \"nimbus_sheetD\",\n    \"nimbus_sheetE\",\n    \"nimbus_portrait\",\n    \"nimbus_hero\",\n    \"nimbus_cutin\",\n    \"nimbus_ending\",\n    \"switchback_source\",\n    \"switchback_reference\",\n    \"switchback_sheet\",\n    \"switchback_sheetB\",\n    \"switchback_sheetC\",\n    \"switchback_sheetD\",\n    \"switchback_sheetE\",\n    \"switchback_portrait\",\n    \"switchback_hero\",\n    \"switchback_cutin\",\n    \"switchback_ending\",\n    \"brick_source\",\n    \"brick_reference\",\n    \"brick_sheet\",\n    \"brick_sheetB\",\n    \"brick_sheetC\",\n    \"brick_sheetD\",\n    \"brick_sheetE\",\n    \"brick_portrait\",\n    \"brick_hero\",\n    \"brick_cutin\",\n    \"brick_ending\",\n    \"bylaw_source\",\n    \"bylaw_reference\",\n    \"bylaw_sheet\",\n    \"bylaw_sheetB\",\n    \"bylaw_sheetC\",\n    \"bylaw_sheetD\",\n    \"bylaw_sheetE\",\n    \"bylaw_portrait\",\n    \"bylaw_hero\",\n    \"bylaw_cutin\",\n    \"bylaw_ending\",\n    \"yard_source\",\n    \"yard\",\n    \"rooftop_source\",\n    \"rooftop\",\n    \"arcade_source\",\n    \"arcade\",\n    \"title\",\n    \"select\",\n    \"logo\",\n    \"hud\",\n    \"icons\",\n    \"frame\",\n    \"combat_effects\"\n  ]\n}"
       ]
     },
     {
@@ -231,7 +232,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 166
+          "link": 167
         }
       ],
       "outputs": [
@@ -239,7 +240,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            167
+            168
           ]
         }
       ],
@@ -363,7 +364,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 168
+          "link": 169
         }
       ],
       "outputs": [
@@ -371,7 +372,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            169
+            170
           ]
         }
       ],
@@ -486,7 +487,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 170
+          "link": 171
         }
       ],
       "outputs": [
@@ -494,7 +495,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            171
+            172
           ]
         }
       ],
@@ -609,7 +610,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 172
+          "link": 173
         }
       ],
       "outputs": [
@@ -617,7 +618,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            173
+            174
           ]
         }
       ],
@@ -732,7 +733,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 174
+          "link": 175
         }
       ],
       "outputs": [
@@ -740,7 +741,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            175
+            176
           ]
         }
       ],
@@ -855,7 +856,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 176
+          "link": 177
         }
       ],
       "outputs": [
@@ -863,7 +864,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            177
+            178
           ]
         }
       ],
@@ -978,7 +979,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 178
+          "link": 179
         }
       ],
       "outputs": [
@@ -986,7 +987,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            179
+            180
           ]
         }
       ],
@@ -1101,7 +1102,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 180
+          "link": 181
         }
       ],
       "outputs": [
@@ -1109,7 +1110,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            181
+            182
           ]
         }
       ],
@@ -1224,7 +1225,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 182
+          "link": 183
         }
       ],
       "outputs": [
@@ -1232,7 +1233,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            183
+            184
           ]
         }
       ],
@@ -1347,7 +1348,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 184
+          "link": 185
         }
       ],
       "outputs": [
@@ -1355,7 +1356,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            185
+            186
           ]
         }
       ],
@@ -1470,7 +1471,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 186
+          "link": 187
         }
       ],
       "outputs": [
@@ -1478,7 +1479,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            187
+            188
           ]
         }
       ],
@@ -1594,7 +1595,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 188
+          "link": 189
         }
       ],
       "outputs": [
@@ -1602,7 +1603,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            189
+            190
           ]
         }
       ],
@@ -1726,7 +1727,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 190
+          "link": 191
         }
       ],
       "outputs": [
@@ -1734,7 +1735,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            191
+            192
           ]
         }
       ],
@@ -1849,7 +1850,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 192
+          "link": 193
         }
       ],
       "outputs": [
@@ -1857,7 +1858,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            193
+            194
           ]
         }
       ],
@@ -1972,7 +1973,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 194
+          "link": 195
         }
       ],
       "outputs": [
@@ -1980,7 +1981,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            195
+            196
           ]
         }
       ],
@@ -2095,7 +2096,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 196
+          "link": 197
         }
       ],
       "outputs": [
@@ -2103,7 +2104,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            197
+            198
           ]
         }
       ],
@@ -2218,7 +2219,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 198
+          "link": 199
         }
       ],
       "outputs": [
@@ -2226,7 +2227,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            199
+            200
           ]
         }
       ],
@@ -2341,7 +2342,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 200
+          "link": 201
         }
       ],
       "outputs": [
@@ -2349,7 +2350,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            201
+            202
           ]
         }
       ],
@@ -2464,7 +2465,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 202
+          "link": 203
         }
       ],
       "outputs": [
@@ -2472,7 +2473,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            203
+            204
           ]
         }
       ],
@@ -2587,7 +2588,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 204
+          "link": 205
         }
       ],
       "outputs": [
@@ -2595,7 +2596,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            205
+            206
           ]
         }
       ],
@@ -2710,7 +2711,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 206
+          "link": 207
         }
       ],
       "outputs": [
@@ -2718,7 +2719,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            207
+            208
           ]
         }
       ],
@@ -2833,7 +2834,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 208
+          "link": 209
         }
       ],
       "outputs": [
@@ -2841,7 +2842,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            209
+            210
           ]
         }
       ],
@@ -2957,7 +2958,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 210
+          "link": 211
         }
       ],
       "outputs": [
@@ -2965,7 +2966,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            211
+            212
           ]
         }
       ],
@@ -3089,7 +3090,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 212
+          "link": 213
         }
       ],
       "outputs": [
@@ -3097,7 +3098,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            213
+            214
           ]
         }
       ],
@@ -3212,7 +3213,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 214
+          "link": 215
         }
       ],
       "outputs": [
@@ -3220,7 +3221,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            215
+            216
           ]
         }
       ],
@@ -3335,7 +3336,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 216
+          "link": 217
         }
       ],
       "outputs": [
@@ -3343,7 +3344,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            217
+            218
           ]
         }
       ],
@@ -3458,7 +3459,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 218
+          "link": 219
         }
       ],
       "outputs": [
@@ -3466,7 +3467,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            219
+            220
           ]
         }
       ],
@@ -3581,7 +3582,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 220
+          "link": 221
         }
       ],
       "outputs": [
@@ -3589,7 +3590,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            221
+            222
           ]
         }
       ],
@@ -3704,7 +3705,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 222
+          "link": 223
         }
       ],
       "outputs": [
@@ -3712,7 +3713,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            223
+            224
           ]
         }
       ],
@@ -3827,7 +3828,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 224
+          "link": 225
         }
       ],
       "outputs": [
@@ -3835,7 +3836,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            225
+            226
           ]
         }
       ],
@@ -3950,7 +3951,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 226
+          "link": 227
         }
       ],
       "outputs": [
@@ -3958,7 +3959,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            227
+            228
           ]
         }
       ],
@@ -4073,7 +4074,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 228
+          "link": 229
         }
       ],
       "outputs": [
@@ -4081,7 +4082,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            229
+            230
           ]
         }
       ],
@@ -4196,7 +4197,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 230
+          "link": 231
         }
       ],
       "outputs": [
@@ -4204,7 +4205,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            231
+            232
           ]
         }
       ],
@@ -4320,7 +4321,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 232
+          "link": 233
         }
       ],
       "outputs": [
@@ -4328,7 +4329,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            233
+            234
           ]
         }
       ],
@@ -4452,7 +4453,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 234
+          "link": 235
         }
       ],
       "outputs": [
@@ -4460,7 +4461,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            235
+            236
           ]
         }
       ],
@@ -4575,7 +4576,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 236
+          "link": 237
         }
       ],
       "outputs": [
@@ -4583,7 +4584,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            237
+            238
           ]
         }
       ],
@@ -4698,7 +4699,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 238
+          "link": 239
         }
       ],
       "outputs": [
@@ -4706,7 +4707,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            239
+            240
           ]
         }
       ],
@@ -4821,7 +4822,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 240
+          "link": 241
         }
       ],
       "outputs": [
@@ -4829,7 +4830,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            241
+            242
           ]
         }
       ],
@@ -4944,7 +4945,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 242
+          "link": 243
         }
       ],
       "outputs": [
@@ -4952,7 +4953,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            243
+            244
           ]
         }
       ],
@@ -5067,7 +5068,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 244
+          "link": 245
         }
       ],
       "outputs": [
@@ -5075,7 +5076,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            245
+            246
           ]
         }
       ],
@@ -5190,7 +5191,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 246
+          "link": 247
         }
       ],
       "outputs": [
@@ -5198,7 +5199,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            247
+            248
           ]
         }
       ],
@@ -5313,7 +5314,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 248
+          "link": 249
         }
       ],
       "outputs": [
@@ -5321,7 +5322,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            249
+            250
           ]
         }
       ],
@@ -5436,7 +5437,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 250
+          "link": 251
         }
       ],
       "outputs": [
@@ -5444,7 +5445,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            251
+            252
           ]
         }
       ],
@@ -5559,7 +5560,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 252
+          "link": 253
         }
       ],
       "outputs": [
@@ -5567,7 +5568,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            253
+            254
           ]
         }
       ],
@@ -5683,7 +5684,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 254
+          "link": 255
         }
       ],
       "outputs": [
@@ -5691,7 +5692,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            255
+            256
           ]
         }
       ],
@@ -5815,7 +5816,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 256
+          "link": 257
         }
       ],
       "outputs": [
@@ -5823,7 +5824,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            257
+            258
           ]
         }
       ],
@@ -5938,7 +5939,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 258
+          "link": 259
         }
       ],
       "outputs": [
@@ -5946,7 +5947,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            259
+            260
           ]
         }
       ],
@@ -6061,7 +6062,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 260
+          "link": 261
         }
       ],
       "outputs": [
@@ -6069,7 +6070,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            261
+            262
           ]
         }
       ],
@@ -6184,7 +6185,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 262
+          "link": 263
         }
       ],
       "outputs": [
@@ -6192,7 +6193,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            263
+            264
           ]
         }
       ],
@@ -6307,7 +6308,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 264
+          "link": 265
         }
       ],
       "outputs": [
@@ -6315,7 +6316,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            265
+            266
           ]
         }
       ],
@@ -6430,7 +6431,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 266
+          "link": 267
         }
       ],
       "outputs": [
@@ -6438,7 +6439,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            267
+            268
           ]
         }
       ],
@@ -6553,7 +6554,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 268
+          "link": 269
         }
       ],
       "outputs": [
@@ -6561,7 +6562,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            269
+            270
           ]
         }
       ],
@@ -6676,7 +6677,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 270
+          "link": 271
         }
       ],
       "outputs": [
@@ -6684,7 +6685,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            271
+            272
           ]
         }
       ],
@@ -6799,7 +6800,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 272
+          "link": 273
         }
       ],
       "outputs": [
@@ -6807,7 +6808,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            273
+            274
           ]
         }
       ],
@@ -6922,7 +6923,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 274
+          "link": 275
         }
       ],
       "outputs": [
@@ -6930,7 +6931,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            275
+            276
           ]
         }
       ],
@@ -7046,7 +7047,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 276
+          "link": 277
         }
       ],
       "outputs": [
@@ -7054,7 +7055,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            277
+            278
           ]
         }
       ],
@@ -7178,7 +7179,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 278
+          "link": 279
         }
       ],
       "outputs": [
@@ -7186,7 +7187,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            279
+            280
           ]
         }
       ],
@@ -7301,7 +7302,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 280
+          "link": 281
         }
       ],
       "outputs": [
@@ -7309,7 +7310,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            281
+            282
           ]
         }
       ],
@@ -7424,7 +7425,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 282
+          "link": 283
         }
       ],
       "outputs": [
@@ -7432,7 +7433,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            283
+            284
           ]
         }
       ],
@@ -7547,7 +7548,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 284
+          "link": 285
         }
       ],
       "outputs": [
@@ -7555,7 +7556,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            285
+            286
           ]
         }
       ],
@@ -7670,7 +7671,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 286
+          "link": 287
         }
       ],
       "outputs": [
@@ -7678,7 +7679,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            287
+            288
           ]
         }
       ],
@@ -7793,7 +7794,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 288
+          "link": 289
         }
       ],
       "outputs": [
@@ -7801,7 +7802,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            289
+            290
           ]
         }
       ],
@@ -7916,7 +7917,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 290
+          "link": 291
         }
       ],
       "outputs": [
@@ -7924,7 +7925,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            291
+            292
           ]
         }
       ],
@@ -8039,7 +8040,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 292
+          "link": 293
         }
       ],
       "outputs": [
@@ -8047,7 +8048,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            293
+            294
           ]
         }
       ],
@@ -8162,7 +8163,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 294
+          "link": 295
         }
       ],
       "outputs": [
@@ -8170,7 +8171,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            295
+            296
           ]
         }
       ],
@@ -8285,7 +8286,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 296
+          "link": 297
         }
       ],
       "outputs": [
@@ -8293,7 +8294,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            297
+            298
           ]
         }
       ],
@@ -8409,7 +8410,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 298
+          "link": 299
         }
       ],
       "outputs": [
@@ -8417,7 +8418,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            299
+            300
           ]
         }
       ],
@@ -8541,7 +8542,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 300
+          "link": 301
         }
       ],
       "outputs": [
@@ -8549,7 +8550,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            301
+            302
           ]
         }
       ],
@@ -8664,7 +8665,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 302
+          "link": 303
         }
       ],
       "outputs": [
@@ -8672,7 +8673,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            303
+            304
           ]
         }
       ],
@@ -8787,7 +8788,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 304
+          "link": 305
         }
       ],
       "outputs": [
@@ -8795,7 +8796,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            305
+            306
           ]
         }
       ],
@@ -8910,7 +8911,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 306
+          "link": 307
         }
       ],
       "outputs": [
@@ -8918,7 +8919,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            307
+            308
           ]
         }
       ],
@@ -9033,7 +9034,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 308
+          "link": 309
         }
       ],
       "outputs": [
@@ -9041,7 +9042,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            309
+            310
           ]
         }
       ],
@@ -9156,7 +9157,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 310
+          "link": 311
         }
       ],
       "outputs": [
@@ -9164,7 +9165,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            311
+            312
           ]
         }
       ],
@@ -9279,7 +9280,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 312
+          "link": 313
         }
       ],
       "outputs": [
@@ -9287,7 +9288,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            313
+            314
           ]
         }
       ],
@@ -9402,7 +9403,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 314
+          "link": 315
         }
       ],
       "outputs": [
@@ -9410,7 +9411,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            315
+            316
           ]
         }
       ],
@@ -9525,7 +9526,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 316
+          "link": 317
         }
       ],
       "outputs": [
@@ -9533,7 +9534,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            317
+            318
           ]
         }
       ],
@@ -9648,7 +9649,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 318
+          "link": 319
         }
       ],
       "outputs": [
@@ -9656,7 +9657,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            319
+            320
           ]
         }
       ],
@@ -9772,7 +9773,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 320
+          "link": 321
         }
       ],
       "outputs": [
@@ -9780,7 +9781,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            321
+            322
           ]
         }
       ],
@@ -9897,7 +9898,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 322
+          "link": 323
         }
       ],
       "outputs": [
@@ -9905,7 +9906,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            323
+            324
           ]
         }
       ],
@@ -10021,7 +10022,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 324
+          "link": 325
         }
       ],
       "outputs": [
@@ -10029,7 +10030,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            325
+            326
           ]
         }
       ],
@@ -10144,7 +10145,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 326
+          "link": 327
         }
       ],
       "outputs": [
@@ -10152,7 +10153,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            327
+            328
           ]
         }
       ],
@@ -10268,7 +10269,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 328
+          "link": 329
         }
       ],
       "outputs": [
@@ -10276,7 +10277,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            329
+            330
           ]
         }
       ],
@@ -10391,7 +10392,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 330
+          "link": 331
         }
       ],
       "outputs": [
@@ -10399,7 +10400,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            331
+            332
           ]
         }
       ],
@@ -10514,7 +10515,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 332
+          "link": 333
         }
       ],
       "outputs": [
@@ -10522,7 +10523,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            333
+            334
           ]
         }
       ],
@@ -10637,7 +10638,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 334
+          "link": 335
         }
       ],
       "outputs": [
@@ -10645,7 +10646,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            335
+            336
           ]
         }
       ],
@@ -10760,7 +10761,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 336
+          "link": 337
         }
       ],
       "outputs": [
@@ -10768,7 +10769,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            337
+            338
           ]
         }
       ],
@@ -10883,7 +10884,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 338
+          "link": 339
         }
       ],
       "outputs": [
@@ -10891,7 +10892,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            339
+            340
           ]
         }
       ],
@@ -11006,7 +11007,7 @@
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 340
+          "link": 341
         }
       ],
       "outputs": [
@@ -11014,7 +11015,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            341
+            342
           ]
         }
       ],
@@ -11076,6 +11077,129 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nASSET TYPE: one isolated interface panel frame, not a scene. A rectangular arcade options-panel border filling the image edge to edge: riveted brass edges, charcoal inner band and thin deep-red trim with small corner ornaments. The entire interior is empty flat chroma green. No text, icons, figures or scenery.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nASSET TYPE: one isolated interface panel frame, not a scene. A rectangular arcade options-panel border filling the image edge to edge: riveted brass edges, charcoal inner band and thin deep-red trim with small corner ornaments. The entire interior is empty flat chroma green. No text, icons, figures or scenery.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "frame | cloud generation"
+    },
+    {
+      "id": 178,
+      "type": "CFZSaveAsset",
+      "title": "2. Save + map: frame",
+      "pos": [
+        9630,
+        6620
+      ],
+      "size": [
+        480,
+        390
+      ],
+      "flags": {},
+      "order": 178,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 164
+        },
+        {
+          "name": "root",
+          "type": "CFZ_ROOT",
+          "link": 343
+        }
+      ],
+      "outputs": [
+        {
+          "name": "asset",
+          "type": "CFZ_ASSET",
+          "links": [
+            344
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSaveAsset"
+      },
+      "widgets_values": [
+        "{\n  \"id\": \"frame\",\n  \"kind\": \"ui\",\n  \"key\": true\n}"
+      ]
+    },
+    {
+      "id": 179,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        9160,
+        7200
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 179,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            165
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
         "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.\nA square 3x3 anime combat effects atlas, exactly nine equally sized cells row-major, one isolated effect in each cell: 1. hit, 2. block, 3. projectile, 4. dust, 5. ko, 6. powerup, 7. dash, 8. launch, 9. spark. Orange, yellow, cream, magenta and cyan effects only. Projectile travels RIGHT. No characters. All effects fit their cell with 12% empty padding, equal visual scale. No grid, separators, borders, labels or text. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "Gemini Nano Banana 2.1",
         "1:1",
@@ -11106,30 +11230,30 @@
       "title": "combat_effects | cloud generation"
     },
     {
-      "id": 178,
+      "id": 180,
       "type": "CFZSaveAsset",
       "title": "2. Save + map: combat_effects",
       "pos": [
         9630,
-        6620
+        7200
       ],
       "size": [
         480,
         390
       ],
       "flags": {},
-      "order": 178,
+      "order": 180,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 164
+          "link": 165
         },
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 342
+          "link": 345
         }
       ],
       "outputs": [
@@ -11137,7 +11261,7 @@
           "name": "asset",
           "type": "CFZ_ASSET",
           "links": [
-            343
+            346
           ]
         }
       ],
@@ -11149,7 +11273,7 @@
       ]
     },
     {
-      "id": 179,
+      "id": 181,
       "type": "MarkdownNote",
       "pos": [
         -550,
@@ -11160,17 +11284,17 @@
         360
       ],
       "flags": {},
-      "order": 179,
+      "order": 181,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# Comfy Fighter Z: complete game asset factory\n\n1. Set the absolute root_directory on Asset Root. Fictional source definitions are generated from text; this demo loads no prior-session files.\n2. Run the graph: 89 CLOUD image-generation nodes (paid Comfy credits). Each Save + Map node saves a stable raw PNG and its metadata.\n3. The final exporter waits for ALL 89 mapped assets, then writes assets.json in that root, including descriptions, special moves and source mappings.\n4. Open the Game Builder frontend, select that folder (assets.json + raw/), customize the roster/title, and export a playable directory or ZIP.\n\nNew source designs feed the anime identity references and stage; all sheets and cut-ins use those identities. Character descriptions and specialMove definitions drive the artwork. Audio has a separate cloud workflow writing audio.json into this root.\n\nInstall this project's comfyui/custom_nodes/comfy_fighter_assets pack into ComfyUI/custom_nodes and restart ComfyUI once. Only model nodes call cloud services; root/save/manifest nodes process local files. No model downloads. Running the graph spends credits; preparing it does not."
+        "# Comfy Fighter Z: complete game asset factory\n\n1. Set the absolute root_directory on Asset Root. Fictional source definitions are generated from text; this demo loads no prior-session files.\n2. Run the graph: 90 CLOUD image-generation nodes (paid Comfy credits). Each Save + Map node saves a stable raw PNG and its metadata.\n3. The final exporter waits for ALL 90 mapped assets, then writes assets.json in that root, including descriptions, special moves and source mappings.\n4. Open the Game Builder frontend, select that folder (assets.json + raw/), customize the roster/title, and export a playable directory or ZIP.\n\nNew source designs feed the anime identity references and stage; all sheets and cut-ins use those identities. Character descriptions and specialMove definitions drive the artwork. Audio has a separate cloud workflow writing audio.json into this root.\n\nInstall this project's comfyui/custom_nodes/comfy_fighter_assets pack into ComfyUI/custom_nodes and restart ComfyUI once. Only model nodes call cloud services; root/save/manifest nodes process local files. No model downloads. Running the graph spends credits; preparing it does not."
       ]
     },
     {
-      "id": 181,
+      "id": 183,
       "type": "CFZExportManifest",
       "title": "3. Export assets.json (all art + sprite mappings)",
       "pos": [
@@ -11179,461 +11303,466 @@
       ],
       "size": [
         470,
-        2355
+        2380
       ],
       "flags": {},
-      "order": 180,
+      "order": 182,
       "mode": 0,
       "inputs": [
         {
           "name": "root",
           "type": "CFZ_ROOT",
-          "link": 165
+          "link": 166
         },
         {
           "name": "assets.asset_0",
           "type": "CFZ_ASSET",
-          "link": 167
+          "link": 168
         },
         {
           "name": "assets.asset_1",
           "type": "CFZ_ASSET",
-          "link": 169
+          "link": 170
         },
         {
           "name": "assets.asset_2",
           "type": "CFZ_ASSET",
-          "link": 171
+          "link": 172
         },
         {
           "name": "assets.asset_3",
           "type": "CFZ_ASSET",
-          "link": 173
+          "link": 174
         },
         {
           "name": "assets.asset_4",
           "type": "CFZ_ASSET",
-          "link": 175
+          "link": 176
         },
         {
           "name": "assets.asset_5",
           "type": "CFZ_ASSET",
-          "link": 177
+          "link": 178
         },
         {
           "name": "assets.asset_6",
           "type": "CFZ_ASSET",
-          "link": 179
+          "link": 180
         },
         {
           "name": "assets.asset_7",
           "type": "CFZ_ASSET",
-          "link": 181
+          "link": 182
         },
         {
           "name": "assets.asset_8",
           "type": "CFZ_ASSET",
-          "link": 183
+          "link": 184
         },
         {
           "name": "assets.asset_9",
           "type": "CFZ_ASSET",
-          "link": 185
+          "link": 186
         },
         {
           "name": "assets.asset_10",
           "type": "CFZ_ASSET",
-          "link": 187
+          "link": 188
         },
         {
           "name": "assets.asset_11",
           "type": "CFZ_ASSET",
-          "link": 189
+          "link": 190
         },
         {
           "name": "assets.asset_12",
           "type": "CFZ_ASSET",
-          "link": 191
+          "link": 192
         },
         {
           "name": "assets.asset_13",
           "type": "CFZ_ASSET",
-          "link": 193
+          "link": 194
         },
         {
           "name": "assets.asset_14",
           "type": "CFZ_ASSET",
-          "link": 195
+          "link": 196
         },
         {
           "name": "assets.asset_15",
           "type": "CFZ_ASSET",
-          "link": 197
+          "link": 198
         },
         {
           "name": "assets.asset_16",
           "type": "CFZ_ASSET",
-          "link": 199
+          "link": 200
         },
         {
           "name": "assets.asset_17",
           "type": "CFZ_ASSET",
-          "link": 201
+          "link": 202
         },
         {
           "name": "assets.asset_18",
           "type": "CFZ_ASSET",
-          "link": 203
+          "link": 204
         },
         {
           "name": "assets.asset_19",
           "type": "CFZ_ASSET",
-          "link": 205
+          "link": 206
         },
         {
           "name": "assets.asset_20",
           "type": "CFZ_ASSET",
-          "link": 207
+          "link": 208
         },
         {
           "name": "assets.asset_21",
           "type": "CFZ_ASSET",
-          "link": 209
+          "link": 210
         },
         {
           "name": "assets.asset_22",
           "type": "CFZ_ASSET",
-          "link": 211
+          "link": 212
         },
         {
           "name": "assets.asset_23",
           "type": "CFZ_ASSET",
-          "link": 213
+          "link": 214
         },
         {
           "name": "assets.asset_24",
           "type": "CFZ_ASSET",
-          "link": 215
+          "link": 216
         },
         {
           "name": "assets.asset_25",
           "type": "CFZ_ASSET",
-          "link": 217
+          "link": 218
         },
         {
           "name": "assets.asset_26",
           "type": "CFZ_ASSET",
-          "link": 219
+          "link": 220
         },
         {
           "name": "assets.asset_27",
           "type": "CFZ_ASSET",
-          "link": 221
+          "link": 222
         },
         {
           "name": "assets.asset_28",
           "type": "CFZ_ASSET",
-          "link": 223
+          "link": 224
         },
         {
           "name": "assets.asset_29",
           "type": "CFZ_ASSET",
-          "link": 225
+          "link": 226
         },
         {
           "name": "assets.asset_30",
           "type": "CFZ_ASSET",
-          "link": 227
+          "link": 228
         },
         {
           "name": "assets.asset_31",
           "type": "CFZ_ASSET",
-          "link": 229
+          "link": 230
         },
         {
           "name": "assets.asset_32",
           "type": "CFZ_ASSET",
-          "link": 231
+          "link": 232
         },
         {
           "name": "assets.asset_33",
           "type": "CFZ_ASSET",
-          "link": 233
+          "link": 234
         },
         {
           "name": "assets.asset_34",
           "type": "CFZ_ASSET",
-          "link": 235
+          "link": 236
         },
         {
           "name": "assets.asset_35",
           "type": "CFZ_ASSET",
-          "link": 237
+          "link": 238
         },
         {
           "name": "assets.asset_36",
           "type": "CFZ_ASSET",
-          "link": 239
+          "link": 240
         },
         {
           "name": "assets.asset_37",
           "type": "CFZ_ASSET",
-          "link": 241
+          "link": 242
         },
         {
           "name": "assets.asset_38",
           "type": "CFZ_ASSET",
-          "link": 243
+          "link": 244
         },
         {
           "name": "assets.asset_39",
           "type": "CFZ_ASSET",
-          "link": 245
+          "link": 246
         },
         {
           "name": "assets.asset_40",
           "type": "CFZ_ASSET",
-          "link": 247
+          "link": 248
         },
         {
           "name": "assets.asset_41",
           "type": "CFZ_ASSET",
-          "link": 249
+          "link": 250
         },
         {
           "name": "assets.asset_42",
           "type": "CFZ_ASSET",
-          "link": 251
+          "link": 252
         },
         {
           "name": "assets.asset_43",
           "type": "CFZ_ASSET",
-          "link": 253
+          "link": 254
         },
         {
           "name": "assets.asset_44",
           "type": "CFZ_ASSET",
-          "link": 255
+          "link": 256
         },
         {
           "name": "assets.asset_45",
           "type": "CFZ_ASSET",
-          "link": 257
+          "link": 258
         },
         {
           "name": "assets.asset_46",
           "type": "CFZ_ASSET",
-          "link": 259
+          "link": 260
         },
         {
           "name": "assets.asset_47",
           "type": "CFZ_ASSET",
-          "link": 261
+          "link": 262
         },
         {
           "name": "assets.asset_48",
           "type": "CFZ_ASSET",
-          "link": 263
+          "link": 264
         },
         {
           "name": "assets.asset_49",
           "type": "CFZ_ASSET",
-          "link": 265
+          "link": 266
         },
         {
           "name": "assets.asset_50",
           "type": "CFZ_ASSET",
-          "link": 267
+          "link": 268
         },
         {
           "name": "assets.asset_51",
           "type": "CFZ_ASSET",
-          "link": 269
+          "link": 270
         },
         {
           "name": "assets.asset_52",
           "type": "CFZ_ASSET",
-          "link": 271
+          "link": 272
         },
         {
           "name": "assets.asset_53",
           "type": "CFZ_ASSET",
-          "link": 273
+          "link": 274
         },
         {
           "name": "assets.asset_54",
           "type": "CFZ_ASSET",
-          "link": 275
+          "link": 276
         },
         {
           "name": "assets.asset_55",
           "type": "CFZ_ASSET",
-          "link": 277
+          "link": 278
         },
         {
           "name": "assets.asset_56",
           "type": "CFZ_ASSET",
-          "link": 279
+          "link": 280
         },
         {
           "name": "assets.asset_57",
           "type": "CFZ_ASSET",
-          "link": 281
+          "link": 282
         },
         {
           "name": "assets.asset_58",
           "type": "CFZ_ASSET",
-          "link": 283
+          "link": 284
         },
         {
           "name": "assets.asset_59",
           "type": "CFZ_ASSET",
-          "link": 285
+          "link": 286
         },
         {
           "name": "assets.asset_60",
           "type": "CFZ_ASSET",
-          "link": 287
+          "link": 288
         },
         {
           "name": "assets.asset_61",
           "type": "CFZ_ASSET",
-          "link": 289
+          "link": 290
         },
         {
           "name": "assets.asset_62",
           "type": "CFZ_ASSET",
-          "link": 291
+          "link": 292
         },
         {
           "name": "assets.asset_63",
           "type": "CFZ_ASSET",
-          "link": 293
+          "link": 294
         },
         {
           "name": "assets.asset_64",
           "type": "CFZ_ASSET",
-          "link": 295
+          "link": 296
         },
         {
           "name": "assets.asset_65",
           "type": "CFZ_ASSET",
-          "link": 297
+          "link": 298
         },
         {
           "name": "assets.asset_66",
           "type": "CFZ_ASSET",
-          "link": 299
+          "link": 300
         },
         {
           "name": "assets.asset_67",
           "type": "CFZ_ASSET",
-          "link": 301
+          "link": 302
         },
         {
           "name": "assets.asset_68",
           "type": "CFZ_ASSET",
-          "link": 303
+          "link": 304
         },
         {
           "name": "assets.asset_69",
           "type": "CFZ_ASSET",
-          "link": 305
+          "link": 306
         },
         {
           "name": "assets.asset_70",
           "type": "CFZ_ASSET",
-          "link": 307
+          "link": 308
         },
         {
           "name": "assets.asset_71",
           "type": "CFZ_ASSET",
-          "link": 309
+          "link": 310
         },
         {
           "name": "assets.asset_72",
           "type": "CFZ_ASSET",
-          "link": 311
+          "link": 312
         },
         {
           "name": "assets.asset_73",
           "type": "CFZ_ASSET",
-          "link": 313
+          "link": 314
         },
         {
           "name": "assets.asset_74",
           "type": "CFZ_ASSET",
-          "link": 315
+          "link": 316
         },
         {
           "name": "assets.asset_75",
           "type": "CFZ_ASSET",
-          "link": 317
+          "link": 318
         },
         {
           "name": "assets.asset_76",
           "type": "CFZ_ASSET",
-          "link": 319
+          "link": 320
         },
         {
           "name": "assets.asset_77",
           "type": "CFZ_ASSET",
-          "link": 321
+          "link": 322
         },
         {
           "name": "assets.asset_78",
           "type": "CFZ_ASSET",
-          "link": 323
+          "link": 324
         },
         {
           "name": "assets.asset_79",
           "type": "CFZ_ASSET",
-          "link": 325
+          "link": 326
         },
         {
           "name": "assets.asset_80",
           "type": "CFZ_ASSET",
-          "link": 327
+          "link": 328
         },
         {
           "name": "assets.asset_81",
           "type": "CFZ_ASSET",
-          "link": 329
+          "link": 330
         },
         {
           "name": "assets.asset_82",
           "type": "CFZ_ASSET",
-          "link": 331
+          "link": 332
         },
         {
           "name": "assets.asset_83",
           "type": "CFZ_ASSET",
-          "link": 333
+          "link": 334
         },
         {
           "name": "assets.asset_84",
           "type": "CFZ_ASSET",
-          "link": 335
+          "link": 336
         },
         {
           "name": "assets.asset_85",
           "type": "CFZ_ASSET",
-          "link": 337
+          "link": 338
         },
         {
           "name": "assets.asset_86",
           "type": "CFZ_ASSET",
-          "link": 339
+          "link": 340
         },
         {
           "name": "assets.asset_87",
           "type": "CFZ_ASSET",
-          "link": 341
+          "link": 342
         },
         {
           "name": "assets.asset_88",
           "type": "CFZ_ASSET",
-          "link": 343
+          "link": 344
+        },
+        {
+          "name": "assets.asset_89",
+          "type": "CFZ_ASSET",
+          "link": 346
         }
       ],
       "outputs": [
@@ -12964,1434 +13093,1458 @@
     ],
     [
       165,
+      179,
+      0,
       180,
       0,
-      181,
-      0,
-      "CFZ_ROOT"
+      "IMAGE"
     ],
     [
       166,
-      180,
+      182,
       0,
-      2,
-      1,
+      183,
+      0,
       "CFZ_ROOT"
     ],
     [
       167,
-      2,
+      182,
       0,
-      181,
+      2,
       1,
-      "CFZ_ASSET"
+      "CFZ_ROOT"
     ],
     [
       168,
-      180,
+      2,
+      0,
+      183,
+      1,
+      "CFZ_ASSET"
+    ],
+    [
+      169,
+      182,
       0,
       4,
       1,
       "CFZ_ROOT"
     ],
     [
-      169,
+      170,
       4,
       0,
-      181,
+      183,
       2,
       "CFZ_ASSET"
     ],
     [
-      170,
-      180,
+      171,
+      182,
       0,
       6,
       1,
       "CFZ_ROOT"
     ],
     [
-      171,
+      172,
       6,
       0,
-      181,
+      183,
       3,
       "CFZ_ASSET"
     ],
     [
-      172,
-      180,
+      173,
+      182,
       0,
       8,
       1,
       "CFZ_ROOT"
     ],
     [
-      173,
+      174,
       8,
       0,
-      181,
+      183,
       4,
       "CFZ_ASSET"
     ],
     [
-      174,
-      180,
+      175,
+      182,
       0,
       10,
       1,
       "CFZ_ROOT"
     ],
     [
-      175,
+      176,
       10,
       0,
-      181,
+      183,
       5,
       "CFZ_ASSET"
     ],
     [
-      176,
-      180,
+      177,
+      182,
       0,
       12,
       1,
       "CFZ_ROOT"
     ],
     [
-      177,
+      178,
       12,
       0,
-      181,
+      183,
       6,
       "CFZ_ASSET"
     ],
     [
-      178,
-      180,
+      179,
+      182,
       0,
       14,
       1,
       "CFZ_ROOT"
     ],
     [
-      179,
+      180,
       14,
       0,
-      181,
+      183,
       7,
       "CFZ_ASSET"
     ],
     [
-      180,
-      180,
+      181,
+      182,
       0,
       16,
       1,
       "CFZ_ROOT"
     ],
     [
-      181,
+      182,
       16,
       0,
-      181,
+      183,
       8,
       "CFZ_ASSET"
     ],
     [
+      183,
       182,
-      180,
       0,
       18,
       1,
       "CFZ_ROOT"
     ],
     [
-      183,
+      184,
       18,
       0,
-      181,
+      183,
       9,
       "CFZ_ASSET"
     ],
     [
-      184,
-      180,
+      185,
+      182,
       0,
       20,
       1,
       "CFZ_ROOT"
     ],
     [
-      185,
+      186,
       20,
       0,
-      181,
+      183,
       10,
       "CFZ_ASSET"
     ],
     [
-      186,
-      180,
+      187,
+      182,
       0,
       22,
       1,
       "CFZ_ROOT"
     ],
     [
-      187,
+      188,
       22,
       0,
-      181,
+      183,
       11,
       "CFZ_ASSET"
     ],
     [
-      188,
-      180,
+      189,
+      182,
       0,
       24,
       1,
       "CFZ_ROOT"
     ],
     [
-      189,
+      190,
       24,
       0,
-      181,
+      183,
       12,
       "CFZ_ASSET"
     ],
     [
-      190,
-      180,
+      191,
+      182,
       0,
       26,
       1,
       "CFZ_ROOT"
     ],
     [
-      191,
+      192,
       26,
       0,
-      181,
+      183,
       13,
       "CFZ_ASSET"
     ],
     [
-      192,
-      180,
+      193,
+      182,
       0,
       28,
       1,
       "CFZ_ROOT"
     ],
     [
-      193,
+      194,
       28,
       0,
-      181,
+      183,
       14,
       "CFZ_ASSET"
     ],
     [
-      194,
-      180,
+      195,
+      182,
       0,
       30,
       1,
       "CFZ_ROOT"
     ],
     [
-      195,
+      196,
       30,
       0,
-      181,
+      183,
       15,
       "CFZ_ASSET"
     ],
     [
-      196,
-      180,
+      197,
+      182,
       0,
       32,
       1,
       "CFZ_ROOT"
     ],
     [
-      197,
+      198,
       32,
       0,
-      181,
+      183,
       16,
       "CFZ_ASSET"
     ],
     [
-      198,
-      180,
+      199,
+      182,
       0,
       34,
       1,
       "CFZ_ROOT"
     ],
     [
-      199,
+      200,
       34,
       0,
-      181,
+      183,
       17,
       "CFZ_ASSET"
     ],
     [
-      200,
-      180,
+      201,
+      182,
       0,
       36,
       1,
       "CFZ_ROOT"
     ],
     [
-      201,
+      202,
       36,
       0,
-      181,
+      183,
       18,
       "CFZ_ASSET"
     ],
     [
-      202,
-      180,
+      203,
+      182,
       0,
       38,
       1,
       "CFZ_ROOT"
     ],
     [
-      203,
+      204,
       38,
       0,
-      181,
+      183,
       19,
       "CFZ_ASSET"
     ],
     [
-      204,
-      180,
+      205,
+      182,
       0,
       40,
       1,
       "CFZ_ROOT"
     ],
     [
-      205,
+      206,
       40,
       0,
-      181,
+      183,
       20,
       "CFZ_ASSET"
     ],
     [
-      206,
-      180,
+      207,
+      182,
       0,
       42,
       1,
       "CFZ_ROOT"
     ],
     [
-      207,
+      208,
       42,
       0,
-      181,
+      183,
       21,
       "CFZ_ASSET"
     ],
     [
-      208,
-      180,
+      209,
+      182,
       0,
       44,
       1,
       "CFZ_ROOT"
     ],
     [
-      209,
+      210,
       44,
       0,
-      181,
+      183,
       22,
       "CFZ_ASSET"
     ],
     [
-      210,
-      180,
+      211,
+      182,
       0,
       46,
       1,
       "CFZ_ROOT"
     ],
     [
-      211,
+      212,
       46,
       0,
-      181,
+      183,
       23,
       "CFZ_ASSET"
     ],
     [
-      212,
-      180,
+      213,
+      182,
       0,
       48,
       1,
       "CFZ_ROOT"
     ],
     [
-      213,
+      214,
       48,
       0,
-      181,
+      183,
       24,
       "CFZ_ASSET"
     ],
     [
-      214,
-      180,
+      215,
+      182,
       0,
       50,
       1,
       "CFZ_ROOT"
     ],
     [
-      215,
+      216,
       50,
       0,
-      181,
+      183,
       25,
       "CFZ_ASSET"
     ],
     [
-      216,
-      180,
+      217,
+      182,
       0,
       52,
       1,
       "CFZ_ROOT"
     ],
     [
-      217,
+      218,
       52,
       0,
-      181,
+      183,
       26,
       "CFZ_ASSET"
     ],
     [
-      218,
-      180,
+      219,
+      182,
       0,
       54,
       1,
       "CFZ_ROOT"
     ],
     [
-      219,
+      220,
       54,
       0,
-      181,
+      183,
       27,
       "CFZ_ASSET"
     ],
     [
-      220,
-      180,
+      221,
+      182,
       0,
       56,
       1,
       "CFZ_ROOT"
     ],
     [
-      221,
+      222,
       56,
       0,
-      181,
+      183,
       28,
       "CFZ_ASSET"
     ],
     [
-      222,
-      180,
+      223,
+      182,
       0,
       58,
       1,
       "CFZ_ROOT"
     ],
     [
-      223,
+      224,
       58,
       0,
-      181,
+      183,
       29,
       "CFZ_ASSET"
     ],
     [
-      224,
-      180,
+      225,
+      182,
       0,
       60,
       1,
       "CFZ_ROOT"
     ],
     [
-      225,
+      226,
       60,
       0,
-      181,
+      183,
       30,
       "CFZ_ASSET"
     ],
     [
-      226,
-      180,
+      227,
+      182,
       0,
       62,
       1,
       "CFZ_ROOT"
     ],
     [
-      227,
+      228,
       62,
       0,
-      181,
+      183,
       31,
       "CFZ_ASSET"
     ],
     [
-      228,
-      180,
+      229,
+      182,
       0,
       64,
       1,
       "CFZ_ROOT"
     ],
     [
-      229,
+      230,
       64,
       0,
-      181,
+      183,
       32,
       "CFZ_ASSET"
     ],
     [
-      230,
-      180,
+      231,
+      182,
       0,
       66,
       1,
       "CFZ_ROOT"
     ],
     [
-      231,
+      232,
       66,
       0,
-      181,
+      183,
       33,
       "CFZ_ASSET"
     ],
     [
-      232,
-      180,
+      233,
+      182,
       0,
       68,
       1,
       "CFZ_ROOT"
     ],
     [
-      233,
+      234,
       68,
       0,
-      181,
+      183,
       34,
       "CFZ_ASSET"
     ],
     [
-      234,
-      180,
+      235,
+      182,
       0,
       70,
       1,
       "CFZ_ROOT"
     ],
     [
-      235,
+      236,
       70,
       0,
-      181,
+      183,
       35,
       "CFZ_ASSET"
     ],
     [
-      236,
-      180,
+      237,
+      182,
       0,
       72,
       1,
       "CFZ_ROOT"
     ],
     [
-      237,
+      238,
       72,
       0,
-      181,
+      183,
       36,
       "CFZ_ASSET"
     ],
     [
-      238,
-      180,
+      239,
+      182,
       0,
       74,
       1,
       "CFZ_ROOT"
     ],
     [
-      239,
+      240,
       74,
       0,
-      181,
+      183,
       37,
       "CFZ_ASSET"
     ],
     [
-      240,
-      180,
+      241,
+      182,
       0,
       76,
       1,
       "CFZ_ROOT"
     ],
     [
-      241,
+      242,
       76,
       0,
-      181,
+      183,
       38,
       "CFZ_ASSET"
     ],
     [
-      242,
-      180,
+      243,
+      182,
       0,
       78,
       1,
       "CFZ_ROOT"
     ],
     [
-      243,
+      244,
       78,
       0,
-      181,
+      183,
       39,
       "CFZ_ASSET"
     ],
     [
-      244,
-      180,
+      245,
+      182,
       0,
       80,
       1,
       "CFZ_ROOT"
     ],
     [
-      245,
+      246,
       80,
       0,
-      181,
+      183,
       40,
       "CFZ_ASSET"
     ],
     [
-      246,
-      180,
+      247,
+      182,
       0,
       82,
       1,
       "CFZ_ROOT"
     ],
     [
-      247,
+      248,
       82,
       0,
-      181,
+      183,
       41,
       "CFZ_ASSET"
     ],
     [
-      248,
-      180,
+      249,
+      182,
       0,
       84,
       1,
       "CFZ_ROOT"
     ],
     [
-      249,
+      250,
       84,
       0,
-      181,
+      183,
       42,
       "CFZ_ASSET"
     ],
     [
-      250,
-      180,
+      251,
+      182,
       0,
       86,
       1,
       "CFZ_ROOT"
     ],
     [
-      251,
+      252,
       86,
       0,
-      181,
+      183,
       43,
       "CFZ_ASSET"
     ],
     [
-      252,
-      180,
+      253,
+      182,
       0,
       88,
       1,
       "CFZ_ROOT"
     ],
     [
-      253,
+      254,
       88,
       0,
-      181,
+      183,
       44,
       "CFZ_ASSET"
     ],
     [
-      254,
-      180,
+      255,
+      182,
       0,
       90,
       1,
       "CFZ_ROOT"
     ],
     [
-      255,
+      256,
       90,
       0,
-      181,
+      183,
       45,
       "CFZ_ASSET"
     ],
     [
-      256,
-      180,
+      257,
+      182,
       0,
       92,
       1,
       "CFZ_ROOT"
     ],
     [
-      257,
+      258,
       92,
       0,
-      181,
+      183,
       46,
       "CFZ_ASSET"
     ],
     [
-      258,
-      180,
+      259,
+      182,
       0,
       94,
       1,
       "CFZ_ROOT"
     ],
     [
-      259,
+      260,
       94,
       0,
-      181,
+      183,
       47,
       "CFZ_ASSET"
     ],
     [
-      260,
-      180,
+      261,
+      182,
       0,
       96,
       1,
       "CFZ_ROOT"
     ],
     [
-      261,
+      262,
       96,
       0,
-      181,
+      183,
       48,
       "CFZ_ASSET"
     ],
     [
-      262,
-      180,
+      263,
+      182,
       0,
       98,
       1,
       "CFZ_ROOT"
     ],
     [
-      263,
+      264,
       98,
       0,
-      181,
+      183,
       49,
       "CFZ_ASSET"
     ],
     [
-      264,
-      180,
+      265,
+      182,
       0,
       100,
       1,
       "CFZ_ROOT"
     ],
     [
-      265,
+      266,
       100,
       0,
-      181,
+      183,
       50,
       "CFZ_ASSET"
     ],
     [
-      266,
-      180,
+      267,
+      182,
       0,
       102,
       1,
       "CFZ_ROOT"
     ],
     [
-      267,
+      268,
       102,
       0,
-      181,
+      183,
       51,
       "CFZ_ASSET"
     ],
     [
-      268,
-      180,
+      269,
+      182,
       0,
       104,
       1,
       "CFZ_ROOT"
     ],
     [
-      269,
+      270,
       104,
       0,
-      181,
+      183,
       52,
       "CFZ_ASSET"
     ],
     [
-      270,
-      180,
+      271,
+      182,
       0,
       106,
       1,
       "CFZ_ROOT"
     ],
     [
-      271,
+      272,
       106,
       0,
-      181,
+      183,
       53,
       "CFZ_ASSET"
     ],
     [
-      272,
-      180,
+      273,
+      182,
       0,
       108,
       1,
       "CFZ_ROOT"
     ],
     [
-      273,
+      274,
       108,
       0,
-      181,
+      183,
       54,
       "CFZ_ASSET"
     ],
     [
-      274,
-      180,
+      275,
+      182,
       0,
       110,
       1,
       "CFZ_ROOT"
     ],
     [
-      275,
+      276,
       110,
       0,
-      181,
+      183,
       55,
       "CFZ_ASSET"
     ],
     [
-      276,
-      180,
+      277,
+      182,
       0,
       112,
       1,
       "CFZ_ROOT"
     ],
     [
-      277,
+      278,
       112,
       0,
-      181,
+      183,
       56,
       "CFZ_ASSET"
     ],
     [
-      278,
-      180,
+      279,
+      182,
       0,
       114,
       1,
       "CFZ_ROOT"
     ],
     [
-      279,
+      280,
       114,
       0,
-      181,
+      183,
       57,
       "CFZ_ASSET"
     ],
     [
-      280,
-      180,
+      281,
+      182,
       0,
       116,
       1,
       "CFZ_ROOT"
     ],
     [
-      281,
+      282,
       116,
       0,
-      181,
+      183,
       58,
       "CFZ_ASSET"
     ],
     [
-      282,
-      180,
+      283,
+      182,
       0,
       118,
       1,
       "CFZ_ROOT"
     ],
     [
-      283,
+      284,
       118,
       0,
-      181,
+      183,
       59,
       "CFZ_ASSET"
     ],
     [
-      284,
-      180,
+      285,
+      182,
       0,
       120,
       1,
       "CFZ_ROOT"
     ],
     [
-      285,
+      286,
       120,
       0,
-      181,
+      183,
       60,
       "CFZ_ASSET"
     ],
     [
-      286,
-      180,
+      287,
+      182,
       0,
       122,
       1,
       "CFZ_ROOT"
     ],
     [
-      287,
+      288,
       122,
       0,
-      181,
+      183,
       61,
       "CFZ_ASSET"
     ],
     [
-      288,
-      180,
+      289,
+      182,
       0,
       124,
       1,
       "CFZ_ROOT"
     ],
     [
-      289,
+      290,
       124,
       0,
-      181,
+      183,
       62,
       "CFZ_ASSET"
     ],
     [
-      290,
-      180,
+      291,
+      182,
       0,
       126,
       1,
       "CFZ_ROOT"
     ],
     [
-      291,
+      292,
       126,
       0,
-      181,
+      183,
       63,
       "CFZ_ASSET"
     ],
     [
-      292,
-      180,
+      293,
+      182,
       0,
       128,
       1,
       "CFZ_ROOT"
     ],
     [
-      293,
+      294,
       128,
       0,
-      181,
+      183,
       64,
       "CFZ_ASSET"
     ],
     [
-      294,
-      180,
+      295,
+      182,
       0,
       130,
       1,
       "CFZ_ROOT"
     ],
     [
-      295,
+      296,
       130,
       0,
-      181,
+      183,
       65,
       "CFZ_ASSET"
     ],
     [
-      296,
-      180,
+      297,
+      182,
       0,
       132,
       1,
       "CFZ_ROOT"
     ],
     [
-      297,
+      298,
       132,
       0,
-      181,
+      183,
       66,
       "CFZ_ASSET"
     ],
     [
-      298,
-      180,
+      299,
+      182,
       0,
       134,
       1,
       "CFZ_ROOT"
     ],
     [
-      299,
+      300,
       134,
       0,
-      181,
+      183,
       67,
       "CFZ_ASSET"
     ],
     [
-      300,
-      180,
+      301,
+      182,
       0,
       136,
       1,
       "CFZ_ROOT"
     ],
     [
-      301,
+      302,
       136,
       0,
-      181,
+      183,
       68,
       "CFZ_ASSET"
     ],
     [
-      302,
-      180,
+      303,
+      182,
       0,
       138,
       1,
       "CFZ_ROOT"
     ],
     [
-      303,
+      304,
       138,
       0,
-      181,
+      183,
       69,
       "CFZ_ASSET"
     ],
     [
-      304,
-      180,
+      305,
+      182,
       0,
       140,
       1,
       "CFZ_ROOT"
     ],
     [
-      305,
+      306,
       140,
       0,
-      181,
+      183,
       70,
       "CFZ_ASSET"
     ],
     [
-      306,
-      180,
+      307,
+      182,
       0,
       142,
       1,
       "CFZ_ROOT"
     ],
     [
-      307,
+      308,
       142,
       0,
-      181,
+      183,
       71,
       "CFZ_ASSET"
     ],
     [
-      308,
-      180,
+      309,
+      182,
       0,
       144,
       1,
       "CFZ_ROOT"
     ],
     [
-      309,
+      310,
       144,
       0,
-      181,
+      183,
       72,
       "CFZ_ASSET"
     ],
     [
-      310,
-      180,
+      311,
+      182,
       0,
       146,
       1,
       "CFZ_ROOT"
     ],
     [
-      311,
+      312,
       146,
       0,
-      181,
+      183,
       73,
       "CFZ_ASSET"
     ],
     [
-      312,
-      180,
+      313,
+      182,
       0,
       148,
       1,
       "CFZ_ROOT"
     ],
     [
-      313,
+      314,
       148,
       0,
-      181,
+      183,
       74,
       "CFZ_ASSET"
     ],
     [
-      314,
-      180,
+      315,
+      182,
       0,
       150,
       1,
       "CFZ_ROOT"
     ],
     [
-      315,
+      316,
       150,
       0,
-      181,
+      183,
       75,
       "CFZ_ASSET"
     ],
     [
-      316,
-      180,
+      317,
+      182,
       0,
       152,
       1,
       "CFZ_ROOT"
     ],
     [
-      317,
+      318,
       152,
       0,
-      181,
+      183,
       76,
       "CFZ_ASSET"
     ],
     [
-      318,
-      180,
+      319,
+      182,
       0,
       154,
       1,
       "CFZ_ROOT"
     ],
     [
-      319,
+      320,
       154,
       0,
-      181,
+      183,
       77,
       "CFZ_ASSET"
     ],
     [
-      320,
-      180,
+      321,
+      182,
       0,
       156,
       1,
       "CFZ_ROOT"
     ],
     [
-      321,
+      322,
       156,
       0,
-      181,
+      183,
       78,
       "CFZ_ASSET"
     ],
     [
-      322,
-      180,
+      323,
+      182,
       0,
       158,
       1,
       "CFZ_ROOT"
     ],
     [
-      323,
+      324,
       158,
       0,
-      181,
+      183,
       79,
       "CFZ_ASSET"
     ],
     [
-      324,
-      180,
+      325,
+      182,
       0,
       160,
       1,
       "CFZ_ROOT"
     ],
     [
-      325,
+      326,
       160,
       0,
-      181,
+      183,
       80,
       "CFZ_ASSET"
     ],
     [
-      326,
-      180,
+      327,
+      182,
       0,
       162,
       1,
       "CFZ_ROOT"
     ],
     [
-      327,
+      328,
       162,
       0,
-      181,
+      183,
       81,
       "CFZ_ASSET"
     ],
     [
-      328,
-      180,
+      329,
+      182,
       0,
       164,
       1,
       "CFZ_ROOT"
     ],
     [
-      329,
+      330,
       164,
       0,
-      181,
+      183,
       82,
       "CFZ_ASSET"
     ],
     [
-      330,
-      180,
+      331,
+      182,
       0,
       166,
       1,
       "CFZ_ROOT"
     ],
     [
-      331,
+      332,
       166,
       0,
-      181,
+      183,
       83,
       "CFZ_ASSET"
     ],
     [
-      332,
-      180,
+      333,
+      182,
       0,
       168,
       1,
       "CFZ_ROOT"
     ],
     [
-      333,
+      334,
       168,
       0,
-      181,
+      183,
       84,
       "CFZ_ASSET"
     ],
     [
-      334,
-      180,
+      335,
+      182,
       0,
       170,
       1,
       "CFZ_ROOT"
     ],
     [
-      335,
+      336,
       170,
       0,
-      181,
+      183,
       85,
       "CFZ_ASSET"
     ],
     [
-      336,
-      180,
+      337,
+      182,
       0,
       172,
       1,
       "CFZ_ROOT"
     ],
     [
-      337,
+      338,
       172,
       0,
-      181,
+      183,
       86,
       "CFZ_ASSET"
     ],
     [
-      338,
-      180,
+      339,
+      182,
       0,
       174,
       1,
       "CFZ_ROOT"
     ],
     [
-      339,
+      340,
       174,
       0,
-      181,
+      183,
       87,
       "CFZ_ASSET"
     ],
     [
-      340,
-      180,
+      341,
+      182,
       0,
       176,
       1,
       "CFZ_ROOT"
     ],
     [
-      341,
+      342,
       176,
       0,
-      181,
+      183,
       88,
       "CFZ_ASSET"
     ],
     [
-      342,
-      180,
+      343,
+      182,
       0,
       178,
       1,
       "CFZ_ROOT"
     ],
     [
-      343,
+      344,
       178,
       0,
-      181,
+      183,
       89,
+      "CFZ_ASSET"
+    ],
+    [
+      345,
+      182,
+      0,
+      180,
+      1,
+      "CFZ_ROOT"
+    ],
+    [
+      346,
+      180,
+      0,
+      183,
+      90,
       "CFZ_ASSET"
     ]
   ],
@@ -14494,7 +14647,7 @@
         9120,
         160,
         1130,
-        6960
+        7540
       ],
       "color": "#5e6582",
       "font_size": 26,

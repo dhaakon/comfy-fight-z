@@ -60,12 +60,12 @@ test('main factory has six fighters, a final boss, three environments and one co
 });
 
 test('factory and expansion counts are transparent for the arcade roster', () => {
-  const full = {paidImages:89,sourceSaves:10,mappedAssets:89,oneK:47,twoK:42,estimatedUSD:5.28528};
+  const full = {paidImages:90,sourceSaves:10,mappedAssets:90,oneK:48,twoK:42,estimatedUSD:5.333328};
   assert.deepEqual(factoryCounts(config), full);
   assert.deepEqual(factoryCounts(config, true), full);
   // Without the optional arcade art the original per-fighter pack remains eight images.
   const classic = { ...config, extraSheets: undefined, fighters: config.fighters.slice(0, 6), stages: config.stages.map((s, i) => ({ ...s, enabled: i === 0 })) };
-  assert.deepEqual(factoryCounts(classic), {paidImages:56,sourceSaves:7,mappedAssets:56,oneK:35,twoK:21,estimatedUSD:3.195192});
+  assert.deepEqual(factoryCounts(classic), {paidImages:57,sourceSaves:7,mappedAssets:57,oneK:36,twoK:21,estimatedUSD:3.24324});
   assert.deepEqual(expansionCounts(config), {paidImages:33,oneK:12,twoK:21,mappedAssets:33,estimatedUSD:2.090088});
   assert.equal(read('comfyui/config/game.json').stages.length, 3);
   assert.equal(config.assetRoot, read('comfyui/config/game.json').assetRoot, 'Default image and audio bundles share their output root');
@@ -144,10 +144,10 @@ test('browser downloads match canonical workflows exactly and advanced native gr
   assert.deepEqual(read('comfyui/workflows/comfy-hackathon.json'),makeFactoryGraph(config));
   assert.deepEqual(read('build/public/builder/factory-template.json'),builderMetadata(config));
   const advanced = read('comfyui/workflows/advanced/full-image-graph.json');
-  assert.equal(functional(advanced).length, 180);
-  assert.equal(advanced.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,89);
+  assert.equal(functional(advanced).length, 182);
+  assert.equal(advanced.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,90);
   assert.equal(advanced.nodes.filter(n=>n.type==='LoadImage').length,0);
-  assert.equal(advanced.nodes.filter(n=>n.type==='CFZSaveAsset').length,89);
+  assert.equal(advanced.nodes.filter(n=>n.type==='CFZSaveAsset').length,90);
 });
 
 test('shipped recipes use text-only fictional art or explicitly muted upload templates', () => {

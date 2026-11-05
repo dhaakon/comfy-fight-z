@@ -22,9 +22,9 @@ test('two-fighter run builds every image, the startup media and full audio in on
   for (const node of Object.values(prompt)) for (const value of Object.values(node.inputs)) if (Array.isArray(value)) assert.ok(prompt[value[0]], 'Every link resolves');
   const exporter = Object.values(prompt).find(node => node.class_type === 'CFZExportGameAssets');
   assert.equal(Object.keys(exporter.inputs).filter(name => name.startsWith('bundles.')).length, 2 + 10 + 1 + 1 + 1);
-  assert.deepEqual(plan.images, { paidImages: 35, oneK: 21, twoK: 14, mappedAssets: 31, estimatedUSD: 2.018016 });
+  assert.deepEqual(plan.images, { paidImages: 36, oneK: 22, twoK: 14, mappedAssets: 32, estimatedUSD: 2.066064 });
   assert.equal(plan.videos.clips, 6); assert.equal(plan.videos.seconds, 36); assert.equal(plan.audio.clips, 61);
-  assert.equal(plan.total.estimatedUSD, 7.629619); assert.equal(plan.generationSubmitted, false);
+  assert.equal(plan.total.estimatedUSD, 7.677667); assert.equal(plan.generationSubmitted, false);
   assert.equal(workflow.nodes.filter(node => node.type !== 'MarkdownNote').length, Object.keys(prompt).length);
   assert.throws(() => buildDuo(config, ['griddle', 'griddle'], root), /two different fighters/);
   assert.throws(() => buildDuo(config, ['griddle', 'nobody'], root), /two different fighters/);

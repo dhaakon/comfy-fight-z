@@ -40,9 +40,9 @@ test('game phase exclusively selects the newly named seven uploads and maps comp
   assert.deepEqual(selected.map(node => node.widgets_values_named.image).sort(), plan.references.map(job => job.uploadFilename).sort());
   for (const node of factories) assert.equal(node.widgets_values_named.source_mode, 'Upload reference');
   for (const node of factories.filter(node => node.type === 'CFZEnvironmentFactory' && !node.widgets_values_named.enabled)) assert.equal(node.widgets_values_named.image, '');
-  assert.equal(plan.game.image.paidImages, 49); assert.equal(plan.game.image.oneK, 29); assert.equal(plan.game.image.twoK, 20);
-  assert.equal(plan.game.image.mappedAssets, 56); assert.equal(plan.game.audio.paidClips, 2 + 1 + 4 + 20 + 20 + 6 * 7); assert.equal(plan.runtimePoses, 162);
-  assert.equal(plan.total.paidImages, 56); assert.equal(plan.total.estimatedUSD, 4.4780136);
+  assert.equal(plan.game.image.paidImages, 50); assert.equal(plan.game.image.oneK, 30); assert.equal(plan.game.image.twoK, 20);
+  assert.equal(plan.game.image.mappedAssets, 57); assert.equal(plan.game.audio.paidClips, 2 + 1 + 4 + 20 + 20 + 6 * 7); assert.equal(plan.runtimePoses, 162);
+  assert.equal(plan.total.paidImages, 57); assert.equal(plan.total.estimatedUSD, 4.5260616);
   const project = gameGraph.nodes.find(node => node.type === 'CFZProjectSettings'), bridge = gameGraph.nodes.find(node => node.type === 'CFZProjectAudioRoot');
   assert.deepEqual(gamePrompt[bridge.id].inputs.project, [String(project.id), 0]);
   assert.equal(gameGraph.nodes.filter(node => node.type === 'CFZAssetRoot').length, 0);

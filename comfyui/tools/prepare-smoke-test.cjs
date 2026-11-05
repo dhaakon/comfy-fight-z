@@ -71,9 +71,9 @@ function buildSmoke(input, directory, preparedAt = new Date().toISOString()) {
   // Count paid calls from the selected nodes: optional arcade art adds two 2K sheets and a 1K ending per fighter.
   const invents = node => node.widgets_values_named.source_mode === 'Invent fictional reference';
   const arcade = node => node.widgets_values_named.include_arcade_art !== false;
-  const oneK = fighters.reduce((sum, node) => sum + 4 + (arcade(node) ? 1 : 0) + (invents(node) ? 1 : 0), 0) + 5;
+  const oneK = fighters.reduce((sum, node) => sum + 4 + (arcade(node) ? 1 : 0) + (invents(node) ? 1 : 0), 0) + 6;
   const twoK = fighters.reduce((sum, node) => sum + 3 + (arcade(node) ? 2 : 0), 0) + 1 + (invents(stage) ? 1 : 0) + 1;
-  const mappedAssets = fighters.reduce((sum, node) => sum + 8 + (arcade(node) ? 3 : 0), 0) + 2 + 6;
+  const mappedAssets = fighters.reduce((sum, node) => sum + 8 + (arcade(node) ? 3 : 0), 0) + 2 + 7;
   const plan = {
     title: 'Comfy Fighter Z generation smoke test', preparedAt,
     workflow: path.join(directory, 'workflow.api.json'), bundle: path.join(directory, 'bundle'),

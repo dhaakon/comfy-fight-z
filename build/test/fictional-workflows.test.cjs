@@ -32,7 +32,7 @@ test('main fictional factory uses six generated references and one stage, keepin
  const graph=makeFactoryGraph(factory),counts=factoryCounts(factory);
  assert.equal(graph.nodes.filter(node=>node.type==='CFZCharacterFactory').length,6);
  assert.equal(graph.nodes.filter(node=>node.type==='CFZEnvironmentFactory').length,3);
- assert.equal(counts.paidImages,49);assert.equal(counts.mappedAssets,56);
+ assert.equal(counts.paidImages,50);assert.equal(counts.mappedAssets,57);
  for(const node of graph.nodes.filter(node=>node.type==='CFZCharacterFactory'))assert.match(node.widgets_values_named.image,/^cfz-demo-/);
  assert.deepEqual(config.stages.map(stage=>!!stage.sourceInput),[true,true,true],'Preparing run does not erase sample definitions');
 });

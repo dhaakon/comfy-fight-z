@@ -50,6 +50,7 @@ game.js  ──frame state──▶  render/arena.js  ──▶  render/pixi-ren
 - Step 4: browser suites launch headless Chromium with ANGLE/SwiftShader (`browserLaunchOptions()` in `build/tools/build-bundle.cjs`); `CFZ_FORCE_CANVAS=1` runs them on the fallback.
 - Step 5 done: motion layer (auras while charging or at MAX power, dash and rush speed lines, impact flashes and rings, super and KO bursts, projectile glow trails, rotational shake) in `pixi-renderer.js`, off under reduced motion.
 - Step 5b: impact shader (chromatic aberration, radial blur, shockwave ring, negative flash) as a custom GLSL `Filter` on the world with `filterArea` set to the screen; camera punch-ins, glow sparks, stage desaturation on KO. Fragment shaders must declare `precision highp float;` to link against `defaultFilterVert`.
+- Hit zones: `engine.reachOf()` derives each strike's reach from the painted cel (`artReaches` from the pose metadata, 80–125% of the move's base reach) on client and server alike. Settings → DEBUG → COLLISION BOXES draws hurt boxes, active hit boxes, the painted extents, anchors, facing arrows and `pose/move` labels on both renderers (`drawHitboxes` in each renderer, `debugBoxes` on the frame).
 - Step 6: in Edge on this machine the renderer spends 1.6 ms per frame on Pixi against 0.3 ms on Canvas (both far under the 16 ms budget; the test harness window itself caps rAF at about 34 fps). Eleven textures are resident for a two-fighter match. All suites pass on both paths; the strict export ships `render/` and `vendor/`.
 
 ## Steps

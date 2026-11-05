@@ -40,11 +40,11 @@ Factories expand into native **Gemini Nano Banana 2.1** API nodes, with 1K chara
 
 | Enabled factory inputs | Paid image calls | Source saves | Mapped records |
 | --- | --- | --- | --- |
-| Text-only: seven characters + three environments (default) | 89 | 10 | 89 |
-| Text-only: seven characters + the Yard | 85 | 8 | 85 |
-| Uploaded references: seven characters + three environments | 79 | 10 | 89 |
-| Uploaded references: seven characters + the Yard | 77 | 8 | 85 |
-| Classic text-only: six characters without arcade art + the Yard | 56 | 7 | 56 |
+| Text-only: seven characters + three environments (default) | 90 | 10 | 90 |
+| Text-only: seven characters + the Yard | 86 | 8 | 86 |
+| Uploaded references: seven characters + three environments | 80 | 10 | 90 |
+| Uploaded references: seven characters + the Yard | 78 | 8 | 86 |
+| Classic text-only: six characters without arcade art + the Yard | 57 | 7 | 57 |
 
 At the installed native rates checked on November 3, 2026, a 1K request is approximately $0.048048 and a 2K request $0.072072. The default text-only image factory estimates $5.285, or $4.997 with The Yard only. With uploaded references, estimates are $4.733 and $4.589. The classic set estimates $3.195. Source saves do not add charges beyond the listed generation calls. Actual billing may vary. Audio and video remain separate workflows; no paid retry is authorized automatically.
 
