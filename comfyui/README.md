@@ -4,11 +4,11 @@ This folder contains the recipes and inputs used to generate Comfy Fighter Z ass
 
 | Path | Purpose |
 | --- | --- |
-| `workflows/comfy-hackathon.json` | Main factory: six characters, three environment slots, shared art and mapped `assets.json` |
-| `workflows/comfy-audio.json` | Music, effects, announcer and fighter voices; 22 clips mapped by `audio.json` |
+| `workflows/comfy-hackathon.json` | Main factory: six characters, a final boss, three environments, shared art and mapped `assets.json` |
+| `workflows/comfy-audio.json` | Music, effects, announcer and fighter voices; 99 clips mapped by `audio.json` |
 | `workflows/comfy-opening.json` | Optional 25-second Seedance opening, preceded by seven text-only fictional reference generations |
 | `workflows/simple-image-generation.json` | Small cloud image example |
-| `workflows/factory/` | Focused character, sprite-sheet and environment factories |
+| `workflows/factory/` | Focused character, sprite-sheet and environment factories, plus the muted arcade expansion for an accepted classic bundle |
 | `workflows/advanced/` | Expanded graphs for inspecting the native cloud nodes |
 | `config/` | Canonical game configuration and separate reusable factory defaults |
 | `custom_nodes/comfy_fighter_assets/` | Project-owned cloud factories, individual-sheet nodes and manifest exporters |
@@ -26,6 +26,8 @@ npm run nodes:install -- --comfy-root "C:\path\to\ComfyUI"
 
 Workflow preparation writes recipes and matching browser downloads without calling a model. After installing the custom pack, restart ComfyUI and reload the editor. Open `comfyui/workflows/comfy-hackathon.json` with Nodes 2.0 enabled. Set its output root to a new absolute folder under `output/test-runs/` and use that same root for companion audio.
 
-The default Invent fictional reference mode ignores the image selector and creates every source from text. Six fighters plus The Yard require 56 paid image calls; enabling all three environments requires 60. Explicit Upload mode requires 49 or 51 calls. The Yard is enabled, while the extra environment slots remain disabled. No earlier photographs or character sheets are default inputs.
+The default Invent fictional reference mode ignores the image selector and creates every source from text. The full arcade cast needs 89 paid image calls (85 with The Yard only): six fighters and the final boss with 45 poses and ending art each, plus three arenas. Explicit Upload mode needs 79 (77). The classic 27-pose set without a boss or endings needs 56. All three environments are enabled by default. No earlier photographs or character sheets are default inputs.
+
+To add the arcade material to an accepted classic bundle without redrawing its fighters, run `npm run workflows:expansion -- --base example/bundle --out output/test-runs/<fresh>`. It prepares 33 image calls and the 99-clip audio set, and submits nothing.
 
 All inference uses cloud/API models. Opening a workflow, preparing it, validating it or building a game does not authorize paid generation. Obtain spending authorization for each new batch. Review generated assets and merge accepted replacements into a complete source bundle before passing it to the builder in `build/`.

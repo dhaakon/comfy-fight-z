@@ -59,7 +59,7 @@ async function pairPhone(url, index = 0) {
   return phone;
 }
 async function projection(mode) {
-  const tv = await device(); await title(tv); await tv.click('#title-phones'); await tv.selectOption('#network-play-mode', mode); await tv.click('#network-project');
+  const tv = await device(); await title(tv); await tv.click('#title-phones'); await tv.locator(`input[name="network-play-mode"][value="${mode}"]`).check(); await tv.click('#network-project');
   await tv.waitForFunction(count => document.querySelectorAll('#network-pairing a').length === count, mode === 'solo' ? 1 : 2);
   const urls = await tv.locator('#network-pairing a').evaluateAll(links => links.map(link => link.href));
   assert.ok(urls.every(url => new URL(url).pathname.startsWith(new URL(base).pathname) && url.includes('controller.html?session=')));
@@ -81,7 +81,9 @@ async function projection(mode) {
   browser = await chromium.launch({ executablePath: browserExecutable(), headless: true, args: option('--url') ? [] : ['--disable-features=LocalNetworkAccessChecks'] });
   try {
     const offline = await device(); await title(offline); await screenshot(offline, 'title');
+    // Arcade (the default) shows its versus screen before the introductions.
     await offline.click('#title-start'); await offline.click('#start-button');
+    await offline.waitForFunction(() => window.FighterDebug.presentation().screen === 'intro', null, { timeout: 15000 });
     assert.equal((await snapshot(offline)).cpu, true); assert.equal((await snapshot(offline)).frame, 0);
     await offline.click('#intro-skip'); await fighting(offline); await offline.keyboard.press('KeyD');
     await offline.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].move === 'heavy');
@@ -149,6 +151,17 @@ async function projection(mode) {
     await phone.waitForFunction(() => window.FighterControllerDebug.snapshot().connected && window.FighterControllerDebug.snapshot().phase === 'playing');
     assert.equal(new URL(phone.url()).searchParams.get('session'), session); await fighting(solo.tv);
     check('Controller reload resumes its private seat after the pairing fragment is removed');
+    // The taunt pill sends G like the keyboard; retry around CPU pressure until the move starts.
+    const taunt = await phone.locator('[data-key="taunt"]').boundingBox();
+    let taunted = false;
+    for (let attempt = 0; attempt < 8 && !taunted; attempt++) {
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: taunt.x + taunt.width / 2, y: taunt.y + taunt.height / 2, id: 3 }] });
+      taunted = await solo.tv.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].move === 'taunt', null, { timeout: 1500 }).then(() => true, () => false);
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    }
+    assert.ok(taunted, 'The phone taunt pill starts a taunt');
+    await phone.waitForFunction(() => !window.FighterControllerDebug.snapshot().held.taunt);
+    check('The phone taunt pill sends the taunt input and releases it');
     await screenshot(phone, 'phone-controller-landscape'); await phone.setViewportSize({ width: 390, height: 844 }); await screenshot(phone, 'phone-controller-portrait');
     assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await phone.click('#controller-leave'); await solo.tv.waitForFunction(() => document.querySelector('#network-dialog').open && document.querySelectorAll('#network-pairing a').length === 1);

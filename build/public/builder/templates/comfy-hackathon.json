@@ -1,8 +1,8 @@
 {
   "id": "639ad575-5713-40cb-a53e-5f33127b2774",
   "revision": 0,
-  "last_node_id": 14,
-  "last_link_id": 22,
+  "last_node_id": 15,
+  "last_link_id": 24,
   "nodes": [
     {
       "id": 1,
@@ -35,7 +35,8 @@
             8,
             9,
             10,
-            12
+            11,
+            13
           ]
         }
       ],
@@ -90,7 +91,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            13
+            14
           ]
         },
         {
@@ -117,7 +118,14 @@
         "#ff8b3d",
         "griddle",
         true,
-        "Invent fictional reference"
+        "Invent fictional reference",
+        "grappler",
+        "Five-Alarm Cookout",
+        "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave.",
+        "Well done. Just how I like my steaks, and my opponents.",
+        "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
+        "Fighter",
+        true
       ],
       "widgets_values_named": {
         "image": "",
@@ -129,7 +137,14 @@
         "color": "#ff8b3d",
         "character_id": "griddle",
         "include_sprite_sheets": true,
-        "source_mode": "Invent fictional reference"
+        "source_mode": "Invent fictional reference",
+        "fighting_style": "grappler",
+        "super_name": "Five-Alarm Cookout",
+        "super_description": "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave.",
+        "win_quote": "Well done. Just how I like my steaks, and my opponents.",
+        "ending": "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
+        "role": "Fighter",
+        "include_arcade_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -161,7 +176,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            14
+            15
           ]
         },
         {
@@ -188,7 +203,14 @@
         "#58c7ff",
         "rivet",
         true,
-        "Invent fictional reference"
+        "Invent fictional reference",
+        "balanced",
+        "Full Overhaul",
+        "Rivet snaps both copper bracers together and drives one palm toward the right, firing a tight cyan magnetic spiral with copper fragments orbiting its core. Keep the spiral compact near the palm in sprite art.",
+        "Tightened every loose bolt. You were the last one.",
+        "Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner.",
+        "Fighter",
+        true
       ],
       "widgets_values_named": {
         "image": "",
@@ -200,7 +222,14 @@
         "color": "#58c7ff",
         "character_id": "rivet",
         "include_sprite_sheets": true,
-        "source_mode": "Invent fictional reference"
+        "source_mode": "Invent fictional reference",
+        "fighting_style": "balanced",
+        "super_name": "Full Overhaul",
+        "super_description": "Rivet snaps both copper bracers together and drives one palm toward the right, firing a tight cyan magnetic spiral with copper fragments orbiting its core. Keep the spiral compact near the palm in sprite art.",
+        "win_quote": "Tightened every loose bolt. You were the last one.",
+        "ending": "Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner.",
+        "role": "Fighter",
+        "include_arcade_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -232,7 +261,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            15
+            16
           ]
         },
         {
@@ -259,7 +288,14 @@
         "#f46bc4",
         "tempo",
         true,
-        "Invent fictional reference"
+        "Invent fictional reference",
+        "speed",
+        "Encore Fortissimo",
+        "Tempo spins into a forward kick toward the right that releases a large magenta-and-violet sound shockwave of three concentric rings. Keep the rings close to the kicking foot in sprite art.",
+        "You were off-beat from the very first round.",
+        "Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune.",
+        "Fighter",
+        true
       ],
       "widgets_values_named": {
         "image": "",
@@ -271,7 +307,14 @@
         "color": "#f46bc4",
         "character_id": "tempo",
         "include_sprite_sheets": true,
-        "source_mode": "Invent fictional reference"
+        "source_mode": "Invent fictional reference",
+        "fighting_style": "speed",
+        "super_name": "Encore Fortissimo",
+        "super_description": "Tempo spins into a forward kick toward the right that releases a large magenta-and-violet sound shockwave of three concentric rings. Keep the rings close to the kicking foot in sprite art.",
+        "win_quote": "You were off-beat from the very first round.",
+        "ending": "Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune.",
+        "role": "Fighter",
+        "include_arcade_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -303,7 +346,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            16
+            17
           ]
         },
         {
@@ -330,7 +373,14 @@
         "#b99cff",
         "nimbus",
         true,
-        "Invent fictional reference"
+        "Invent fictional reference",
+        "zoner",
+        "Thunderhead Bloom",
+        "Nimbus raises both open palms toward the right and launches a dense lavender storm cloud crackling with pale blue lightning. Keep the cloud compact and attached to her palms in sprite art.",
+        "Storms pass. Gardens grow. You lost.",
+        "Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own.",
+        "Fighter",
+        true
       ],
       "widgets_values_named": {
         "image": "",
@@ -342,7 +392,14 @@
         "color": "#b99cff",
         "character_id": "nimbus",
         "include_sprite_sheets": true,
-        "source_mode": "Invent fictional reference"
+        "source_mode": "Invent fictional reference",
+        "fighting_style": "zoner",
+        "super_name": "Thunderhead Bloom",
+        "super_description": "Nimbus raises both open palms toward the right and launches a dense lavender storm cloud crackling with pale blue lightning. Keep the cloud compact and attached to her palms in sprite art.",
+        "win_quote": "Storms pass. Gardens grow. You lost.",
+        "ending": "Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own.",
+        "role": "Fighter",
+        "include_arcade_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -374,7 +431,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            17
+            18
           ]
         },
         {
@@ -401,7 +458,14 @@
         "#ffd44d",
         "switchback",
         true,
-        "Invent fictional reference"
+        "Invent fictional reference",
+        "trickster",
+        "Rush Hour Relay",
+        "Switchback bursts forward in a blur of short golden streaks and finishes with a sharp palm strike toward the right that releases a long golden arrow pulse. Keep the streaks hugging his body in sprite art.",
+        "Delivered. No signature required.",
+        "Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner.",
+        "Fighter",
+        true
       ],
       "widgets_values_named": {
         "image": "",
@@ -413,7 +477,14 @@
         "color": "#ffd44d",
         "character_id": "switchback",
         "include_sprite_sheets": true,
-        "source_mode": "Invent fictional reference"
+        "source_mode": "Invent fictional reference",
+        "fighting_style": "trickster",
+        "super_name": "Rush Hour Relay",
+        "super_description": "Switchback bursts forward in a blur of short golden streaks and finishes with a sharp palm strike toward the right that releases a long golden arrow pulse. Keep the streaks hugging his body in sprite art.",
+        "win_quote": "Delivered. No signature required.",
+        "ending": "Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner.",
+        "role": "Fighter",
+        "include_arcade_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -445,7 +516,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            18
+            19
           ]
         },
         {
@@ -472,7 +543,14 @@
         "#ff6677",
         "brick",
         true,
-        "Invent fictional reference"
+        "Invent fictional reference",
+        "power",
+        "Load-Bearing Avalanche",
+        "Brick slams both wrapped fists down and sends a massive rose-red pressure wave edged in pale gold rolling along the ground toward the right. Keep the wave compact near his fists in sprite art.",
+        "Built to last. You were not.",
+        "Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin.",
+        "Fighter",
+        true
       ],
       "widgets_values_named": {
         "image": "",
@@ -484,22 +562,29 @@
         "color": "#ff6677",
         "character_id": "brick",
         "include_sprite_sheets": true,
-        "source_mode": "Invent fictional reference"
+        "source_mode": "Invent fictional reference",
+        "fighting_style": "power",
+        "super_name": "Load-Bearing Avalanche",
+        "super_description": "Brick slams both wrapped fists down and sends a massive rose-red pressure wave edged in pale gold rolling along the ground toward the right. Keep the wave compact near his fists in sprite art.",
+        "win_quote": "Built to last. You were not.",
+        "ending": "Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin.",
+        "role": "Fighter",
+        "include_arcade_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
     },
     {
       "id": 8,
-      "type": "CFZEnvironmentFactory",
-      "title": "Environment 1 | The Yard",
+      "type": "CFZCharacterFactory",
+      "title": "Final boss | Baron Bylaw",
       "pos": [
         0,
-        1780
+        1760
       ],
       "size": [
         440,
-        540
+        720
       ],
       "flags": {},
       "order": 7,
@@ -516,14 +601,99 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            19
+            20
+          ]
+        },
+        {
+          "name": "identity",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZCharacterFactory"
+      },
+      "widgets_values": [
+        "",
+        "Baron Bylaw",
+        "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+        "Ordinance Orb",
+        "Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell.",
+        "This tournament is now in violation. Prepare for enforcement.",
+        "#d4a72c",
+        "bylaw",
+        true,
+        "Invent fictional reference",
+        "boss",
+        "Final Notice",
+        "Baron Bylaw raises his golden gauntlet overhead and hurls a towering wall of golden light edged in burgundy toward the right. Keep the light attached to the gauntlet in sprite art.",
+        "Appeal denied. Permanently.",
+        "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
+        "Final boss",
+        true
+      ],
+      "widgets_values_named": {
+        "image": "",
+        "name": "Baron Bylaw",
+        "description": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+        "special_name": "Ordinance Orb",
+        "special_description": "Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell.",
+        "intro_tagline": "This tournament is now in violation. Prepare for enforcement.",
+        "color": "#d4a72c",
+        "character_id": "bylaw",
+        "include_sprite_sheets": true,
+        "source_mode": "Invent fictional reference",
+        "fighting_style": "boss",
+        "super_name": "Final Notice",
+        "super_description": "Baron Bylaw raises his golden gauntlet overhead and hurls a towering wall of golden light edged in burgundy toward the right. Keep the light attached to the gauntlet in sprite art.",
+        "win_quote": "Appeal denied. Permanently.",
+        "ending": "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
+        "role": "Final boss",
+        "include_arcade_art": true
+      },
+      "color": "#4b2630",
+      "bgcolor": "#341720"
+    },
+    {
+      "id": 9,
+      "type": "CFZEnvironmentFactory",
+      "title": "Environment 1 | The Yard",
+      "pos": [
+        0,
+        2600
+      ],
+      "size": [
+        440,
+        540
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            21
           ]
         },
         {
           "name": "stage",
           "type": "IMAGE",
           "links": [
-            11
+            12
           ]
         }
       ],
@@ -550,70 +720,12 @@
       "bgcolor": "#1b2927"
     },
     {
-      "id": 9,
-      "type": "CFZEnvironmentFactory",
-      "title": "Environment 2 | disabled",
-      "pos": [
-        490,
-        1780
-      ],
-      "size": [
-        440,
-        540
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "project",
-          "type": "CFZ_PROJECT",
-          "link": 8
-        }
-      ],
-      "outputs": [
-        {
-          "name": "bundle",
-          "type": "CFZ_BUNDLE",
-          "links": [
-            20
-          ]
-        },
-        {
-          "name": "stage",
-          "type": "IMAGE",
-          "links": []
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CFZEnvironmentFactory"
-      },
-      "widgets_values": [
-        "",
-        false,
-        "Sunset Rooftop",
-        "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
-        "rooftop",
-        "Invent fictional reference"
-      ],
-      "widgets_values_named": {
-        "image": "",
-        "enabled": false,
-        "name": "Sunset Rooftop",
-        "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
-        "stage_id": "rooftop",
-        "source_mode": "Invent fictional reference"
-      },
-      "color": "#3a3e46",
-      "bgcolor": "#1b2927"
-    },
-    {
       "id": 10,
       "type": "CFZEnvironmentFactory",
-      "title": "Environment 3 | disabled",
+      "title": "Environment 2 | Sunset Rooftop",
       "pos": [
-        980,
-        1780
+        490,
+        2600
       ],
       "size": [
         440,
@@ -634,7 +746,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            21
+            22
           ]
         },
         {
@@ -648,7 +760,65 @@
       },
       "widgets_values": [
         "",
-        false,
+        true,
+        "Sunset Rooftop",
+        "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
+        "rooftop",
+        "Invent fictional reference"
+      ],
+      "widgets_values_named": {
+        "image": "",
+        "enabled": true,
+        "name": "Sunset Rooftop",
+        "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
+        "stage_id": "rooftop",
+        "source_mode": "Invent fictional reference"
+      },
+      "color": "#29463d",
+      "bgcolor": "#1b2927"
+    },
+    {
+      "id": 11,
+      "type": "CFZEnvironmentFactory",
+      "title": "Environment 3 | Midnight Arcade",
+      "pos": [
+        980,
+        2600
+      ],
+      "size": [
+        440,
+        540
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            23
+          ]
+        },
+        {
+          "name": "stage",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZEnvironmentFactory"
+      },
+      "widgets_values": [
+        "",
+        true,
         "Midnight Arcade",
         "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.",
         "arcade",
@@ -656,17 +826,17 @@
       ],
       "widgets_values_named": {
         "image": "",
-        "enabled": false,
+        "enabled": true,
         "name": "Midnight Arcade",
         "description": "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.",
         "stage_id": "arcade",
         "source_mode": "Invent fictional reference"
       },
-      "color": "#3a3e46",
+      "color": "#29463d",
       "bgcolor": "#1b2927"
     },
     {
-      "id": 11,
+      "id": 12,
       "type": "CFZSharedArtFactory",
       "title": "Shared art | menus, logo, HUD + effects",
       "pos": [
@@ -678,18 +848,18 @@
         160
       ],
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
           "name": "project",
           "type": "CFZ_PROJECT",
-          "link": 10
+          "link": 11
         },
         {
           "name": "stage_reference",
           "type": "IMAGE",
-          "link": 11
+          "link": 12
         }
       ],
       "outputs": [
@@ -697,7 +867,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            22
+            24
           ]
         }
       ],
@@ -708,7 +878,7 @@
       "widgets_values_named": {}
     },
     {
-      "id": 12,
+      "id": 13,
       "type": "CFZExportGameAssets",
       "title": "Export complete assets.json",
       "pos": [
@@ -720,63 +890,68 @@
         340
       ],
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "project",
           "type": "CFZ_PROJECT",
-          "link": 12
+          "link": 13
         },
         {
           "name": "bundles.bundle_0",
           "type": "CFZ_BUNDLE",
-          "link": 13
+          "link": 14
         },
         {
           "name": "bundles.bundle_1",
           "type": "CFZ_BUNDLE",
-          "link": 14
+          "link": 15
         },
         {
           "name": "bundles.bundle_2",
           "type": "CFZ_BUNDLE",
-          "link": 15
+          "link": 16
         },
         {
           "name": "bundles.bundle_3",
           "type": "CFZ_BUNDLE",
-          "link": 16
+          "link": 17
         },
         {
           "name": "bundles.bundle_4",
           "type": "CFZ_BUNDLE",
-          "link": 17
+          "link": 18
         },
         {
           "name": "bundles.bundle_5",
           "type": "CFZ_BUNDLE",
-          "link": 18
+          "link": 19
         },
         {
           "name": "bundles.bundle_6",
           "type": "CFZ_BUNDLE",
-          "link": 19
+          "link": 20
         },
         {
           "name": "bundles.bundle_7",
           "type": "CFZ_BUNDLE",
-          "link": 20
+          "link": 21
         },
         {
           "name": "bundles.bundle_8",
           "type": "CFZ_BUNDLE",
-          "link": 21
+          "link": 22
         },
         {
           "name": "bundles.bundle_9",
           "type": "CFZ_BUNDLE",
-          "link": 22
+          "link": 23
+        },
+        {
+          "name": "bundles.bundle_10",
+          "type": "CFZ_BUNDLE",
+          "link": 24
         }
       ],
       "outputs": [
@@ -793,7 +968,7 @@
       "widgets_values_named": {}
     },
     {
-      "id": 13,
+      "id": 14,
       "type": "MarkdownNote",
       "pos": [
         -510,
@@ -804,17 +979,17 @@
         290
       ],
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# Comfy Fighter Z\n## Invent fictional fighters. Build your game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Environment 1 supplies the title/select venue; slots 2 and 3 stay disabled until enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 56 image calls / 56 mapped assets (about $3.195). All three environments: 60 calls / 60 records (about $3.483). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing."
+        "# Comfy Fighter Z\n## Invent fictional fighters and a final boss. Build your arcade game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Six fighter slots plus one Final boss slot close Arcade mode. Environment 1 supplies the title/select venue; disable slots 2 and 3 to build a one-stage game. Each fighter's arcade art adds two in-between sheets (45 poses) and an ending illustration. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 89 image calls / 89 mapped assets (about $5.285). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing."
       ]
     },
     {
-      "id": 14,
+      "id": 15,
       "type": "MarkdownNote",
       "pos": [
         1510,
@@ -825,13 +1000,13 @@
         440
       ],
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "## Before you run\n\n1. Install comfyui/custom_nodes/comfy_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet or one environment. The full native graph is under comfyui/workflows/advanced/."
+        "## Before you run\n\n1. Install comfyui/custom_nodes/comfy_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials, supers, win quotes, endings and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 45 poses per fighter (27 required + 18 arcade in-betweens) before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet, one art image or one environment. The full native graph is under comfyui/workflows/advanced/."
       ]
     }
   ],
@@ -918,14 +1093,6 @@
     ],
     [
       11,
-      8,
-      1,
-      11,
-      1,
-      "IMAGE"
-    ],
-    [
-      12,
       1,
       0,
       12,
@@ -933,95 +1100,119 @@
       "CFZ_PROJECT"
     ],
     [
+      12,
+      9,
+      1,
+      12,
+      1,
+      "IMAGE"
+    ],
+    [
       13,
+      1,
+      0,
+      13,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      14,
       2,
       0,
-      12,
+      13,
       1,
       "CFZ_BUNDLE"
     ],
     [
-      14,
+      15,
       3,
       0,
-      12,
+      13,
       2,
       "CFZ_BUNDLE"
     ],
     [
-      15,
+      16,
       4,
       0,
-      12,
+      13,
       3,
       "CFZ_BUNDLE"
     ],
     [
-      16,
+      17,
       5,
       0,
-      12,
+      13,
       4,
       "CFZ_BUNDLE"
     ],
     [
-      17,
+      18,
       6,
       0,
-      12,
+      13,
       5,
       "CFZ_BUNDLE"
     ],
     [
-      18,
+      19,
       7,
       0,
-      12,
+      13,
       6,
       "CFZ_BUNDLE"
     ],
     [
-      19,
+      20,
       8,
       0,
-      12,
+      13,
       7,
       "CFZ_BUNDLE"
     ],
     [
-      20,
+      21,
       9,
       0,
-      12,
+      13,
       8,
       "CFZ_BUNDLE"
     ],
     [
-      21,
+      22,
       10,
       0,
-      12,
+      13,
       9,
       "CFZ_BUNDLE"
     ],
     [
-      22,
+      23,
       11,
       0,
-      12,
+      13,
       10,
+      "CFZ_BUNDLE"
+    ],
+    [
+      24,
+      12,
+      0,
+      13,
+      11,
       "CFZ_BUNDLE"
     ]
   ],
   "groups": [
     {
       "id": 1,
-      "title": "Six character factories",
+      "title": "Six character factories + final boss",
       "bounding": [
         -25,
         45,
         1470,
-        1620
+        2460
       ],
       "color": "#4b6387",
       "font_size": 26,
@@ -1029,10 +1220,10 @@
     },
     {
       "id": 2,
-      "title": "Up to three environment factories",
+      "title": "Three environment factories",
       "bounding": [
         -25,
-        1705,
+        2525,
         1470,
         675
       ],

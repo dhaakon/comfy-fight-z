@@ -7,29 +7,30 @@ const { PLACEHOLDER, buildExample, validateConfig, prepare, checkPrices } = requ
 const config = require('../../example/config.json');
 const ROOT = path.resolve(__dirname, '../..');
 
-test('complete example has six text-only factories, one arena, both mapped exports and all audio', () => {
+test('complete example has six text-only fighters, a final boss, three arenas, both mapped exports and all audio', () => {
   const { workflow, prompt, plan } = buildExample(config, PLACEHOLDER, { seed: 100 });
-  assert.equal(Object.keys(prompt).length, 65);
-  assert.equal(plan.expectedAssets, 56); assert.equal(plan.expectedAudio, 22); assert.equal(plan.runtimePoses, 162);
-  assert.equal(plan.total.estimatedUSD, 3.619941867);
-  assert.equal(plan.image.oneK, 35); assert.equal(plan.image.twoK, 21);
-  assert.equal(plan.audio.voiceCharacters, 1353); assert.equal(plan.audio.musicSeconds, 105); assert.equal(plan.audio.effectsSeconds, 3.2);
+  assert.equal(Object.keys(prompt).length, 221);
+  assert.equal(plan.expectedAssets, 89); assert.equal(plan.expectedAudio, 99); assert.equal(plan.runtimePoses, 315);
+  assert.equal(plan.total.estimatedUSD, 7.0467464);
+  assert.equal(plan.image.oneK, 47); assert.equal(plan.image.twoK, 42);
+  assert.equal(plan.audio.voiceCharacters, 4081); assert.equal(plan.audio.musicSeconds, 503); assert.ok(Math.abs(plan.audio.effectsSeconds - 15.9) < 1e-9);
   const nodes = type => workflow.nodes.filter(node => node.type === type);
-  assert.equal(nodes('CFZCharacterFactory').length, 6);
+  assert.equal(nodes('CFZCharacterFactory').length, 7);
+  assert.equal(nodes('CFZCharacterFactory').filter(node => node.widgets_values_named.role === 'Final boss').length, 1);
   assert.equal(nodes('CFZEnvironmentFactory').length, 3);
-  assert.equal(nodes('CFZEnvironmentFactory').filter(node => node.widgets_values_named.enabled).length, 1);
+  assert.equal(nodes('CFZEnvironmentFactory').filter(node => node.widgets_values_named.enabled).length, 3);
   for (const node of [...nodes('CFZCharacterFactory'), ...nodes('CFZEnvironmentFactory')]) {
     assert.equal(node.widgets_values_named.image, ''); assert.equal(node.widgets_values_named.source_mode, 'Invent fictional reference');
   }
   assert.equal(workflow.nodes.filter(node => /LoadImage|LoadAudio|CheckpointLoader|VoiceClone/.test(node.type)).length, 0);
-  assert.equal(nodes('SoniloTextToMusic').length, 2); assert.equal(nodes('ElevenLabsTextToSoundEffects').length, 4); assert.equal(nodes('ElevenLabsTextToSpeech').length, 16);
-  assert.equal(nodes('CFZSaveAudio').length, 22); assert.equal(nodes('CFZExportAudioManifest').length, 1); assert.equal(nodes('CFZExportGameAssets').length, 1);
+  assert.equal(nodes('SoniloTextToMusic').length, 10); assert.equal(nodes('ElevenLabsTextToSoundEffects').length, 20); assert.equal(nodes('ElevenLabsTextToSpeech').length, 69);
+  assert.equal(nodes('CFZSaveAudio').length, 99); assert.equal(nodes('CFZExportAudioManifest').length, 1); assert.equal(nodes('CFZExportGameAssets').length, 1);
   const project = nodes('CFZProjectSettings')[0], bridge = nodes('CFZProjectAudioRoot')[0];
   assert.equal(project.widgets_values_named.root_directory, PLACEHOLDER);
   assert.equal(nodes('CFZAssetRoot').length, 0);
   assert.deepEqual(prompt[bridge.id].inputs.project, [String(project.id), 0]);
   const audioConfig = JSON.parse(bridge.widgets_values_named.audio_config);
-  assert.deepEqual(audioConfig.stages.map(stage => stage.id), ['yard']);
+  assert.deepEqual(audioConfig.stages.map(stage => stage.id), ['yard', 'rooftop', 'arcade']);
   assert.deepEqual(audioConfig.expectedAudio, plan.audioIds);
   for (const [id, sourceId, sourceSlot, targetId, targetSlot, type] of workflow.links) {
     const source = workflow.nodes.find(node => node.id === sourceId), target = workflow.nodes.find(node => node.id === targetId);
@@ -46,7 +47,7 @@ test('example preparation is offline by default, portable, and preserves previou
     fs.rmSync(directory, { recursive: true, force: true });
   });
   const result = await prepare({ out: directory, fetchImpl: () => { throw new Error('Offline preparation attempted network access'); } });
-  assert.equal(result.generationSubmitted, false); assert.equal(result.total.paidImages, 56);
+  assert.equal(result.generationSubmitted, false); assert.equal(result.total.paidImages, 89);
   assert.equal(result.bundle, path.join(directory, 'bundle'));
   const file = path.join(directory, 'workflow.api.json'), before = fs.readFileSync(file);
   const prompt = JSON.parse(before), project = Object.values(prompt).find(node => node.class_type === 'CFZProjectSettings');
@@ -59,11 +60,13 @@ test('example preparation is offline by default, portable, and preserves previou
   assert.ok(JSON.parse(fs.readFileSync(path.join(directory, 'workflow.json'))).nodes.every(node => node.mode === 0), 'Prepared workflow is runnable');
 });
 
-test('example configuration rejects reused image inputs and extra enabled environments', () => {
+test('example configuration rejects reused image inputs, disabled arenas and missing arcade fields', () => {
   const oldImage = structuredClone(config); oldImage.fighters[0].sourceInput = 'previous.png';
   assert.throws(() => validateConfig(oldImage), /text-only/);
-  const stages = structuredClone(config); stages.stages[1].enabled = true;
-  assert.throws(() => validateConfig(stages), /The Yard enabled/);
+  const stages = structuredClone(config); stages.stages[1].enabled = false;
+  assert.throws(() => validateConfig(stages), /three enabled environments/);
+  const ending = structuredClone(config); delete ending.fighters[2].ending;
+  assert.throws(() => validateConfig(ending), /arcade style, super, win quote and ending/);
   const intro = structuredClone(config); intro.fighters[0].introTagline = '';
   assert.throws(() => validateConfig(intro), /introduction/);
 });

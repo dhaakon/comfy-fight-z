@@ -16,6 +16,13 @@
       },
       "introTagline": "The grill is hot. Your winning streak is toast.",
       "color": "#ff8b3d",
+      "style": "grappler",
+      "superMove": {
+        "name": "Five-Alarm Cookout",
+        "description": "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave."
+      },
+      "winQuote": "Well done. Just how I like my steaks, and my opponents.",
+      "ending": "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
       "poses": {}
     },
     {
@@ -28,6 +35,13 @@
       },
       "introTagline": "I fix everything. Your stance is next.",
       "color": "#58c7ff",
+      "style": "balanced",
+      "superMove": {
+        "name": "Full Overhaul",
+        "description": "Rivet snaps both copper bracers together and drives one palm toward the right, firing a tight cyan magnetic spiral with copper fragments orbiting its core. Keep the spiral compact near the palm in sprite art."
+      },
+      "winQuote": "Tightened every loose bolt. You were the last one.",
+      "ending": "Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner.",
       "poses": {}
     },
     {
@@ -40,6 +54,13 @@
       },
       "introTagline": "Keep up with the beat, or take a seat.",
       "color": "#f46bc4",
+      "style": "speed",
+      "superMove": {
+        "name": "Encore Fortissimo",
+        "description": "Tempo spins into a forward kick toward the right that releases a large magenta-and-violet sound shockwave of three concentric rings. Keep the rings close to the kicking foot in sprite art."
+      },
+      "winQuote": "You were off-beat from the very first round.",
+      "ending": "Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune.",
       "poses": {}
     },
     {
@@ -52,6 +73,13 @@
       },
       "introTagline": "I raised a garden. I can handle a little thunder.",
       "color": "#b99cff",
+      "style": "zoner",
+      "superMove": {
+        "name": "Thunderhead Bloom",
+        "description": "Nimbus raises both open palms toward the right and launches a dense lavender storm cloud crackling with pale blue lightning. Keep the cloud compact and attached to her palms in sprite art."
+      },
+      "winQuote": "Storms pass. Gardens grow. You lost.",
+      "ending": "Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own.",
       "poses": {}
     },
     {
@@ -64,6 +92,13 @@
       },
       "introTagline": "School run complete. Express knockout incoming.",
       "color": "#ffd44d",
+      "style": "trickster",
+      "superMove": {
+        "name": "Rush Hour Relay",
+        "description": "Switchback bursts forward in a blur of short golden streaks and finishes with a sharp palm strike toward the right that releases a long golden arrow pulse. Keep the streaks hugging his body in sprite art."
+      },
+      "winQuote": "Delivered. No signature required.",
+      "ending": "Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner.",
       "poses": {}
     },
     {
@@ -76,6 +111,33 @@
       },
       "introTagline": "I built this block. Now hold your ground.",
       "color": "#ff6677",
+      "style": "power",
+      "superMove": {
+        "name": "Load-Bearing Avalanche",
+        "description": "Brick slams both wrapped fists down and sends a massive rose-red pressure wave edged in pale gold rolling along the ground toward the right. Keep the wave compact near his fists in sprite art."
+      },
+      "winQuote": "Built to last. You were not.",
+      "ending": "Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin.",
+      "poses": {}
+    },
+    {
+      "id": "bylaw",
+      "name": "Baron Bylaw",
+      "description": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "specialMove": {
+        "name": "Ordinance Orb",
+        "description": "Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell."
+      },
+      "introTagline": "This tournament is now in violation. Prepare for enforcement.",
+      "color": "#d4a72c",
+      "style": "boss",
+      "superMove": {
+        "name": "Final Notice",
+        "description": "Baron Bylaw raises his golden gauntlet overhead and hurls a towering wall of golden light edged in burgundy toward the right. Keep the light attached to the gauntlet in sprite art."
+      },
+      "winQuote": "Appeal denied. Permanently.",
+      "ending": "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
+      "boss": true,
       "poses": {}
     }
   ],
@@ -84,6 +146,16 @@
       "id": "yard",
       "name": "The Yard",
       "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines."
+    },
+    {
+      "id": "rooftop",
+      "name": "Sunset Rooftop",
+      "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders."
+    },
+    {
+      "id": "arcade",
+      "name": "Midnight Arcade",
+      "description": "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders."
     }
   ],
   "ui": {},

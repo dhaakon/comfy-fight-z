@@ -2,8 +2,8 @@
   "model": "Gemini Nano Banana 2.1",
   "cloudOnly": true,
   "paid": true,
-  "paidGenerations": 56,
-  "mappedAssets": 56,
+  "paidGenerations": 89,
+  "mappedAssets": 89,
   "sourceReferences": [
     {
       "id": "griddle_source",
@@ -36,7 +36,22 @@
       "inputImages": 0
     },
     {
+      "id": "bylaw_source",
+      "sourceMode": "Invent fictional reference",
+      "inputImages": 0
+    },
+    {
       "id": "yard_source",
+      "sourceMode": "Invent fictional reference",
+      "inputImages": 0
+    },
+    {
+      "id": "rooftop_source",
+      "sourceMode": "Invent fictional reference",
+      "inputImages": 0
+    },
+    {
+      "id": "arcade_source",
       "sourceMode": "Invent fictional reference",
       "inputImages": 0
     }
@@ -78,6 +93,20 @@
       "output": "output/assets/generated/raw/griddle_sheetC.png"
     },
     {
+      "id": "griddle_sheetD",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/griddle_sheetD.json",
+      "reference": "griddle_reference",
+      "output": "output/assets/generated/raw/griddle_sheetD.png"
+    },
+    {
+      "id": "griddle_sheetE",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/griddle_sheetE.json",
+      "reference": "griddle_reference",
+      "output": "output/assets/generated/raw/griddle_sheetE.png"
+    },
+    {
       "id": "griddle_portrait",
       "kind": "portrait",
       "workflow": "comfyui/workflows/jobs/griddle_portrait.json",
@@ -97,6 +126,13 @@
       "workflow": "comfyui/workflows/jobs/griddle_cutin.json",
       "reference": "griddle_reference",
       "output": "output/assets/generated/raw/griddle_cutin.png"
+    },
+    {
+      "id": "griddle_ending",
+      "kind": "ending",
+      "workflow": "comfyui/workflows/jobs/griddle_ending.json",
+      "reference": "griddle_reference",
+      "output": "output/assets/generated/raw/griddle_ending.png"
     },
     {
       "id": "rivet_source",
@@ -134,6 +170,20 @@
       "output": "output/assets/generated/raw/rivet_sheetC.png"
     },
     {
+      "id": "rivet_sheetD",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/rivet_sheetD.json",
+      "reference": "rivet_reference",
+      "output": "output/assets/generated/raw/rivet_sheetD.png"
+    },
+    {
+      "id": "rivet_sheetE",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/rivet_sheetE.json",
+      "reference": "rivet_reference",
+      "output": "output/assets/generated/raw/rivet_sheetE.png"
+    },
+    {
       "id": "rivet_portrait",
       "kind": "portrait",
       "workflow": "comfyui/workflows/jobs/rivet_portrait.json",
@@ -153,6 +203,13 @@
       "workflow": "comfyui/workflows/jobs/rivet_cutin.json",
       "reference": "rivet_reference",
       "output": "output/assets/generated/raw/rivet_cutin.png"
+    },
+    {
+      "id": "rivet_ending",
+      "kind": "ending",
+      "workflow": "comfyui/workflows/jobs/rivet_ending.json",
+      "reference": "rivet_reference",
+      "output": "output/assets/generated/raw/rivet_ending.png"
     },
     {
       "id": "tempo_source",
@@ -190,6 +247,20 @@
       "output": "output/assets/generated/raw/tempo_sheetC.png"
     },
     {
+      "id": "tempo_sheetD",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/tempo_sheetD.json",
+      "reference": "tempo_reference",
+      "output": "output/assets/generated/raw/tempo_sheetD.png"
+    },
+    {
+      "id": "tempo_sheetE",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/tempo_sheetE.json",
+      "reference": "tempo_reference",
+      "output": "output/assets/generated/raw/tempo_sheetE.png"
+    },
+    {
       "id": "tempo_portrait",
       "kind": "portrait",
       "workflow": "comfyui/workflows/jobs/tempo_portrait.json",
@@ -209,6 +280,13 @@
       "workflow": "comfyui/workflows/jobs/tempo_cutin.json",
       "reference": "tempo_reference",
       "output": "output/assets/generated/raw/tempo_cutin.png"
+    },
+    {
+      "id": "tempo_ending",
+      "kind": "ending",
+      "workflow": "comfyui/workflows/jobs/tempo_ending.json",
+      "reference": "tempo_reference",
+      "output": "output/assets/generated/raw/tempo_ending.png"
     },
     {
       "id": "nimbus_source",
@@ -246,6 +324,20 @@
       "output": "output/assets/generated/raw/nimbus_sheetC.png"
     },
     {
+      "id": "nimbus_sheetD",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/nimbus_sheetD.json",
+      "reference": "nimbus_reference",
+      "output": "output/assets/generated/raw/nimbus_sheetD.png"
+    },
+    {
+      "id": "nimbus_sheetE",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/nimbus_sheetE.json",
+      "reference": "nimbus_reference",
+      "output": "output/assets/generated/raw/nimbus_sheetE.png"
+    },
+    {
       "id": "nimbus_portrait",
       "kind": "portrait",
       "workflow": "comfyui/workflows/jobs/nimbus_portrait.json",
@@ -265,6 +357,13 @@
       "workflow": "comfyui/workflows/jobs/nimbus_cutin.json",
       "reference": "nimbus_reference",
       "output": "output/assets/generated/raw/nimbus_cutin.png"
+    },
+    {
+      "id": "nimbus_ending",
+      "kind": "ending",
+      "workflow": "comfyui/workflows/jobs/nimbus_ending.json",
+      "reference": "nimbus_reference",
+      "output": "output/assets/generated/raw/nimbus_ending.png"
     },
     {
       "id": "switchback_source",
@@ -302,6 +401,20 @@
       "output": "output/assets/generated/raw/switchback_sheetC.png"
     },
     {
+      "id": "switchback_sheetD",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/switchback_sheetD.json",
+      "reference": "switchback_reference",
+      "output": "output/assets/generated/raw/switchback_sheetD.png"
+    },
+    {
+      "id": "switchback_sheetE",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/switchback_sheetE.json",
+      "reference": "switchback_reference",
+      "output": "output/assets/generated/raw/switchback_sheetE.png"
+    },
+    {
       "id": "switchback_portrait",
       "kind": "portrait",
       "workflow": "comfyui/workflows/jobs/switchback_portrait.json",
@@ -321,6 +434,13 @@
       "workflow": "comfyui/workflows/jobs/switchback_cutin.json",
       "reference": "switchback_reference",
       "output": "output/assets/generated/raw/switchback_cutin.png"
+    },
+    {
+      "id": "switchback_ending",
+      "kind": "ending",
+      "workflow": "comfyui/workflows/jobs/switchback_ending.json",
+      "reference": "switchback_reference",
+      "output": "output/assets/generated/raw/switchback_ending.png"
     },
     {
       "id": "brick_source",
@@ -358,6 +478,20 @@
       "output": "output/assets/generated/raw/brick_sheetC.png"
     },
     {
+      "id": "brick_sheetD",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/brick_sheetD.json",
+      "reference": "brick_reference",
+      "output": "output/assets/generated/raw/brick_sheetD.png"
+    },
+    {
+      "id": "brick_sheetE",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/brick_sheetE.json",
+      "reference": "brick_reference",
+      "output": "output/assets/generated/raw/brick_sheetE.png"
+    },
+    {
       "id": "brick_portrait",
       "kind": "portrait",
       "workflow": "comfyui/workflows/jobs/brick_portrait.json",
@@ -379,6 +513,90 @@
       "output": "output/assets/generated/raw/brick_cutin.png"
     },
     {
+      "id": "brick_ending",
+      "kind": "ending",
+      "workflow": "comfyui/workflows/jobs/brick_ending.json",
+      "reference": "brick_reference",
+      "output": "output/assets/generated/raw/brick_ending.png"
+    },
+    {
+      "id": "bylaw_source",
+      "kind": "source",
+      "workflow": "comfyui/workflows/jobs/bylaw_source.json",
+      "output": "output/assets/generated/raw/bylaw_source.png",
+      "generateSource": true
+    },
+    {
+      "id": "bylaw_reference",
+      "kind": "reference",
+      "workflow": "comfyui/workflows/jobs/bylaw_reference.json",
+      "reference": "bylaw_source",
+      "output": "output/assets/generated/raw/bylaw_reference.png"
+    },
+    {
+      "id": "bylaw_sheet",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/bylaw_sheet.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_sheet.png"
+    },
+    {
+      "id": "bylaw_sheetB",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/bylaw_sheetB.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_sheetB.png"
+    },
+    {
+      "id": "bylaw_sheetC",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/bylaw_sheetC.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_sheetC.png"
+    },
+    {
+      "id": "bylaw_sheetD",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/bylaw_sheetD.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_sheetD.png"
+    },
+    {
+      "id": "bylaw_sheetE",
+      "kind": "sprites",
+      "workflow": "comfyui/workflows/jobs/bylaw_sheetE.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_sheetE.png"
+    },
+    {
+      "id": "bylaw_portrait",
+      "kind": "portrait",
+      "workflow": "comfyui/workflows/jobs/bylaw_portrait.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_portrait.png"
+    },
+    {
+      "id": "bylaw_hero",
+      "kind": "hero",
+      "workflow": "comfyui/workflows/jobs/bylaw_hero.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_hero.png"
+    },
+    {
+      "id": "bylaw_cutin",
+      "kind": "cutin",
+      "workflow": "comfyui/workflows/jobs/bylaw_cutin.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_cutin.png"
+    },
+    {
+      "id": "bylaw_ending",
+      "kind": "ending",
+      "workflow": "comfyui/workflows/jobs/bylaw_ending.json",
+      "reference": "bylaw_reference",
+      "output": "output/assets/generated/raw/bylaw_ending.png"
+    },
+    {
       "id": "yard_source",
       "kind": "source",
       "workflow": "comfyui/workflows/jobs/yard_source.json",
@@ -391,6 +609,34 @@
       "workflow": "comfyui/workflows/jobs/yard.json",
       "reference": "yard_source",
       "output": "output/assets/generated/raw/yard.png"
+    },
+    {
+      "id": "rooftop_source",
+      "kind": "source",
+      "workflow": "comfyui/workflows/jobs/rooftop_source.json",
+      "output": "output/assets/generated/raw/rooftop_source.png",
+      "generateSource": true
+    },
+    {
+      "id": "rooftop",
+      "kind": "stage",
+      "workflow": "comfyui/workflows/jobs/rooftop.json",
+      "reference": "rooftop_source",
+      "output": "output/assets/generated/raw/rooftop.png"
+    },
+    {
+      "id": "arcade_source",
+      "kind": "source",
+      "workflow": "comfyui/workflows/jobs/arcade_source.json",
+      "output": "output/assets/generated/raw/arcade_source.png",
+      "generateSource": true
+    },
+    {
+      "id": "arcade",
+      "kind": "stage",
+      "workflow": "comfyui/workflows/jobs/arcade.json",
+      "reference": "arcade_source",
+      "output": "output/assets/generated/raw/arcade.png"
     },
     {
       "id": "title",
@@ -438,6 +684,7 @@
     "comfyui/workflows/packs/nimbus.json",
     "comfyui/workflows/packs/switchback.json",
     "comfyui/workflows/packs/brick.json",
+    "comfyui/workflows/packs/bylaw.json",
     "comfyui/workflows/packs/environment-and-ui.json"
   ]
 }

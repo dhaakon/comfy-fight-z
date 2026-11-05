@@ -1,8 +1,8 @@
 {
   "id": "faea460f-d456-47b8-a50a-dd7e797409e5",
   "revision": 0,
-  "last_node_id": 7,
-  "last_link_id": 15,
+  "last_node_id": 9,
+  "last_link_id": 23,
   "nodes": [
     {
       "id": 1,
@@ -29,7 +29,9 @@
             2,
             5,
             8,
-            11
+            11,
+            14,
+            17
           ]
         }
       ],
@@ -60,7 +62,7 @@
     {
       "id": 2,
       "type": "CFZCharacterFactory",
-      "title": "Upload character | identity + selection art",
+      "title": "Upload character | identity, selection and ending art",
       "pos": [
         0,
         110
@@ -84,7 +86,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            12
+            18
           ]
         },
         {
@@ -93,7 +95,9 @@
           "links": [
             4,
             7,
-            10
+            10,
+            13,
+            16
           ]
         },
         {
@@ -102,7 +106,9 @@
           "links": [
             3,
             6,
-            9
+            9,
+            12,
+            15
           ]
         }
       ],
@@ -119,7 +125,14 @@
         "#ff8b3d",
         "griddle",
         false,
-        "Invent fictional reference"
+        "Invent fictional reference",
+        "grappler",
+        "Five-Alarm Cookout",
+        "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave.",
+        "Well done. Just how I like my steaks, and my opponents.",
+        "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
+        "Fighter",
+        true
       ],
       "widgets_values_named": {
         "image": "",
@@ -131,13 +144,20 @@
         "color": "#ff8b3d",
         "character_id": "griddle",
         "include_sprite_sheets": false,
-        "source_mode": "Invent fictional reference"
+        "source_mode": "Invent fictional reference",
+        "fighting_style": "grappler",
+        "super_name": "Five-Alarm Cookout",
+        "super_description": "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave.",
+        "win_quote": "Well done. Just how I like my steaks, and my opponents.",
+        "ending": "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
+        "role": "Fighter",
+        "include_arcade_art": true
       }
     },
     {
       "id": 3,
       "type": "CFZSpriteSheet",
-      "title": "Sprite sheet A | nine poses",
+      "title": "Sprite sheet A | nine required poses",
       "pos": [
         540,
         110
@@ -171,7 +191,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            13
+            19
           ]
         },
         {
@@ -193,7 +213,7 @@
     {
       "id": 4,
       "type": "CFZSpriteSheet",
-      "title": "Sprite sheet B | nine poses",
+      "title": "Sprite sheet B | nine required poses",
       "pos": [
         540,
         345
@@ -227,7 +247,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            14
+            20
           ]
         },
         {
@@ -249,7 +269,7 @@
     {
       "id": 5,
       "type": "CFZSpriteSheet",
-      "title": "Sprite sheet C | nine poses",
+      "title": "Sprite sheet C | nine required poses",
       "pos": [
         540,
         580
@@ -283,7 +303,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            15
+            21
           ]
         },
         {
@@ -304,15 +324,15 @@
     },
     {
       "id": 6,
-      "type": "CFZExportAssetPatch",
-      "title": "Export PARTIAL assets.json",
+      "type": "CFZSpriteSheet",
+      "title": "Sprite sheet D | nine arcade in-betweens",
       "pos": [
-        1060,
-        250
+        540,
+        815
       ],
       "size": [
-        440,
-        340
+        420,
+        170
       ],
       "flags": {},
       "order": 5,
@@ -324,24 +344,146 @@
           "link": 11
         },
         {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 12
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            22
+          ]
+        },
+        {
+          "name": "sheet_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSpriteSheet"
+      },
+      "widgets_values": [
+        "sheetD"
+      ],
+      "widgets_values_named": {
+        "sheet": "sheetD"
+      }
+    },
+    {
+      "id": 7,
+      "type": "CFZSpriteSheet",
+      "title": "Sprite sheet E | nine arcade in-betweens",
+      "pos": [
+        540,
+        1050
+      ],
+      "size": [
+        420,
+        170
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 14
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 15
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            23
+          ]
+        },
+        {
+          "name": "sheet_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSpriteSheet"
+      },
+      "widgets_values": [
+        "sheetE"
+      ],
+      "widgets_values_named": {
+        "sheet": "sheetE"
+      }
+    },
+    {
+      "id": 8,
+      "type": "CFZExportAssetPatch",
+      "title": "Export PARTIAL assets.json",
+      "pos": [
+        1060,
+        250
+      ],
+      "size": [
+        440,
+        340
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 17
+        },
+        {
           "name": "bundles.bundle_0",
           "type": "CFZ_BUNDLE",
-          "link": 12
+          "link": 18
         },
         {
           "name": "bundles.bundle_1",
           "type": "CFZ_BUNDLE",
-          "link": 13
+          "link": 19
         },
         {
           "name": "bundles.bundle_2",
           "type": "CFZ_BUNDLE",
-          "link": 14
+          "link": 20
         },
         {
           "name": "bundles.bundle_3",
           "type": "CFZ_BUNDLE",
-          "link": 15
+          "link": 21
+        },
+        {
+          "name": "bundles.bundle_4",
+          "type": "CFZ_BUNDLE",
+          "link": 22
+        },
+        {
+          "name": "bundles.bundle_5",
+          "type": "CFZ_BUNDLE",
+          "link": 23
         }
       ],
       "outputs": [
@@ -358,7 +500,7 @@
       "widgets_values_named": {}
     },
     {
-      "id": 7,
+      "id": 9,
       "type": "MarkdownNote",
       "pos": [
         -510,
@@ -369,13 +511,13 @@
         220
       ],
       "flags": {},
-      "order": 6,
+      "order": 8,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# One complete character pack\n\nInvent mode creates a fresh fictional source from text, then identity, portrait, hero and cut-in. Its internal sheets are OFF: the three visible sheet nodes reuse that identity. Eight paid images in Invent mode; seven when explicitly uploading a new reference. No previous photos are selected. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle."
+        "# One complete character pack\n\nInvent mode creates a fresh fictional source from text, then identity, portrait, hero, cut-in and arcade ending art. Its internal sheets are OFF: the five visible sheet nodes reuse that identity (sheets A-C hold the 27 required poses; D and E add 18 optional in-betweens). Eleven paid images in Invent mode; ten when explicitly uploading a new reference. No previous photos are selected. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle."
       ]
     }
   ],
@@ -471,33 +613,97 @@
     [
       12,
       2,
-      0,
+      2,
       6,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      13,
+      2,
+      1,
+      6,
+      2,
+      "IMAGE"
+    ],
+    [
+      14,
+      1,
+      0,
+      7,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      15,
+      2,
+      2,
+      7,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      16,
+      2,
+      1,
+      7,
+      2,
+      "IMAGE"
+    ],
+    [
+      17,
+      1,
+      0,
+      8,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      18,
+      2,
+      0,
+      8,
       1,
       "CFZ_BUNDLE"
     ],
     [
-      13,
+      19,
       3,
       0,
-      6,
+      8,
       2,
       "CFZ_BUNDLE"
     ],
     [
-      14,
+      20,
       4,
       0,
-      6,
+      8,
       3,
       "CFZ_BUNDLE"
     ],
     [
-      15,
+      21,
       5,
       0,
-      6,
+      8,
       4,
+      "CFZ_BUNDLE"
+    ],
+    [
+      22,
+      6,
+      0,
+      8,
+      5,
+      "CFZ_BUNDLE"
+    ],
+    [
+      23,
+      7,
+      0,
+      8,
+      6,
       "CFZ_BUNDLE"
     ]
   ],

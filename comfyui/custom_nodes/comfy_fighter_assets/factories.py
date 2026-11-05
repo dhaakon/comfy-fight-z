@@ -9,13 +9,41 @@ from PIL import Image
 from comfy_api.latest import io, ui
 from comfy_execution.graph_utils import GraphBuilder
 
-from . import SHEETS, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
+from . import SHEETS, EXTRA_SHEETS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
 
 Project = io.Custom("CFZ_PROJECT")
 Character = io.Custom("CFZ_CHARACTER")
 Bundle = io.Custom("CFZ_BUNDLE")
 MODELS = ["Gemini Nano Banana 2.1", "Nano Banana 2 (Gemini 3.1 Flash Image)"]
 SOURCE_MODES = ["Upload reference", "Invent fictional reference"]
+ROLES = ["Fighter", "Final boss"]
+# Pose directions keep generated in-betweens readable; every attack faces RIGHT.
+POSE_HINTS = {
+    "idle": "relaxed fighting guard", "walk": "forward walking stride, left foot leading", "punch": "straight lead-hand jab fully extended",
+    "kick": "high roundhouse kick fully extended", "block": "standing forearm guard", "hit": "recoiling from a torso hit", "special": "signature special attack release",
+    "down": "lying knocked down horizontally", "win": "triumphant victory pose", "stance2": "upright fighting guard, second idle pose",
+    "crouch": "low crouching guard", "sweep": "low sweeping leg kick with the attacking foot extended to the RIGHT of the hips", "launcher": "rising uppercut toward the RIGHT",
+    "jump": "airborne rising jump with bent knees", "airkick": "airborne forward kick", "hpunch": "heavy rear-hand punch fully extended", "dash": "forward dash leaning toward right",
+    "tumble": "airborne backward tumble", "walk2": "walking stride, right foot leading", "lkick": "quick low standing kick", "cjab": "crouching jab",
+    "airpunch": "airborne punch", "throw": "empty-handed forward throwing motion without another person", "taunt": "playful confident taunt",
+    "getup": "rising from one knee", "powerup": "powering up, clenched fists", "entrance": "confident entrance pose",
+    "walk3": "walking passing position, feet together under the hips, upright", "walk4": "walking stride, long step with the rear heel lifting",
+    "run": "sprinting run toward the right, torso leaning forward, front knee high", "run2": "sprinting run toward the right, opposite legs, rear foot pushing off",
+    "backstep": "quick backward hop away from the right, both feet just off the ground, guard up", "jumpfall": "airborne falling, legs extending down to land, arms guarding",
+    "crouchblock": "low crouching block with both forearms raised in front of the face", "hitlow": "crouching hit reaction, head snapped back while staying low",
+    "hitheavy": "heavy stagger hit, body bent backwards, one foot lifting", "punchwind": "lead-hand jab chambered at the shoulder, about to strike right",
+    "kickwind": "front knee raised and chambered before a kick to the right", "heavywind": "rear arm pulled far back, torso coiled for a heavy blow",
+    "roll": "evasive forward roll, body tucked in a tight ball", "blowback": "powerful two-handed palm strike or spinning kick that blasts the opponent away to the right",
+    "super": "dramatic super-move stance, both arms thrust forward to the right with compact energy", "dizzy": "dazed stagger, wobbly knees, hand on forehead",
+    "win2": "second celebratory victory pose, different from the first", "lose": "defeated, kneeling on one knee with the head bowed",
+}
+# Arcade art beyond the 27 required poses: two optional in-between sheets and an ending illustration.
+ARTWORK = {
+    "portrait": ("1:1", False, "Close-up face and shoulders for character selection. Expressive confident anime fighter portrait, uncluttered dark background, no text."),
+    "hero": ("2:3", True, "One complete full-body hero fighter in their signature special-move stance, facing RIGHT. Keep the energy close to the body, and include complete shoes and hands with safe padding. "),
+    "cutin": ("16:9", False, "Dramatic horizontal special-move cut-in: face and upper torso, fast energy streaks, strong negative space, no text."),
+    "ending": ("16:9", False, "Arcade ending illustration for this fighter after winning the neighborhood tournament: one calm cinematic epilogue scene with the same character, warm evening light, a fictional suburban setting, readable expression and pose. No other recognizable people, no text, captions, logos, borders or panels."),
+}
 EFFECTS = ["hit", "block", "projectile", "dust", "ko", "powerup", "dash", "launch", "spark"]
 DEFAULT_STYLE = "Original 1990s shonen battle-anime fighting-game artwork. Bold clean ink, angular expressive eyes, two-tone cel shading, dynamic clear silhouettes and vivid energy. Preserve the supplied fictional character design, clothing and accessories; no real-person likenesses or copied franchise characters or costumes."
 DEFAULT_STAGE_STYLE = "Anime fighting-game stage based on the supplied fictional environment design. Wide side-on camera and clear level fighting floor; keep architecture and furniture behind the fight plane. No real venue details, people, lettering, logos, floor emblems, speed-line borders or vignette."
@@ -38,13 +66,29 @@ def _project(project):
     return directory
 
 
-def _character(name, description, special_name, special_description, intro_tagline, color, character_id):
+def _character(name, description, special_name, special_description, intro_tagline, color, character_id,
+               fighting_style="balanced", super_name="", super_description="", win_quote="", ending="", role="Fighter"):
     if not isinstance(color, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", color):
         raise ValueError("Character color must use #RRGGBB")
-    return {"id": _slug(character_id, "Character ID"), "name": _text(name, "Character name", True),
-            "description": _text(description, "Character description"), "color": color,
-            "specialMove": {"name": _text(special_name, "Special move name", True), "description": _text(special_description, "Special move description", True)},
-            "introTagline": _text(intro_tagline, "Intro tagline")}
+    if fighting_style not in STYLES:
+        raise ValueError(f"Fighting style must be one of {', '.join(STYLES)}")
+    if role not in ROLES:
+        raise ValueError("Role must be Fighter or Final boss")
+    result = {"id": _slug(character_id, "Character ID"), "name": _text(name, "Character name", True),
+              "description": _text(description, "Character description"), "color": color,
+              "specialMove": {"name": _text(special_name, "Special move name", True), "description": _text(special_description, "Special move description", True)},
+              "introTagline": _text(intro_tagline, "Intro tagline"), "style": fighting_style}
+    if _text(super_name, "Super move name"):
+        result["superMove"] = {"name": _text(super_name, "Super move name"), "description": _text(super_description, "Super move description", True)}
+    for field, value, limit in (("winQuote", win_quote, 200), ("ending", ending, 800)):
+        value = _text(value, field)
+        if len(value) > limit:
+            raise ValueError(f"{field} must be at most {limit} characters")
+        if value:
+            result[field] = value
+    if role == "Final boss":
+        result["boss"] = True
+    return result
 
 
 def _checked_character(character):
@@ -53,7 +97,9 @@ def _checked_character(character):
     if not isinstance(character.get("specialMove"), dict):
         raise ValueError("Character requires a special move name and description")
     return _character(character.get("name"), character.get("description", ""), character.get("specialMove", {}).get("name"),
-                      character.get("specialMove", {}).get("description"), character.get("introTagline", ""), character.get("color"), character.get("id"))
+                      character.get("specialMove", {}).get("description"), character.get("introTagline", ""), character.get("color"), character.get("id"),
+                      character.get("style", "balanced"), (character.get("superMove") or {}).get("name", ""), (character.get("superMove") or {}).get("description", ""),
+                      character.get("winQuote", ""), character.get("ending", ""), "Final boss" if character.get("boss") else "Fighter")
 
 
 def _character_inputs():
@@ -61,6 +107,21 @@ def _character_inputs():
             io.String.Input("special_name", default="Energy Burst"), io.String.Input("special_description", default="A compact energy projectile released from the forward palm.", multiline=True),
             io.String.Input("intro_tagline", default="This fight is mine."), io.String.Input("color", default="#ffd23f", advanced=True),
             io.String.Input("character_id", default="fighter", advanced=True)]
+
+
+def _arcade_inputs():
+    return [io.Combo.Input("fighting_style", options=list(STYLES), default="balanced", optional=True,
+                           tooltip="Gameplay archetype: specials, speed and damage. Free; does not change paid calls."),
+            io.String.Input("super_name", default="", optional=True, tooltip="Super move name shown in the cut-in and called by the fighter's voice."),
+            io.String.Input("super_description", default="", multiline=True, optional=True),
+            io.String.Input("win_quote", default="", optional=True, tooltip="Arcade win-screen quote, up to 200 characters."),
+            io.String.Input("ending", default="", multiline=True, optional=True, tooltip="Arcade ending text, up to 800 characters."),
+            io.Combo.Input("role", options=ROLES, default="Fighter", optional=True, tooltip="Final boss closes Arcade mode. At most one per game.")]
+
+
+def _arcade_values(kwargs):
+    return [kwargs.get("fighting_style", "balanced"), kwargs.get("super_name", ""), kwargs.get("super_description", ""),
+            kwargs.get("win_quote", ""), kwargs.get("ending", ""), kwargs.get("role", "Fighter")]
 
 
 def _image_input():
@@ -100,7 +161,17 @@ def _image_hash(filename):
 
 
 def _members(character=None, stage=None):
-    return {"fighters": [character] if character else [], "stages": [stage] if stage else [], "sheets": SHEETS}
+    return {"fighters": [character] if character else [], "stages": [stage] if stage else [], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS}
+
+
+def _artwork(graph, project, character, identity, kind, offset):
+    aspect, key, prompt = ARTWORK[kind]
+    if kind == "cutin" and character.get("superMove"):
+        prompt += f" Depict the super move {character['superMove']['name']}: {character['superMove']['description']}"
+    if kind == "ending" and character.get("ending"):
+        prompt += f" Ending story beat: {character['ending']}"
+    generated = _cloud(graph, project, _description(project, character) + "\n" + prompt + (KEY if key else ""), identity, aspect, offset=offset)
+    return _save(graph, project, generated.out(0), {"id": f"{character['id']}_{kind}", "kind": kind, "fighter": character["id"], "key": key}, _members(character=character))
 
 
 def _cloud(graph, project, prompt, reference=None, aspect="1:1", resolution="1K", offset=0):
@@ -174,11 +245,11 @@ class CFZCharacterDefinition(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(node_id="CFZCharacterDefinition", display_name="CFZ Character Definition", category="Comfy Fighter Z",
-                         inputs=_character_inputs(), outputs=[Character.Output(display_name="character")])
+                         inputs=[*_character_inputs(), *_arcade_inputs()], outputs=[Character.Output(display_name="character")])
 
     @classmethod
-    def execute(cls, name, description, special_name, special_description, intro_tagline, color, character_id):
-        return io.NodeOutput(_character(name, description, special_name, special_description, intro_tagline, color, character_id))
+    def execute(cls, name, description, special_name, special_description, intro_tagline, color, character_id, **kwargs):
+        return io.NodeOutput(_character(name, description, special_name, special_description, intro_tagline, color, character_id, *_arcade_values(kwargs)))
 
 
 class CFZFictionalReference(io.ComfyNode):
@@ -203,10 +274,12 @@ class CFZCharacterFactory(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(node_id="CFZCharacterFactory", display_name="CFZ Character Factory", category="Comfy Fighter Z",
-            description="PAID cloud generation: Upload reference uses 7 images (4 without sheets); Invent fictional reference uses 8 images (5 without sheets). Invent creates its source from text and never reads the image field or earlier session files. Uses native Comfy cloud authentication.",
+            description="PAID cloud generation: Upload reference uses 10 images (7 without the optional arcade art; 4 or 5 without sheets); Invent fictional reference adds one source image. Arcade art adds two in-between sheets and an ending illustration. Invent creates its source from text and never reads the image field or earlier session files. Uses native Comfy cloud authentication.",
             inputs=[Project.Input("project"), _image_input(), *_character_inputs(),
-                    io.Boolean.Input("include_sprite_sheets", default=True, advanced=True, tooltip="Disable only when connecting the identity and character outputs to three individual CFZ Sprite Sheet nodes."),
-                    _source_mode_input()],
+                    io.Boolean.Input("include_sprite_sheets", default=True, advanced=True, tooltip="Disable only when connecting the identity and character outputs to individual CFZ Sprite Sheet nodes."),
+                    _source_mode_input(), *_arcade_inputs(),
+                    io.Boolean.Input("include_arcade_art", default=True, optional=True, advanced=True,
+                                     tooltip="Adds the optional sheetD/sheetE in-between poses (when sheets are included) and a 16:9 arcade ending illustration: up to 3 more paid images.")],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="identity"), Character.Output(display_name="character")],
             enable_expand=True, is_api_node=True)
 
@@ -215,19 +288,19 @@ class CFZCharacterFactory(io.ComfyNode):
         return _image_hash(image) if _source_mode(source_mode) == "Upload reference" else "fictional-text-only"
 
     @classmethod
-    def validate_inputs(cls, image, name, description, special_name, special_description, intro_tagline, color, character_id, source_mode="Upload reference"):
+    def validate_inputs(cls, image, name, description, special_name, special_description, intro_tagline, color, character_id, source_mode="Upload reference", **kwargs):
         try:
             if _source_mode(source_mode) == "Upload reference":
                 _input_image(image)
-            _character(name, description, special_name, special_description, intro_tagline, color, character_id)
+            _character(name, description, special_name, special_description, intro_tagline, color, character_id, *_arcade_values(kwargs))
             return True
         except ValueError as error:
             return str(error)
 
     @classmethod
-    def execute(cls, project, image, name, description, special_name, special_description, intro_tagline, color, character_id, include_sprite_sheets=True, source_mode="Upload reference"):
+    def execute(cls, project, image, name, description, special_name, special_description, intro_tagline, color, character_id, include_sprite_sheets=True, source_mode="Upload reference", include_arcade_art=True, **kwargs):
         _project(project); _source_mode(source_mode)
-        character = _character(name, description, special_name, special_description, intro_tagline, color, character_id)
+        character = _character(name, description, special_name, special_description, intro_tagline, color, character_id, *_arcade_values(kwargs))
         members = _members(character=character); graph = GraphBuilder()
         common = _description(project, character)
         if source_mode == "Invent fictional reference":
@@ -239,15 +312,12 @@ class CFZCharacterFactory(io.ComfyNode):
         source = _save(graph, project, source_image, {"id": f"{character_id}_source", "kind": "source", "fighter": character_id, "key": False}, members)
         identity = _cloud(graph, project, common + "\nUse the supplied reference design as the visible appearance reference. One full-body model reference, complete head, both shoes and all accessories visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen footwear naturally. Leave generous padding. " + KEY, source_image, "2:3")
         assets = [source, _save(graph, project, identity.out(0), {"id": f"{character_id}_reference", "kind": "reference", "fighter": character_id, "key": True}, members)]
-        artwork = [("portrait", "1:1", False, "Close-up face and shoulders for character selection. Expressive confident anime fighter portrait, uncluttered dark background, no text."),
-                   ("hero", "2:3", True, "One complete full-body hero fighter in their signature special-move stance, facing RIGHT. Keep the energy close to the body, and include complete shoes and hands with safe padding. " + KEY),
-                   ("cutin", "16:9", False, "Dramatic horizontal special-move cut-in: face and upper torso, fast energy streaks, strong negative space, no text.")]
-        for index, (kind, aspect, key, prompt) in enumerate(artwork, 1):
-            generated = _cloud(graph, project, common + "\n" + prompt, identity.out(0), aspect, offset=index)
-            assets.append(_save(graph, project, generated.out(0), {"id": f"{character_id}_{kind}", "kind": kind, "fighter": character_id, "key": key}, members))
+        kinds = ["portrait", "hero", "cutin"] + (["ending"] if include_arcade_art else [])
+        for index, kind in enumerate(kinds, 1):
+            assets.append(_artwork(graph, project, character, identity.out(0), kind, index))
         bundles = []
         if include_sprite_sheets:
-            for sheet in SHEETS:
+            for sheet in (ALL_SHEETS if include_arcade_art else SHEETS):
                 bundles.append(graph.node("CFZSpriteSheet", project=project, character=character, reference=identity.out(0), sheet=sheet).out(0))
         bundle = _collect(graph, project, members, assets, bundles)
         return io.NodeOutput(bundle, identity.out(0), character, expand=graph.finalize())
@@ -257,17 +327,24 @@ class CFZSpriteSheet(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(node_id="CFZSpriteSheet", display_name="CFZ Sprite Sheet", category="Comfy Fighter Z",
-            description="PAID cloud generation: exactly one 2K 3x3 sheet for nine named poses, saved with an exact mapped pose layout. Native cloud API; no local checkpoint.",
-            inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True), io.Combo.Input("sheet", options=list(SHEETS), default="sheet")],
+            description="PAID cloud generation: exactly one 2K 3x3 sheet for nine named poses, saved with an exact mapped pose layout. sheet, sheetB and sheetC hold the 27 required poses; optional sheetD and sheetE add in-betweens. Native cloud API; no local checkpoint.",
+            inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True), io.Combo.Input("sheet", options=list(ALL_SHEETS), default="sheet")],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="sheet_image")], enable_expand=True, is_api_node=True)
 
     @classmethod
     def execute(cls, project, character, reference, sheet):
         _project(project); character = _checked_character(character)
-        if sheet not in SHEETS:
-            raise ValueError("Sheet must be sheet, sheetB or sheetC")
-        poses = SHEETS[sheet]; graph = GraphBuilder(); members = _members(character=character)
-        layout = "; ".join(f"row {i // 3 + 1} column {i % 3 + 1}: {pose}" for i, pose in enumerate(poses))
+        if sheet not in ALL_SHEETS:
+            raise ValueError("Sheet must be sheet, sheetB, sheetC, sheetD or sheetE")
+        poses = ALL_SHEETS[sheet]; graph = GraphBuilder(); members = _members(character=character)
+        def hint(pose):
+            if pose == "special":
+                return f"{character['specialMove']['name']}: {character['specialMove']['description']}"
+            if pose == "super" and character.get("superMove"):
+                # Pose only: the full effect text (walls, waves, beams) belongs to the cut-in; the game draws the super effect.
+                return f"{character['superMove']['name']} stance: {POSE_HINTS['super']}, only a small glow at the hands"
+            return POSE_HINTS[pose]
+        layout = "; ".join(f"row {i // 3 + 1} column {i % 3 + 1}: {pose} ({hint(pose)})" for i, pose in enumerate(poses))
         prompt = (_description(project, character) + f"\nExactly one square 3x3 sprite sheet with these nine poses in row-major order: {layout}. "
                   "One complete fighter per cell, all standing and attack poses face RIGHT. Every pose includes the entire body, both shoes and accessories. "
                   "Choose one common body scale small enough for the widest kick and longest horizontal fallen pose. Standing figures are about 60% of cell height, with heads near 22% and shoes at 82%. "
@@ -275,9 +352,28 @@ class CFZSpriteSheet(io.ComfyNode):
                   "Keep canvas bands from 30% to 37% and 63% to 70% entirely empty green, with matching vertical green corridors between columns. No limbs cross cell boundaries. "
                   "Keep common body scale and consistent identity across all nine cells. Sweep kicks point right, launcher strikes upward-right, stance2 is an upright guard, crouch a low guard, down is a complete fallen body. "
                   "Keep special energy compact and attached to the palms; the game supplies the traveling projectile. These are named key poses, not a nine-frame animation loop. No duplicate bodies, detached props, labels or visible cell borders. " + KEY)
-        generated = _cloud(graph, project, prompt, reference, "1:1", "2K", 10 + list(SHEETS).index(sheet))
+        generated = _cloud(graph, project, prompt, reference, "1:1", "2K", 10 + list(ALL_SHEETS).index(sheet))
         asset = _save(graph, project, generated.out(0), {"id": f"{character['id']}_{sheet}", "kind": "sprites", "fighter": character["id"], "sheet": sheet, "poses": poses, "key": True}, members)
         return io.NodeOutput(_collect(graph, project, members, [asset]), generated.out(0), expand=graph.finalize())
+
+
+class CFZCharacterArt(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZCharacterArt", display_name="CFZ Character Art", category="Comfy Fighter Z",
+            description="PAID cloud generation: exactly one 1K portrait, hero, cut-in or arcade ending illustration from an accepted identity reference. Use it to add ending art to an existing fighter or to repair one image.",
+            inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True),
+                    io.Combo.Input("kind", options=list(ARTWORK), default="ending")],
+            outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="image")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, character, reference, kind):
+        _project(project); character = _checked_character(character)
+        if kind not in ARTWORK:
+            raise ValueError("Kind must be portrait, hero, cutin or ending")
+        graph = GraphBuilder(); members = _members(character=character)
+        asset = _artwork(graph, project, character, reference, kind, 1 + list(ARTWORK).index(kind))
+        return io.NodeOutput(_collect(graph, project, members, [asset]), None, expand=graph.finalize())
 
 
 class CFZEnvironmentFactory(io.ComfyNode):
@@ -411,7 +507,7 @@ class CFZCollectBundle(io.ComfyNode):
         return io.Schema(node_id="CFZCollectBundle", display_name="CFZ Collect Bundle (internal)", category="Comfy Fighter Z/internal",
             inputs=[Project.Input("project"), io.String.Input("members_json"),
                     io.Autogrow.Input("assets", template=io.Autogrow.TemplatePrefix(AssetRecord.Input("asset"), prefix="asset_", min=0)),
-                    io.Autogrow.Input("bundles", template=io.Autogrow.TemplatePrefix(Bundle.Input("bundle"), prefix="bundle_", min=0))], outputs=[Bundle.Output(display_name="bundle")])
+                    io.Autogrow.Input("bundles", template=io.Autogrow.TemplatePrefix(Bundle.Input("bundle"), prefix="bundle_", min=0, max=100))], outputs=[Bundle.Output(display_name="bundle")])
 
     @classmethod
     def execute(cls, project, members_json, assets=None, bundles=None):
@@ -424,7 +520,9 @@ def _export(project, bundles, complete):
         raise ValueError("Connect at least one generated asset bundle")
     if complete and (len(bundle["fighters"]) < 2 or not bundle["stages"]):
         raise ValueError("A complete game requires at least two fighters and one enabled environment")
-    config = {"title": project["title"], "subtitle": project["subtitle"], "fighters": bundle["fighters"], "stages": bundle["stages"], "sheets": SHEETS}
+    config = {"title": project["title"], "subtitle": project["subtitle"], "fighters": bundle["fighters"], "stages": bundle["stages"], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS}
+    if sum(1 for fighter in config["fighters"] if fighter.get("boss")) > 1:
+        raise ValueError("A game can include at most one final boss")
     records = []
     for item in bundle["assets"]:
         if item.get("_root") != str(directory):
@@ -445,17 +543,21 @@ def _export(project, bundles, complete):
     if complete:
         mappings = {name: {"kind": "ui"} for name in ["title", "select", "logo", "hud", "icons"]}
         mappings["combat_effects"] = {"kind": "effects", "poses": EFFECTS, "key": True}
+        optional = set()
         for fighter in config["fighters"]:
-            for suffix in ["source", "reference", *SHEETS, "portrait", "hero", "cutin"]:
-                expected_mapping = {"kind": "sprites" if suffix in SHEETS else suffix, "fighter": fighter["id"]}
-                if suffix in SHEETS:
-                    expected_mapping.update(sheet=suffix, poses=SHEETS[suffix], key=True)
+            for suffix in ["source", "reference", *ALL_SHEETS, "portrait", "hero", "cutin", "ending"]:
+                expected_mapping = {"kind": "sprites" if suffix in ALL_SHEETS else suffix, "fighter": fighter["id"]}
+                if suffix in ALL_SHEETS:
+                    expected_mapping.update(sheet=suffix, poses=ALL_SHEETS[suffix], key=True)
                 mappings[f"{fighter['id']}_{suffix}"] = expected_mapping
+                if suffix in EXTRA_SHEETS or suffix == "ending":
+                    optional.add(f"{fighter['id']}_{suffix}")
         for stage in config["stages"]:
             mappings[stage["id"]] = {"kind": "stage", "stage": stage["id"]}
             mappings[f"{stage['id']}_source"] = {"kind": "source", "stage": stage["id"]}
-        expected = set(mappings)
         actual = {record["id"] for record in records}
+        # Arcade in-betweens and ending art are optional per fighter.
+        expected = (set(mappings) - optional) | (optional & actual)
         if expected != actual:
             raise ValueError(f"Incomplete game assets; missing: {', '.join(sorted(expected - actual)) or 'none'}; unexpected: {', '.join(sorted(actual - expected)) or 'none'}")
         for record in records:
@@ -464,7 +566,8 @@ def _export(project, bundles, complete):
                 raise ValueError(f"Incorrect mapped kind, owner or layout for {record['id']}")
         for fighter in config["fighters"]:
             poses = [pose for record in records if record["kind"] == "sprites" and record.get("fighter") == fighter["id"] for pose in record["poses"]]
-            if len(poses) != 27 or set(poses) != {pose for sheet in SHEETS.values() for pose in sheet}:
+            required = {pose for sheet in SHEETS.values() for pose in sheet}
+            if len(poses) != len(set(poses)) or not required <= set(poses):
                 raise ValueError(f"Complete game requires all 27 poses for {fighter['id']}")
     config["expectedAssets"] = [record["id"] for record in records]
     manifest = {"schema": SCHEMA, "root": ".", "cloudOnly": True, "game": config, "assets": records}
@@ -483,7 +586,7 @@ class CFZExportGameAssets(io.ComfyNode):
     def define_schema(cls):
         return io.Schema(node_id="CFZExportGameAssets", display_name="CFZ Export Complete Game", category="Comfy Fighter Z",
             description="Writes assets.json after verifying every image, all 27 poses per fighter, shared art and active stages. At least two fighters and one environment are required.",
-            inputs=[Project.Input("project"), io.Autogrow.Input("bundles", template=io.Autogrow.TemplatePrefix(Bundle.Input("bundle"), prefix="bundle_", min=1))],
+            inputs=[Project.Input("project"), io.Autogrow.Input("bundles", template=io.Autogrow.TemplatePrefix(Bundle.Input("bundle"), prefix="bundle_", min=1, max=100))],
             outputs=[io.String.Output(display_name="manifest_path")], is_output_node=True)
 
     @classmethod
@@ -500,7 +603,7 @@ class CFZExportAssetPatch(io.ComfyNode):
     def define_schema(cls):
         return io.Schema(node_id="CFZExportAssetPatch", display_name="CFZ Export Asset Patch", category="Comfy Fighter Z",
             description="Writes a partial mapped assets.json in a separate patch root. Merge its asset IDs into a complete bundle before building a game; it never replaces a complete manifest.",
-            inputs=[Project.Input("project"), io.Autogrow.Input("bundles", template=io.Autogrow.TemplatePrefix(Bundle.Input("bundle"), prefix="bundle_", min=1))],
+            inputs=[Project.Input("project"), io.Autogrow.Input("bundles", template=io.Autogrow.TemplatePrefix(Bundle.Input("bundle"), prefix="bundle_", min=1, max=100))],
             outputs=[io.String.Output(display_name="manifest_path")], is_output_node=True)
 
     @classmethod
@@ -512,5 +615,5 @@ class CFZExportAssetPatch(io.ComfyNode):
         return _export(project, bundles, False)
 
 
-FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZEnvironmentFactory,
+FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZCharacterArt, CFZEnvironmentFactory,
                  CFZSharedArtFactory, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]

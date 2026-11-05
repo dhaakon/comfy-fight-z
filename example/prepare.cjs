@@ -15,7 +15,8 @@ const round = number => Number(number.toFixed(9));
 function validateConfig(config) {
   if (config.exampleSchema !== 'comfy-fighter-example/v1' || config.demoSource !== 'fictional-text-only') throw new Error('Expected a fictional Comfy Fighter Z example configuration.');
   if (config.model !== 'Gemini Nano Banana 2.1') throw new Error('The example estimate requires Gemini Nano Banana 2.1.');
-  if (config.fighters?.length !== 6 || config.stages?.length !== 3 || config.stages.filter(stage => stage.enabled).length !== 1 || !config.stages[0].enabled || config.stages[0].id !== 'yard') throw new Error('The example requires six fighters and The Yard enabled in the first of three environment slots.');
+  const bosses = (config.fighters || []).filter(fighter => fighter.boss);
+  if (config.fighters?.length !== 7 || bosses.length !== 1 || !config.fighters[6].boss || config.stages?.length !== 3 || config.stages.some(stage => !stage.enabled) || config.stages[0].id !== 'yard') throw new Error('The example requires six fighters, a final boss in the last slot and three enabled environments with The Yard first.');
   const ids = new Set();
   for (const item of [...config.fighters, ...config.stages]) {
     if (!/^[a-z][a-z0-9_-]*$/.test(item.id) || ids.has(item.id)) throw new Error(`Invalid or duplicate example ID: ${item.id}`);
@@ -23,8 +24,10 @@ function validateConfig(config) {
     if (item.sourceMode !== 'Invent fictional reference' || item.sourceImage || item.sourceInput || item.acceptedReferenceInput) throw new Error('The example only accepts text-only invented references with empty image selectors.');
   }
   for (const fighter of config.fighters) if (!fighter.description?.trim() || !fighter.specialMove?.name?.trim() || !fighter.specialMove?.description?.trim() || !fighter.introTagline?.trim() || !fighter.introVoice?.trim()) throw new Error(`Complete the description, special and introduction for ${fighter.id}.`);
-  const sheets = read(path.join(ROOT, 'comfyui/config/game.json')).sheets;
-  if (JSON.stringify(config.sheets) !== JSON.stringify(sheets)) throw new Error('Preserve the game\'s three standard 3x3 pose layouts.');
+  for (const fighter of config.fighters) if (!fighter.style || !fighter.superMove?.name?.trim() || !fighter.superMove?.description?.trim() || !fighter.winQuote?.trim() || !fighter.ending?.trim()) throw new Error(`Complete the arcade style, super, win quote and ending for ${fighter.id}.`);
+  const canonical = read(path.join(ROOT, 'comfyui/config/game.json'));
+  if (JSON.stringify(config.sheets) !== JSON.stringify(canonical.sheets)) throw new Error('Preserve the game\'s three standard 3x3 pose layouts.');
+  if (JSON.stringify(config.extraSheets) !== JSON.stringify(canonical.extraSheets)) throw new Error('Keep the optional sheetD/sheetE arcade layouts for the complete example.');
   return config;
 }
 
@@ -119,9 +122,11 @@ function buildCombinedGame(input, bundleRoot, { seed = 20261103, preparedAt = ne
   const audioCost = round(musicSeconds * RATES.musicSecond + effectsSeconds * RATES.effectMinute / 60 + voiceCharacters * RATES.speechThousandCharacters / 1000);
   const total = round(image.estimatedUSD + audioCost);
   const notes = workflow.nodes.filter(node => node.type === 'MarkdownNote');
-  notes[0].widgets_values = [`# Comfy Fighter Z: complete six-fighter example\n\nONE WORKFLOW: ${image.paidImages} fresh cloud images + ${jobs.length} cloud audio clips, estimated $${total.toFixed(2)}. Six fictional fighters, 162 poses, The Yard, menu art, UI/effects, music, calls and introductions. No external image files, real photos, local model weights or opening film.\n\nRun node example/prepare.cjs --out output/example/<fresh-name> to fill your local output folder, then open that run's workflow.json. Edit example/config.json and prepare a new run to keep image and audio descriptions synchronized. Validate and approve the exact cloud spend before queueing. No automatic paid retries.`];
-  notes[1].widgets_values = ['## One shared output folder\n\nProject Settings supplies the folder to both exporters. The run writes bundle/assets.json, bundle/audio.json and their raw/ media. The Yard alone is playable; the other two environment slots remain disabled.\n\nReview every fighter sheet and audition the audio. The builder loads the complete bundle and exports a strict self-contained game. A graph is a recipe, not generated artwork.'];
-  notes[2].widgets_values = [`# Included audio: ${jobs.length} clips\n\n2 music tracks (Sonilo), 4 effects (ElevenLabs SFX), 4 announcer calls, 6 special calls and 6 introduction taglines (Eleven v4 stock voices). The audio root is linked to Project Settings; there is no second directory to edit.\n\nAudio source files are PCM WAVs. audio.json is exported after all tracks finish. Costs are estimates; actual billing varies.`];
+  const poseCount = Object.values({ ...config.sheets, ...(config.extraSheets || {}) }).flat().length;
+  const counts = category => jobs.filter(job => job.category === category).length;
+  notes[0].widgets_values = [`# Comfy Fighter Z: complete arcade example\n\nONE WORKFLOW: ${image.paidImages} fresh cloud images + ${jobs.length} cloud audio clips, estimated $${total.toFixed(2)}. Six fictional fighters plus a final boss, ${config.fighters.length * poseCount} poses, ${game.stages.length} arenas, ending art, menu art, UI/effects, music, announcer calls and fighter voices. No external image files, real photos, local model weights or opening film.\n\nRun node example/prepare.cjs --out output/example/<fresh-name> to fill your local output folder, then open that run's workflow.json. Edit example/config.json and prepare a new run to keep image and audio descriptions synchronized. Validate and approve the exact cloud spend before queueing. No automatic paid retries.`];
+  notes[1].widgets_values = ['## One shared output folder\n\nProject Settings supplies the folder to both exporters. The run writes bundle/assets.json, bundle/audio.json and their raw/ media. All three arenas are enabled; The Yard also supplies the title and select venue.\n\nReview every fighter sheet and audition the audio. The builder loads the complete bundle and exports a strict self-contained game. A graph is a recipe, not generated artwork.'];
+  notes[2].widgets_values = [`# Included audio: ${jobs.length} clips\n\n${counts('music')} music tracks (Sonilo), ${counts('sfx')} effects (ElevenLabs SFX) and ${counts('voice')} announcer and fighter lines (Eleven v4 stock voices). The audio root is linked to Project Settings; there is no second directory to edit.\n\nAudio source files are PCM WAVs. audio.json is exported after all tracks finish. Costs are estimates; actual billing varies.`];
   notes[2].pos = [2220, -270]; notes[2].size = [3550, 290];
   workflow.groups.push({ id: 4, title: 'Complete audio: music, impacts, calls and introductions', bounding: [2190, 65, 3610, 4730], color: '#745b88', font_size: 26, flags: {} });
   workflow.nodes.forEach((node, index) => node.order = index);
@@ -135,9 +140,9 @@ function buildCombinedGame(input, bundleRoot, { seed = 20261103, preparedAt = ne
     cloudOnly: true, generationSubmitted: false, requiresSpendingAuthorization: true, automaticPaidRetries: 0,
     source: 'All source references are invented from text inside this workflow. No uploaded photos or earlier media are loaded.',
     fighters: config.fighters.map(fighter => fighter.id), enabledStages: game.stages.map(stage => stage.id), disabledStages: config.stages.filter(stage => !stage.enabled).map(stage => stage.id),
-    expectedAssets: image.mappedAssets, expectedAudio: jobs.length, runtimePoses: config.fighters.length * 27,
+    expectedAssets: image.mappedAssets, expectedAudio: jobs.length, runtimePoses: config.fighters.length * poseCount,
     image: { ...image, model: config.model, thinkingLevel: 'MINIMAL' },
-    audio: { paidClips: jobs.length, musicClips: 2, musicSeconds, effectsClips: 4, effectsSeconds, voiceClips: 16, voiceCharacters, estimatedUSD: audioCost },
+    audio: { paidClips: jobs.length, musicClips: counts('music'), musicSeconds, effectsClips: counts('sfx'), effectsSeconds, voiceClips: counts('voice'), voiceCharacters, estimatedUSD: audioCost },
     total: { paidImages: image.paidImages, paidAudioClips: jobs.length, estimatedUSD: total }, rates: RATES,
     priceStatus: 'Snapshot estimate; live price check not requested. Validate current pricing before a paid submission.',
     estimateNote: 'Installed ComfyUI price badges; actual provider billing may vary. No paid retries or video generation included.',

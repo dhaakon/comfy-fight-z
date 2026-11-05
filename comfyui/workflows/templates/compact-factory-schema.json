@@ -65,7 +65,7 @@
             "advanced": true,
             "default": 42,
             "min": 0,
-            "max": 18446744073709551615
+            "max": 18446744073709552000
           }
         ]
       }
@@ -165,6 +165,68 @@
             "multiline": false
           }
         ]
+      },
+      "optional": {
+        "fighting_style": [
+          "COMBO",
+          {
+            "tooltip": "Gameplay archetype: specials, speed and damage. Free; does not change paid calls.",
+            "default": "balanced",
+            "multiselect": false,
+            "options": [
+              "balanced",
+              "power",
+              "speed",
+              "zoner",
+              "grappler",
+              "trickster",
+              "boss"
+            ]
+          }
+        ],
+        "super_name": [
+          "STRING",
+          {
+            "tooltip": "Super move name shown in the cut-in and called by the fighter's voice.",
+            "default": "",
+            "multiline": false
+          }
+        ],
+        "super_description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "win_quote": [
+          "STRING",
+          {
+            "tooltip": "Arcade win-screen quote, up to 200 characters.",
+            "default": "",
+            "multiline": false
+          }
+        ],
+        "ending": [
+          "STRING",
+          {
+            "tooltip": "Arcade ending text, up to 800 characters.",
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "role": [
+          "COMBO",
+          {
+            "tooltip": "Final boss closes Arcade mode. At most one per game.",
+            "default": "Fighter",
+            "multiselect": false,
+            "options": [
+              "Fighter",
+              "Final boss"
+            ]
+          }
+        ]
       }
     },
     "input_order": {
@@ -176,6 +238,14 @@
         "intro_tagline",
         "color",
         "character_id"
+      ],
+      "optional": [
+        "fighting_style",
+        "super_name",
+        "super_description",
+        "win_quote",
+        "ending",
+        "role"
       ]
     },
     "is_input_list": false,
@@ -386,7 +456,7 @@
         "include_sprite_sheets": [
           "BOOLEAN",
           {
-            "tooltip": "Disable only when connecting the identity and character outputs to three individual CFZ Sprite Sheet nodes.",
+            "tooltip": "Disable only when connecting the identity and character outputs to individual CFZ Sprite Sheet nodes.",
             "advanced": true,
             "default": true
           }
@@ -403,6 +473,74 @@
               "Upload reference",
               "Invent fictional reference"
             ]
+          }
+        ],
+        "fighting_style": [
+          "COMBO",
+          {
+            "tooltip": "Gameplay archetype: specials, speed and damage. Free; does not change paid calls.",
+            "default": "balanced",
+            "multiselect": false,
+            "options": [
+              "balanced",
+              "power",
+              "speed",
+              "zoner",
+              "grappler",
+              "trickster",
+              "boss"
+            ]
+          }
+        ],
+        "super_name": [
+          "STRING",
+          {
+            "tooltip": "Super move name shown in the cut-in and called by the fighter's voice.",
+            "default": "",
+            "multiline": false
+          }
+        ],
+        "super_description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "win_quote": [
+          "STRING",
+          {
+            "tooltip": "Arcade win-screen quote, up to 200 characters.",
+            "default": "",
+            "multiline": false
+          }
+        ],
+        "ending": [
+          "STRING",
+          {
+            "tooltip": "Arcade ending text, up to 800 characters.",
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "role": [
+          "COMBO",
+          {
+            "tooltip": "Final boss closes Arcade mode. At most one per game.",
+            "default": "Fighter",
+            "multiselect": false,
+            "options": [
+              "Fighter",
+              "Final boss"
+            ]
+          }
+        ],
+        "include_arcade_art": [
+          "BOOLEAN",
+          {
+            "tooltip": "Adds the optional sheetD/sheetE in-between poses (when sheets are included) and a 16:9 arcade ending illustration: up to 3 more paid images.",
+            "advanced": true,
+            "default": true
           }
         ]
       },
@@ -432,7 +570,14 @@
         "include_sprite_sheets"
       ],
       "optional": [
-        "source_mode"
+        "source_mode",
+        "fighting_style",
+        "super_name",
+        "super_description",
+        "win_quote",
+        "ending",
+        "role",
+        "include_arcade_art"
       ],
       "hidden": [
         "auth_token_comfy_org",
@@ -464,7 +609,7 @@
     "output_matchtypes": null,
     "name": "CFZCharacterFactory",
     "display_name": "CFZ Character Factory",
-    "description": "PAID cloud generation: Upload reference uses 7 images (4 without sheets); Invent fictional reference uses 8 images (5 without sheets). Invent creates its source from text and never reads the image field or earlier session files. Uses native Comfy cloud authentication.",
+    "description": "PAID cloud generation: Upload reference uses 10 images (7 without the optional arcade art; 4 or 5 without sheets); Invent fictional reference adds one source image. Arcade art adds two in-between sheets and an ending illustration. Invent creates its source from text and never reads the image field or earlier session files. Uses native Comfy cloud authentication.",
     "python_module": null,
     "category": "Comfy Fighter Z",
     "output_node": false,
@@ -502,7 +647,9 @@
             "options": [
               "sheet",
               "sheetB",
-              "sheetC"
+              "sheetC",
+              "sheetD",
+              "sheetE"
             ]
           }
         ]
@@ -552,7 +699,7 @@
     "output_matchtypes": null,
     "name": "CFZSpriteSheet",
     "display_name": "CFZ Sprite Sheet",
-    "description": "PAID cloud generation: exactly one 2K 3x3 sheet for nine named poses, saved with an exact mapped pose layout. Native cloud API; no local checkpoint.",
+    "description": "PAID cloud generation: exactly one 2K 3x3 sheet for nine named poses, saved with an exact mapped pose layout. sheet, sheetB and sheetC hold the 27 required poses; optional sheetD and sheetE add in-betweens. Native cloud API; no local checkpoint.",
     "python_module": null,
     "category": "Comfy Fighter Z",
     "output_node": false,
@@ -869,7 +1016,7 @@
               },
               "prefix": "bundle_",
               "min": 0,
-              "max": 10
+              "max": 100
             }
           }
         ]
@@ -933,7 +1080,7 @@
               },
               "prefix": "bundle_",
               "min": 1,
-              "max": 10
+              "max": 100
             }
           }
         ]
@@ -1007,7 +1154,7 @@
               },
               "prefix": "bundle_",
               "min": 1,
-              "max": 10
+              "max": 100
             }
           }
         ]
@@ -1106,6 +1253,95 @@
     "experimental": false,
     "dev_only": false,
     "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZCharacterArt": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "character": [
+          "CFZ_CHARACTER",
+          {}
+        ],
+        "reference": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "kind": [
+          "COMBO",
+          {
+            "default": "ending",
+            "multiselect": false,
+            "options": [
+              "portrait",
+              "hero",
+              "cutin",
+              "ending"
+            ]
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "character",
+        "reference",
+        "kind"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "bundle",
+      "image"
+    ],
+    "output_tooltips": [
+      null,
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZCharacterArt",
+    "display_name": "CFZ Character Art",
+    "description": "PAID cloud generation: exactly one 1K portrait, hero, cut-in or arcade ending illustration from an accepted identity reference. Use it to add ending art to an existing fighter or to repair one image.",
+    "python_module": null,
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
     "price_badge": null,
     "search_aliases": null,
     "essentials_category": null,

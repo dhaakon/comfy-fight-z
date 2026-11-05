@@ -62,7 +62,7 @@ async function adopt(game) {
       if (!definition) throw new Error(`Unknown fighter: ${fighter.id}`);
       fighter.introTagline = definition.introTagline || '';
       for (const pose of Object.values(fighter.poses)) pose.src = await media(pose.src);
-      for (const kind of ['portrait', 'hero', 'cutin']) if (fighter[kind]) fighter[kind] = await media(fighter[kind]);
+      for (const kind of ['portrait', 'hero', 'cutin', 'endingArt']) if (fighter[kind]) fighter[kind] = await media(fighter[kind]);
       if (fighter.sourceImage) fighter.sourceImage = await media(fighter.sourceImage, true);
     }
     for (const level of manifest.stages) {
@@ -75,6 +75,8 @@ async function adopt(game) {
       entry.src = await media(entry.src); delete entry.sha256; // Source WAV digest does not describe the encoded MP3.
     }
     if (manifest.openingVideo) manifest.openingVideo.src = await media(manifest.openingVideo.src);
+    if (manifest.titleVideo) manifest.titleVideo.src = await media(manifest.titleVideo.src);
+    for (const fighter of manifest.fighters) if (fighter.introVideo) fighter.introVideo.src = await media(fighter.introVideo.src);
     fs.writeFileSync(path.join(assets, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
     fs.writeFileSync(path.join(assets, 'production.json'), JSON.stringify({ title: manifest.title, source: 'Verified ComfyUI bundle export', generatedWith: ['Gemini Nano Banana 2.1', 'Sonilo', 'ElevenLabs', ...(manifest.openingVideo ? ['Seedance 2.5'] : [])], openingVideo: manifest.openingVideo ? { duration: manifest.openingVideo.duration, format: 'H.264/AAC MP4' } : null, fighters: manifest.fighters.length, stages: manifest.stages.length, poses: manifest.fighters.reduce((n, f) => n + Object.keys(f.poses).length, 0), audio: Object.keys(manifest.audio || {}).length, files: converted.size, sourceBytes, outputBytes, formats: 'WebP quality 94, MP3 VBR quality 2, accepted MP4 copied unchanged; source reference previews limited to 1200px' }, null, 2) + '\n');
     // Keep the prior accepted runtime for recovery, then publish atomically.

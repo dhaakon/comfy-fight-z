@@ -1,12 +1,12 @@
 # Multiplayer and phone controllers
 
-Comfy Fighter Z has three ways to play the same game. The six-fighter roster, introductions, specials and first-to-two-rounds combat are shared across modes.
+Comfy Fighter Z has several ways to play the same game. The roster, introductions, specials, supers and round rules are shared across modes. Arcade, local Versus and Training run in one browser; the two network modes below use the bundled Node server.
 
 | Title-screen button | Players and screens |
 | --- | --- |
-| **ENTER THE SAGA** | One player against the CPU, using the keyboard or the game's on-screen buttons. |
+| **ARCADE** | One player against a CPU ladder that ends with the final boss, using the keyboard, a gamepad or the game's on-screen buttons. **VERSUS** and **TRAINING** are local modes beside it. |
 | **ONLINE VERSUS** | Two human players, each viewing the game on their own computer. Join by invitation. |
-| **PHONE CONTROLLERS** | One shared TV or computer display, with one phone against the CPU or two phones against each other. |
+| **PHONE / TV** | One shared TV or computer display, with one phone against the CPU or two phones against each other. |
 
 These modes are included in newly built games. Earlier downloaded ZIPs keep their original runtime: rebuild their `sources/` folder with the current builder to add multiplayer without generating new artwork.
 
@@ -42,16 +42,16 @@ An invite must point to a server both computers can reach. For two computers on 
 
 Rooms are private by invitation; there is no public matchmaking lobby or account signup. Both players must use the same game URL and roster. The root demo and `/phone-photo-demo/` have separate rooms.
 
-## Phone Controllers: play on a shared display
+## Phone / TV: play on a shared display
 
 The TV or computer shows the full game. Phones show fighter selection and touch controls; no controller app is needed.
 
 1. Connect the display computer and phones to the same Wi-Fi when using a local server.
 2. On the **display computer**, open the printed **Phone / LAN** address. Do this before making a session. For a hosted game, use its public HTTPS URL instead.
-3. Choose **PHONE CONTROLLERS** on the title screen, then select **One phone vs CPU** or **Two phones / versus**.
+3. Choose **PHONE / TV** on the title screen, then select **One phone vs CPU** or **Two phones / versus**.
 4. Select **START SHARED SCREEN**. Scan Player 1's QR code with the first phone and tap **CONNECT AS PLAYER 1**. For two-player mode, scan Player 2's code with the second phone and tap **CONNECT AS PLAYER 2**.
 5. Choose a fighter on each phone and tap its Ready button. Keep the game visible on the display and the controller pages visible on the phones.
-6. Drag the phone's thumbstick to move, jump or crouch, and use the **A / S / D / F** attack buttons. Use **FULLSCREEN** on the display to fill the TV.
+6. Drag the phone's thumbstick to move, jump or crouch, and use the **A / S / D / F** attack buttons. Press two buttons together for a roll (A+S), blowback (S+D) or super (F+D); the **TAUNT** pill under the stick drains the opponent's power gauge. Use **FULLSCREEN** on the display to fill the TV.
 
 **Do not create a local phone session at `127.0.0.1` or `localhost`.** Those addresses mean “this device,” so the QR code would send a phone to itself. Opening the LAN address on the display makes the generated controller links point to the computer running the server.
 

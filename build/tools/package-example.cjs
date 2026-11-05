@@ -54,7 +54,7 @@ async function pool(items, worker, count = 3) {
   }));
 }
 
-async function packageExample({ bundle, out = path.join(ROOT, 'example/bundle'), plan, promptId } = {}) {
+async function packageExample({ bundle, out = path.join(ROOT, 'example/bundle'), plan, promptId, previous } = {}) {
   if (!bundle) throw new Error('Supply --bundle <complete generated bundle directory>.');
   if (promptId && !/^[a-f0-9-]{36}$/i.test(promptId)) throw new Error('Supply the actual ComfyUI prompt UUID.');
   bundle = fs.realpathSync(bundle); out = path.resolve(out);
@@ -72,6 +72,13 @@ async function packageExample({ bundle, out = path.join(ROOT, 'example/bundle'),
     imageEncoding: 'lossless WebP; decoded RGBA pixels verified', audioEncoding: 'MP3 VBR quality 2; sample rate, channels and duration verified',
     images: [], audio: [] };
   if (promptId) provenance.promptId = promptId;
+  // A bundle merged onto an earlier packaged example keeps that example's generation record, so
+  // unchanged images still trace back to their original cloud outputs.
+  if (previous) {
+    const earlier = JSON.parse(fs.readFileSync(previous, 'utf8'));
+    if (earlier.schema !== 'comfy-fighter-example-provenance/v1') throw new Error('--previous must be an earlier example provenance.json.');
+    provenance.previous = earlier;
+  }
   if (plan) {
     const preparation = JSON.parse(fs.readFileSync(plan, 'utf8'));
     provenance.generationPlanSha256 = hash(fs.readFileSync(plan));
@@ -83,7 +90,8 @@ async function packageExample({ bundle, out = path.join(ROOT, 'example/bundle'),
     if (record.width !== verified.width || record.height !== verified.height) throw new Error(`Generated dimensions disagree with manifest: ${record.id}`);
     Object.assign(manifest.assets[index], { src, width: verified.width, height: verified.height, sha256: hash(encoded), bytes: encoded.length });
     sourcePaths.set(record.src, src);
-    provenance.images[index] = { id: record.id, sourceSha256: record.sha256, packagedSha256: hash(encoded), sourceBytes: bytes, bytes: encoded.length, ...verified };
+    const carried = provenance.previous?.images?.find(item => item.id === record.id && item.packagedSha256 === record.sha256);
+    provenance.images[index] = { id: record.id, sourceSha256: record.sha256, ...(carried ? { originalSha256: carried.sourceSha256 } : {}), packagedSha256: hash(encoded), sourceBytes: bytes, bytes: encoded.length, ...verified };
     console.log(`Image ${index + 1}/${checked.manifest.assets.length}: ${record.id} — identical pixels, ${Math.round(encoded.length / 1024)} KiB`);
   });
   await pool(checked.entries.filter(entry => entry.record.kind === 'audio'), async ({ record, file, bytes }, index) => {
@@ -111,9 +119,9 @@ async function packageExample({ bundle, out = path.join(ROOT, 'example/bundle'),
 
 if (require.main === module) Promise.resolve().then(() => {
   const args = process.argv.slice(2), options = {};
-  if (args.length === 1 && args[0] === '--help') return console.log('Usage: npm run example:package -- --bundle <generated bundle> [--out <fresh folder>] [--plan <generation plan>] [--prompt-id <ComfyUI UUID>]\nMaintainer-only local compression; requires FFmpeg. Preserves original generated files, verifies every image pixel, and never calls a model.');
+  if (args.length === 1 && args[0] === '--help') return console.log('Usage: npm run example:package -- --bundle <generated bundle> [--out <fresh folder>] [--plan <generation plan>] [--prompt-id <ComfyUI UUID>] [--previous <earlier example provenance.json>]\nMaintainer-only local compression; requires FFmpeg. Preserves original generated files, verifies every image pixel, and never calls a model.');
   for (let i = 0; i < args.length; i++) {
-    if (!['--bundle', '--out', '--plan', '--prompt-id'].includes(args[i]) || !args[i + 1] || args[i + 1].startsWith('--')) throw new Error('Use --bundle <folder>, optional --out <fresh folder>, --plan <JSON> and --prompt-id <UUID>.');
+    if (!['--bundle', '--out', '--plan', '--prompt-id', '--previous'].includes(args[i]) || !args[i + 1] || args[i + 1].startsWith('--')) throw new Error('Use --bundle <folder>, optional --out <fresh folder>, --plan <JSON>, --prompt-id <UUID> and --previous <provenance.json>.');
     const flag = args[i], key = flag === '--prompt-id' ? 'promptId' : flag.slice(2);
     if (options[key]) throw new Error(`Duplicate flag: ${flag}`);
     options[key] = flag === '--prompt-id' ? args[++i] : path.resolve(args[++i]);

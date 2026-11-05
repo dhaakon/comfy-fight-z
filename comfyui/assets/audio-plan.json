@@ -3,52 +3,256 @@
   "cloudOnly": true,
   "paid": true,
   "workflow": "comfyui/workflows/comfy-audio.json",
-  "estimatedUSD": 0.4247498666666667,
+  "estimatedUSD": 1.7614664000000015,
   "estimateSource": "Installed ComfyUI node price_badge: Sonilo $0.0025/s, ElevenLabs SFX ~$0.14/min, Eleven v4 ~$0.1144/1K chars; actual billing may vary.",
   "jobs": [
     {
       "id": "menu_music",
+      "duration": 60,
+      "loop": true,
+      "prompt": "Original instrumental anime arcade fighting-game title and menu theme. Bright electric guitar riffs, punchy bass, energetic drums, heroic synth brass, 148 BPM, confident memorable original melody. No vocals, no speech, no existing game or anime melody. Clean loop-friendly ending without a long fade. For Comfy Fighter Z.",
       "category": "music",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "select_music",
       "duration": 45,
       "loop": true,
-      "prompt": "Original instrumental anime arcade fighting-game character selection music. Bright electric guitar riffs, punchy bass, energetic drums, heroic synth brass, playful competitive energy, 148 BPM. Confident memorable original melody, no vocals, no speech, no existing game or anime melody. Steady groove, clean loop-friendly ending without a long fade. For Comfy Fighter Z.",
+      "prompt": "Original instrumental 1990s arcade fighting-game character select music: tense driving synth bass, staccato guitar chugs, crisp drums and a rising brass hook, 150 BPM, anticipation before battle. No vocals or speech, no existing game melody. Loop-friendly ending.",
+      "category": "music",
       "kind": "audio",
       "model": "SoniloTextToMusic"
     },
     {
       "id": "yard_music",
-      "category": "music",
-      "duration": 60,
+      "duration": 75,
       "loop": true,
-      "prompt": "Original instrumental 1990s battle-anime fighting-game theme for The Yard: A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+      "prompt": "Original instrumental 1990s battle-anime fighting-game stage theme for The Yard: A wholly fictional neighborhood backyard tournament arena at golden hour. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and memorable. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+      "category": "music",
       "kind": "audio",
       "model": "SoniloTextToMusic"
     },
     {
+      "id": "rooftop_music",
+      "duration": 75,
+      "loop": true,
+      "prompt": "Original instrumental 1990s battle-anime fighting-game stage theme for Sunset Rooftop: A wholly fictional community-center rooftop at sunset. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 154 BPM. Upbeat, dramatic and memorable. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+      "category": "music",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "arcade_music",
+      "duration": 75,
+      "loop": true,
+      "prompt": "Original instrumental 1990s battle-anime fighting-game stage theme for Midnight Arcade: A wholly fictional neighborhood arcade after closing. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 170 BPM. Upbeat, dramatic and memorable. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.",
+      "category": "music",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "boss_music",
+      "duration": 75,
+      "loop": true,
+      "prompt": "Original instrumental final-boss battle theme for an arcade fighting game: imposing pipe-organ chords, heavy distorted guitar, pounding orchestral drums, dark brass and a menacing minor-key melody, 140 BPM, grand and villainous yet playful. The boss is Baron Bylaw. No vocals or speech, no existing game melody. Loop-friendly ending.",
+      "category": "music",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "victory_music",
+      "duration": 10,
+      "loop": false,
+      "prompt": "Original short triumphant arcade fighting-game victory jingle: bright brass fanfare and guitar flourish ending on a strong final chord. No vocals, no existing melody.",
+      "category": "music",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "continue_music",
+      "duration": 20,
+      "loop": true,
+      "prompt": "Original tense arcade continue-countdown music: ticking percussion, suspenseful pulsing synth bass and a pleading melodic motif, 120 BPM. No vocals, no existing melody. Loop-friendly.",
+      "category": "music",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "gameover_music",
+      "duration": 8,
+      "loop": false,
+      "prompt": "Original short melancholy arcade game-over sting: slow descending synth and soft piano, ending in a quiet minor chord. No vocals, no existing melody.",
+      "category": "music",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "ending_music",
+      "duration": 60,
+      "loop": true,
+      "prompt": "Original warm, nostalgic arcade ending credits theme: gentle electric piano, hopeful guitar melody, soft drums and a sunset feeling of a neighborhood celebrating together, 96 BPM. No vocals, no existing melody. Loop-friendly.",
+      "category": "music",
+      "kind": "audio",
+      "model": "SoniloTextToMusic"
+    },
+    {
+      "id": "ann_title",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Comfy Fighter Z!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
       "id": "ann_select",
       "category": "voice",
+      "voice": "Roger (male, american)",
       "prompt": "[excited, powerful arcade announcer, crisp and energetic] Choose your fighter!",
       "kind": "audio",
       "model": "ElevenLabsTextToSpeech"
     },
     {
-      "id": "ann_fight",
+      "id": "ann_versus",
       "category": "voice",
-      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Ready? FIGHT!",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Versus!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_round1",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Round one!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_round2",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Round two!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_round3",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Round three!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_final",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Final round!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_ready",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Ready?",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_go",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] GO!",
       "kind": "audio",
       "model": "ElevenLabsTextToSpeech"
     },
     {
       "id": "ann_ko",
       "category": "voice",
+      "voice": "Roger (male, american)",
       "prompt": "[excited, powerful arcade announcer, crisp and energetic] K! O!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_doubleko",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Double K! O!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_timeover",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Time over!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_perfect",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Perfect!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_draw",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Draw game!",
       "kind": "audio",
       "model": "ElevenLabsTextToSpeech"
     },
     {
       "id": "ann_victory",
       "category": "voice",
+      "voice": "Roger (male, american)",
       "prompt": "[excited, powerful arcade announcer, crisp and energetic] Victory!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_youwin",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] You win!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_youlose",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] You lose.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_continue",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Continue?",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_gameover",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Game over.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "id": "ann_finalbattle",
+      "category": "voice",
+      "voice": "Roger (male, american)",
+      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Final battle!",
       "kind": "audio",
       "model": "ElevenLabsTextToSpeech"
     },
@@ -56,7 +260,7 @@
       "id": "sfx_punch",
       "category": "sfx",
       "duration": 0.6,
-      "prompt": "One isolated stylized anime fighting-game punch impact: fast airy swoosh then sharp solid thwack and tiny energy snap. Immediate attack, short clean decay, no voice, no music, no ambience.",
+      "prompt": "One isolated stylized anime fighting-game light punch impact: fast airy swoosh then a sharp solid thwack and tiny energy snap. Immediate attack, short clean decay. No voice, no music, no ambience.",
       "kind": "audio",
       "model": "ElevenLabsTextToSoundEffects"
     },
@@ -64,7 +268,15 @@
       "id": "sfx_kick",
       "category": "sfx",
       "duration": 0.8,
-      "prompt": "One isolated heavy arcade fighting-game kick impact: short fast swish followed by deep punchy slam with a crisp crack. Immediate attack and short clean tail. No voice, no music, no ambience.",
+      "prompt": "One isolated arcade fighting-game medium kick impact: short fast swish followed by a punchy slam with a crisp crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_heavy",
+      "category": "sfx",
+      "duration": 1,
+      "prompt": "One isolated heavy arcade fighting-game strike: deep whoomp, bone-rattling bass slam and a short crunchy crack. Immediate attack, short clean decay. No voice, no music, no ambience.",
       "kind": "audio",
       "model": "ElevenLabsTextToSoundEffects"
     },
@@ -72,7 +284,7 @@
       "id": "sfx_block",
       "category": "sfx",
       "duration": 0.6,
-      "prompt": "One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate and concise. No voices, no music, no ambience.",
+      "prompt": "One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate attack, short clean decay. No voice, no music, no ambience.",
       "kind": "audio",
       "model": "ElevenLabsTextToSoundEffects"
     },
@@ -80,96 +292,137 @@
       "id": "sfx_special",
       "category": "sfx",
       "duration": 1.2,
-      "prompt": "One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate start, compact clean tail. No voice, no music, no ambience.",
+      "prompt": "One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate attack, short clean decay. No voice, no music, no ambience.",
       "kind": "audio",
       "model": "ElevenLabsTextToSoundEffects"
     },
     {
-      "id": "fighter_griddle_special",
+      "id": "sfx_projectile_hit",
+      "category": "sfx",
+      "duration": 0.9,
+      "prompt": "One isolated energy-ball impact in an arcade fighting game: crackling burst, bright shatter and a quick electric fizzle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_whiff",
+      "category": "sfx",
+      "duration": 0.5,
+      "prompt": "One isolated quick light air whoosh of a fast punch missing its target. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_whiff_heavy",
+      "category": "sfx",
+      "duration": 0.6,
+      "prompt": "One isolated heavy swinging whoosh of a big kick missing its target, low and airy. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_jump",
+      "category": "sfx",
+      "duration": 0.5,
+      "prompt": "One isolated light springy hop sound of a fighter leaving the ground: sneaker scuff and short air puff. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_land",
+      "category": "sfx",
+      "duration": 0.5,
+      "prompt": "One isolated fighter landing on a hard patio: firm double footstep thud with tiny dust scatter. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_dash",
+      "category": "sfx",
+      "duration": 0.6,
+      "prompt": "One isolated quick dash in an arcade fighting game: rapid scuffing footsteps and a short rushing whoosh. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_throw",
+      "category": "sfx",
+      "duration": 1,
+      "prompt": "One isolated fighting-game throw: cloth grab rustle, heave whoosh and a heavy body slam on the ground. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_super",
+      "category": "sfx",
+      "duration": 1.6,
+      "prompt": "One isolated super-move activation flash: dramatic rising energy charge, bright shimmering chime and a deep impact boom. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_ko",
+      "category": "sfx",
+      "duration": 1.6,
+      "prompt": "One isolated final knockout blow in an arcade fighting game: massive impact boom with a short reverberant echo tail. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_counter",
+      "category": "sfx",
+      "duration": 0.6,
+      "prompt": "One isolated counter-hit accent: bright sharp metallic clang with a quick sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_dizzy",
+      "category": "sfx",
+      "duration": 1.2,
+      "prompt": "One isolated cartoon dizzy daze: light swirling chirps and twinkling stars circling. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_menu_move",
+      "category": "sfx",
+      "duration": 0.5,
+      "prompt": "One isolated crisp retro arcade menu cursor tick, short and clean. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_menu_select",
+      "category": "sfx",
+      "duration": 0.6,
+      "prompt": "One isolated retro arcade menu confirm: punchy bright chord stab with a short sparkle. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_menu_back",
+      "category": "sfx",
+      "duration": 0.5,
+      "prompt": "One isolated retro arcade menu cancel: short soft descending blip. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
+      "id": "sfx_timer",
+      "category": "sfx",
+      "duration": 0.5,
+      "prompt": "One isolated urgent digital timer warning beep, single short tone. Immediate attack, short clean decay. No voice, no music, no ambience.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSoundEffects"
+    },
+    {
       "category": "voice",
       "fighter": "griddle",
-      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Sizzle Burst!",
-      "characterDescription": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
-      "specialMove": {
-        "name": "Sizzle Burst",
-        "description": "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell."
-      },
-      "kind": "audio",
-      "model": "ElevenLabsTextToSpeech"
-    },
-    {
-      "id": "fighter_rivet_special",
-      "category": "voice",
-      "fighter": "rivet",
-      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Magnet Crash!",
-      "characterDescription": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
-      "specialMove": {
-        "name": "Magnet Crash",
-        "description": "Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms."
-      },
-      "kind": "audio",
-      "model": "ElevenLabsTextToSpeech"
-    },
-    {
-      "id": "fighter_tempo_special",
-      "category": "voice",
-      "fighter": "tempo",
-      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Beat Drop!",
-      "characterDescription": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
-      "specialMove": {
-        "name": "Beat Drop",
-        "description": "Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering."
-      },
-      "kind": "audio",
-      "model": "ElevenLabsTextToSpeech"
-    },
-    {
-      "id": "fighter_nimbus_special",
-      "category": "voice",
-      "fighter": "nimbus",
-      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Cloudburst Palm!",
-      "characterDescription": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
-      "specialMove": {
-        "name": "Cloudburst Palm",
-        "description": "Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot."
-      },
-      "kind": "audio",
-      "model": "ElevenLabsTextToSpeech"
-    },
-    {
-      "id": "fighter_switchback_special",
-      "category": "voice",
-      "fighter": "switchback",
-      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Express Pulse!",
-      "characterDescription": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
-      "specialMove": {
-        "name": "Express Pulse",
-        "description": "Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell."
-      },
-      "kind": "audio",
-      "model": "ElevenLabsTextToSpeech"
-    },
-    {
-      "id": "fighter_brick_special",
-      "category": "voice",
-      "fighter": "brick",
-      "prompt": "[excited, powerful arcade announcer, crisp and energetic] Foundation Break!",
-      "characterDescription": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
-      "specialMove": {
-        "name": "Foundation Break",
-        "description": "Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell."
-      },
-      "kind": "audio",
-      "model": "ElevenLabsTextToSpeech"
-    },
-    {
-      "id": "fighter_griddle_intro",
-      "category": "voice",
-      "fighter": "griddle",
-      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] The grill is hot. Your winning streak is toast.",
       "voice": "Brian (male, american)",
-      "introTagline": "The grill is hot. Your winning streak is toast.",
       "characterDescription": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+      "id": "fighter_griddle_special",
+      "prompt": "[shouting the attack name with fierce energy] Sizzle Burst!",
       "specialMove": {
         "name": "Sizzle Burst",
         "description": "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell."
@@ -178,13 +431,82 @@
       "model": "ElevenLabsTextToSpeech"
     },
     {
-      "id": "fighter_rivet_intro",
+      "category": "voice",
+      "fighter": "griddle",
+      "voice": "Brian (male, american)",
+      "characterDescription": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+      "id": "fighter_griddle_super",
+      "prompt": "[roaring at full power, dramatic] Five-Alarm Cookout!",
+      "superMove": {
+        "name": "Five-Alarm Cookout",
+        "description": "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "griddle",
+      "voice": "Brian (male, american)",
+      "characterDescription": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+      "id": "fighter_griddle_attack",
+      "prompt": "[sharp fierce battle cry] Hyaah!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "griddle",
+      "voice": "Brian (male, american)",
+      "characterDescription": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+      "id": "fighter_griddle_hurt",
+      "prompt": "[pained grunt, short] Ugh!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "griddle",
+      "voice": "Brian (male, american)",
+      "characterDescription": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+      "id": "fighter_griddle_ko",
+      "prompt": "[long anguished defeated cry, fading] Nooooo...!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "griddle",
+      "voice": "Brian (male, american)",
+      "characterDescription": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+      "id": "fighter_griddle_win",
+      "prompt": "[confident, satisfied] Well done. Just how I like my steaks, and my opponents.",
+      "winQuote": "Well done. Just how I like my steaks, and my opponents.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "griddle",
+      "voice": "Brian (male, american)",
+      "characterDescription": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
+      "id": "fighter_griddle_intro",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] The grill is hot. Your winning streak is toast.",
+      "introTagline": "The grill is hot. Your winning streak is toast.",
+      "specialMove": {
+        "name": "Sizzle Burst",
+        "description": "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
       "category": "voice",
       "fighter": "rivet",
-      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] I fix everything. Your stance is next.",
       "voice": "Adam (male, american)",
-      "introTagline": "I fix everything. Your stance is next.",
       "characterDescription": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+      "id": "fighter_rivet_special",
+      "prompt": "[shouting the attack name with fierce energy] Magnet Crash!",
       "specialMove": {
         "name": "Magnet Crash",
         "description": "Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms."
@@ -193,13 +515,82 @@
       "model": "ElevenLabsTextToSpeech"
     },
     {
-      "id": "fighter_tempo_intro",
+      "category": "voice",
+      "fighter": "rivet",
+      "voice": "Adam (male, american)",
+      "characterDescription": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+      "id": "fighter_rivet_super",
+      "prompt": "[roaring at full power, dramatic] Full Overhaul!",
+      "superMove": {
+        "name": "Full Overhaul",
+        "description": "Rivet snaps both copper bracers together and drives one palm toward the right, firing a tight cyan magnetic spiral with copper fragments orbiting its core. Keep the spiral compact near the palm in sprite art."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "rivet",
+      "voice": "Adam (male, american)",
+      "characterDescription": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+      "id": "fighter_rivet_attack",
+      "prompt": "[sharp fierce battle cry] Hyaah!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "rivet",
+      "voice": "Adam (male, american)",
+      "characterDescription": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+      "id": "fighter_rivet_hurt",
+      "prompt": "[pained grunt, short] Ugh!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "rivet",
+      "voice": "Adam (male, american)",
+      "characterDescription": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+      "id": "fighter_rivet_ko",
+      "prompt": "[long anguished defeated cry, fading] Nooooo...!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "rivet",
+      "voice": "Adam (male, american)",
+      "characterDescription": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+      "id": "fighter_rivet_win",
+      "prompt": "[confident, satisfied] Tightened every loose bolt. You were the last one.",
+      "winQuote": "Tightened every loose bolt. You were the last one.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "rivet",
+      "voice": "Adam (male, american)",
+      "characterDescription": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
+      "id": "fighter_rivet_intro",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] I fix everything. Your stance is next.",
+      "introTagline": "I fix everything. Your stance is next.",
+      "specialMove": {
+        "name": "Magnet Crash",
+        "description": "Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
       "category": "voice",
       "fighter": "tempo",
-      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] Keep up with the beat, or take a seat.",
       "voice": "River (neutral, american)",
-      "introTagline": "Keep up with the beat, or take a seat.",
       "characterDescription": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+      "id": "fighter_tempo_special",
+      "prompt": "[shouting the attack name with fierce energy] Beat Drop!",
       "specialMove": {
         "name": "Beat Drop",
         "description": "Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering."
@@ -208,13 +599,82 @@
       "model": "ElevenLabsTextToSpeech"
     },
     {
-      "id": "fighter_nimbus_intro",
+      "category": "voice",
+      "fighter": "tempo",
+      "voice": "River (neutral, american)",
+      "characterDescription": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+      "id": "fighter_tempo_super",
+      "prompt": "[roaring at full power, dramatic] Encore Fortissimo!",
+      "superMove": {
+        "name": "Encore Fortissimo",
+        "description": "Tempo spins into a forward kick toward the right that releases a large magenta-and-violet sound shockwave of three concentric rings. Keep the rings close to the kicking foot in sprite art."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "tempo",
+      "voice": "River (neutral, american)",
+      "characterDescription": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+      "id": "fighter_tempo_attack",
+      "prompt": "[sharp fierce battle cry] Hyaah!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "tempo",
+      "voice": "River (neutral, american)",
+      "characterDescription": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+      "id": "fighter_tempo_hurt",
+      "prompt": "[pained grunt, short] Ugh!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "tempo",
+      "voice": "River (neutral, american)",
+      "characterDescription": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+      "id": "fighter_tempo_ko",
+      "prompt": "[long anguished defeated cry, fading] Nooooo...!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "tempo",
+      "voice": "River (neutral, american)",
+      "characterDescription": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+      "id": "fighter_tempo_win",
+      "prompt": "[confident, satisfied] You were off-beat from the very first round.",
+      "winQuote": "You were off-beat from the very first round.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "tempo",
+      "voice": "River (neutral, american)",
+      "characterDescription": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
+      "id": "fighter_tempo_intro",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] Keep up with the beat, or take a seat.",
+      "introTagline": "Keep up with the beat, or take a seat.",
+      "specialMove": {
+        "name": "Beat Drop",
+        "description": "Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
       "category": "voice",
       "fighter": "nimbus",
-      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] I raised a garden. I can handle a little thunder.",
       "voice": "Jessica (female, american)",
-      "introTagline": "I raised a garden. I can handle a little thunder.",
       "characterDescription": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+      "id": "fighter_nimbus_special",
+      "prompt": "[shouting the attack name with fierce energy] Cloudburst Palm!",
       "specialMove": {
         "name": "Cloudburst Palm",
         "description": "Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot."
@@ -223,13 +683,82 @@
       "model": "ElevenLabsTextToSpeech"
     },
     {
-      "id": "fighter_switchback_intro",
+      "category": "voice",
+      "fighter": "nimbus",
+      "voice": "Jessica (female, american)",
+      "characterDescription": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+      "id": "fighter_nimbus_super",
+      "prompt": "[roaring at full power, dramatic] Thunderhead Bloom!",
+      "superMove": {
+        "name": "Thunderhead Bloom",
+        "description": "Nimbus raises both open palms toward the right and launches a dense lavender storm cloud crackling with pale blue lightning. Keep the cloud compact and attached to her palms in sprite art."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "nimbus",
+      "voice": "Jessica (female, american)",
+      "characterDescription": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+      "id": "fighter_nimbus_attack",
+      "prompt": "[sharp fierce battle cry] Hyaah!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "nimbus",
+      "voice": "Jessica (female, american)",
+      "characterDescription": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+      "id": "fighter_nimbus_hurt",
+      "prompt": "[pained grunt, short] Ugh!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "nimbus",
+      "voice": "Jessica (female, american)",
+      "characterDescription": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+      "id": "fighter_nimbus_ko",
+      "prompt": "[long anguished defeated cry, fading] Nooooo...!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "nimbus",
+      "voice": "Jessica (female, american)",
+      "characterDescription": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+      "id": "fighter_nimbus_win",
+      "prompt": "[confident, satisfied] Storms pass. Gardens grow. You lost.",
+      "winQuote": "Storms pass. Gardens grow. You lost.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "nimbus",
+      "voice": "Jessica (female, american)",
+      "characterDescription": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
+      "id": "fighter_nimbus_intro",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] I raised a garden. I can handle a little thunder.",
+      "introTagline": "I raised a garden. I can handle a little thunder.",
+      "specialMove": {
+        "name": "Cloudburst Palm",
+        "description": "Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
       "category": "voice",
       "fighter": "switchback",
-      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] School run complete. Express knockout incoming.",
       "voice": "Charlie (male, australian)",
-      "introTagline": "School run complete. Express knockout incoming.",
       "characterDescription": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+      "id": "fighter_switchback_special",
+      "prompt": "[shouting the attack name with fierce energy] Express Pulse!",
       "specialMove": {
         "name": "Express Pulse",
         "description": "Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell."
@@ -238,16 +767,239 @@
       "model": "ElevenLabsTextToSpeech"
     },
     {
-      "id": "fighter_brick_intro",
+      "category": "voice",
+      "fighter": "switchback",
+      "voice": "Charlie (male, australian)",
+      "characterDescription": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+      "id": "fighter_switchback_super",
+      "prompt": "[roaring at full power, dramatic] Rush Hour Relay!",
+      "superMove": {
+        "name": "Rush Hour Relay",
+        "description": "Switchback bursts forward in a blur of short golden streaks and finishes with a sharp palm strike toward the right that releases a long golden arrow pulse. Keep the streaks hugging his body in sprite art."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "switchback",
+      "voice": "Charlie (male, australian)",
+      "characterDescription": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+      "id": "fighter_switchback_attack",
+      "prompt": "[sharp fierce battle cry] Hyaah!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "switchback",
+      "voice": "Charlie (male, australian)",
+      "characterDescription": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+      "id": "fighter_switchback_hurt",
+      "prompt": "[pained grunt, short] Ugh!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "switchback",
+      "voice": "Charlie (male, australian)",
+      "characterDescription": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+      "id": "fighter_switchback_ko",
+      "prompt": "[long anguished defeated cry, fading] Nooooo...!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "switchback",
+      "voice": "Charlie (male, australian)",
+      "characterDescription": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+      "id": "fighter_switchback_win",
+      "prompt": "[confident, satisfied] Delivered. No signature required.",
+      "winQuote": "Delivered. No signature required.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "switchback",
+      "voice": "Charlie (male, australian)",
+      "characterDescription": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
+      "id": "fighter_switchback_intro",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] School run complete. Express knockout incoming.",
+      "introTagline": "School run complete. Express knockout incoming.",
+      "specialMove": {
+        "name": "Express Pulse",
+        "description": "Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
       "category": "voice",
       "fighter": "brick",
-      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] I built this block. Now hold your ground.",
       "voice": "Daniel (male, british)",
-      "introTagline": "I built this block. Now hold your ground.",
       "characterDescription": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+      "id": "fighter_brick_special",
+      "prompt": "[shouting the attack name with fierce energy] Foundation Break!",
       "specialMove": {
         "name": "Foundation Break",
         "description": "Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "brick",
+      "voice": "Daniel (male, british)",
+      "characterDescription": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+      "id": "fighter_brick_super",
+      "prompt": "[roaring at full power, dramatic] Load-Bearing Avalanche!",
+      "superMove": {
+        "name": "Load-Bearing Avalanche",
+        "description": "Brick slams both wrapped fists down and sends a massive rose-red pressure wave edged in pale gold rolling along the ground toward the right. Keep the wave compact near his fists in sprite art."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "brick",
+      "voice": "Daniel (male, british)",
+      "characterDescription": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+      "id": "fighter_brick_attack",
+      "prompt": "[sharp fierce battle cry] Hyaah!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "brick",
+      "voice": "Daniel (male, british)",
+      "characterDescription": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+      "id": "fighter_brick_hurt",
+      "prompt": "[pained grunt, short] Ugh!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "brick",
+      "voice": "Daniel (male, british)",
+      "characterDescription": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+      "id": "fighter_brick_ko",
+      "prompt": "[long anguished defeated cry, fading] Nooooo...!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "brick",
+      "voice": "Daniel (male, british)",
+      "characterDescription": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+      "id": "fighter_brick_win",
+      "prompt": "[confident, satisfied] Built to last. You were not.",
+      "winQuote": "Built to last. You were not.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "brick",
+      "voice": "Daniel (male, british)",
+      "characterDescription": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
+      "id": "fighter_brick_intro",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] I built this block. Now hold your ground.",
+      "introTagline": "I built this block. Now hold your ground.",
+      "specialMove": {
+        "name": "Foundation Break",
+        "description": "Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "bylaw",
+      "voice": "George (male, british)",
+      "characterDescription": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "id": "fighter_bylaw_special",
+      "prompt": "[shouting the attack name with fierce energy] Ordinance Orb!",
+      "specialMove": {
+        "name": "Ordinance Orb",
+        "description": "Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "bylaw",
+      "voice": "George (male, british)",
+      "characterDescription": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "id": "fighter_bylaw_super",
+      "prompt": "[roaring at full power, dramatic] Final Notice!",
+      "superMove": {
+        "name": "Final Notice",
+        "description": "Baron Bylaw raises his golden gauntlet overhead and hurls a towering wall of golden light edged in burgundy toward the right. Keep the light attached to the gauntlet in sprite art."
+      },
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "bylaw",
+      "voice": "George (male, british)",
+      "characterDescription": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "id": "fighter_bylaw_attack",
+      "prompt": "[sharp fierce battle cry] Hyaah!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "bylaw",
+      "voice": "George (male, british)",
+      "characterDescription": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "id": "fighter_bylaw_hurt",
+      "prompt": "[pained grunt, short] Ugh!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "bylaw",
+      "voice": "George (male, british)",
+      "characterDescription": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "id": "fighter_bylaw_ko",
+      "prompt": "[long anguished defeated cry, fading] Nooooo...!",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "bylaw",
+      "voice": "George (male, british)",
+      "characterDescription": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "id": "fighter_bylaw_win",
+      "prompt": "[confident, satisfied] Appeal denied. Permanently.",
+      "winQuote": "Appeal denied. Permanently.",
+      "kind": "audio",
+      "model": "ElevenLabsTextToSpeech"
+    },
+    {
+      "category": "voice",
+      "fighter": "bylaw",
+      "voice": "George (male, british)",
+      "characterDescription": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "id": "fighter_bylaw_intro",
+      "prompt": "[confident, energetic anime tournament fighter, crisp delivery] This tournament is now in violation. Prepare for enforcement.",
+      "introTagline": "This tournament is now in violation. Prepare for enforcement.",
+      "specialMove": {
+        "name": "Ordinance Orb",
+        "description": "Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell."
       },
       "kind": "audio",
       "model": "ElevenLabsTextToSpeech"

@@ -90,7 +90,13 @@
         "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.",
         "The grill is hot. Your winning streak is toast.",
         "#ff8b3d",
-        "griddle"
+        "griddle",
+        "grappler",
+        "Five-Alarm Cookout",
+        "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave.",
+        "Well done. Just how I like my steaks, and my opponents.",
+        "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
+        "Fighter"
       ],
       "widgets_values_named": {
         "name": "Griddle",
@@ -99,7 +105,13 @@
         "special_description": "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.",
         "intro_tagline": "The grill is hot. Your winning streak is toast.",
         "color": "#ff8b3d",
-        "character_id": "griddle"
+        "character_id": "griddle",
+        "fighting_style": "grappler",
+        "super_name": "Five-Alarm Cookout",
+        "super_description": "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave.",
+        "win_quote": "Well done. Just how I like my steaks, and my opponents.",
+        "ending": "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
+        "role": "Fighter"
       }
     },
     {

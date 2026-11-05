@@ -19,9 +19,9 @@ function fixture(t) {
     write(path.join(source, 'sources', src), bytes);
     return { ...assetRecord(job), src, sha256: createHash('sha256').update(bytes).digest('hex') };
   });
-  const media = 'assets/shared.png', poses = Object.fromEntries(Object.values(game.sheets).flat().map(pose => [pose, { src: media }]));
+  const media = 'assets/shared.png', poses = Object.fromEntries(Object.values({ ...game.sheets, ...game.extraSheets }).flat().map(pose => [pose, { src: media }]));
   const runtime = { version: 1, title: game.title,
-    fighters: game.fighters.map(fighter => ({ ...fighter, poses, portrait: media, hero: media, cutin: media, sourceImage: media })),
+    fighters: game.fighters.map(fighter => ({ ...fighter, poses, portrait: media, hero: media, cutin: media, endingArt: media, sourceImage: media })),
     stages: game.stages.map(stage => ({ ...stage, src: media, sourceImage: media })),
     ui: Object.fromEntries(['title', 'select', 'logo', 'hud', 'icons'].map(id => [id, media])),
     effects: Object.fromEntries(['hit', 'block', 'projectile', 'dust', 'ko', 'powerup', 'dash', 'launch', 'spark'].map(id => [id, { src: media }])), audio: {} };
@@ -30,7 +30,7 @@ function fixture(t) {
   write(path.join(source, 'assets/manifest.json'), runtime);
   write(path.join(source, 'sources/assets.json'), { schema: 'comfy-fighter-assets/v1', root: '.', game, assets: records });
   const build = { strict: true, missing: [], warnings: [], sourceAssets: records.length, built: records.map(record => record.id) };
-  const receipt = { status: 'passed', title: game.title, sourceAssets: records.length, poseCount: 54 };
+  const receipt = { status: 'passed', title: game.title, sourceAssets: records.length, poseCount: 90 };
   write(path.join(source, 'build-report.json'), build);
   write(path.join(source, '../build-test.json'), receipt);
   write(path.join(root, 'build/public/builder/index.html'), 'current builder');
@@ -41,7 +41,7 @@ function fixture(t) {
 
 test('verified two-fighter export installs with builder and recoverable preview without changing canonical media', t => {
   const item = fixture(t), receipt = installGame({ game: item.source, root: item.root });
-  assert.equal(receipt.fighters, 2); assert.equal(receipt.poses, 54);
+  assert.equal(receipt.fighters, 2); assert.equal(receipt.poses, 90);
   assert.equal(fs.readFileSync(path.join(item.root, 'output/game/index.html'), 'utf8'), 'exported index.html');
   assert.equal(fs.readFileSync(path.join(item.root, 'output/game/builder/index.html'), 'utf8'), 'current builder');
   assert.equal(fs.readFileSync(path.join(receipt.previousGame, 'index.html'), 'utf8'), 'previous preview');

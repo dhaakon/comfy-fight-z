@@ -30,6 +30,10 @@ async function syntheticBundle(folder) {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'build/public/builder/example-assets.json'), 'utf8'));
   manifest.game.subtitle = 'Synthetic Open Source Saga';
   manifest.game.fighters.forEach(fighter => { fighter.introTagline = `${fighter.name} is ready for the showdown.`; });
+  // Start from one canonical arena; this test adds its own reference environments.
+  const firstStage = manifest.game.stages[0].id;
+  manifest.game.stages = manifest.game.stages.slice(0, 1);
+  manifest.assets = manifest.assets.filter(asset => !asset.stage || asset.stage === firstStage);
   for (const [id, name] of [['rooftop', 'Rooftop Reference'], ['courtyard', 'Courtyard Reference']]) {
     manifest.game.stages.push({ id, name, description: `A distinct uploaded ${name.toLowerCase()} for multi-environment export testing.` });
     manifest.assets.push({ id: `${id}_source`, kind: 'source', stage: id, key: false, src: `raw/${id}_source.png` }, { id, kind: 'stage', stage: id, key: false, src: `raw/${id}.png` });
@@ -145,7 +149,13 @@ function unzipStored(bytes, destination) {
     assert.equal(runtime.fighters[0].name, 'Captain Barbecue'); assert.equal(runtime.fighters[0].color, '#cc4466');
     assert.equal(runtime.stages.length, 3);
     assert.deepEqual(runtime.stages.map(stage => stage.name), ['Championship Patio', 'Neon Rooftop', 'Moon Courtyard']);
-    const poseCount = manifest.game.fighters.length * 27;
+    // 27 required poses plus the optional arcade in-between sheets mapped in the bundle.
+    const poseCount = manifest.assets.filter(asset => asset.kind === 'sprites').reduce((sum, asset) => sum + asset.poses.length, 0);
+    assert.ok(runtime.fighters.every(fighter => Object.keys(fighter.poses).length >= 27));
+    const boss = manifest.game.fighters.find(fighter => fighter.boss), runtimeBoss = runtime.fighters.find(fighter => fighter.id === boss.id);
+    assert.equal(runtimeBoss.boss, true); assert.equal(runtimeBoss.style, boss.style); assert.deepEqual(runtimeBoss.superMove, boss.superMove);
+    assert.equal(runtime.fighters[0].winQuote, manifest.game.fighters[0].winQuote); assert.equal(runtime.fighters[0].ending, manifest.game.fighters[0].ending);
+    assert.ok(runtime.fighters.every(fighter => fighter.endingArt && packageFiles.has(fighter.endingArt)), 'Ending illustrations export as endingArt');
     assert.equal(runtime.fighters.reduce((sum, fighter) => sum + Object.keys(fighter.poses).length, 0), poseCount);
     assert.equal(runtime.fighters[0].description, manifest.game.fighters[0].description);
     assert.equal(runtime.fighters[0].introTagline, manifest.game.fighters[0].introTagline);
@@ -208,9 +218,10 @@ function unzipStored(bytes, destination) {
     assert.equal(partial.status, 206); assert.equal((await partial.arrayBuffer()).byteLength, 44);
     const invalid = await fetch(audioURL, { headers: { Range: 'bytes=999999-' } });
     assert.equal(invalid.status, 416);
-    await game.click('#title-start');
+    // Versus lets players choose the arena; Arcade rotates arenas itself.
+    await game.click('#title-versus');
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().screen), 'selection');
-    assert.equal(await game.locator('#stage-control').isVisible(), true);
+    assert.equal(await game.locator('#stage-cycle').isVisible(), true, 'Arena cycling is on the selection screen');
     assert.equal(await game.locator('#stage option').count(), 3);
     assert.equal(await game.locator('#selection-eyebrow').textContent(), 'ONE NIGHT. THREE ARENAS. YOUR FIGHTERS.');
     await game.screenshot({ path: path.join(root, 'output/diagnostics/multi-environment-select.png') });
@@ -223,7 +234,7 @@ function unzipStored(bytes, destination) {
     assert.equal(await game.evaluate(() => window.FighterDebug.presentation().humanPlayers), 1);
     await game.keyboard.press('KeyD'); await game.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].move === 'heavy');
     for (const [index, id, name, color] of [[1, 'rooftop', 'Neon Rooftop', [32, 93, 50]], [2, 'courtyard', 'Moon Courtyard', [121, 45, 76]]]) {
-      await game.click('#back-select'); await game.selectOption('#stage', String(index));
+      await game.click('#back-select'); await game.click('#stage-next');
       assert.equal(await game.evaluate(() => window.FighterDebug.presentation().stageId), id);
       assert.equal(await game.locator('#stage-name').textContent(), name.toUpperCase());
       assert.equal(await game.locator('#stage-label').textContent(), name.toUpperCase());
@@ -233,8 +244,9 @@ function unzipStored(bytes, destination) {
       const pixel = await game.evaluate(() => [...document.querySelector('#arena').getContext('2d').getImageData(20, 110, 1, 1).data].slice(0, 3));
       assert.deepEqual(pixel, color, `Gameplay canvas must render selected environment ${id}`);
     }
-    await game.click('#back-select'); await game.setViewportSize({ width: 390, height: 844 }); await game.selectOption('#stage', '1');
-    assert.equal(await game.locator('#stage-control').isVisible(), true, 'Multi-environment picker remains usable on phones');
+    await game.click('#back-select'); await game.setViewportSize({ width: 390, height: 844 }); await game.click('#stage-prev');
+    assert.equal(await game.evaluate(() => window.FighterDebug.presentation().stageId), 'rooftop');
+    assert.equal(await game.locator('#stage-cycle').isVisible(), true, 'Multi-environment picker remains usable on phones');
     assert.equal(await game.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     assert.equal(await game.evaluate(() => {
       const opponent = document.querySelector('#fighter-two').getBoundingClientRect(), environments = document.querySelector('.battle-ready').getBoundingClientRect();

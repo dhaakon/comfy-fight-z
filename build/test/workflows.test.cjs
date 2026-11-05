@@ -20,12 +20,14 @@ test('standalone logo and icon cannot inherit scene-directed style or image inpu
   }
   for(const id of ['title','select','hud']) assert.ok(jobs.find(j=>j.id===id).prompt.includes(sceneStyle));
 });
-test('every plan asset has an importable name and right-facing 27-pose fighter contract',()=>{
+test('every plan asset has an importable name, the 27 required poses and optional arcade in-betweens',()=>{
   const jobs=makeJobs(config);
   assert.equal(new Set(jobs.map(j=>j.id)).size,jobs.length);
   for(const fighter of config.fighters) {
     const poses=jobs.filter(j=>j.fighter===fighter.id&&j.kind==='sprites').flatMap(j=>j.poses);
-    assert.equal(poses.length,27); assert.equal(new Set(poses).size,27);
+    const required=Object.values(config.sheets).flat(), extra=Object.values(config.extraSheets||{}).flat();
+    assert.equal(required.length,27); assert.ok(required.every(p=>poses.includes(p)));
+    assert.equal(poses.length,27+extra.length); assert.equal(new Set(poses).size,poses.length);
     assert.ok(poses.includes('stance2')); assert.ok(poses.includes('idle'));
   }
   for(const job of jobs) {
@@ -37,7 +39,7 @@ test('cloud packs wire the actual reference image into every derived asset',()=>
   const jobs=makeJobs(config).filter(j=>j.fighter===config.fighters[0].id);
   const graph=makeGraph(jobs,config,template);
   const nodes=graph.nodes.filter(n=>n.type==='GeminiNanoBanana2V2');
-  assert.equal(nodes.length,8);
+  assert.equal(nodes.length,11); // source, identity, five sheets, portrait, hero, cut-in, ending
   for(const node of nodes.slice(2)) {
     const input=node.inputs.find(i=>i.name==='model.images.image_1');
     const link=graph.links.find(l=>l[0]===input.link);
@@ -87,14 +89,16 @@ test('complete game graph maps all assets under one root and exports only after 
   }
 });
 
-test('Comfy Fighter Z preserves six character designs, one source environment and their special-move prompts',()=>{
+test('Comfy Fighter Z preserves six fighters, a final boss, three source environments and their special-move prompts',()=>{
   const jobs=makeJobs(config), graph=makeBundleGraph(jobs,config,template);
-  assert.equal(config.title,'Comfy Fighter Z'); assert.equal(config.fighters.length,6);
-  assert.deepEqual(config.stages.map(s=>s.id),['yard']);
-  assert.equal(jobs.length,56); assert.equal(jobs.filter(j=>j.kind==='source').length,7);
-  assert.equal(graph.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,56);
+  assert.equal(config.title,'Comfy Fighter Z'); assert.equal(config.fighters.length,7);
+  assert.deepEqual(config.fighters.filter(f=>f.boss).map(f=>f.id),['bylaw']);
+  assert.deepEqual(config.stages.map(s=>s.id),['yard','rooftop','arcade']);
+  assert.equal(jobs.length,89); assert.equal(jobs.filter(j=>j.kind==='source').length,10);
+  assert.equal(jobs.filter(j=>j.kind==='ending').length,7);
+  assert.equal(graph.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,89);
   assert.equal(graph.nodes.filter(n=>n.type==='LoadImage').length,0);
-  assert.equal(graph.nodes.filter(n=>n.type!=='MarkdownNote').length,114);
+  assert.equal(graph.nodes.filter(n=>n.type!=='MarkdownNote').length,180);
   for (const item of [...config.fighters,...config.stages]) {
     const source=jobs.find(j=>j.id===`${item.id}_source`);
     assert.equal(source.sourceImage,undefined); assert.equal(source.sourceInput,undefined);

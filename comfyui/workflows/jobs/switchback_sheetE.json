@@ -1,0 +1,337 @@
+{
+  "id": "1044a7b6-7144-4039-a3fc-9d85473322c0",
+  "revision": 0,
+  "last_node_id": 5,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        460,
+        220
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 2
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.\nSIGNATURE SPECIAL MOVE: Express Pulse: Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): punchwind - lead-hand jab chambered at the shoulder, about to strike right.\nCell 2 (row 1, column 2): kickwind - front knee raised and chambered before a kick to the right.\nCell 3 (row 1, column 3): heavywind - rear arm pulled far back, torso coiled for a heavy blow.\nCell 4 (row 2, column 1): roll - evasive forward roll, body tucked in a tight ball.\nCell 5 (row 2, column 2): blowback - powerful two-handed palm strike or spinning kick that blasts the opponent away to the right.\nCell 6 (row 2, column 3): super - Rush Hour Relay stance: dramatic super-move stance, both arms thrust forward to the right with compact energy, only a small glow at the hands.\nCell 7 (row 3, column 1): dizzy - dazed stagger, wobbly knees, hand on forehead.\nCell 8 (row 3, column 2): win2 - second celebratory victory pose, different from the first.\nCell 9 (row 3, column 3): lose - defeated, kneeling on one knee with the head bowed.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "1:1",
+        "2K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.\nSIGNATURE SPECIAL MOVE: Express Pulse: Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): punchwind - lead-hand jab chambered at the shoulder, about to strike right.\nCell 2 (row 1, column 2): kickwind - front knee raised and chambered before a kick to the right.\nCell 3 (row 1, column 3): heavywind - rear arm pulled far back, torso coiled for a heavy blow.\nCell 4 (row 2, column 1): roll - evasive forward roll, body tucked in a tight ball.\nCell 5 (row 2, column 2): blowback - powerful two-handed palm strike or spinning kick that blasts the opponent away to the right.\nCell 6 (row 2, column 3): super - Rush Hour Relay stance: dramatic super-move stance, both arms thrust forward to the right with compact energy, only a small glow at the hands.\nCell 7 (row 3, column 1): dizzy - dazed stagger, wobbly knees, hand on forehead.\nCell 8 (row 3, column 2): win2 - second celebratory victory pose, different from the first.\nCell 9 (row 3, column 3): lose - defeated, kneeling on one knee with the head bowed.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "1:1",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "switchback_sheetE | cloud generation"
+    },
+    {
+      "id": 2,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        460,
+        780
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.\nSIGNATURE SPECIAL MOVE: Express Pulse: Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.\nUse the supplied reference design to preserve its appearance, costume and palette. Create one full-body character model reference, entire head and shoes visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen clothing details according to the character description. This design is the identity reference for every later asset. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.\nSIGNATURE SPECIAL MOVE: Express Pulse: Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell.\nUse the supplied reference design to preserve its appearance, costume and palette. Create one full-body character model reference, entire head and shoes visible, three-quarter side view facing RIGHT, neutral fighting stance. Complete unseen clothing details according to the character description. This design is the identity reference for every later asset. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "switchback_reference | cloud generation"
+    },
+    {
+      "id": 3,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        460,
+        1340
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create one original fictional adult anime fighter from text alone, unrelated to any real person or franchise character. Switchback is a bicycle-courier dad in his early forties: tall lean build, cool dark-brown skin, narrow expressive face, shaved head and a thin silver eyebrow notch. Smooth amber bicycle helmet with fully open face and no visor, bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bike, bag, loose straps, glasses or logos. Full-body three-quarter side view facing RIGHT, springy forward-leaning boxing guard, clear separated limbs and complete visible shoes and fingers. Original 1990s shonen anime model art with bold black ink, clean two-tone shading and a simple readable silhouette. Exactly one centered figure, generous padding, flat uniform chroma green RGB(0,255,0) background. No green costume pieces, shadows, text, grids, panels or watermark.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create one original fictional adult anime fighter from text alone, unrelated to any real person or franchise character. Switchback is a bicycle-courier dad in his early forties: tall lean build, cool dark-brown skin, narrow expressive face, shaved head and a thin silver eyebrow notch. Smooth amber bicycle helmet with fully open face and no visor, bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bike, bag, loose straps, glasses or logos. Full-body three-quarter side view facing RIGHT, springy forward-leaning boxing guard, clear separated limbs and complete visible shoes and fingers. Original 1990s shonen anime model art with bold black ink, clean two-tone shading and a simple readable silhouette. Exactly one centered figure, generous padding, flat uniform chroma green RGB(0,255,0) background. No green costume pieces, shadows, text, grids, panels or watermark.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "switchback_source | source image"
+    },
+    {
+      "id": 4,
+      "type": "SaveImage",
+      "title": "Save switchback_sheetE",
+      "pos": [
+        950,
+        220
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/switchback_sheetE"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "MarkdownNote",
+      "pos": [
+        40,
+        -100
+      ],
+      "size": [
+        780,
+        260
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# switchback_sheetE\n\nCLOUD ONLY. This graph contains 3 paid image-generation node(s). Running those nodes consumes Comfy credits. Save nodes only process local files. No generation is triggered by creating or building these files.\n\nAll references are invented from text in this graph. No photographs or files from previous sessions are loaded.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      3,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      1,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      1,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7,
+      "offset": [
+        30,
+        140
+      ]
+    }
+  },
+  "version": 0.4
+}

@@ -5,7 +5,7 @@ const { createCanvas, loadImage } = require('@napi-rs/canvas');
 
 const DEFAULT_ROOT = path.resolve(__dirname, '../../..');
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
-const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'stage', 'ui', 'effects']);
+const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending', 'stage', 'ui', 'effects']);
 
 function inside(root, relative) {
   const base = path.resolve(root), file = path.resolve(base, relative);
@@ -43,7 +43,7 @@ function readProject(root = DEFAULT_ROOT) {
     outputs.add(output);
     if (job.fighter && !fighterIds.has(job.fighter)) throw new Error(`Unknown fighter: ${job.fighter}`);
     if (job.stage && !stageIds.has(job.stage)) throw new Error(`Unknown stage: ${job.stage}`);
-    if (['sprites', 'portrait', 'hero', 'cutin'].includes(job.kind) && !job.fighter) throw new Error(`${job.id} needs a fighter`);
+    if (['sprites', 'portrait', 'hero', 'cutin', 'ending'].includes(job.kind) && !job.fighter) throw new Error(`${job.id} needs a fighter`);
     if (job.kind === 'stage' && !job.stage) throw new Error(`${job.id} needs a stage`);
     if (job.kind === 'sprites' || job.kind === 'effects') {
       if (!Array.isArray(job.poses) || job.poses.length !== 9 || new Set(job.poses).size !== 9 || job.poses.some(p => !ID.test(p))) {
@@ -215,7 +215,7 @@ async function buildAssets({ root = DEFAULT_ROOT, strict = false } = {}) {
     throw new Error(report.errors[0]);
   }
   const manifest = { version: 1, title: config.title, subtitle: config.subtitle || '',
-    fighters: config.fighters.map(({ id, name, color, description, specialMove, introTagline }) => ({ id, name, color, description, specialMove, introTagline, poses: {} })),
+    fighters: config.fighters.map(({ id, name, color, description, specialMove, introTagline, superMove, style, winQuote, ending, boss }) => ({ id, name, color, description, specialMove, introTagline, ...(superMove ? { superMove } : {}), ...(style ? { style } : {}), ...(winQuote ? { winQuote } : {}), ...(ending ? { ending } : {}), ...(boss ? { boss: true } : {}), poses: {} })),
     stages: config.stages.map(({ id, name, description }) => ({ id, name, description })), ui: {}, effects: {}, audio: {} };
   const fighters = new Map(manifest.fighters.map(f => [f.id, f]));
   const stages = new Map(manifest.stages.map(s => [s.id, s]));
@@ -271,15 +271,15 @@ async function buildAssets({ root = DEFAULT_ROOT, strict = false } = {}) {
           manifest.effects[pose] = { src, ...await exportCell(cell, 1, inside(staging, src)) };
         }
       } else {
-        const directories = { portrait: 'portraits', hero: 'heroes', cutin: 'cutins', stage: 'stages', ui: 'ui' };
+        const directories = { portrait: 'portraits', hero: 'heroes', cutin: 'cutins', ending: 'endings', stage: 'stages', ui: 'ui' };
         const src = `assets/${directories[job.kind]}/${job.id}.webp`;
         const options = { key: Boolean(job.key) };
         if (job.kind === 'portrait') Object.assign(options, { width: 320, square: true });
         if (job.kind === 'hero') options.height = 760;
-        if (job.kind === 'cutin') options.width = 960;
+        if (job.kind === 'cutin' || job.kind === 'ending') options.width = 960;
         if (job.kind === 'stage') options.width = 1600;
         await exportImage(file, inside(staging, src), options);
-        if (job.fighter) fighters.get(job.fighter)[job.kind] = src;
+        if (job.fighter) fighters.get(job.fighter)[job.kind === 'ending' ? 'endingArt' : job.kind] = src;
         else if (job.kind === 'stage') stages.get(job.stage).src = src;
         else manifest.ui[job.id] = src;
       }

@@ -1,0 +1,445 @@
+{
+  "id": "7dc9fab1-4bc9-45c8-9fe9-202611040002",
+  "revision": 0,
+  "last_node_id": 8,
+  "last_link_id": 7,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "title": "Fighter 1: griddle (replace with your own fictional design)",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        320,
+        300
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-title-upload-1.png",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "title": "Fighter 2: rivet (replace with your own fictional design)",
+      "pos": [
+        0,
+        350
+      ],
+      "size": [
+        320,
+        300
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-title-upload-2.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "title": "Fighter 3: tempo (replace with your own fictional design)",
+      "pos": [
+        0,
+        700
+      ],
+      "size": [
+        320,
+        300
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-title-upload-3.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "title": "Fighter 4: nimbus (replace with your own fictional design)",
+      "pos": [
+        0,
+        1050
+      ],
+      "size": [
+        320,
+        300
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-title-upload-4.png",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "LoadImage",
+      "title": "Fighter 5: switchback (replace with your own fictional design)",
+      "pos": [
+        0,
+        1400
+      ],
+      "size": [
+        320,
+        300
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-title-upload-5.png",
+        "image"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoadImage",
+      "title": "Fighter 6: brick (replace with your own fictional design)",
+      "pos": [
+        0,
+        1750
+      ],
+      "size": [
+        320,
+        300
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-title-upload-6.png",
+        "image"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Compose all six into ONE title image",
+      "pos": [
+        430,
+        500
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "type": "IMAGE",
+          "link": 1,
+          "shape": 7
+        },
+        {
+          "name": "model.images.image_2",
+          "type": "IMAGE",
+          "link": 2,
+          "shape": 7
+        },
+        {
+          "name": "model.images.image_3",
+          "type": "IMAGE",
+          "link": 3,
+          "shape": 7
+        },
+        {
+          "name": "model.images.image_4",
+          "type": "IMAGE",
+          "link": 4,
+          "shape": 7
+        },
+        {
+          "name": "model.images.image_5",
+          "type": "IMAGE",
+          "link": 5,
+          "shape": 7
+        },
+        {
+          "name": "model.images.image_6",
+          "type": "IMAGE",
+          "link": 6,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Create ONE unified 1990s hand-drawn arcade fighting game title illustration, not a collage or grid. The six supplied image references are six DIFFERENT original fictional adult fighters. Include EACH referenced fighter EXACTLY ONCE together in a single shared fictional backyard at dusk. Preserve their faces, hair, skin tones, body shapes and specific clothing from reference images 1 through 6; do not invent extra people or replace a character. Arrange all six standing prominently across the full width in an expressive staggered ensemble group portrait, waist-up or three-quarter length, clear separate faces and hands, confident fighting stances, all in the same natural camera perspective and lighting. These are the actual protagonists, not small silhouettes in the background. Keep a dark uncluttered band at bottom 25 percent for title/menu overlays. The scene is an invented backyard with wooden fencing, warm lights, and no recognisable real venue. Hand-drawn 1990s arcade game cel animation: economical black ink, distinct silhouettes, crisp flat shadow shapes, muted charcoal, warm ivory, brick red, steel navy and subdued brass; rich inked detailing, cinematic depth, restrained saturated accents. Strong purposeful composition, no glossy 3D, no garish neon, no lens bloom, no comic panels, no grid, no UI, no text, no logos, no watermark. No resemblance to existing franchise characters.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "HIGH",
+        461108723,
+        "fixed",
+        "IMAGE",
+        "Create exactly one complete original illustrated image. Reference images depict invented characters, not real individuals. Preserve all six identities and outfits. Compose them into one coherent scene. Do not render any writing.",
+        0.8,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Create ONE unified 1990s hand-drawn arcade fighting game title illustration, not a collage or grid. The six supplied image references are six DIFFERENT original fictional adult fighters. Include EACH referenced fighter EXACTLY ONCE together in a single shared fictional backyard at dusk. Preserve their faces, hair, skin tones, body shapes and specific clothing from reference images 1 through 6; do not invent extra people or replace a character. Arrange all six standing prominently across the full width in an expressive staggered ensemble group portrait, waist-up or three-quarter length, clear separate faces and hands, confident fighting stances, all in the same natural camera perspective and lighting. These are the actual protagonists, not small silhouettes in the background. Keep a dark uncluttered band at bottom 25 percent for title/menu overlays. The scene is an invented backyard with wooden fencing, warm lights, and no recognisable real venue. Hand-drawn 1990s arcade game cel animation: economical black ink, distinct silhouettes, crisp flat shadow shapes, muted charcoal, warm ivory, brick red, steel navy and subdued brass; rich inked detailing, cinematic depth, restrained saturated accents. Strong purposeful composition, no glossy 3D, no garish neon, no lens bloom, no comic panels, no grid, no UI, no text, no logos, no watermark. No resemblance to existing franchise characters.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "HIGH",
+        "seed": 461108723,
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create exactly one complete original illustrated image. Reference images depict invented characters, not real individuals. Preserve all six identities and outfits. Compose them into one coherent scene. Do not render any writing.",
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 8,
+      "type": "SaveImage",
+      "title": "Save the complete title illustration",
+      "pos": [
+        950,
+        500
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/ensemble-title-20261104/cfz-title-ensemble"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/ensemble-title-20261104/cfz-title-ensemble"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      7,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      7,
+      2,
+      "IMAGE"
+    ],
+    [
+      4,
+      4,
+      0,
+      7,
+      3,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      7,
+      4,
+      "IMAGE"
+    ],
+    [
+      6,
+      6,
+      0,
+      7,
+      5,
+      "IMAGE"
+    ],
+    [
+      7,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6,
+      "offset": [
+        0,
+        0
+      ]
+    },
+    "cfzEnsembleTitle": {
+      "purpose": "Replace six fictional reference images; unmute after upload",
+      "defaultMuted": true
+    }
+  },
+  "version": 0.4
+}

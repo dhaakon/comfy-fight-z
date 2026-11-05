@@ -68,12 +68,18 @@ function buildSmoke(input, directory, preparedAt = new Date().toISOString()) {
     workflow.links.push([id, source.id, input[1], node.id, node.inputs.length - 1, output.type]);
   }
   workflow.extra.ds = { scale: 0.45, offset: [80, 80] };
+  // Count paid calls from the selected nodes: optional arcade art adds two 2K sheets and a 1K ending per fighter.
+  const invents = node => node.widgets_values_named.source_mode === 'Invent fictional reference';
+  const arcade = node => node.widgets_values_named.include_arcade_art !== false;
+  const oneK = fighters.reduce((sum, node) => sum + 4 + (arcade(node) ? 1 : 0) + (invents(node) ? 1 : 0), 0) + 5;
+  const twoK = fighters.reduce((sum, node) => sum + 3 + (arcade(node) ? 2 : 0), 0) + 1 + (invents(stage) ? 1 : 0) + 1;
+  const mappedAssets = fighters.reduce((sum, node) => sum + 8 + (arcade(node) ? 3 : 0), 0) + 2 + 6;
   const plan = {
     title: 'Comfy Fighter Z generation smoke test', preparedAt,
     workflow: path.join(directory, 'workflow.api.json'), bundle: path.join(directory, 'bundle'),
     fighters: fighters.map(node => node.widgets_values_named.character_id), stage: stage.widgets_values_named.stage_id,
-    paidImages: 24, oneK: 15, twoK: 9, mappedAssets: 24, runtimePoses: 54,
-    estimatedUSD: Number((15 * 0.048048 + 9 * 0.072072).toFixed(6)),
+    paidImages: oneK + twoK, oneK, twoK, mappedAssets, runtimePoses: fighters.reduce((sum, node) => sum + 27 + (arcade(node) ? 18 : 0), 0),
+    estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072).toFixed(6)),
     model: project.widgets_values_named.model, source: 'Fresh text-only fictional designs; no image files loaded.',
     audio: false, video: false, paidRetries: 0, generationSubmitted: false,
     note: 'Preparation does not submit jobs. Confirm the cloud spend before running through ComfyUI.',

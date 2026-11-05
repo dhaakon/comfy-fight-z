@@ -1,0 +1,446 @@
+{
+  "id": "9f81db40-af4f-4c24-a92a-202611040001",
+  "revision": 0,
+  "last_node_id": 8,
+  "last_link_id": 4,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Generate title-backdrop",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "A polished 1990s arcade fighting game title backdrop: a fictional quiet suburban backyard at dusk, warm floodlights illuminating weathered timber fences, a grill and workbench. Moody charcoal and slate navy shadows, muted brick red and warm ivory, small burnished brass highlights. Hand-painted cel animation, sharp chunky brush ink, subtle paper grain, deep layered perspective. Broad dark clear central space for a large title and menu. No people, fighters, lettering, logos, interface, rays, radial speed lines, neon glow or border.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "MINIMAL",
+        86753090,
+        "fixed",
+        "IMAGE",
+        "Create original 1990s hand-drawn arcade fighting game artwork, with strong ink and flat cel colors. Invented designs only, no real people, existing franchise imagery, brand marks, watermark or tiny text.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "A polished 1990s arcade fighting game title backdrop: a fictional quiet suburban backyard at dusk, warm floodlights illuminating weathered timber fences, a grill and workbench. Moody charcoal and slate navy shadows, muted brick red and warm ivory, small burnished brass highlights. Hand-painted cel animation, sharp chunky brush ink, subtle paper grain, deep layered perspective. Broad dark clear central space for a large title and menu. No people, fighters, lettering, logos, interface, rays, radial speed lines, neon glow or border.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 86753090,
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create original 1990s hand-drawn arcade fighting game artwork, with strong ink and flat cel colors. Invented designs only, no real people, existing franchise imagery, brand marks, watermark or tiny text.",
+        "temperature": 1,
+        "top_p": 0.95,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 2,
+      "type": "SaveImage",
+      "title": "Save title-backdrop",
+      "pos": [
+        490,
+        0
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/arcade-ui-20261104/title-backdrop"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/arcade-ui-20261104/title-backdrop"
+      }
+    },
+    {
+      "id": 3,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Generate select-backdrop",
+      "pos": [
+        970,
+        0
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original late 1990s fighting game character select background plate, empty dark tournament board with hand-painted ink texture, strong diagonal composition, warm black charcoal and muted oxblood with a little brass and steel blue. Leave the middle uncluttered and dark so character portraits and readable buttons can be layered by code. No people, text, numbers, logos, portraits, neon, light bloom, speed lines or interface elements.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "MINIMAL",
+        86753091,
+        "fixed",
+        "IMAGE",
+        "Create original 1990s hand-drawn arcade fighting game artwork, with strong ink and flat cel colors. Invented designs only, no real people, existing franchise imagery, brand marks, watermark or tiny text.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original late 1990s fighting game character select background plate, empty dark tournament board with hand-painted ink texture, strong diagonal composition, warm black charcoal and muted oxblood with a little brass and steel blue. Leave the middle uncluttered and dark so character portraits and readable buttons can be layered by code. No people, text, numbers, logos, portraits, neon, light bloom, speed lines or interface elements.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 86753091,
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create original 1990s hand-drawn arcade fighting game artwork, with strong ink and flat cel colors. Invented designs only, no real people, existing franchise imagery, brand marks, watermark or tiny text.",
+        "temperature": 1,
+        "top_p": 0.95,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 4,
+      "type": "SaveImage",
+      "title": "Save select-backdrop",
+      "pos": [
+        1460,
+        0
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/arcade-ui-20261104/select-backdrop"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/arcade-ui-20261104/select-backdrop"
+      }
+    },
+    {
+      "id": 5,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Generate menu-frame",
+      "pos": [
+        1940,
+        0
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "An original 1990s 2D arcade fighting game decorative menu backdrop: broad flat charcoal panel, worn oxblood and steel-blue geometric side panels, discreet brass trim, subtle hand-inked print texture. Big dark clear rectangular central area, high contrast, clean direct shapes and classic arcade-cabinet feeling. No text, no words, no logo, no characters, no rasterized buttons, no glowing neon, no gradients or speed lines.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "MINIMAL",
+        86753092,
+        "fixed",
+        "IMAGE",
+        "Create original 1990s hand-drawn arcade fighting game artwork, with strong ink and flat cel colors. Invented designs only, no real people, existing franchise imagery, brand marks, watermark or tiny text.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "An original 1990s 2D arcade fighting game decorative menu backdrop: broad flat charcoal panel, worn oxblood and steel-blue geometric side panels, discreet brass trim, subtle hand-inked print texture. Big dark clear rectangular central area, high contrast, clean direct shapes and classic arcade-cabinet feeling. No text, no words, no logo, no characters, no rasterized buttons, no glowing neon, no gradients or speed lines.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 86753092,
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create original 1990s hand-drawn arcade fighting game artwork, with strong ink and flat cel colors. Invented designs only, no real people, existing franchise imagery, brand marks, watermark or tiny text.",
+        "temperature": 1,
+        "top_p": 0.95,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 6,
+      "type": "SaveImage",
+      "title": "Save menu-frame",
+      "pos": [
+        2430,
+        0
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/arcade-ui-20261104/menu-frame"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/arcade-ui-20261104/menu-frame"
+      }
+    },
+    {
+      "id": 7,
+      "type": "GeminiNanoBanana2V2",
+      "title": "Generate title-logo",
+      "pos": [
+        2910,
+        0
+      ],
+      "size": [
+        460,
+        650
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Design a single isolated arcade fighting game wordmark. Write exactly COMFY FIGHTER Z, no other text, every letter spelled exactly; huge bold ivory condensed italic capitals, oversize Z in deep brick red, thick black ink contour and slim aged brass keyline, dynamic modest angle, late 1990s screen-printed video-game logo. Entire logo centered with generous empty padding, isolated on a perfectly uniform flat chroma green RGB(0,255,0) background. No characters, scenery, frames, extra letters, subtitle, branding, watermark or light bloom.",
+        "Gemini Nano Banana 2.1",
+        "3:2",
+        "2K",
+        "MINIMAL",
+        86753093,
+        "fixed",
+        "IMAGE",
+        "Create original 1990s hand-drawn arcade fighting game artwork, with strong ink and flat cel colors. Invented designs only, no real people, existing franchise imagery, brand marks, watermark or tiny text.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Design a single isolated arcade fighting game wordmark. Write exactly COMFY FIGHTER Z, no other text, every letter spelled exactly; huge bold ivory condensed italic capitals, oversize Z in deep brick red, thick black ink contour and slim aged brass keyline, dynamic modest angle, late 1990s screen-printed video-game logo. Entire logo centered with generous empty padding, isolated on a perfectly uniform flat chroma green RGB(0,255,0) background. No characters, scenery, frames, extra letters, subtitle, branding, watermark or light bloom.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "3:2",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 86753093,
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create original 1990s hand-drawn arcade fighting game artwork, with strong ink and flat cel colors. Invented designs only, no real people, existing franchise imagery, brand marks, watermark or tiny text.",
+        "temperature": 1,
+        "top_p": 0.95,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 8,
+      "type": "SaveImage",
+      "title": "Save title-logo",
+      "pos": [
+        3400,
+        0
+      ],
+      "size": [
+        430,
+        600
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "comfy-fighter-z/arcade-ui-20261104/title-logo"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/arcade-ui-20261104/title-logo"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6,
+      "offset": [
+        0,
+        0
+      ]
+    }
+  },
+  "version": 0.4
+}

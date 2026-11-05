@@ -1,8 +1,8 @@
 {
   "id": "91dcea91-7756-46a9-a3e8-0744638d4399",
   "revision": 0,
-  "last_node_id": 17,
-  "last_link_id": 15,
+  "last_node_id": 23,
+  "last_link_id": 21,
   "nodes": [
     {
       "id": 1,
@@ -154,7 +154,10 @@
             8,
             10,
             12,
-            14
+            14,
+            16,
+            18,
+            20
           ]
         },
         {
@@ -612,10 +615,10 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A bold 1990s battle-anime character-select portrait, head and shoulders, centered recognizable face, angular expressive eyes, strong ink eyebrows, dramatic hard cel shadows and a fierce competitive expression. Keep the complete head and hair inside the image with clear padding. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): walk3 - walking passing position, feet together under the hips, upright.\nCell 2 (row 1, column 2): walk4 - walking stride, long step with the rear heel lifting.\nCell 3 (row 1, column 3): run - sprinting run toward the right, torso leaning forward, front knee high.\nCell 4 (row 2, column 1): run2 - sprinting run toward the right, opposite legs, rear foot pushing off.\nCell 5 (row 2, column 2): backstep - quick backward hop away from the right, both feet just off the ground, guard up.\nCell 6 (row 2, column 3): jumpfall - airborne falling, legs extending down to land, arms guarding.\nCell 7 (row 3, column 1): crouchblock - low crouching block with both forearms raised in front of the face.\nCell 8 (row 3, column 2): hitlow - crouching hit reaction, head snapped back while staying low.\nCell 9 (row 3, column 3): hitheavy - heavy stagger hit, body bent backwards, one foot lifting.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "Gemini Nano Banana 2.1",
         "1:1",
-        "1K",
+        "2K",
         "MINIMAL",
         42,
         "fixed",
@@ -625,10 +628,10 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A bold 1990s battle-anime character-select portrait, head and shoulders, centered recognizable face, angular expressive eyes, strong ink eyebrows, dramatic hard cel shadows and a fierce competitive expression. Keep the complete head and hair inside the image with clear padding. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): walk3 - walking passing position, feet together under the hips, upright.\nCell 2 (row 1, column 2): walk4 - walking stride, long step with the rear heel lifting.\nCell 3 (row 1, column 3): run - sprinting run toward the right, torso leaning forward, front knee high.\nCell 4 (row 2, column 1): run2 - sprinting run toward the right, opposite legs, rear foot pushing off.\nCell 5 (row 2, column 2): backstep - quick backward hop away from the right, both feet just off the ground, guard up.\nCell 6 (row 2, column 3): jumpfall - airborne falling, legs extending down to land, arms guarding.\nCell 7 (row 3, column 1): crouchblock - low crouching block with both forearms raised in front of the face.\nCell 8 (row 3, column 2): hitlow - crouching hit reaction, head snapped back while staying low.\nCell 9 (row 3, column 3): hitheavy - heavy stagger hit, body bent backwards, one foot lifting.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "model": "Gemini Nano Banana 2.1",
         "model.aspect_ratio": "1:1",
-        "model.resolution": "1K",
+        "model.resolution": "2K",
         "model.thinking_level": "MINIMAL",
         "seed": 42,
         "control_after_generate": "fixed",
@@ -639,12 +642,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "griddle_portrait | cloud generation"
+      "title": "griddle_sheetD | cloud generation"
     },
     {
       "id": 12,
       "type": "SaveImage",
-      "title": "Save griddle_portrait",
+      "title": "Save griddle_sheetD",
       "pos": [
         950,
         3020
@@ -668,7 +671,7 @@
         "Node name for S&R": "SaveImage"
       },
       "widgets_values": [
-        "hackathon/griddle_portrait"
+        "hackathon/griddle_sheetD"
       ]
     },
     {
@@ -722,10 +725,10 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A single full-body 1990s battle-anime character-selection hero illustration for a large versus panel. Powerful planted fighting stance, clenched or open fighting hands, sharp two-tone muscle and cloth shading, dynamic foreshortening. Entire shoes, head, hands and hair fully visible with at least 10% clear padding. Compact gold and cyan power highlights attached to the silhouette. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): punchwind - lead-hand jab chambered at the shoulder, about to strike right.\nCell 2 (row 1, column 2): kickwind - front knee raised and chambered before a kick to the right.\nCell 3 (row 1, column 3): heavywind - rear arm pulled far back, torso coiled for a heavy blow.\nCell 4 (row 2, column 1): roll - evasive forward roll, body tucked in a tight ball.\nCell 5 (row 2, column 2): blowback - powerful two-handed palm strike or spinning kick that blasts the opponent away to the right.\nCell 6 (row 2, column 3): super - Five-Alarm Cookout stance: dramatic super-move stance, both arms thrust forward to the right with compact energy, only a small glow at the hands.\nCell 7 (row 3, column 1): dizzy - dazed stagger, wobbly knees, hand on forehead.\nCell 8 (row 3, column 2): win2 - second celebratory victory pose, different from the first.\nCell 9 (row 3, column 3): lose - defeated, kneeling on one knee with the head bowed.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "Gemini Nano Banana 2.1",
-        "2:3",
-        "1K",
+        "1:1",
+        "2K",
         "MINIMAL",
         42,
         "fixed",
@@ -735,10 +738,10 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A single full-body 1990s battle-anime character-selection hero illustration for a large versus panel. Powerful planted fighting stance, clenched or open fighting hands, sharp two-tone muscle and cloth shading, dynamic foreshortening. Entire shoes, head, hands and hair fully visible with at least 10% clear padding. Compact gold and cyan power highlights attached to the silhouette. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nUse the supplied accepted anime reference to preserve the recognizable face, natural body build, hairstyle, clothing, accessories and palette. Redraw that same original person with the stronger angular ink, sculpted cel shadows and powerful 1990s battle-anime posing described above. Produce a SINGLE square 3 by 3 sprite sheet, exactly 9 equally sized invisible cells in a uniform mathematical grid. Read left to right, then top to bottom. One COMPLETE full-body pose per cell, including BOTH shoes. All poses face RIGHT: the nose, chest, leading fist and attacking foot point toward the right edge; especially the sweep, airkick and punches attack RIGHT. Consistent side-on camera and body scale across all nine cells. Choose a small enough body scale that the widest kick and longest horizontal down pose fit their own cells. Each standing figure is approximately 60% of its cell height, with shoes at 82% of cell height and the head near 22%. Center each whole pose inside its cell, including horizontal and airborne poses. Every hand, shoe, hair tip, accessory and attached energy accent stays within the central 76% of its cell, with at least 12% clear green on ALL four sides. The bottom row, including entrance, must show both complete feet and clear green below them. No limb crosses a cell boundary. Every complete silhouette is separated from its neighbors by uninterrupted green corridors: keep horizontal canvas bands from 30% to 37% and from 63% to 70% entirely empty green. Keep matching vertical green corridors between the three columns. No shoe touches another pose's hair, hand or effects. Keep special energy compact and attached to the palms, without a long beam reaching a cell edge; the game supplies the traveling projectile. No cropping at the outer canvas edge. Cell divisions are completely invisible: NO grid lines, panels, frames, dividers, gutters in another color, numbers or labels. Avoid large aura clouds on sprites; use compact attached energy accents only. These are named key poses, not a smooth nine-frame loop.\nCell 1 (row 1, column 1): punchwind - lead-hand jab chambered at the shoulder, about to strike right.\nCell 2 (row 1, column 2): kickwind - front knee raised and chambered before a kick to the right.\nCell 3 (row 1, column 3): heavywind - rear arm pulled far back, torso coiled for a heavy blow.\nCell 4 (row 2, column 1): roll - evasive forward roll, body tucked in a tight ball.\nCell 5 (row 2, column 2): blowback - powerful two-handed palm strike or spinning kick that blasts the opponent away to the right.\nCell 6 (row 2, column 3): super - Five-Alarm Cookout stance: dramatic super-move stance, both arms thrust forward to the right with compact energy, only a small glow at the hands.\nCell 7 (row 3, column 1): dizzy - dazed stagger, wobbly knees, hand on forehead.\nCell 8 (row 3, column 2): win2 - second celebratory victory pose, different from the first.\nCell 9 (row 3, column 3): lose - defeated, kneeling on one knee with the head bowed.\nFlat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "model": "Gemini Nano Banana 2.1",
-        "model.aspect_ratio": "2:3",
-        "model.resolution": "1K",
+        "model.aspect_ratio": "1:1",
+        "model.resolution": "2K",
         "model.thinking_level": "MINIMAL",
         "seed": 42,
         "control_after_generate": "fixed",
@@ -749,12 +752,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "griddle_hero | cloud generation"
+      "title": "griddle_sheetE | cloud generation"
     },
     {
       "id": 14,
       "type": "SaveImage",
-      "title": "Save griddle_hero",
+      "title": "Save griddle_sheetE",
       "pos": [
         950,
         3580
@@ -778,7 +781,7 @@
         "Node name for S&R": "SaveImage"
       },
       "widgets_values": [
-        "hackathon/griddle_hero"
+        "hackathon/griddle_sheetE"
       ]
     },
     {
@@ -832,9 +835,9 @@
         "Node name for S&R": "GeminiNanoBanana2V2"
       },
       "widgets_values": [
-        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A dramatic anime waist-up super-attack cut-in depicting Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell. Character and attack face RIGHT, complete face and arms, intense expression and tight inked energy accents. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A bold 1990s battle-anime character-select portrait, head and shoulders, centered recognizable face, angular expressive eyes, strong ink eyebrows, dramatic hard cel shadows and a fierce competitive expression. Keep the complete head and hair inside the image with clear padding. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "Gemini Nano Banana 2.1",
-        "16:9",
+        "1:1",
         "1K",
         "MINIMAL",
         42,
@@ -845,9 +848,9 @@
         0.95
       ],
       "widgets_values_named": {
-        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A dramatic anime waist-up super-attack cut-in depicting Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell. Character and attack face RIGHT, complete face and arms, intense expression and tight inked energy accents. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A bold 1990s battle-anime character-select portrait, head and shoulders, centered recognizable face, angular expressive eyes, strong ink eyebrows, dramatic hard cel shadows and a fierce competitive expression. Keep the complete head and hair inside the image with clear padding. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
         "model": "Gemini Nano Banana 2.1",
-        "model.aspect_ratio": "16:9",
+        "model.aspect_ratio": "1:1",
         "model.resolution": "1K",
         "model.thinking_level": "MINIMAL",
         "seed": 42,
@@ -859,12 +862,12 @@
       },
       "color": "#432",
       "bgcolor": "#653",
-      "title": "griddle_cutin | cloud generation"
+      "title": "griddle_portrait | cloud generation"
     },
     {
       "id": 16,
       "type": "SaveImage",
-      "title": "Save griddle_cutin",
+      "title": "Save griddle_portrait",
       "pos": [
         950,
         4140
@@ -888,11 +891,341 @@
         "Node name for S&R": "SaveImage"
       },
       "widgets_values": [
-        "hackathon/griddle_cutin"
+        "hackathon/griddle_portrait"
       ]
     },
     {
       "id": 17,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        4700
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 16
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            17
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A single full-body 1990s battle-anime character-selection hero illustration for a large versus panel. Powerful planted fighting stance, clenched or open fighting hands, sharp two-tone muscle and cloth shading, dynamic foreshortening. Entire shoes, head, hands and hair fully visible with at least 10% clear padding. Compact gold and cyan power highlights attached to the silhouette. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "2:3",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A single full-body 1990s battle-anime character-selection hero illustration for a large versus panel. Powerful planted fighting stance, clenched or open fighting hands, sharp two-tone muscle and cloth shading, dynamic foreshortening. Entire shoes, head, hands and hair fully visible with at least 10% clear padding. Compact gold and cyan power highlights attached to the silhouette. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "2:3",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "griddle_hero | cloud generation"
+    },
+    {
+      "id": 18,
+      "type": "SaveImage",
+      "title": "Save griddle_hero",
+      "pos": [
+        950,
+        4700
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 17
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/griddle_hero"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        5260
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 18
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A dramatic anime waist-up super-attack cut-in depicting Five-Alarm Cookout: Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave. Character and attack face RIGHT, complete face and arms, intense expression and tight inked energy accents. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. A dramatic anime waist-up super-attack cut-in depicting Five-Alarm Cookout: Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave. Character and attack face RIGHT, complete face and arms, intense expression and tight inked energy accents. Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "griddle_cutin | cloud generation"
+    },
+    {
+      "id": 20,
+      "type": "SaveImage",
+      "title": "Save griddle_cutin",
+      "pos": [
+        950,
+        5260
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 19
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/griddle_cutin"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        420,
+        5820
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 20
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. An arcade ending illustration for this fighter after winning the neighborhood tournament: one calm cinematic epilogue scene with the same character, warm evening light, a fictional suburban setting and a readable expression. Story beat: With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes. No other recognizable people, no text, captions, logos, borders or panels.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "1K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.\nCHARACTER: A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.\nSIGNATURE SPECIAL MOVE: Sizzle Burst: Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell.\nPreserve the supplied reference identity, outfit and palette while upgrading its rendering to the bold battle-anime art direction above. An arcade ending illustration for this fighter after winning the neighborhood tournament: one calm cinematic epilogue scene with the same character, warm evening light, a fictional suburban setting and a readable expression. Story beat: With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes. No other recognizable people, no text, captions, logos, borders or panels.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "1K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "griddle_ending | cloud generation"
+    },
+    {
+      "id": 22,
+      "type": "SaveImage",
+      "title": "Save griddle_ending",
+      "pos": [
+        950,
+        5820
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 21
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/griddle_ending"
+      ]
+    },
+    {
+      "id": 23,
       "type": "MarkdownNote",
       "pos": [
         40,
@@ -903,13 +1236,13 @@
         260
       ],
       "flags": {},
-      "order": 16,
+      "order": 22,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# Griddle: full art pack\n\nCLOUD ONLY. This graph contains 8 paid image-generation node(s). Running those nodes consumes Comfy credits. Save nodes only process local files. No generation is triggered by creating or building these files.\n\nAll references are invented from text in this graph. No photographs or files from previous sessions are loaded.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
+        "# Griddle: full art pack\n\nCLOUD ONLY. This graph contains 11 paid image-generation node(s). Running those nodes consumes Comfy credits. Save nodes only process local files. No generation is triggered by creating or building these files.\n\nAll references are invented from text in this graph. No photographs or files from previous sessions are loaded.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
       ]
     }
   ],
@@ -1031,6 +1364,54 @@
       15,
       0,
       16,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      3,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      17,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      3,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      19,
+      19,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      20,
+      3,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      21,
+      21,
+      0,
+      22,
       0,
       "IMAGE"
     ]

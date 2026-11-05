@@ -4,27 +4,36 @@
   "config": "comfyui/config/factory.json",
   "workflow": "comfyui/workflows/comfy-hackathon.json",
   "advancedWorkflow": "comfyui/workflows/advanced/full-image-graph.json",
-  "characterSlots": 6,
+  "characterSlots": 7,
+  "bossSlots": 1,
   "environmentSlots": 3,
   "defaults": {
-    "paidImages": 56,
-    "sourceSaves": 7,
-    "mappedAssets": 56,
-    "oneK": 35,
-    "twoK": 21,
-    "estimatedUSD": 3.195192
+    "paidImages": 89,
+    "sourceSaves": 10,
+    "mappedAssets": 89,
+    "oneK": 47,
+    "twoK": 42,
+    "estimatedUSD": 5.28528
   },
   "allEnvironments": {
-    "paidImages": 60,
-    "sourceSaves": 9,
-    "mappedAssets": 60,
-    "oneK": 35,
-    "twoK": 25,
-    "estimatedUSD": 3.48348
+    "paidImages": 89,
+    "sourceSaves": 10,
+    "mappedAssets": 89,
+    "oneK": 47,
+    "twoK": 42,
+    "estimatedUSD": 5.28528
+  },
+  "expansion": {
+    "paidImages": 33,
+    "oneK": 12,
+    "twoK": 21,
+    "mappedAssets": 33,
+    "estimatedUSD": 2.090088
   },
   "templates": [
     "comfyui/workflows/factory/character-factory.json",
     "comfyui/workflows/factory/sprite-sheet.json",
-    "comfyui/workflows/factory/environment-factory.json"
+    "comfyui/workflows/factory/environment-factory.json",
+    "comfyui/workflows/factory/arcade-expansion.json"
   ]
 }

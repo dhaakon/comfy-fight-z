@@ -9,16 +9,18 @@ const load = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 const config = load('comfyui/config/game.json'), template = load('comfyui/workflows/templates/cloud-image.json');
 const accepted = { assets: makeJobs(config).map(job => ({ ...assetRecord(job), src: `raw/${job.id}-accepted.png` })) };
 
-test('saga refresh replaces only 38 selected images and shares seven accepted references', () => {
+test('saga refresh replaces only the selected art images and shares the accepted references', () => {
   const jobs = makeSagaPatchJobs(config, accepted);
-  assert.equal(jobs.length, 38);
-  assert.equal(jobs.filter(job => job.kind === 'sprites').length, 18);
-  assert.equal(jobs.filter(job => job.resolution === '2K').length, 18);
+  // Seven fighters (including the final boss) x (five sheets + portrait, hero, cut-in) + title + logo.
+  const sheets = Object.keys({ ...config.sheets, ...config.extraSheets }).length;
+  assert.equal(jobs.length, config.fighters.length * (sheets + 3) + 2);
+  assert.equal(jobs.filter(job => job.kind === 'sprites').length, config.fighters.length * sheets);
+  assert.equal(jobs.filter(job => job.resolution === '2K').length, config.fighters.length * sheets);
   assert.equal(jobs.some(job => ['stage', 'source', 'reference', 'effects'].includes(job.kind)), false);
   const graph = makeBundleGraph(jobs, config, template, { externalReference: true, rootDirectory: 'output/test-output/saga-patch', patch: true });
-  assert.equal(graph.nodes.filter(node => node.type === 'GeminiNanoBanana2V2').length, 38);
+  assert.equal(graph.nodes.filter(node => node.type === 'GeminiNanoBanana2V2').length, jobs.length);
   const loads = graph.nodes.filter(node => node.type === 'LoadImage');
-  assert.equal(loads.length, 7);
+  assert.equal(loads.length, config.fighters.length + 1);
   for (const job of jobs.filter(item => item.reference)) {
     const generator = graph.nodes.find(node => node.title === `${job.id} | cloud generation`);
     const input = generator.inputs.find(item => item.name === 'model.images.image_1');

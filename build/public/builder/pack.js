@@ -1,9 +1,13 @@
 // Browser-only asset compiler. It consumes accepted local images and never calls a model.
 import { segmentSheet } from './sheet-layout.mjs';
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
-const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'stage', 'ui', 'effects']);
-const MAX_BYTES = 512 * 1024 * 1024;
+const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending', 'stage', 'ui', 'effects']);
+const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending'];
+const STYLES = new Set(['balanced', 'power', 'speed', 'zoner', 'grappler', 'trickster', 'boss']);
+// A complete arcade cast (seven fighters, three arenas, PNG/WAV sources) exports at roughly 550 MB.
+const MAX_BYTES = 1024 * 1024 * 1024;
 const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'style.css', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
+const ARCADE_ART = ['arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp', 'arcade/title-logo.webp'];
 const REQUIRED_POSES = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win', 'stance2', 'crouch', 'sweep', 'launcher', 'jump', 'airkick', 'hpunch', 'dash', 'tumble', 'walk2', 'lkick', 'cjab', 'airpunch', 'throw', 'taunt', 'getup', 'powerup', 'entrance'];
 const encoder = new TextEncoder();
 const jsonBlob = value => new Blob([JSON.stringify(value, null, 2) + '\n'], { type: 'application/json' });
@@ -47,8 +51,19 @@ export function validateManifest(input) {
         text(item.specialMove?.name, `${item.id} special move`, 100);
         text(item.specialMove?.description, `${item.id} special description`, 4000);
       }
+      // Optional arcade metadata from the factory: gameplay style, super, win quote, ending and boss role.
+      if (item.superMove !== undefined) {
+        text(item.superMove?.name, `${item.id} super move`, 100);
+        text(item.superMove?.description, `${item.id} super description`, 4000);
+      }
+      if (item.style !== undefined && !STYLES.has(item.style)) throw new Error(`Unknown fighting style for ${item.id}: ${item.style}`);
+      if (item.winQuote !== undefined && item.winQuote !== '') text(item.winQuote, `${item.id} win quote`, 200);
+      if (item.ending !== undefined && item.ending !== '') text(item.ending, `${item.id} ending`, 800);
+      if (item.boss !== undefined && typeof item.boss !== 'boolean') throw new Error(`Invalid boss flag for ${item.id}`);
     }
   }
+  if (game.fighters.filter(fighter => fighter.boss === true).length > 1) throw new Error('A game can include at most one final boss.');
+  const layouts = { ...(game.sheets || {}), ...(game.extraSheets || {}) };
   if (!Array.isArray(manifest.assets) || !manifest.assets.length || manifest.assets.length > 1024) throw new Error('Manifest needs between 1 and 1024 mapped assets.');
   const ids = new Set(), paths = new Set(), outputs = new Set();
   for (const asset of manifest.assets) {
@@ -63,7 +78,7 @@ export function validateManifest(input) {
     if (asset.sha256 !== undefined && (typeof asset.sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(asset.sha256))) throw new Error(`Invalid SHA-256 digest for ${asset.id}`);
     if (asset.fighter && !game.fighters.some(f => f.id === asset.fighter)) throw new Error(`Unknown fighter on ${asset.id}: ${asset.fighter}`);
     if (asset.stage && !game.stages.some(s => s.id === asset.stage)) throw new Error(`Unknown stage on ${asset.id}: ${asset.stage}`);
-    if (['reference', 'sprites', 'portrait', 'hero', 'cutin'].includes(asset.kind) && !asset.fighter) throw new Error(`${asset.id} needs a fighter mapping.`);
+    if (FIGHTER_KINDS.includes(asset.kind) && !asset.fighter) throw new Error(`${asset.id} needs a fighter mapping.`);
     if (asset.kind === 'stage' && !asset.stage) throw new Error(`${asset.id} needs a stage mapping.`);
     if (['ui', 'effects', 'stage'].includes(asset.kind) && asset.fighter) throw new Error(`${asset.id} has an unexpected fighter mapping.`);
     if (!['stage', 'source'].includes(asset.kind) && asset.stage) throw new Error(`${asset.id} has an unexpected stage mapping.`);
@@ -72,7 +87,7 @@ export function validateManifest(input) {
     const claims = [];
     if (asset.kind === 'sprites' || asset.kind === 'effects') {
       if (!Array.isArray(asset.poses) || asset.poses.length !== 9 || new Set(asset.poses).size !== 9 || asset.poses.some(p => !ID.test(p))) throw new Error(`${asset.id} needs exactly nine unique pose names.`);
-      if (asset.kind === 'sprites' && asset.sheet && game.sheets?.[asset.sheet] && JSON.stringify(asset.poses) !== JSON.stringify(game.sheets[asset.sheet])) throw new Error(`${asset.id} pose order disagrees with game.sheets.${asset.sheet}.`);
+      if (asset.kind === 'sprites' && asset.sheet && layouts[asset.sheet] && JSON.stringify(asset.poses) !== JSON.stringify(layouts[asset.sheet])) throw new Error(`${asset.id} pose order disagrees with the ${asset.sheet} layout.`);
       claims.push(...asset.poses.map(p => asset.kind === 'sprites' ? `assets/fighters/${asset.fighter}_${p}.png` : `assets/effects/${p}.png`));
     } else claims.push(`${asset.kind}/${asset.fighter || asset.stage || asset.id}`);
     for (const claim of claims) {
@@ -109,17 +124,30 @@ export function validateAudioManifest(input, game) {
   return manifest;
 }
 
-export function validateVideoManifest(input) {
+export function validateVideoManifest(input, game = null) {
   let manifest;
   try { manifest = typeof input === 'string' ? JSON.parse(input) : structuredClone(input); }
   catch { throw new Error('The video manifest is not valid JSON.'); }
   if (manifest?.schema !== 'comfy-fighter-video/v1' || manifest.root !== '.') throw new Error('Expected a comfy-fighter-video/v1 video.json with root ".".');
-  const video = manifest.openingVideo;
-  if (!video || video.id !== 'opening') throw new Error('Video manifest requires an opening video.');
-  safePath(video.src);
-  if (!/\.mp4$/i.test(video.src)) throw new Error('Opening video must be an MP4.');
-  if (!Number.isFinite(video.duration) || video.duration <= 0 || video.duration > 300) throw new Error('Opening video duration must be between 0 and 300 seconds.');
-  if (typeof video.sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(video.sha256)) throw new Error('Opening video requires a SHA-256 digest.');
+  const intros = manifest.fighterIntros ?? [];
+  if (!Array.isArray(intros) || intros.length > 64 || (!manifest.openingVideo && !manifest.titleVideo && !intros.length)) throw new Error('Video manifest needs an opening, animated title or fighter introduction videos.');
+  const paths = new Set(), fighters = new Set();
+  const check = (video, label, limit) => {
+    if (!video || typeof video !== 'object') throw new Error(`Invalid ${label}.`);
+    safePath(video.src);
+    if (!/\.mp4$/i.test(video.src) || paths.has(video.src.toLowerCase())) throw new Error(`${label} must use a unique MP4 path.`);
+    paths.add(video.src.toLowerCase());
+    if (!Number.isFinite(video.duration) || video.duration <= 0 || video.duration > limit) throw new Error(`Invalid ${label} duration.`);
+    if (typeof video.sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(video.sha256)) throw new Error(`${label} requires a SHA-256 digest.`);
+    if (video.hasAudio !== undefined && typeof video.hasAudio !== 'boolean') throw new Error(`${label} has an invalid audio flag.`);
+  };
+  if (manifest.openingVideo) { if (manifest.openingVideo.id !== 'opening') throw new Error('Invalid opening video ID.'); check(manifest.openingVideo, 'Opening video', 300); }
+  if (manifest.titleVideo) { if (manifest.titleVideo.id !== 'title') throw new Error('Invalid title video ID.'); check(manifest.titleVideo, 'Title video', 300); }
+  for (const video of intros) {
+    if (!ID.test(video?.fighter || '') || video.id !== `intro-${video.fighter}` || fighters.has(video.fighter.toLowerCase())) throw new Error('Invalid or duplicate fighter intro.');
+    if (game && !game.fighters.some(f => f.id === video.fighter)) throw new Error(`Unknown intro fighter: ${video.fighter}`);
+    fighters.add(video.fighter.toLowerCase()); check(video, 'Fighter introduction', 30);
+  }
   return manifest;
 }
 
@@ -194,7 +222,7 @@ async function exportImage(image, job) {
   let sx = 0, sy = 0, sw = image.width, sh = image.height, width, height;
   if (job.kind === 'portrait') { sw = sh = Math.min(sw, sh); sx = (image.width - sw) / 2; sy = (image.height - sh) * .3; width = 320; }
   if (job.kind === 'hero') height = 760;
-  if (job.kind === 'cutin') width = 960;
+  if (job.kind === 'cutin' || job.kind === 'ending') width = 960;
   if (job.kind === 'stage') width = 1600;
   const result = canvas(width || sw * (height || sh) / sh, height || sh * (width || sw) / sw);
   result.getContext('2d').drawImage(image, sx, sy, sw, sh, 0, 0, result.width, result.height);
@@ -217,6 +245,9 @@ function customize(items, edits, label) {
       name: text(update.specialMove?.name ?? item.specialMove.name, 'Special move name', 100),
       description: text(update.specialMove?.description ?? item.specialMove.description, 'Special move description', 4000)
     };
+    if (item.superMove) value.superMove = { name: text(item.superMove.name, 'Super move name', 100), description: text(item.superMove.description, 'Super move description', 4000) };
+    for (const field of ['style', 'winQuote', 'ending']) if (item[field]) value[field] = item[field];
+    if (item.boss === true) value.boss = true;
     if (label === 'fighter') {
       value.color = update.color ?? item.color ?? '#ff824f';
       if (!/^#[0-9a-f]{6}$/i.test(value.color)) throw new Error(`Invalid color for ${item.id}`);
@@ -229,7 +260,7 @@ function customize(items, edits, label) {
 export async function buildGame({ manifest: input, audioManifest: audioInput = null, videoManifest: videoInput = null, files, customization = {}, onProgress = () => {} }) {
   const source = validateManifest(input);
   const audioSource = audioInput ? validateAudioManifest(audioInput, source.game) : null;
-  const videoSource = videoInput ? validateVideoManifest(videoInput) : null;
+  const videoSource = videoInput ? validateVideoManifest(videoInput, source.game) : null;
   if (!(files instanceof Map)) throw new Error('Choose the source image folder before building.');
   const runtime = { version: 1, title: text(customization.title ?? source.game.title, 'Game title'),
     subtitle: source.game.subtitle || '',
@@ -241,7 +272,8 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   const allow = customization.allowPlaceholders === true, missing = jobs.filter(job => !files.has(job.src)), warnings = [], output = new Map(), built = [];
   if (missing.length && !allow) throw new Error(`Missing ${missing.length} source image(s): ${missing.map(j => j.src).join(', ')}. Select the full asset root or explicitly allow placeholders.`);
   if (missing.length) warnings.push(`Missing artwork: ${missing.map(j => j.id).join(', ')}. The game uses labeled placeholders.`);
-  if (videoSource && !files.has(videoSource.openingVideo.src)) throw new Error('Missing opening video file. Select the complete asset root.');
+  const videoJobs = [...(videoSource?.openingVideo ? [videoSource.openingVideo] : []), ...(videoSource?.titleVideo ? [videoSource.titleVideo] : []), ...(videoSource?.fighterIntros || []).filter(video => selectedFighters.has(video.fighter))];
+  for (const video of videoJobs) if (!files.has(video.src)) throw new Error(`Missing video file: ${video.src}. Select the complete asset root.`);
   const unmapped = [];
   for (const fighter of runtime.fighters) {
     const characterJobs = jobs.filter(job => job.fighter === fighter.id);
@@ -256,21 +288,24 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   if (unmapped.length && !allow) throw new Error(`Incomplete asset mappings: ${unmapped.join(', ')}. Load the complete bundle or explicitly allow placeholders.`);
   if (unmapped.length) warnings.push(`Unmapped artwork: ${unmapped.join(', ')}. Placeholder mode is enabled.`);
   let sourceBytes = 0;
-  for (const job of [...jobs, ...audioJobs, ...(videoSource ? [videoSource.openingVideo] : [])]) { const file = files.get(job.src); if (file) sourceBytes += file.size; }
-  if (sourceBytes > MAX_BYTES) throw new Error('Selected source images exceed the 512 MB browser build limit.');
-  const allCells = new Map(), accepted = [], total = jobs.length + audioJobs.length + TEMPLATE_FILES.length + Number(!!videoSource); let done = 0;
-  if (videoSource) {
-    const video = videoSource.openingVideo, blob = files.get(video.src);
-    if (!(blob instanceof Blob) || !blob.size) throw new Error('Opening video file is empty.');
+  for (const job of [...jobs, ...audioJobs, ...videoJobs]) { const file = files.get(job.src); if (file) sourceBytes += file.size; }
+  if (sourceBytes > MAX_BYTES) throw new Error('Selected source images exceed the 1 GB browser build limit.');
+  const allCells = new Map(), accepted = [], total = jobs.length + audioJobs.length + TEMPLATE_FILES.length + videoJobs.length; let done = 0;
+  for (const video of videoJobs) {
+    const blob = files.get(video.src);
+    if (!(blob instanceof Blob) || !blob.size) throw new Error(`Video file is empty: ${video.src}`);
     if (!globalThis.crypto?.subtle) throw new Error('Video integrity verification requires localhost or HTTPS.');
     const digest = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
     const actual = [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
-    if (actual !== video.sha256.toLowerCase()) throw new Error('Opening video SHA-256 mismatch.');
-    const src = 'assets/video/opening.mp4';
-    runtime.openingVideo = { ...video, src };
+    if (actual !== video.sha256.toLowerCase()) throw new Error(`Video SHA-256 mismatch: ${video.id}`);
+    const src = video.fighter ? `assets/video/intro-${video.fighter}.mp4` : `assets/video/${video.id}.mp4`;
+    if (video.fighter) selectedFighters.get(video.fighter).introVideo = { ...video, src };
+    else if (video.id === 'title') runtime.titleVideo = { ...video, src };
+    else runtime.openingVideo = { ...video, src };
     output.set(src, blob); output.set(`sources/${video.src}`, blob);
-    output.set('sources/video.json', jsonBlob(videoSource)); done++;
+    done++;
   }
+  if (videoSource && videoJobs.length) output.set('sources/video.json', jsonBlob({ ...videoSource, ...(videoSource.fighterIntros ? { fighterIntros: videoJobs.filter(video => video.fighter) } : {}) }));
   for (const job of jobs) {
     onProgress({ done, total, message: `Processing ${job.id}` });
     const blob = files.get(job.src); let image;
@@ -299,9 +334,10 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
         }
         for (const result of pending) { output.set(result.src, result.blob); runtime.effects[result.pose] = { src: result.src, ...result.meta }; }
       } else if (job.kind !== 'reference') {
-        const dirs = { portrait: 'portraits', hero: 'heroes', cutin: 'cutins', stage: 'stages', ui: 'ui' }, src = `assets/${dirs[job.kind]}/${job.id}.png`;
+        const dirs = { portrait: 'portraits', hero: 'heroes', cutin: 'cutins', ending: 'endings', stage: 'stages', ui: 'ui' }, src = `assets/${dirs[job.kind]}/${job.id}.png`;
         output.set(src, await exportImage(image, job));
-        if (job.fighter) selectedFighters.get(job.fighter)[job.kind] = src;
+        // The ending text keeps its name; the illustration is exposed as endingArt.
+        if (job.fighter) selectedFighters.get(job.fighter)[job.kind === 'ending' ? 'endingArt' : job.kind] = src;
         else if (job.kind === 'stage') selectedStages.get(job.stage).src = src;
         else runtime.ui[job.id] = src;
       }
@@ -360,9 +396,10 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
     if (file === 'index.html') content = content.replace(/<a\b[^>]*href=["'][^"']*builder[^"']*["'][^>]*>[\s\S]*?<\/a>/gi, '');
     output.set(file, new Blob([content], { type: file === 'LICENSE' ? 'text/plain' : file.endsWith('.html') ? 'text/html' : file.endsWith('.css') ? 'text/css' : 'text/javascript' })); done++;
   }
+  for (const file of ARCADE_ART) { const response = await fetch(new URL(`../${file}`, import.meta.url)); if (!response.ok) throw new Error(`Arcade artwork unavailable: ${file}`); output.set(file, await response.blob()); }
   output.set('assets/manifest.json', jsonBlob(runtime));
   const sourceGame = { ...source.game, title: runtime.title,
-    fighters: runtime.fighters.map(({ poses, portrait, hero, cutin, ...f }) => ({ ...source.game.fighters.find(item => item.id === f.id), ...f })),
+    fighters: runtime.fighters.map(({ poses, portrait, hero, cutin, endingArt, introVideo, ...f }) => ({ ...source.game.fighters.find(item => item.id === f.id), ...f })),
     stages: runtime.stages.map(({ src, ...s }) => ({ ...source.game.stages.find(item => item.id === s.id), ...s })) };
   if (sourceGame.expectedAssets) sourceGame.expectedAssets = jobs.map(job => job.id);
   output.set('sources/assets.json', jsonBlob({ ...source, root: '.', game: sourceGame, assets: jobs }));
@@ -393,23 +430,24 @@ function validateOutput(files) {
     if (!(blob instanceof Blob)) throw new Error(`Invalid export data: ${path}`);
     size += blob.size;
   }
-  if (size > MAX_BYTES) throw new Error('Export exceeds the 512 MB browser package limit.');
+  if (size > MAX_BYTES) throw new Error('Export exceeds the 1 GB browser package limit.');
 }
 export async function zipFiles(files) {
   validateOutput(files);
   const local = [], central = []; let offset = 0, centralSize = 0;
   for (const [path, blob] of files) {
-    const name = encoder.encode(path), data = new Uint8Array(await blob.arrayBuffer()), crc = crc32(data);
+    // Read each file once for its checksum, then reference the original blob so the archive is not a second in-memory copy.
+    const name = encoder.encode(path), crc = crc32(new Uint8Array(await blob.arrayBuffer()));
     if (name.length > 65535) throw new Error('ZIP filename is too long.');
     const head = new Uint8Array(30 + name.length), view = new DataView(head.buffer);
     view.setUint32(0, 0x04034b50, true); view.setUint16(4, 20, true); view.setUint16(6, 0x800, true);
     view.setUint16(12, 0x21, true); // Fixed DOS date 1980-01-01 for reproducible archives.
-    view.setUint32(14, crc, true); view.setUint32(18, data.length, true); view.setUint32(22, data.length, true); view.setUint16(26, name.length, true); head.set(name, 30);
-    local.push(head, data);
+    view.setUint32(14, crc, true); view.setUint32(18, blob.size, true); view.setUint32(22, blob.size, true); view.setUint16(26, name.length, true); head.set(name, 30);
+    local.push(head, blob);
     const entry = new Uint8Array(46 + name.length), cv = new DataView(entry.buffer);
     cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true); cv.setUint16(8, 0x800, true); cv.setUint16(14, 0x21, true);
-    cv.setUint32(16, crc, true); cv.setUint32(20, data.length, true); cv.setUint32(24, data.length, true); cv.setUint16(28, name.length, true); cv.setUint32(42, offset, true); entry.set(name, 46);
-    central.push(entry); centralSize += entry.length; offset += head.length + data.length;
+    cv.setUint32(16, crc, true); cv.setUint32(20, blob.size, true); cv.setUint32(24, blob.size, true); cv.setUint16(28, name.length, true); cv.setUint32(42, offset, true); entry.set(name, 46);
+    central.push(entry); centralSize += entry.length; offset += head.length + blob.size;
   }
   const end = new Uint8Array(22), ev = new DataView(end.buffer);
   ev.setUint32(0, 0x06054b50, true); ev.setUint16(8, files.size, true); ev.setUint16(10, files.size, true); ev.setUint32(12, centralSize, true); ev.setUint32(16, offset, true);

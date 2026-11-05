@@ -18,6 +18,33 @@ test('opening film manifest requires a portable MP4, duration and integrity hash
     assert.throws(() => validateVideoManifest({ ...video, openingVideo: { ...video.openingVideo, ...patch } }));
   }
 });
+test('animated title can stand alone or accompany the opening and fighter intros', async () => {
+  const { validateVideoManifest } = await api;
+  const title = { id: 'title', src: 'raw/title.mp4', duration: 8, sha256: 'a'.repeat(64), hasAudio: false };
+  const opening = { id: 'opening', src: 'raw/opening.mp4', duration: 8, sha256: 'b'.repeat(64), hasAudio: false };
+  const intro = { id: 'intro-griddle', fighter: 'griddle', src: 'raw/griddle.mp4', duration: 8, sha256: 'c'.repeat(64) };
+  const base = { schema: 'comfy-fighter-video/v1', root: '.' };
+  assert.deepEqual(validateVideoManifest({ ...base, titleVideo: title }), { ...base, titleVideo: title });
+  assert.deepEqual(validateVideoManifest({ ...base, openingVideo: opening, titleVideo: title, fighterIntros: [intro] }), { ...base, openingVideo: opening, titleVideo: title, fighterIntros: [intro] });
+  for (const invalid of [
+    { ...title, id: 'opening' }, { ...title, src: '../title.mp4' }, { ...title, hasAudio: 'no' },
+    { ...title, sha256: 'bad' }, { ...title, duration: 0 }
+  ]) assert.throws(() => validateVideoManifest({ ...base, titleVideo: invalid }));
+  assert.throws(() => validateVideoManifest({ ...base, titleVideo: title, openingVideo: { ...opening, src: title.src } }), /unique/);
+});
+test('intro-only video maps validate fighter identities, paths and integrity', async () => {
+  const { validateVideoManifest } = await api;
+  const game = { fighters: [{ id: 'griddle' }, { id: 'tempo' }] };
+  const clip = { id: 'intro-griddle', fighter: 'griddle', src: 'raw/griddle-intro.mp4', duration: 8, sha256: 'a'.repeat(64) };
+  const map = { schema: 'comfy-fighter-video/v1', root: '.', fighterIntros: [clip] };
+  assert.deepEqual(validateVideoManifest(map, game), map);
+  for (const altered of [
+    { fighterIntros: [{ ...clip, fighter: 'other', id: 'intro-other' }] },
+    { fighterIntros: [clip, clip] }, { fighterIntros: [{ ...clip, src: '../escape.mp4' }] },
+    { fighterIntros: [{ ...clip, duration: 31 }] }, { fighterIntros: [{ ...clip, sha256: '' }] },
+    { fighterIntros: [] }
+  ]) assert.throws(() => validateVideoManifest({ ...map, ...altered }, game));
+});
 function manifest() {
   return { schema: 'comfy-fighter-assets/v1', root: '.', game: { title: 'Custom fighters', fighters: [{ id: 'dad', name: 'Dad', color: '#ff8844' }, { id: 'rival', name: 'Rival', color: '#44aaff' }], stages: [{ id: 'yard', name: 'Yard' }], sheets: { sheet: poses } },
     assets: [{ id: 'dad_sheet', kind: 'sprites', fighter: 'dad', sheet: 'sheet', poses: [...poses], src: 'raw/dad_sheet.png', key: true }] };

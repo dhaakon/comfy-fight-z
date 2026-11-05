@@ -4,7 +4,15 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { createHash } = require('node:crypto');
 const { sourceFile } = require('./runtime-validation.cjs');
-const CONTRACT = Object.freeze({ fighters: 6, stages: 1, images: 56, audio: 22, poses: 162 });
+// A shipped example matches one reviewed release exactly: the classic six-fighter Yard bundle, or
+// the arcade bundle with a final boss, three arenas and 45 poses each (27 required + 18 in-betweens).
+const CONTRACTS = Object.freeze({
+  classic: Object.freeze({ name: 'classic', fighters: 6, bosses: 0, stages: 1, images: 56, audio: 22, poses: 27,
+    art: ['source', 'reference', 'portrait', 'hero', 'cutin'], voices: ['intro', 'special'] }),
+  arcade: Object.freeze({ name: 'arcade', fighters: 7, bosses: 1, stages: 3, images: 89, audio: 99, poses: 45,
+    art: ['source', 'reference', 'portrait', 'hero', 'cutin', 'ending'], voices: ['intro', 'special', 'super', 'attack', 'hurt', 'ko', 'win'] })
+});
+const contractFor = game => game?.extraSheets ? CONTRACTS.arcade : CONTRACTS.classic;
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 
@@ -23,15 +31,17 @@ async function verifyBundle(directory, { packaged = true } = {}) {
   const { validateManifest, validateAudioManifest } = await import(pathToFileURL(path.join(__dirname, '../../public/builder/pack.js')).href);
   const manifest = validateManifest(read(sourceFile(directory, 'assets.json')));
   const audio = validateAudioManifest(read(sourceFile(directory, 'audio.json')), manifest.game);
-  if (manifest.cloudOnly !== true || manifest.game.fighters.length !== CONTRACT.fighters || manifest.game.stages.length !== CONTRACT.stages || manifest.assets.length !== CONTRACT.images || audio.assets.length !== CONTRACT.audio)
-    throw new Error('The complete example requires 6 fictional fighters, 1 arena, 56 generated images and 22 audio clips.');
-  const poses = Object.values(manifest.game.sheets || {}).flat();
-  if (poses.length !== 27 || new Set(poses).size !== 27) throw new Error('Example needs the complete 27-pose layout.');
+  const contract = contractFor(manifest.game);
+  if (manifest.cloudOnly !== true || manifest.game.fighters.length !== contract.fighters || manifest.game.stages.length !== contract.stages || manifest.assets.length !== contract.images || audio.assets.length !== contract.audio)
+    throw new Error(`The complete ${contract.name} example requires ${contract.fighters} fictional fighters, ${contract.stages} arena(s), ${contract.images} generated images and ${contract.audio} audio clips.`);
+  if (manifest.game.fighters.filter(fighter => fighter.boss).length !== contract.bosses) throw new Error(`The complete ${contract.name} example requires ${contract.bosses} final boss(es).`);
+  const required = Object.values(manifest.game.sheets || {}).flat(), poses = [...required, ...Object.values(manifest.game.extraSheets || {}).flat()];
+  if (required.length !== 27 || poses.length !== contract.poses || new Set(poses).size !== poses.length) throw new Error(`Example needs the complete ${contract.poses}-pose ${contract.name} layout.`);
   for (const fighter of manifest.game.fighters) {
     const mapped = manifest.assets.filter(asset => asset.kind === 'sprites' && asset.fighter === fighter.id).flatMap(asset => asset.poses);
-    if (mapped.length !== 27 || new Set(mapped).size !== 27 || poses.some(pose => !mapped.includes(pose))) throw new Error(`Incomplete pose map: ${fighter.id}`);
-    for (const kind of ['source', 'reference', 'portrait', 'hero', 'cutin']) if (!manifest.assets.some(asset => asset.kind === kind && asset.fighter === fighter.id)) throw new Error(`Missing ${kind} for ${fighter.id}`);
-    for (const role of ['intro', 'special']) if (!audio.assets.some(asset => asset.id === `fighter_${fighter.id}_${role}` && asset.fighter === fighter.id)) throw new Error(`Missing fighter audio: fighter_${fighter.id}_${role}`);
+    if (mapped.length !== poses.length || new Set(mapped).size !== poses.length || poses.some(pose => !mapped.includes(pose))) throw new Error(`Incomplete pose map: ${fighter.id}`);
+    for (const kind of contract.art) if (!manifest.assets.some(asset => asset.kind === kind && asset.fighter === fighter.id)) throw new Error(`Missing ${kind} for ${fighter.id}`);
+    for (const role of contract.voices) if (!audio.assets.some(asset => asset.id === `fighter_${fighter.id}_${role}` && asset.fighter === fighter.id)) throw new Error(`Missing fighter audio: fighter_${fighter.id}_${role}`);
   }
   const allowed = new Set(['assets.json', 'audio.json', 'provenance.json']);
   const entries = []; let bytes = 0;
@@ -47,7 +57,7 @@ async function verifyBundle(directory, { packaged = true } = {}) {
   let provenance;
   if (packaged) {
     provenance = read(sourceFile(directory, 'provenance.json'));
-    if (provenance.schema !== 'comfy-fighter-example-provenance/v1' || provenance.imageEncoding !== 'lossless WebP; decoded RGBA pixels verified' || provenance.images?.length !== CONTRACT.images || provenance.audio?.length !== CONTRACT.audio) throw new Error('The reviewed example provenance record is missing or incomplete.');
+    if (provenance.schema !== 'comfy-fighter-example-provenance/v1' || provenance.imageEncoding !== 'lossless WebP; decoded RGBA pixels verified' || provenance.images?.length !== contract.images || provenance.audio?.length !== contract.audio) throw new Error('The reviewed example provenance record is missing or incomplete.');
     for (const entry of entries) {
       const records = entry.record.kind === 'audio' ? provenance.audio : provenance.images;
       const evidence = records.find(item => item.id === entry.record.id);
@@ -56,7 +66,7 @@ async function verifyBundle(directory, { packaged = true } = {}) {
     const unknown = filesIn(directory).filter(name => !allowed.has(name));
     if (unknown.length) throw new Error(`Unmapped files in the shipped example: ${unknown.join(', ')}`);
   }
-  return { directory, manifest, audio, entries, bytes, provenance, poseCount: poses.length * manifest.game.fighters.length };
+  return { directory, manifest, audio, entries, bytes, provenance, contract, poseCount: poses.length * manifest.game.fighters.length };
 }
 
-module.exports = { CONTRACT, hash, read, filesIn, verifyBundle };
+module.exports = { CONTRACTS, contractFor, hash, read, filesIn, verifyBundle };

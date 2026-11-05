@@ -12,7 +12,7 @@ const QRCode = require('qrcode');
 
 const VERSION = 1;
 const STEP = 1000 / 60;
-const INPUTS = ['left', 'right', 'jump', 'down', 'punch', 'kick', 'heavy', 'special'];
+const INPUTS = ['left', 'right', 'jump', 'down', 'punch', 'kick', 'heavy', 'special', 'taunt'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.cjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.flac': 'audio/flac', '.ogg': 'audio/ogg', '.m4a': 'audio/mp4', '.mp4': 'video/mp4', '.webm': 'video/webm', '.woff2': 'font/woff2' };
 const PUBLIC_FILES = new Set(['index.html', 'game.js', 'engine.js', 'anim.js', 'style.css', 'session-client.js', 'multiplayer.js', 'network.css', 'controller.html', 'controller.js', 'favicon.ico', 'LICENSE', 'THIRD-PARTY-NOTICES.txt']);
@@ -44,12 +44,14 @@ function createGameServer(options = {}) {
     const runtimeRequire = createRequire(path.join(gameRoot, 'start-server.cjs'));
     const engine = runtimeRequire(path.join(gameRoot, 'engine.js'));
     const manifest = JSON.parse(fs.readFileSync(path.join(gameRoot, 'assets/manifest.json'), 'utf8'));
-    const fighters = manifest.fighters?.map(f => ({ id: f.id, name: f.name, color: f.color, introTagline: f.introTagline })) || [];
+    const fighters = manifest.fighters?.map(f => ({ id: f.id, name: f.name, color: f.color, introTagline: f.introTagline, style: f.style, boss: f.boss === true })) || [];
     const stages = manifest.stages?.map(s => ({ id: s.id, name: s.name })) || [];
     if (!fighters.length || !stages.length || fighters.some(f => typeof f.id !== 'string') || stages.some(s => typeof s.id !== 'string') || new Set(fighters.map(f => f.id)).size !== fighters.length || new Set(stages.map(s => s.id)).size !== stages.length)
       throw new Error('Every game mount needs a runtime manifest with unique fighter and stage IDs.');
     if (typeof engine.create !== 'function' || typeof engine.tick !== 'function') throw new Error('Game mount engine must expose create() and tick().');
-    return { basePath: basePath(mount), root: gameRoot, engine, catalog: { fighters, stages }, fighters: new Set(fighters.map(f => f.id)), stages: new Set(stages.map(s => s.id)) };
+    // Fighting styles travel with the runtime manifest so online matches use each fighter's moveset.
+    const profiles = Object.fromEntries(fighters.map(f => [f.id, { style: f.style, boss: f.boss }]));
+    return { basePath: basePath(mount), root: gameRoot, engine, profiles, catalog: { fighters, stages }, fighters: new Set(fighters.map(f => f.id)), stages: new Set(stages.map(s => s.id)) };
   }).sort((a, b) => b.basePath.length - a.basePath.length);
   if (!mounts.length) throw new Error('Configure at least one game mount.');
   const findMount = pathname => mounts.find(game => pathname.startsWith(game.basePath));
@@ -62,7 +64,7 @@ function createGameServer(options = {}) {
   const rooms = new Map(), sessions = new Map();
   const graceMs = options.graceMs ?? 45000, pairingMs = options.pairingMs ?? 600000;
   const idleMs = options.idleMs ?? 900000, maxRooms = options.maxRooms ?? 64;
-  const introMs = options.introMs ?? 18000;
+  const introMs = options.introMs ?? 30000;
   let closed = false;
 
   const server = http.createServer((req, res) => {
@@ -90,7 +92,8 @@ function createGameServer(options = {}) {
     const page = route ? (route[1] === 'project' ? 'index.html' : 'controller.html') : relative === 'builder/' && options.allowBuilder === true ? 'builder/index.html' : relative || 'index.html';
     // Exports contain a runnable backend too: never expose it, packages or dotfiles over HTTP.
     const extension = path.extname(page).toLowerCase();
-    const asset = page.startsWith('assets/') && Object.hasOwn(MIME, extension) && !['.cjs', '.mjs', '.js', '.html'].includes(extension);
+    const arcade = ['arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp', 'arcade/title-logo.webp'].includes(page);
+    const asset = (page.startsWith('assets/') || arcade) && Object.hasOwn(MIME, extension) && !['.cjs', '.mjs', '.js', '.html'].includes(extension);
     const builder = options.allowBuilder === true && page.startsWith('builder/') && ['.js', '.mjs', '.css', '.html', '.json', '.cjs'].includes(extension);
     if ((!PUBLIC_FILES.has(page) && !asset && !builder) || page.split('/').some(part => part.startsWith('.'))) { res.writeHead(404); return res.end(); }
     const file = path.resolve(game.root, page);
@@ -168,7 +171,7 @@ function createGameServer(options = {}) {
     broadcast(room, { type: 'intro_complete', matchId: room.matchId }); publishRoom(room); broadcast(room, snapshot(room)); controllerState(room);
   }
   function startMatch(room) {
-    room.matchId = crypto.randomUUID(); room.state = room.game.engine.create(room.players.map(p => p.fighter), { cpu: room.playMode === 'solo' });
+    room.matchId = crypto.randomUUID(); room.state = room.game.engine.create(room.players.map(p => p.fighter), { cpu: room.playMode === 'solo', profiles: room.game.profiles, seed: crypto.randomInt(1, 2 ** 31) });
     room.phase = 'intro'; room.introFrames = 0; room.lastActivity = Date.now();
     for (const p of room.players) { p.input = {}; p.taps.clear(); p.seq = -1; p.introDone = p.cpu || p.role === 'controller'; }
     if (room.projector) room.projector.introDone = false;

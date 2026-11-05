@@ -15,6 +15,10 @@ const ID = /^[a-z0-9][a-z0-9_-]*$/i;
 const IMAGE_SCHEMA = 'comfy-fighter-assets/v1', AUDIO_SCHEMA = 'comfy-fighter-audio/v1';
 const LEGACY_SCHEMAS = { [IMAGE_SCHEMA]: 'dad-fighter-assets/v1', [AUDIO_SCHEMA]: 'dad-fighter-audio/v1' };
 const MAPPING_FIELDS = ['kind', 'fighter', 'stage', 'sheet', 'poses', 'category', 'key'];
+const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending'];
+const IMAGE_KINDS = ['source', ...FIGHTER_KINDS, 'stage', 'ui', 'effects'];
+const STYLES = ['balanced', 'power', 'speed', 'zoner', 'grappler', 'trickster', 'boss'];
+const canonical = () => require('../../comfyui/config/game.json');
 function readMap(folder, filename, schema) {
   const file = path.join(folder, filename);
   if (!fs.existsSync(file)) return null;
@@ -30,8 +34,11 @@ function readMap(folder, filename, schema) {
 }
 function baseContract(manifest) {
   if (!manifest || manifest.partial) throw new Error('A complete base assets.json is required; a partial patch cannot be the base.');
-  const game = manifest.game, standardSheets = require('../../comfyui/config/game.json').sheets;
+  const game = manifest.game, standardSheets = canonical().sheets, extraSheets = canonical().extraSheets || {};
   if (!game || typeof game.title !== 'string' || !game.title.trim() || !Array.isArray(game.fighters) || game.fighters.length < 2 || !Array.isArray(game.stages) || !game.stages.length || !isDeepStrictEqual(game.sheets, standardSheets)) throw new Error('Complete base requires a title, two fighters, an environment and the three standard pose layouts.');
+  if (game.extraSheets !== undefined && !isDeepStrictEqual(game.extraSheets, extraSheets)) throw new Error('Complete base changes the optional arcade pose layouts.');
+  if (game.fighters.filter(fighter => fighter?.boss === true).length > 1) throw new Error('Complete base can include at most one final boss.');
+  const layouts = { ...standardSheets, ...extraSheets };
   for (const group of ['fighters', 'stages']) {
     const ids = new Set();
     for (const entry of game[group]) {
@@ -50,23 +57,25 @@ function baseContract(manifest) {
   required(item => item.kind === 'effects' && isDeepStrictEqual(item.poses, ['hit', 'block', 'projectile', 'dust', 'ko', 'powerup', 'dash', 'launch', 'spark']), 'combat effects');
   if (game.expectedAssets !== undefined && (!Array.isArray(game.expectedAssets) || game.expectedAssets.length !== assets.size || new Set(game.expectedAssets).size !== assets.size || game.expectedAssets.some(id => !assets.has(id)))) throw new Error('Complete base does not include its expected asset records.');
   for (const item of manifest.assets) {
-    if (!['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'stage', 'ui', 'effects'].includes(item.kind)) throw new Error(`Invalid base asset kind: ${item.id}`);
+    if (!IMAGE_KINDS.includes(item.kind)) throw new Error(`Invalid base asset kind: ${item.id}`);
     if (item.fighter && !game.fighters.some(f => f.id === item.fighter) || item.stage && !game.stages.some(s => s.id === item.stage)) throw new Error(`Unknown owner on base asset: ${item.id}`);
-    if (['reference', 'sprites', 'portrait', 'hero', 'cutin'].includes(item.kind) && (!item.fighter || item.stage) || item.kind === 'stage' && (!item.stage || item.fighter) || ['ui', 'effects'].includes(item.kind) && (item.fighter || item.stage) || item.kind === 'source' && Boolean(item.fighter) === Boolean(item.stage)) throw new Error(`Invalid owner mapping on base asset: ${item.id}`);
-    if (item.kind === 'sprites' && !isDeepStrictEqual(item.poses, standardSheets[item.sheet])) throw new Error(`Invalid pose layout on base asset: ${item.id}`);
+    if (FIGHTER_KINDS.includes(item.kind) && (!item.fighter || item.stage) || item.kind === 'stage' && (!item.stage || item.fighter) || ['ui', 'effects'].includes(item.kind) && (item.fighter || item.stage) || item.kind === 'source' && Boolean(item.fighter) === Boolean(item.stage)) throw new Error(`Invalid owner mapping on base asset: ${item.id}`);
+    if (item.kind === 'sprites' && !isDeepStrictEqual(item.poses, layouts[item.sheet])) throw new Error(`Invalid pose layout on base asset: ${item.id}`);
   }
   return assets;
 }
 function applyMetadata(game, original, patchGame, changes) {
   if (!patchGame) return;
   if (patchGame.sheets && !isDeepStrictEqual(patchGame.sheets, original.sheets)) throw new Error('Patch changes the configured pose layouts.');
+  if (patchGame.extraSheets && original.extraSheets && !isDeepStrictEqual(patchGame.extraSheets, original.extraSheets)) throw new Error('Patch changes the optional arcade pose layouts.');
   const update = (target, base, fields, incoming, prefix) => {
     for (const field of fields) if (Object.hasOwn(incoming, field) && !isDeepStrictEqual(incoming[field], base[field])) {
       const key = `${prefix}.${field}`;
       if (changes.has(key) && !isDeepStrictEqual(changes.get(key), incoming[field])) throw new Error(`Conflicting edited metadata: ${key}`);
-      if (field === 'specialMove') {
-        if (!incoming[field] || ['name', 'description'].some(key => typeof incoming[field][key] !== 'string' || !incoming[field][key].trim())) throw new Error(`Invalid special move metadata: ${prefix}`);
-      } else if (typeof incoming[field] !== 'string' || ['name', 'title'].includes(field) && !incoming[field].trim()) throw new Error(`Invalid metadata: ${key}`);
+      if (field === 'specialMove' || field === 'superMove') {
+        if (!incoming[field] || ['name', 'description'].some(key => typeof incoming[field][key] !== 'string' || !incoming[field][key].trim())) throw new Error(`Invalid ${field === 'specialMove' ? 'special' : 'super'} move metadata: ${prefix}`);
+      } else if (field === 'style' && !STYLES.includes(incoming[field])) throw new Error(`Invalid fighting style: ${prefix}`);
+      else if (typeof incoming[field] !== 'string' || ['name', 'title'].includes(field) && !incoming[field].trim()) throw new Error(`Invalid metadata: ${key}`);
       if (field === 'color' && !/^#[a-f0-9]{6}$/i.test(incoming[field])) throw new Error(`Invalid character color: ${prefix}`);
       changes.set(key, incoming[field]); target[field] = structuredClone(incoming[field]);
     }
@@ -80,7 +89,7 @@ function applyMetadata(game, original, patchGame, changes) {
       const base = original[group].find(entry => entry.id === item?.id), target = game[group].find(entry => entry.id === item?.id);
       if (!base || ids.has(item.id)) throw new Error(`Patch contains an unknown or duplicate ${group} definition: ${item?.id}`);
       ids.add(item.id);
-      update(target, base, ['name', 'description', 'specialMove', 'introTagline', 'color'], item, `${group}.${item.id}`);
+      update(target, base, ['name', 'description', 'specialMove', 'superMove', 'introTagline', 'winQuote', 'ending', 'style', 'color'], item, `${group}.${item.id}`);
     }
   }
 }
@@ -96,14 +105,19 @@ function merge({ base, patches, out, saga = false }) {
   const audioPlan = saga ? JSON.parse(fs.readFileSync(path.join(ROOT, 'comfyui/assets/audio-plan.json'), 'utf8')).jobs : [];
   const expectedRecords = new Map([...imagePlan, ...audioPlan].map(job => [job.id, job]));
   const game = structuredClone(config), metadataChanges = new Map();
-  const changes = [], imageRecords = new Map(), audioRecords = new Map();
-  let videoManifest, videoInput;
+  const changes = [], retired = [], imageRecords = new Map(), audioRecords = new Map();
+  let videoManifest, videoInputs = new Map();
+  const videoRecords = new Map();
   for (const folder of roots) for (const [filename, schema, records] of [['assets.json', IMAGE_SCHEMA, imageRecords], ['audio.json', AUDIO_SCHEMA, audioRecords]]) {
     const manifest = readMap(folder, filename, schema); if (!manifest) continue;
     if (!saga && folder !== base && filename === 'assets.json') applyMetadata(game, baseManifest.game, manifest.game, metadataChanges);
     for (const record of manifest.assets) {
       const isAudio = filename === 'audio.json';
       let job = expectedRecords.get(record.id);
+      // A saga merge migrates the accepted base to the current plan: base records the plan retired
+      // or remapped are dropped, and the completeness checks below require a patch to supply any
+      // planned ID that is still missing. Patch records must always match the plan exactly.
+      if (saga && folder === base && (!job || isAudio !== (job.kind === 'audio') || MAPPING_FIELDS.some(field => field !== 'key' && !isDeepStrictEqual(record[field], job[field])))) { retired.push(record.id); continue; }
       if (!saga && isAudio && !job) {
         if ([...expectedRecords.keys()].some(id => id.toLowerCase() === record.id.toLowerCase())) throw new Error(`Conflicting asset ID casing: ${record.id}`);
         if (record.kind !== 'audio' || !['music', 'sfx', 'voice'].includes(record.category) || record.fighter && !game.fighters.some(f => f.id === record.fighter)) throw new Error(`Invalid audio mapping: ${record.id}`);
@@ -120,24 +134,47 @@ function merge({ base, patches, out, saga = false }) {
   }
   for (const folder of roots) {
     const file = path.join(folder, 'video.json'); if (!fs.existsSync(file)) continue;
-    const mapped = JSON.parse(fs.readFileSync(sourceFile(folder, 'video.json'), 'utf8')), video = mapped.openingVideo;
-    if (mapped.schema !== 'comfy-fighter-video/v1' || mapped.root !== '.' || video?.id !== 'opening' || !/\.mp4$/i.test(video.src || '') || !Number.isFinite(video.duration) || video.duration <= 0 || video.duration > 300 || !/^[a-f0-9]{64}$/i.test(video.sha256 || '')) throw new Error('Invalid opening video manifest.');
-    const input = sourceFile(folder, video.src);
-    if (createHash('sha256').update(fs.readFileSync(input)).digest('hex') !== video.sha256.toLowerCase()) throw new Error('Opening video hash mismatch.');
-    videoManifest = mapped; videoInput = input;
+    const mapped = JSON.parse(fs.readFileSync(sourceFile(folder, 'video.json'), 'utf8'));
+    if (mapped.schema !== 'comfy-fighter-video/v1' || mapped.root !== '.' || (mapped.fighterIntros !== undefined && !Array.isArray(mapped.fighterIntros))) throw new Error('Invalid video manifest.');
+    if (mapped.openingVideo && mapped.openingVideo.id !== 'opening' || mapped.titleVideo && mapped.titleVideo.id !== 'title') throw new Error('Invalid opening or title video ID.');
+    const videos = [...(mapped.openingVideo ? [mapped.openingVideo] : []), ...(mapped.titleVideo ? [mapped.titleVideo] : []), ...(mapped.fighterIntros || [])], seenFighters = new Set(), seenPaths = new Set();
+    if (!videos.length || videos.length > 66) throw new Error('Video manifest needs an opening, title or fighter introductions.');
+    for (const video of videos) {
+      const intro = !!video.fighter;
+      if (intro && (!game.fighters.some(f => f.id === video.fighter) || video.id !== `intro-${video.fighter}` || seenFighters.has(video.fighter))) throw new Error('Invalid or duplicate fighter introduction.');
+      if (intro) seenFighters.add(video.fighter);
+      if ((!intro && !['opening', 'title'].includes(video.id)) || (video.hasAudio !== undefined && typeof video.hasAudio !== 'boolean') || !/\.mp4$/i.test(video.src || '') || seenPaths.has(video.src.toLowerCase()) || !Number.isFinite(video.duration) || video.duration <= 0 || video.duration > (intro ? 30 : 300) || !/^[a-f0-9]{64}$/i.test(video.sha256 || '')) throw new Error('Invalid video mapping.');
+      seenPaths.add(video.src.toLowerCase());
+      const input = sourceFile(folder, video.src);
+      if (createHash('sha256').update(fs.readFileSync(input)).digest('hex') !== video.sha256.toLowerCase()) throw new Error('Video hash mismatch.');
+      videoRecords.set(intro ? `fighter:${video.fighter}` : video.id, { video, input });
+    }
+    const { openingVideo, titleVideo, fighterIntros, ...metadata } = mapped;
+    videoManifest = { ...(videoManifest || {}), ...metadata };
+  }
+  if (videoManifest) {
+    const intros = [];
+    for (const [key, { video, input }] of videoRecords) {
+      if ([...videoInputs.keys()].some(src => src.toLowerCase() === video.src.toLowerCase())) throw new Error(`Duplicate merged video path: ${video.src}`);
+      videoInputs.set(video.src, input);
+      if (key === 'opening') videoManifest.openingVideo = video;
+      else if (key === 'title') videoManifest.titleVideo = video;
+      else intros.push(video);
+    }
+    if (intros.length) videoManifest.fighterIntros = intros;
   }
   const assets = [...imageRecords.values()].map(({ record }) => record), audio = [...audioRecords.values()].map(({ record }) => record);
-  const expected = imagePlan.map(j => j.id);
-  if (expected.length !== assets.length || expected.some(id => !imageRecords.has(id))) throw new Error('Merged image set does not match the complete asset plan.');
+  const expected = imagePlan.map(j => j.id), missingImages = expected.filter(id => !imageRecords.has(id));
+  if (expected.length !== assets.length || missingImages.length) throw new Error(`Merged image set does not match the complete asset plan. Missing: ${missingImages.join(', ') || 'none'}.`);
   const expectedAudio = saga ? audioPlan.map(j => j.id) : audio.length ? baseManifest.game.expectedAudio || [] : [];
-  if (!Array.isArray(expectedAudio) || expectedAudio.some(id => !audioRecords.has(id))) throw new Error('Merged audio set is incomplete.');
+  if (!Array.isArray(expectedAudio) || expectedAudio.some(id => !audioRecords.has(id))) throw new Error(`Merged audio set is incomplete. Missing: ${expectedAudio.filter(id => !audioRecords.has(id)).join(', ')}.`);
   const paths = new Set();
   for (const { record } of [...imageRecords.values(), ...audioRecords.values()]) {
     const key = record.src.toLowerCase();
     if (paths.has(key)) throw new Error(`Conflicting source path: ${record.src}`);
     paths.add(key);
   }
-  if (videoManifest && paths.has(videoManifest.openingVideo.src.toLowerCase())) throw new Error('Opening video path collides with other media.');
+  for (const src of videoInputs.keys()) if (paths.has(src.toLowerCase())) throw new Error('Video path collides with other media.');
   fs.mkdirSync(out, { recursive: true });
   for (const { record, input } of [...imageRecords.values(), ...audioRecords.values()]) {
     const target = source(out, record.src); fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -151,11 +188,11 @@ function merge({ base, patches, out, saga = false }) {
   fs.writeFileSync(path.join(out, 'assets.json'), JSON.stringify(outputManifest, null, 2) + '\n');
   if (audio.length) fs.writeFileSync(path.join(out, 'audio.json'), JSON.stringify({ schema: AUDIO_SCHEMA, root: '.', title: game.title, assets: audio }, null, 2) + '\n');
   if (videoManifest) {
-    const outputVideo = source(out, videoManifest.openingVideo.src); fs.mkdirSync(path.dirname(outputVideo), { recursive: true }); fs.copyFileSync(videoInput, outputVideo);
+    for (const [src, input] of videoInputs) { const outputVideo = source(out, src); fs.mkdirSync(path.dirname(outputVideo), { recursive: true }); fs.copyFileSync(input, outputVideo); }
     fs.writeFileSync(path.join(out, 'video.json'), JSON.stringify(videoManifest, null, 2) + '\n');
   }
-  fs.writeFileSync(path.join(out, 'update-report.json'), JSON.stringify({ source: 'Accepted incremental ComfyUI updates', imageAssets: assets.length, audioAssets: audio.length, changed: changes }, null, 2) + '\n');
-  console.log(`Merged ${changes.length} updates into ${assets.length} images and ${audio.length} audio assets. Unchanged files retained.`);
+  fs.writeFileSync(path.join(out, 'update-report.json'), JSON.stringify({ source: 'Accepted incremental ComfyUI updates', imageAssets: assets.length, audioAssets: audio.length, changed: changes, ...(retired.length ? { retired } : {}) }, null, 2) + '\n');
+  console.log(`Merged ${changes.length} updates into ${assets.length} images and ${audio.length} audio assets. Unchanged files retained.${retired.length ? ` Replaced ${retired.length} base record(s) the current plan retired or remapped: ${retired.join(', ')}.` : ''}`);
 }
 if (require.main === module) {
   const options = { patches: [] }, args = process.argv.slice(2);

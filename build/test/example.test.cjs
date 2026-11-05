@@ -24,12 +24,22 @@ function temporary(t) {
   return root;
 }
 
-function fixture(t) {
-  const root = temporary(t), bundle = path.join(root, 'example/bundle'), bytes = Buffer.from('distinct test media, no real-person input');
+// The reviewed classic release: six fighters in The Yard, 27 poses, intro and special voices.
+function classicGame() {
   const game = structuredClone(config);
+  delete game.extraSheets;
+  game.fighters = game.fighters.filter(fighter => !fighter.boss); game.stages = game.stages.slice(0, 1);
+  return game;
+}
+const CLASSIC_AUDIO = ['menu_music', 'yard_music', 'ann_select', 'ann_go', 'ann_ko', 'ann_victory', 'sfx_punch', 'sfx_kick', 'sfx_block', 'sfx_special'];
+
+function fixture(t, { classic = false } = {}) {
+  const root = temporary(t), bundle = path.join(root, 'example/bundle'), bytes = Buffer.from('distinct test media, no real-person input');
+  const game = classic ? classicGame() : structuredClone(config);
   const manifest = { schema: 'comfy-fighter-assets/v1', root: '.', cloudOnly: true, game,
     assets: makeJobs(game).map(job => ({ ...assetRecord(job), src: `raw/${job.id}.webp`, width: 96, height: 96, sha256: hash(bytes) })) };
-  const audio = { schema: 'comfy-fighter-audio/v1', root: '.', assets: audioPlan.jobs.map(job => ({ ...job, src: `raw/${job.id}.mp3`, sha256: hash(bytes) })) };
+  const clips = classic ? audioPlan.jobs.filter(job => CLASSIC_AUDIO.includes(job.id) || /^fighter_.+_(intro|special)$/.test(job.id) && game.fighters.some(fighter => fighter.id === job.fighter)) : audioPlan.jobs;
+  const audio = { schema: 'comfy-fighter-audio/v1', root: '.', assets: clips.map(job => ({ ...job, src: `raw/${job.id}.mp3`, sha256: hash(bytes) })) };
   const provenance = { schema: 'comfy-fighter-example-provenance/v1', imageEncoding: 'lossless WebP; decoded RGBA pixels verified',
     images: manifest.assets.map(record => ({ id: record.id, packagedSha256: record.sha256, pixelsIdentical: true })),
     audio: audio.assets.map(record => ({ id: record.id, packagedSha256: record.sha256 })) };
@@ -44,16 +54,26 @@ test('example CLI has free-build defaults and explicit output/install choices', 
   for (const args of [['--generate'], ['--out'], ['--out', 'a', '--out', 'b'], ['--out', '--no-install']]) assert.throws(() => parseArgs(args), /Usage/);
 });
 
-test('bundled example verifies every image/audio digest and all six complete pose maps', async t => {
+test('bundled example verifies every image/audio digest and all seven complete pose maps', async t => {
   const item = fixture(t), result = await verifyBundle(item.bundle);
-  assert.equal(result.entries.length, 78); assert.equal(result.poseCount, 162);
+  assert.equal(result.contract.name, 'arcade');
+  assert.equal(result.entries.length, 89 + 99); assert.equal(result.poseCount, 7 * 45);
   fs.appendFileSync(path.join(item.bundle, item.manifest.assets[0].src), 'altered');
   await assert.rejects(verifyBundle(item.bundle), /integrity check failed/);
 });
 
+test('the reviewed classic six-fighter release still verifies exactly, and cannot pass as half an arcade bundle', async t => {
+  const item = fixture(t, { classic: true }), result = await verifyBundle(item.bundle);
+  assert.equal(result.contract.name, 'classic');
+  assert.equal(result.entries.length, 56 + 22); assert.equal(result.poseCount, 6 * 27);
+  // Declaring the arcade layout without its boss, arenas, extra sheets and voices is rejected.
+  item.manifest.game.extraSheets = config.extraSheets; write(path.join(item.bundle, 'assets.json'), item.manifest);
+  await assert.rejects(verifyBundle(item.bundle), /complete arcade example requires 7/);
+});
+
 test('the shipped generated example is complete, portable and contains no unmapped private media', async () => {
-  const bundle = path.resolve(__dirname, '../../example/bundle'), result = await verifyBundle(bundle);
-  assert.equal(result.entries.length, 78); assert.equal(result.poseCount, 162);
+  const bundle = path.resolve(__dirname, '../../example/bundle'), result = await verifyBundle(bundle), { contract } = result;
+  assert.equal(result.entries.length, contract.images + contract.audio); assert.equal(result.poseCount, contract.fighters * contract.poses);
   for (const filename of ['assets.json', 'audio.json', 'provenance.json']) {
     const json = fs.readFileSync(path.join(bundle, filename), 'utf8');
     assert.doesNotMatch(json, /[A-Za-z]:[\\/]|\/(?:Users|home)\/|private-archive/);
@@ -73,7 +93,7 @@ test('shipped example rejects unmapped media and unproven image compression', as
 
 test('partial examples cannot silently omit an intro, special or pose', async t => {
   const item = fixture(t);
-  item.audio.assets[10].id = 'unexpected_special'; write(path.join(item.bundle, 'audio.json'), item.audio);
+  item.audio.assets.find(asset => asset.id.startsWith('fighter_') && asset.id.endsWith('_special')).id = 'unexpected_special'; write(path.join(item.bundle, 'audio.json'), item.audio);
   await assert.rejects(verifyBundle(item.bundle), /Missing fighter audio/);
 });
 

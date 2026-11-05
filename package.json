@@ -32,6 +32,9 @@
     "example:build": "node example/run.cjs",
     "example:prepare": "node example/prepare.cjs",
     "example:package": "node build/tools/package-example.cjs",
-    "bundle:server": "node build/tools/bundle-server.cjs"
+    "bundle:server": "node build/tools/bundle-server.cjs",
+    "test:arcade": "npm run build && node build/test/arcade-browser.cjs",
+    "workflows:expansion": "node comfyui/tools/prepare-arcade-expansion.cjs",
+    "test:expansion": "node build/test/expansion-pipeline.cjs"
   }
 }

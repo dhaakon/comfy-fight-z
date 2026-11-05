@@ -30,6 +30,46 @@ test('walking has intermediate stance frames and landing has a brief anchored co
   assert.equal(landing.pose, 'crouch'); assert.ok(landing.sy < 1 && landing.sx > 1); assert.equal(landing.dy, 0);
 });
 
+test('grounded walking keeps feet on their anchor and attacks stay aligned with simulation', () => {
+  const { state, fighter } = scene(); fighter.vx = 4;
+  for (let frame = 0; frame < 24; frame++) {
+    state.motionFrame = frame;
+    assert.equal(A.sample(fighter, state).dy, 0, 'A grounded walk frame must not lift the feet');
+  }
+  fighter.vx = 0; fighter.move = 'heavy';
+  for (let frame = 0; frame < E.MOVES.heavy.startup + E.MOVES.heavy.active + E.MOVES.heavy.recovery; frame++) {
+    fighter.moveFrame = frame;
+    assert.ok(Math.abs(A.sample(fighter, state).dx) <= 4.1, 'Painted fighter must stay near the hitbox');
+  }
+});
+
+test('backwards movement displays a guard when the fighter is actually blocking', () => {
+  const { state, fighter } = scene(); fighter.vx = -3; fighter.guard = true;
+  assert.equal(A.sample(fighter, state).pose, 'block');
+  fighter.guard = false;
+  assert.equal(A.sample(fighter, state).phase, 'walk');
+});
+
+test('stationary pose changes draw one clear cel, while a moving strike may leave a subtle trail', () => {
+  const { state, fighter } = scene(), renderer = A.createRenderer();
+  const canvas = createCanvas(300, 180), ctx = canvas.getContext('2d'), sprite = createCanvas(30, 60);
+  const meta = { src: 'fixture', w: 30, h: 60, ax: 15, ay: 60, bh: 60 };
+  const data = { poses: Object.fromEntries(['idle', 'stance2', 'block', 'punch', 'hpunch'].map(p => [p, meta])) };
+  const originalDraw = ctx.drawImage.bind(ctx); let draws = 0;
+  ctx.drawImage = (...args) => { draws++; return originalDraw(...args); };
+  fighter.x = 100; fighter.move = 'heavy';
+  for (let frame = 1; frame <= 12; frame++) {
+    state.motionFrame = frame; fighter.moveFrame = frame; draws = 0;
+    renderer.draw(ctx, fighter, data, () => sprite, state, { ground: 150, height: 100 });
+    assert.equal(draws, 1, 'A stationary fighter must not have a ghost of the previous pose');
+  }
+  for (let frame = 13; frame <= 18; frame++) {
+    state.motionFrame = frame; fighter.moveFrame = 10; fighter.x += 5; draws = 0;
+    renderer.draw(ctx, fighter, data, () => sprite, state, { ground: 150, height: 100 });
+  }
+  assert.ok(draws > 1, 'A strike moving across the stage may retain a visual trail');
+});
+
 test('animation is deterministic, leaves simulation untouched, and stops during impact freeze', () => {
   const { state, fighter } = scene(); state.motionFrame = 7; fighter.move = 'heavy'; fighter.moveFrame = 9;
   const before = JSON.stringify(state), first = A.sample(fighter, state);
@@ -60,4 +100,33 @@ test('renderer draws anchored mirrored art without changing canvas state or figh
   assert.equal(ctx.globalAlpha, alpha); assert.equal(ctx.getTransform().toString(), transform); assert.equal(JSON.stringify(fighter), original);
   assert.ok(ctx.getImageData(80, 90, 1, 1).data[3] > 0, 'The fighter must actually render');
   assert.equal(renderer.draw(ctx, fighter, data, () => null, state), false, 'Missing sprites must remain visible to the caller instead of silently substituting art');
+});
+
+test('optional arcade poses replace in-betweens only when the fighter has them', () => {
+  const { state, fighter } = scene();
+  const all = Object.fromEntries(['walk3', 'walk4', 'run', 'run2', 'punchwind', 'jumpfall', 'crouchblock', 'dizzy', 'roll', 'super'].map(p => [p, {}]));
+  fighter.vx = 3.5;
+  const walk = [0, 6, 12, 18].map(frame => { state.motionFrame = frame; return A.sample(fighter, state, { poses: all }).pose; });
+  assert.deepEqual(walk, ['walk', 'walk3', 'walk2', 'walk4']);
+  fighter.vx = 0; fighter.move = 'punch'; fighter.moveFrame = 1;
+  assert.equal(A.sample(fighter, state, { poses: all }).pose, 'punchwind');
+  assert.equal(A.sample(fighter, state).pose, 'stance2', 'Without the optional sheet the original wind-up remains');
+  fighter.move = null; fighter.running = true; state.motionFrame = 0;
+  assert.ok(['run', 'run2'].includes(A.sample(fighter, state, { poses: all }).pose));
+  fighter.running = false; fighter.dizzy = 30;
+  assert.equal(A.sample(fighter, state, { poses: all }).pose, 'dizzy');
+  assert.equal(A.sample(fighter, state).pose, 'hit');
+  fighter.dizzy = 0; fighter.move = 'roll'; fighter.moveFrame = 8;
+  const fallbackRoll = A.sample(fighter, state);
+  assert.equal(fallbackRoll.pose, 'tumble'); assert.ok(fallbackRoll.spin > 0, 'A missing roll cel spins the tumble pose');
+  assert.equal(A.sample(fighter, state, { poses: all }).spin, 0);
+});
+
+test('pose resolution follows fallbacks to a required pose', () => {
+  const poses = { idle: {}, stance2: {}, dash: {}, tumble: {}, hit: {}, hpunch: {} };
+  assert.equal(A.resolvePose('run2', poses), 'dash');
+  assert.equal(A.resolvePose('roll', poses), 'tumble');
+  assert.equal(A.resolvePose('hitheavy', poses), 'hit');
+  assert.equal(A.resolvePose('blowback', poses), 'hpunch');
+  assert.equal(A.resolvePose('unknown', poses), 'idle');
 });

@@ -1,0 +1,189 @@
+{
+  "id": "9c700010-99ae-4444-9999-202611040001",
+  "revision": 0,
+  "last_node_id": 3,
+  "last_link_id": 2,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        320,
+        374
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-ltx-new-frame-griddle.png",
+        "image"
+      ],
+      "title": "Upload fictional 16:9 griddle first frame"
+    },
+    {
+      "id": 2,
+      "type": "LtxApi25ImageToVideo",
+      "pos": [
+        420,
+        0
+      ],
+      "size": [
+        400,
+        310
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "last_frame",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LtxApi25ImageToVideo"
+      },
+      "widgets_values": [
+        "LTX-2.5 (Fast)",
+        "8",
+        "1280x720",
+        "24",
+        false,
+        "Original hand-inked, 2D cel-animated 1990s arcade fighting game introduction. Use the supplied image as the actual first frame. Keep exactly the same one fictional character, face, body proportions, hair, costume, footwear and fictional backyard scenery across the entire shot. The camera remains nearly fixed in a medium-wide shot. The broad barbecue hero exhales with a confident grin, flexes his shoulders, rotates his orange-cuffed fist into a grounded boxing guard, then briefly shapes a small controlled orange flame at his palm. Motion is fluid and physically coherent: keep two arms, two hands and two legs, stable facial identity, no extra characters, no cuts, no transformation, no extra props, no text, no UI, no borders, no photorealism, no exaggerated glow. End on a clear fighting stance. Existing recorded dialogue is provided separately; do not add lip sync.",
+        7262020,
+        "fixed"
+      ],
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "griddle ? LTX 2.5 Fast / 8 sec / 720p",
+      "widgets_values_named": {
+        "model": "LTX-2.5 (Fast)",
+        "model.duration": "8",
+        "model.resolution": "1280x720",
+        "model.fps": "24",
+        "model.generate_audio": false,
+        "prompt": "Original hand-inked, 2D cel-animated 1990s arcade fighting game introduction. Use the supplied image as the actual first frame. Keep exactly the same one fictional character, face, body proportions, hair, costume, footwear and fictional backyard scenery across the entire shot. The camera remains nearly fixed in a medium-wide shot. The broad barbecue hero exhales with a confident grin, flexes his shoulders, rotates his orange-cuffed fist into a grounded boxing guard, then briefly shapes a small controlled orange flame at his palm. Motion is fluid and physically coherent: keep two arms, two hands and two legs, stable facial identity, no extra characters, no cuts, no transformation, no extra props, no text, no UI, no borders, no photorealism, no exaggerated glow. End on a clear fighting stance. Existing recorded dialogue is provided separately; do not add lip sync.",
+        "seed": 7262020,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 3,
+      "type": "SaveVideo",
+      "pos": [
+        900,
+        0
+      ],
+      "size": [
+        490,
+        150
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "comfy-fighter-z/ltx-intros-NEW_RUN/intro-griddle",
+        "auto",
+        "auto"
+      ],
+      "title": "Save intro-griddle",
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/ltx-intros-NEW_RUN/intro-griddle",
+        "format": "auto",
+        "format.codec": "auto"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "VIDEO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6,
+      "offset": [
+        0,
+        0
+      ]
+    },
+    "cfzLtxIntros": {
+      "mutedByDefault": true,
+      "reference": "Upload a fresh 16:9 fictional first frame per fighter. All nodes are muted; unmute after review.",
+      "model": "LTX-2.5 (Fast)",
+      "duration": 8,
+      "resolution": "1280x720",
+      "fps": 24,
+      "generatedAudio": false
+    }
+  },
+  "version": 0.4
+}

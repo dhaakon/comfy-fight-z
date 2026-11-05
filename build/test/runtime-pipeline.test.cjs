@@ -40,7 +40,7 @@ function setupMerge(t) {
 }
 function runtime() {
   const src = 'assets/shared.webp';
-  return { title: config.title, fighters: config.fighters.map(f => ({ ...f, sourceImage: src, portrait: src, hero: src, cutin: src, poses: Object.fromEntries(Object.values(config.sheets).flat().map(pose => [pose, { src }])) })),
+  return { title: config.title, fighters: config.fighters.map(f => ({ ...f, sourceImage: src, portrait: src, hero: src, cutin: src, endingArt: src, poses: Object.fromEntries(Object.values({ ...config.sheets, ...config.extraSheets }).flat().map(pose => [pose, { src }])) })),
     stages: config.stages.map(s => ({ ...s, src, sourceImage: src })),
     ui: Object.fromEntries(imagePlan.jobs.filter(j => j.kind === 'ui').map(j => [j.id, src])),
     effects: Object.fromEntries(imagePlan.jobs.filter(j => j.kind === 'effects').flatMap(j => j.poses.map(pose => [pose, { src }]))), audio: {} };
@@ -59,6 +59,22 @@ test('partial image/audio patches merge into the complete plan with current conf
   assert.deepEqual(merged.assets.find(a => a.id === unchanged.id), unchanged);
 });
 
+test('a saga merge retires base audio the plan dropped or remapped once a patch supplies the complete set', t => {
+  const fixture = setupMerge(t), baseAudioFile = path.join(fixture.base, 'audio.json'), baseAudio = JSON.parse(fs.readFileSync(baseAudioFile));
+  // The classic example shipped an announcer call the plan no longer lists; a remapped record must not survive either.
+  const retiredBytes = 'base: ann_fight'; write(path.join(fixture.base, 'raw/ann_fight-base.wav'), retiredBytes);
+  baseAudio.assets.push({ id: 'ann_fight', kind: 'audio', category: 'voice', src: 'raw/ann_fight-base.wav', sha256: hash(retiredBytes) });
+  baseAudio.assets.find(record => record.id === 'yard_music').category = 'sfx'; write(baseAudioFile, baseAudio);
+  assert.throws(() => merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: fixture.out }), /audio set is incomplete. Missing: .*yard_music/);
+  assert.equal(fs.existsSync(fixture.out), false);
+  const complete = path.join(fixture.folder, 'audio-patch'); bundle(complete, [], audioPlan.jobs, 'regenerated'); fs.unlinkSync(path.join(complete, 'assets.json'));
+  merge({ saga: true, base: fixture.base, patches: [fixture.patch, complete], out: fixture.out });
+  const audio = JSON.parse(fs.readFileSync(path.join(fixture.out, 'audio.json'))), report = JSON.parse(fs.readFileSync(path.join(fixture.out, 'update-report.json')));
+  assert.deepEqual(audio.assets.map(record => record.id).sort(), audioPlan.jobs.map(job => job.id).sort());
+  assert.deepEqual(report.retired, ['yard_music', 'ann_fight']);
+  assert.equal(fs.existsSync(path.join(fixture.out, 'raw/ann_fight-base.wav')), false);
+});
+
 test('opening video survives unrelated patches and adopts without image conversion', t => {
   const fixture = setupMerge(t), bytes = 'integrity fixture only; media decoding is covered in browser tests';
   const mapped = { schema: 'comfy-fighter-video/v1', root: '.', openingVideo: { id: 'opening', src: 'raw/opening.mp4', duration: 25, sha256: hash(bytes) } };
@@ -72,6 +88,23 @@ test('opening video survives unrelated patches and adopts without image conversi
   manifest.openingVideo = { ...mapped.openingVideo, src: 'assets/video/opening.mp4' };
   const video = adoptionInputs(target, manifest, config, imagePlan).get(manifest.openingVideo.src);
   assert.equal(video.video, true); assert.equal(video.next, manifest.openingVideo.src);
+});
+
+test('adding a title video through a later patch preserves opening and fighter intros', t => {
+  const fixture = setupMerge(t), create = (folder, name, id, fighter) => {
+    const bytes = `video bytes ${name}`, src = `raw/${name}.mp4`;
+    write(path.join(folder, src), bytes);
+    return { id, ...(fighter ? { fighter } : {}), src, duration: 8, sha256: hash(bytes), hasAudio: false };
+  };
+  const opening = create(fixture.base, 'opening', 'opening');
+  const intro = create(fixture.base, 'fighter-griddle', 'intro-griddle', 'griddle');
+  const title = create(fixture.patch, 'animated-title', 'title');
+  write(path.join(fixture.base, 'video.json'), { schema: 'comfy-fighter-video/v1', root: '.', openingVideo: opening, fighterIntros: [intro] });
+  write(path.join(fixture.patch, 'video.json'), { schema: 'comfy-fighter-video/v1', root: '.', titleVideo: title });
+  merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: fixture.out });
+  const result = JSON.parse(fs.readFileSync(path.join(fixture.out, 'video.json'), 'utf8'));
+  assert.deepEqual(result.openingVideo, opening); assert.deepEqual(result.titleVideo, title); assert.deepEqual(result.fighterIntros, [intro]);
+  for (const record of [opening, title, intro]) assert.equal(hash(fs.readFileSync(path.join(fixture.out, record.src))), record.sha256);
 });
 
 test('a pose-order change is rejected before a merged bundle is written', t => {

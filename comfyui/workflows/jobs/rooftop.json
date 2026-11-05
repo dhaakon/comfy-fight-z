@@ -1,0 +1,249 @@
+{
+  "id": "4b12261f-1338-4b3b-a8a5-30d6ca35a402",
+  "revision": 0,
+  "last_node_id": 4,
+  "last_link_id": 2,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        460,
+        220
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.\nFighting arena: A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders. Use the supplied environment design to preserve its architecture, surfaces and lighting. Recompose as a wide side-on anime stage background with an unobstructed horizontal playable floor at 82% image height, flat camera, clear central arena. Background props remain behind the fight plane. No fighters, people, HUD, letters or logos. Full-bleed landscape with natural surfaces reaching every edge. No superimposed directional lines, radial rays, speed-line border, comic frame, edge vignette or letterboxing.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.\nFighting arena: A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders. Use the supplied environment design to preserve its architecture, surfaces and lighting. Recompose as a wide side-on anime stage background with an unobstructed horizontal playable floor at 82% image height, flat camera, clear central arena. Background props remain behind the fight plane. No fighters, people, HUD, letters or logos. Full-bleed landscape with natural surfaces reaching every edge. No superimposed directional lines, radial rays, speed-line border, comic frame, edge vignette or letterboxing.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "rooftop | cloud generation"
+    },
+    {
+      "id": 2,
+      "type": "GeminiNanoBanana2V2",
+      "pos": [
+        460,
+        780
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model.images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "model.files",
+          "shape": 7,
+          "type": "GEMINI_INPUT_FILES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "thought_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GeminiNanoBanana2V2"
+      },
+      "widgets_values": [
+        "Generate a wholly invented environment from text alone: Sunset Rooftop, a community-center roof arena in an imaginary town. Wide 16:9 side-on fighting-game view, flat unobstructed blue-gray deck with horizontal fighting line at 82 percent image height. Far behind the fight plane are a low coral parapet, two compact solar-panel arrays and one round water tank. An original low-rise skyline and peach sunset clouds form the background; no recognizable city landmarks. Hand-painted 1990s anime background, economical ink, warm coral and violet light, clean cel-shaded surfaces. No people, real venue reference, readable signs, logos, floor symbols, furniture in the fight plane, speed lines, graphic borders, vignette, panels or letterboxing. Fill all four edges with natural scenery.",
+        "Gemini Nano Banana 2.1",
+        "16:9",
+        "2K",
+        "MINIMAL",
+        42,
+        "fixed",
+        "IMAGE",
+        "Create the requested original game art. Follow the layout and reference identity precisely.",
+        1,
+        0.95
+      ],
+      "widgets_values_named": {
+        "prompt": "Generate a wholly invented environment from text alone: Sunset Rooftop, a community-center roof arena in an imaginary town. Wide 16:9 side-on fighting-game view, flat unobstructed blue-gray deck with horizontal fighting line at 82 percent image height. Far behind the fight plane are a low coral parapet, two compact solar-panel arrays and one round water tank. An original low-rise skyline and peach sunset clouds form the background; no recognizable city landmarks. Hand-painted 1990s anime background, economical ink, warm coral and violet light, clean cel-shaded surfaces. No people, real venue reference, readable signs, logos, floor symbols, furniture in the fight plane, speed lines, graphic borders, vignette, panels or letterboxing. Fill all four edges with natural scenery.",
+        "model": "Gemini Nano Banana 2.1",
+        "model.aspect_ratio": "16:9",
+        "model.resolution": "2K",
+        "model.thinking_level": "MINIMAL",
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "response_modalities": "IMAGE",
+        "system_prompt": "Create the requested original game art. Follow the layout and reference identity precisely.",
+        "temperature": 1,
+        "top_p": 0.95
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "rooftop_source | source image"
+    },
+    {
+      "id": 3,
+      "type": "SaveImage",
+      "title": "Save rooftop",
+      "pos": [
+        950,
+        220
+      ],
+      "size": [
+        350,
+        330
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "hackathon/rooftop"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "MarkdownNote",
+      "pos": [
+        40,
+        -100
+      ],
+      "size": [
+        780,
+        260
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# rooftop\n\nCLOUD ONLY. This graph contains 2 paid image-generation node(s). Running those nodes consumes Comfy credits. Save nodes only process local files. No generation is triggered by creating or building these files.\n\nAll references are invented from text in this graph. No photographs or files from previous sessions are loaded.\n\nOutputs: ComfyUI/output/hackathon/. Import with npm run import:assets -- --from <output-folder>, then npm run build. Inspect pose sheets and anchors before release. Do not put credentials in this workflow."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      1,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7,
+      "offset": [
+        30,
+        140
+      ]
+    }
+  },
+  "version": 0.4
+}

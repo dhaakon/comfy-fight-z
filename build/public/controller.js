@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id), source = item => typeof item === 'string' ? item : item?.src;
-  const keyMap = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyF: 'special' };
+  const keyMap = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyF: 'special', KeyG: 'taunt' };
   class Controller {
     constructor() {
       this.room = null; this.side = null; this.seq = 0; this.manifest = null; this.catalog = [];
@@ -120,7 +120,7 @@
     }
     clearInput() {
       this.pointers.clear(); this.keyboard.clear(); this.stickKeys = {}; this.stickPointer = undefined; this.lastKeys = '';
-      for (const button of document.querySelectorAll('.pad-key.down')) button.classList.remove('down'); $('controller-nub').style.transform = '';
+      for (const button of document.querySelectorAll('[data-key].down')) button.classList.remove('down'); $('controller-nub').style.transform = '';
       if (this.client.ready) this.client.send({ type: 'input', seq: ++this.seq, keys: {} });
     }
     fail(message) {

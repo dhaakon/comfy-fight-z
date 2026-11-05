@@ -22,7 +22,9 @@ from comfy_api.latest import ComfyExtension, io, ui
 
 SCHEMA = "comfy-fighter-assets/v1"
 ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
-KINDS = {"source", "reference", "sprites", "portrait", "hero", "cutin", "stage", "ui", "effects"}
+KINDS = {"source", "reference", "sprites", "portrait", "hero", "cutin", "ending", "stage", "ui", "effects"}
+FIGHTER_KINDS = {"reference", "sprites", "portrait", "hero", "cutin", "ending"}
+STYLES = ("balanced", "power", "speed", "zoner", "grappler", "trickster", "boss")
 AssetRoot = io.Custom("CFZ_ROOT")
 AssetRecord = io.Custom("CFZ_ASSET")
 AudioRecord = io.Custom("CFZ_AUDIO_ASSET")
@@ -31,6 +33,13 @@ SHEETS = {
     "sheetB": ["stance2", "crouch", "sweep", "launcher", "jump", "airkick", "hpunch", "dash", "tumble"],
     "sheetC": ["walk2", "lkick", "cjab", "airpunch", "throw", "taunt", "getup", "powerup", "entrance"],
 }
+# Optional in-between and arcade poses. The 27 required poses above remain the
+# compatibility contract; fighters without these sheets still build and play.
+EXTRA_SHEETS = {
+    "sheetD": ["walk3", "walk4", "run", "run2", "backstep", "jumpfall", "crouchblock", "hitlow", "hitheavy"],
+    "sheetE": ["punchwind", "kickwind", "heavywind", "roll", "blowback", "super", "dizzy", "win2", "lose"],
+}
+ALL_SHEETS = {**SHEETS, **EXTRA_SHEETS}
 
 
 def _json_object(value, label):
@@ -72,21 +81,36 @@ def _config(value):
             if not isinstance(entry.get("name"), str) or not entry["name"].strip():
                 raise ValueError(f"{category}/{identity} requires a name")
             item = {"id": identity, "name": entry["name"].strip()}
-            for field in ("color", "description", "sourceImage", "sourceInput", "introTagline"):
+            for field in ("color", "description", "sourceImage", "sourceInput", "introTagline", "introVoice", "winQuote", "ending"):
                 if field in entry:
                     if not isinstance(entry[field], str):
                         raise ValueError(f"{category}/{identity}/{field} must be text")
                     item[field] = entry[field]
-            if "specialMove" in entry:
-                move = entry["specialMove"]
-                if not isinstance(move, dict) or any(not isinstance(move.get(key), str) or not move[key].strip() for key in ("name", "description")):
-                    raise ValueError(f"{category}/{identity}/specialMove requires a name and description")
-                item["specialMove"] = {key: move[key] for key in ("name", "description")}
+            for field in ("specialMove", "superMove"):
+                if field in entry:
+                    move = entry[field]
+                    if not isinstance(move, dict) or any(not isinstance(move.get(key), str) or not move[key].strip() for key in ("name", "description")):
+                        raise ValueError(f"{category}/{identity}/{field} requires a name and description")
+                    item[field] = {key: move[key] for key in ("name", "description")}
+            if "style" in entry:
+                if entry["style"] not in STYLES:
+                    raise ValueError(f"{category}/{identity}/style must be one of {', '.join(STYLES)}")
+                item["style"] = entry["style"]
+            if "boss" in entry:
+                if not isinstance(entry["boss"], bool):
+                    raise ValueError(f"{category}/{identity}/boss must be a boolean")
+                item["boss"] = entry["boss"]
             accepted.append(item)
         result[category] = accepted
     if value.get("sheets") != SHEETS:
         raise ValueError("config_json.sheets must preserve the three standard Comfy Fighter Z 3x3 pose layouts")
     result["sheets"] = {name: list(poses) for name, poses in SHEETS.items()}
+    if "extraSheets" in value:
+        if value["extraSheets"] != EXTRA_SHEETS:
+            raise ValueError("config_json.extraSheets must match the optional sheetD/sheetE pose layouts")
+        result["extraSheets"] = {name: list(poses) for name, poses in EXTRA_SHEETS.items()}
+    if sum(1 for fighter in result["fighters"] if fighter.get("boss")) > 1:
+        raise ValueError("config_json can mark at most one final boss")
     for field in ("expectedAssets", "expectedAudio"):
         expected = value.get(field)
         if expected is not None:
@@ -150,7 +174,7 @@ def _metadata(value, config):
             if identity_ref not in {entry["id"] for entry in config[category]}:
                 raise ValueError(f"Unknown {key}: {identity_ref}")
             result[key] = identity_ref
-    if kind in {"reference", "sprites", "portrait", "hero", "cutin"} and "fighter" not in result:
+    if kind in FIGHTER_KINDS and "fighter" not in result:
         raise ValueError(f"{kind} requires fighter metadata")
     if kind == "stage" and "stage" not in result:
         raise ValueError("stage requires stage metadata")
@@ -170,7 +194,8 @@ def _metadata(value, config):
         result["poses"] = poses
         if kind == "sprites":
             sheet = value.get("sheet")
-            if sheet not in config["sheets"] or poses != config["sheets"][sheet]:
+            layouts = {**config["sheets"], **config.get("extraSheets", {})}
+            if sheet not in layouts or poses != layouts[sheet]:
                 raise ValueError("Sprite sheet metadata must match its configured pose order")
             result["sheet"] = sheet
     return result

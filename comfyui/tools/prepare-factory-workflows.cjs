@@ -11,14 +11,16 @@ const write = (file, value) => {
 const SCHEMAS = read('comfyui/workflows/templates/compact-factory-schema.json');
 const WIDGET_TYPES = new Set(['STRING', 'BOOLEAN', 'COMBO', 'INT', 'FLOAT']);
 
+// Arcade art per fighter: two optional in-between sheets (2K) and one ending illustration (1K).
+const arcade = config => !!config.extraSheets;
 function factoryCounts(config, allEnvironments = false) {
-  const fighters = config.fighters.length;
+  const fighters = config.fighters.length, extras = arcade(config);
   const environments = allEnvironments ? config.stages : config.stages.filter(s => s.enabled);
   const stages = environments.length;
   const inventedCharacters=config.fighters.filter(item=>item.sourceMode==='Invent fictional reference').length;
   const inventedEnvironments=environments.filter(item=>item.sourceMode==='Invent fictional reference').length;
-  const oneK = fighters * 4 + 5 + inventedCharacters, twoK = fighters * 3 + stages + 1 + inventedEnvironments;
-  return { paidImages: oneK + twoK, sourceSaves: fighters + stages, mappedAssets: fighters * 8 + stages * 2 + 6,
+  const oneK = fighters * (extras ? 5 : 4) + 5 + inventedCharacters, twoK = fighters * (extras ? 5 : 3) + stages + 1 + inventedEnvironments;
+  return { paidImages: oneK + twoK, sourceSaves: fighters + stages, mappedAssets: fighters * (extras ? 11 : 8) + stages * 2 + 6,
     oneK, twoK, estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072).toFixed(6)) };
 }
 
@@ -87,11 +89,16 @@ function projectValues(config, suffix = '') {
   return { root_directory: path.resolve(ROOT, config.assetRoot, suffix), title: config.title, subtitle: config.subtitle || '',
     style: config.style, ui_style: config.uiStyle, stage_style: config.stageStyle, model: config.model, seed: 42 };
 }
-function characterValues(fighter, includeSheets = true) {
+function arcadeValues(fighter) {
+  return { fighting_style: fighter.style || 'balanced', super_name: fighter.superMove?.name || '', super_description: fighter.superMove?.description || '',
+    win_quote: fighter.winQuote || '', ending: fighter.ending || '', role: fighter.boss ? 'Final boss' : 'Fighter' };
+}
+function characterValues(fighter, includeSheets = true, includeArcade = true) {
   const source_mode=fighter.sourceMode||'Upload reference';
   return { image: source_mode==='Invent fictional reference'?'':fighter.sourceInput || '', source_mode, name: fighter.name, description: fighter.description,
     special_name: fighter.specialMove.name, special_description: fighter.specialMove.description,
-    intro_tagline: fighter.introTagline || '', color: fighter.color, character_id: fighter.id, include_sprite_sheets: includeSheets };
+    intro_tagline: fighter.introTagline || '', color: fighter.color, character_id: fighter.id, include_sprite_sheets: includeSheets,
+    ...arcadeValues(fighter), include_arcade_art: includeArcade };
 }
 function environmentValues(stage) {
   const source_mode=stage.sourceMode||'Upload reference';
@@ -105,19 +112,21 @@ function attachExporter(builder, project, bundles, pos, complete) {
 }
 
 function makeFactoryGraph(config) {
-  if (config.fighters.length !== 6 || config.stages.length !== 3) throw new Error('The main template has exactly six character and three environment slots');
+  // Six fighter slots, an optional seventh final-boss slot and three environment slots.
+  const bosses = config.fighters.filter(f => f.boss).length;
+  if (![6, 7].includes(config.fighters.length) || bosses !== config.fighters.length - 6 || (bosses && !config.fighters[6].boss) || config.stages.length !== 3) throw new Error('The main template has six character slots, one optional final-boss slot and three environment slots');
   const b = graphBuilder(`${config.title}: compact upload factory`);
   const project = b.node('CFZProjectSettings', 'Project settings | output folder + game title', projectValues(config), [-510, 120], [450, 470]);
   const bundles = [];
   config.fighters.forEach((fighter, i) => {
-    const character = b.node('CFZCharacterFactory', `Character ${i + 1} | ${fighter.name}`, characterValues(fighter),
+    const character = b.node('CFZCharacterFactory', fighter.boss ? `Final boss | ${fighter.name}` : `Character ${i + 1} | ${fighter.name}`, characterValues(fighter, true, arcade(config)),
       [(i % 3) * 490, 120 + Math.floor(i / 3) * 820], [440, 720]);
-    character.color = '#26374b'; character.bgcolor = '#172334';
+    character.color = fighter.boss ? '#4b2630' : '#26374b'; character.bgcolor = fighter.boss ? '#341720' : '#172334';
     b.connect(project, 0, character, 'project'); bundles.push(character);
   });
   const environments = config.stages.map((stage, i) => {
     const environment = b.node('CFZEnvironmentFactory', `Environment ${i + 1} | ${stage.enabled ? stage.name : 'disabled'}`,
-      environmentValues(stage), [i * 490, 1780], [440, 540]);
+      environmentValues(stage), [i * 490, 2600], [440, 540]);
     environment.color = stage.enabled ? '#29463d' : '#3a3e46'; environment.bgcolor = '#1b2927';
     b.connect(project, 0, environment, 'project'); bundles.push(environment); return environment;
   });
@@ -125,10 +134,10 @@ function makeFactoryGraph(config) {
   b.connect(project, 0, shared, 'project'); b.connect(environments[0], 1, shared, 'stage_reference'); bundles.push(shared);
   attachExporter(b, project, bundles, [1510, 970], true);
   const count = factoryCounts(config), full = factoryCounts(config, true);
-  b.note(`# ${config.title}\n## Invent fictional fighters. Build your game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Environment 1 supplies the title/select venue; slots 2 and 3 stay disabled until enabled. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default ${count.paidImages} image calls / ${count.mappedAssets} mapped assets (about $${count.estimatedUSD.toFixed(3)}). All three environments: ${full.paidImages} calls / ${full.mappedAssets} records (about $${full.estimatedUSD.toFixed(3)}). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing.`, [-510, -260], [1940, 290]);
-  b.note('## Before you run\n\n1. Install comfyui/custom_nodes/comfy_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 27 poses per fighter before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet or one environment. The full native graph is under comfyui/workflows/advanced/.', [1510, 1470], [440, 440]);
-  b.group('Six character factories', [-25, 45, 1470, 1620], '#4b6387');
-  b.group('Up to three environment factories', [-25, 1705, 1470, 675], '#4b7f6d');
+  b.note(`# ${config.title}\n## Invent fictional fighters and a final boss. Build your arcade game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Six fighter slots plus one Final boss slot close Arcade mode. Environment 1 supplies the title/select venue; disable slots 2 and 3 to build a one-stage game. Each fighter's arcade art adds two in-between sheets (45 poses) and an ending illustration. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default ${count.paidImages} image calls / ${count.mappedAssets} mapped assets (about $${count.estimatedUSD.toFixed(3)}). Source-reference generation is included when Invent is selected. Audio/video are separate. Opening this graph spends nothing.`, [-510, -260], [1940, 290]);
+  b.note('## Before you run\n\n1. Install comfyui/custom_nodes/comfy_fighter_assets and restart ComfyUI.\n2. Edit fictional descriptions, specials, supers, win quotes, endings and taglines; keep Invent mode for a demo without photo inputs.\n3. Validate and review paid-call costs.\n4. Review all 45 poses per fighter (27 required + 18 arcade in-betweens) before exporting a release.\n\nUse comfyui/workflows/factory/ for one character, one sheet, one art image or one environment. The full native graph is under comfyui/workflows/advanced/.', [1510, 1470], [440, 440]);
+  b.group('Six character factories + final boss', [-25, 45, 1470, 2460], '#4b6387');
+  b.group('Three environment factories', [-25, 2525, 1470, 675], '#4b7f6d');
   b.group('Shared artwork + mapped export', [1485, 545, 490, 830], '#826947');
   return b.graph;
 }
@@ -136,15 +145,16 @@ function makeFactoryGraph(config) {
 function makeCharacterTemplate(config) {
   const fighter = config.fighters[0], b = graphBuilder(`${config.title}: one character pack`);
   const project = b.node('CFZProjectSettings', 'Separate character patch folder', projectValues(config, `character-${fighter.id}`), [-510, 110], [440, 470]);
-  const character = b.node('CFZCharacterFactory', 'Upload character | identity + selection art', characterValues(fighter, false), [0, 110], [440, 720]);
+  const character = b.node('CFZCharacterFactory', 'Upload character | identity, selection and ending art', characterValues(fighter, false, arcade(config)), [0, 110], [440, 720]);
   b.connect(project, 0, character, 'project');
   const bundles = [character];
-  ['sheet', 'sheetB', 'sheetC'].forEach((sheet, i) => {
-    const node = b.node('CFZSpriteSheet', `Sprite sheet ${'ABC'[i]} | nine poses`, { sheet }, [540, 110 + i * 235], [420, 170]);
+  const sheets = arcade(config) ? ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE'] : ['sheet', 'sheetB', 'sheetC'];
+  sheets.forEach((sheet, i) => {
+    const node = b.node('CFZSpriteSheet', `Sprite sheet ${'ABCDE'[i]} | ${i < 3 ? 'nine required poses' : 'nine arcade in-betweens'}`, { sheet }, [540, 110 + i * 235], [420, 170]);
     b.connect(project, 0, node, 'project'); b.connect(character, 2, node, 'character'); b.connect(character, 1, node, 'reference'); bundles.push(node);
   });
   attachExporter(b, project, bundles, [1060, 250], false);
-  b.note('# One complete character pack\n\nInvent mode creates a fresh fictional source from text, then identity, portrait, hero and cut-in. Its internal sheets are OFF: the three visible sheet nodes reuse that identity. Eight paid images in Invent mode; seven when explicitly uploading a new reference. No previous photos are selected. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle.', [-510, -230], [1940, 220]);
+  b.note('# One complete character pack\n\nInvent mode creates a fresh fictional source from text, then identity, portrait, hero, cut-in and arcade ending art. Its internal sheets are OFF: the five visible sheet nodes reuse that identity (sheets A-C hold the 27 required poses; D and E add 18 optional in-betweens). Eleven paid images in Invent mode; ten when explicitly uploading a new reference. No previous photos are selected. Produces a PARTIAL assets.json; merge into a complete game before export. Keep this output root separate from the accepted bundle.', [-510, -230], [1940, 220]);
   b.graph.extra.ds = { scale: 0.65, offset: [570, 290] }; return b.graph;
 }
 
@@ -157,7 +167,7 @@ function makeSheetTemplate(config) {
   const sheet = b.node('CFZSpriteSheet', 'Choose sheet A, B or C', { sheet: 'sheet' }, [540, 330], [420, 190]);
   b.connect(project, 0, sheet, 'project'); b.connect(definition, 0, sheet, 'character'); b.connect(reference, 0, sheet, 'reference');
   attachExporter(b, project, [sheet], [1060, 330], false);
-  b.note(fighter.acceptedReferenceInput ? '# One sprite sheet from an accepted fictional identity\n\nUpload the explicitly named, newly generated identity; no old photo is selected. Choose sheet, sheetB or sheetC. One paid 2K image (~$0.072). Writes a PARTIAL assets.json into its own root for review and merge.' : '# One fictional sprite sheet\n\nThe custom Fictional Reference node invents a fresh character reference from text, then the custom Sprite Sheet node generates the selected nine-pose sheet. Two paid image calls (~$0.120); no Load Image node or previous-session file is used. Exports a PARTIAL assets.json into its own root. For consistent full-character production use the complete character pack, whose three sheets share one identity.', [-510, -230], [1940, 220]);
+  b.note(fighter.acceptedReferenceInput ? '# One sprite sheet from an accepted fictional identity\n\nUpload the explicitly named, newly generated identity; no old photo is selected. Choose sheet, sheetB or sheetC (27 required poses) or sheetD/sheetE (optional arcade in-betweens). One paid 2K image (~$0.072). Writes a PARTIAL assets.json into its own root for review and merge.' : '# One fictional sprite sheet\n\nThe custom Fictional Reference node invents a fresh character reference from text, then the custom Sprite Sheet node generates the selected nine-pose sheet. Two paid image calls (~$0.120); no Load Image node or previous-session file is used. Exports a PARTIAL assets.json into its own root. For consistent full-character production use the complete character pack, whose three sheets share one identity.', [-510, -230], [1940, 220]);
   b.graph.extra.ds = { scale: 0.6, offset: [570, 290] }; return b.graph;
 }
 
@@ -170,6 +180,65 @@ function makeEnvironmentTemplate(config) {
   b.graph.extra.ds = { scale: 0.75, offset: [570, 290] }; return b.graph;
 }
 
+// Adds arcade art to an ACCEPTED cast: per existing fighter two in-between sheets and an
+// ending illustration from its uploaded identity, plus the final boss and the extra
+// environments. Writes a PARTIAL assets.json for a reviewed --saga merge.
+function expansionParts(config) {
+  return { fighters: config.fighters.filter(f => !f.boss), boss: config.fighters.find(f => f.boss), stages: config.stages.slice(1).filter(s => s.enabled) };
+}
+function expansionCounts(config) {
+  const { fighters, boss, stages } = expansionParts(config);
+  const bossOneK = boss ? 5 + (boss.sourceMode === 'Invent fictional reference' ? 1 : 0) : 0, bossTwoK = boss ? 5 : 0;
+  const stageTwoK = stages.reduce((sum, stage) => sum + (stage.sourceMode === 'Invent fictional reference' ? 2 : 1), 0);
+  const oneK = fighters.length + bossOneK, twoK = fighters.length * 2 + bossTwoK + stageTwoK;
+  return { paidImages: oneK + twoK, oneK, twoK, mappedAssets: fighters.length * 3 + (boss ? 11 : 0) + stages.length * 2,
+    estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072).toFixed(6)) };
+}
+function makeExpansionGraph(config, { rootDirectory } = {}) {
+  const { fighters, boss, stages } = expansionParts(config);
+  if (!arcade(config)) throw new Error('The arcade expansion requires extraSheets in the configuration');
+  const b = graphBuilder(`${config.title}: arcade expansion for an accepted cast`);
+  const values = projectValues(config, 'arcade-expansion');
+  if (rootDirectory) values.root_directory = rootDirectory;
+  const project = b.node('CFZProjectSettings', 'Separate expansion patch folder', values, [-510, 110], [440, 470]);
+  const bundles = [];
+  fighters.forEach((fighter, i) => {
+    const x = (i % 3) * 1010, y = 110 + Math.floor(i / 3) * 900;
+    const reference = b.loadImage(fighter.acceptedReferenceInput || `cfz-accepted-${fighter.id}-reference.png`, [x, y]);
+    reference.title = `Accepted identity | ${fighter.name}`;
+    const definition = b.node('CFZCharacterDefinition', `${fighter.name} | accepted definition`, characterValues(fighter), [x, y + 500], [440, 330]);
+    ['sheetD', 'sheetE'].forEach((sheet, j) => {
+      const node = b.node('CFZSpriteSheet', `${fighter.name} | ${sheet} in-betweens`, { sheet }, [x + 480, y + j * 200], [420, 170]);
+      b.connect(project, 0, node, 'project'); b.connect(definition, 0, node, 'character'); b.connect(reference, 0, node, 'reference'); bundles.push(node);
+    });
+    const art = b.node('CFZCharacterArt', `${fighter.name} | arcade ending art`, { kind: 'ending' }, [x + 480, y + 400], [420, 170]);
+    b.connect(project, 0, art, 'project'); b.connect(definition, 0, art, 'character'); b.connect(reference, 0, art, 'reference'); bundles.push(art);
+  });
+  if (boss) {
+    // Internal sheets are off: five visible sheet nodes reuse the boss identity, so at most four
+    // art calls run together (workspaces limited to one concurrent job rate-limit larger bursts).
+    const node = b.node('CFZCharacterFactory', `Final boss | ${boss.name}`, characterValues(boss, false, true), [3060, 110], [440, 720]);
+    node.color = '#4b2630'; node.bgcolor = '#341720';
+    b.connect(project, 0, node, 'project'); bundles.push(node);
+    ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE'].forEach((sheet, i) => {
+      const sheetNode = b.node('CFZSpriteSheet', `${boss.name} | sheet ${'ABCDE'[i]}`, { sheet }, [3540, 110 + i * 200], [420, 170]);
+      b.connect(project, 0, sheetNode, 'project'); b.connect(node, 2, sheetNode, 'character'); b.connect(node, 1, sheetNode, 'reference'); bundles.push(sheetNode);
+    });
+  }
+  stages.forEach((stage, i) => {
+    const node = b.node('CFZEnvironmentFactory', `Environment | ${stage.name}`, environmentValues({ ...stage, enabled: true }), [3060, 1180 + i * 620], [440, 540]);
+    b.connect(project, 0, node, 'project'); bundles.push(node);
+  });
+  attachExporter(b, project, bundles, [4040, 600], false);
+  const count = expansionCounts(config);
+  b.note(`# Arcade expansion for the accepted cast\n\nMUTED BY DEFAULT. Upload each accepted identity reference (cfz-accepted-<id>-reference.png) into ComfyUI's input folder first; nothing older is selected automatically. Then unmute every node (select all, Ctrl+M). For each existing fighter this graph generates sheetD and sheetE (18 in-between poses) and an arcade ending illustration from that identity, invents the final boss from text, and invents the extra environments from text.\n\n**CLOUD ONLY / PAID:** ${count.paidImages} image calls (about $${count.estimatedUSD.toFixed(3)}). It writes a PARTIAL assets.json in its own root. Review every pose, then merge with build/tools/merge-bundles.cjs --saga into a fresh complete bundle.`, [-510, -260], [1940, 260]);
+  // Accepted identities are explicit uploads: ship muted until the reviewer selects them.
+  b.graph.nodes.forEach(node => { if (node.type !== 'MarkdownNote') node.mode = 2; });
+  b.graph.extra.cfzArcadeExpansion = { mutedByDefault: true, acceptedReferences: fighters.map(f => f.acceptedReferenceInput || `cfz-accepted-${f.id}-reference.png`) };
+  b.graph.extra.ds = { scale: 0.32, offset: [620, 360] };
+  return b.graph;
+}
+
 function builderMetadata(config) {
   const slots = items => items.map(item => ({ id: item.id, name: item.name, enabled: item.enabled !== false,
     sourceMode:item.sourceMode||'Upload reference', reference: item.sourceMode==='Invent fictional reference'?'':item.sourceInput || '', sourceInput:item.sourceMode==='Invent fictional reference'?'':item.sourceInput || '' }));
@@ -177,6 +246,7 @@ function builderMetadata(config) {
     fictional:true,characters: slots(config.fighters), environments: slots(config.stages),
     templates: [{id:'character',label:'One complete character pack',url:'/builder/templates/character-factory.json'},
       {id:'sheet',label:'One sprite sheet',url:'/builder/templates/sprite-sheet.json'},
+      {id:'expansion',label:'Arcade expansion for an accepted cast',url:'/builder/templates/arcade-expansion.json'},
       {id:'environment',label:'One environment',url:'/builder/templates/environment-factory.json'}],
     nodePack: { name:'Comfy Fighter Z Asset Factory',
       installInstructions:'Copy comfyui/custom_nodes/comfy_fighter_assets into your ComfyUI custom_nodes folder and restart ComfyUI. Then open the downloaded workflow.' } };
@@ -186,16 +256,16 @@ function prepareFactory() {
   const config = read('comfyui/config/factory.json');
   const main = makeFactoryGraph(config);
   write('comfyui/workflows/comfy-hackathon.json', main); write('build/public/builder/templates/comfy-hackathon.json', main);
-  const templates = { 'character-factory': makeCharacterTemplate(config), 'sprite-sheet': makeSheetTemplate(config), 'environment-factory': makeEnvironmentTemplate(config) };
+  const templates = { 'character-factory': makeCharacterTemplate(config), 'sprite-sheet': makeSheetTemplate(config), 'environment-factory': makeEnvironmentTemplate(config), 'arcade-expansion': makeExpansionGraph(config) };
   for (const [name, workflow] of Object.entries(templates)) {
     write(`comfyui/workflows/factory/${name}.json`, workflow); write(`build/public/builder/templates/${name}.json`, workflow);
   }
   write('build/public/builder/factory-template.json', builderMetadata(config));
   write('comfyui/workflows/factory/catalog.json', { schema:'comfy-fighter-factory/v1', cloudOnly:true, config:'comfyui/config/factory.json',
     workflow:'comfyui/workflows/comfy-hackathon.json', advancedWorkflow:'comfyui/workflows/advanced/full-image-graph.json',
-    characterSlots:6, environmentSlots:3, defaults:factoryCounts(config), allEnvironments:factoryCounts(config,true),
+    characterSlots:7, bossSlots:1, environmentSlots:3, defaults:factoryCounts(config), allEnvironments:factoryCounts(config,true), expansion:expansionCounts(config),
     templates:Object.keys(templates).map(name=>`comfyui/workflows/factory/${name}.json`) });
-  console.log('Prepared compact 12-node upload factory, three focused templates and matching builder downloads. No generation submitted.');
+  console.log('Prepared compact 13-node factory (six fighters, final boss, three environments), four focused templates and matching builder downloads. No generation submitted.');
 }
 if (require.main === module) prepareFactory();
-module.exports = { factoryCounts, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, builderMetadata, prepareFactory };
+module.exports = { factoryCounts, expansionCounts, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };

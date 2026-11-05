@@ -5,7 +5,7 @@ const { createHash } = require('node:crypto');
 const { verifiedExport } = require('./install-game.cjs');
 const { directoryTarget, isInside, sourceFile, runtimeSources } = require('./lib/runtime-validation.cjs');
 const ROOT = path.resolve(__dirname, '../..');
-const CODE = ['index.html', 'style.css', 'engine.js', 'anim.js', 'game.js', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
+const CODE = ['index.html', 'style.css', 'engine.js', 'anim.js', 'game.js', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt', 'arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp', 'arcade/title-logo.webp'];
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.flac': 'audio/flac', '.mp4': 'video/mp4' };
 const digest = data => createHash('sha256').update(data).digest('hex');
 

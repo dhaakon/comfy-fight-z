@@ -9,7 +9,8 @@ const net = require('node:net');
 const { spawn } = require('node:child_process');
 const { chromium } = require('playwright');
 const PROJECT = path.resolve(__dirname, '../..');
-const MAX_ZIP_BYTES = 512 * 1024 * 1024;
+// Matches the browser builder package limit in public/builder/pack.js.
+const MAX_ZIP_BYTES = 1024 * 1024 * 1024;
 
 function parseArgs(argv) {
   const options = {};
@@ -106,7 +107,7 @@ function safeArchivePath(name) {
 }
 
 function extractStoredZip(bytes, destination) {
-  if (bytes.length < 22 || bytes.length > MAX_ZIP_BYTES) throw new Error('ZIP size is invalid or exceeds 512 MB.');
+  if (bytes.length < 22 || bytes.length > MAX_ZIP_BYTES) throw new Error('ZIP size is invalid or exceeds 1 GB.');
   const end = bytes.length - 22;
   if (bytes.readUInt32LE(end) !== 0x06054b50 || bytes.readUInt16LE(end + 20) !== 0) throw new Error('ZIP end record is missing or unsupported.');
   if (bytes.readUInt16LE(end + 4) || bytes.readUInt16LE(end + 6)) throw new Error('Multi-disk ZIP is unsupported.');
@@ -129,7 +130,7 @@ function extractStoredZip(bytes, destination) {
     if (!bytes.subarray(offset + 30, offset + 30 + nameLength).equals(nameBytes) || start + size > centralStart) throw new Error(`Invalid ZIP data bounds: ${name}`);
     const data = bytes.subarray(start, start + size);
     if (crc32(data) !== crc) throw new Error(`ZIP checksum mismatch: ${name}`);
-    expanded += size; if (expanded > MAX_ZIP_BYTES) throw new Error('Expanded ZIP exceeds 512 MB.');
+    expanded += size; if (expanded > MAX_ZIP_BYTES) throw new Error('Expanded ZIP exceeds 1 GB.');
     files.set(name, data); localEnd = start + size; cursor = next;
   }
   if (cursor !== end || localEnd !== centralStart) throw new Error('ZIP has unexplained data or mismatched record counts.');
@@ -179,8 +180,12 @@ async function main(options) {
     if (!await builderPage.locator('#export-ready').isVisible()) throw new Error(await builderPage.locator('#status').textContent());
     report.checks.push('strict browser build with every source image');
     await builderPage.screenshot({ path: path.join(output, 'builder.png'), fullPage: true }); report.screenshots.push('builder.png');
-    const downloadPromise = builderPage.waitForEvent('download', { timeout: 60000 });
-    await builderPage.click('#download-zip'); const download = await downloadPromise;
+    // The browser zips every source and processed file in JavaScript; large arcade bundles need minutes.
+    // A refused export (for example the size limit) shows an error status instead of a download: report it.
+    const downloadPromise = builderPage.waitForEvent('download', { timeout: 300000 });
+    const refused = builderPage.waitForFunction(() => document.querySelector('#status').classList.contains('error'), null, { timeout: 300000 })
+      .then(async () => { throw new Error(`ZIP export failed: ${await builderPage.locator('#status').textContent()}`); }, () => new Promise(() => {}));
+    await builderPage.click('#download-zip'); const download = await Promise.race([downloadPromise, refused]);
     const archive = path.join(output, 'game.zip'); await download.saveAs(archive);
     const archiveFiles = extractStoredZip(fs.readFileSync(archive), path.join(output, 'game'));
     assert.deepEqual(archiveFiles.get('LICENSE'), fs.readFileSync(path.join(PROJECT, 'LICENSE')), 'Standalone game must retain the repository MIT notice');
@@ -203,12 +208,24 @@ async function main(options) {
     report.audioCount = Object.keys(runtime.audio || {}).length;
     assert.equal(report.audioCount, audio?.assets.length || 0);
     assert.ok(archiveFiles.has('sources/assets.json')); assert.ok(archiveFiles.has('start-server.cjs')); assert.ok(archiveFiles.has('anim.js'));
-    if (video) {
+    if (video?.openingVideo) {
       assert.ok(runtime.openingVideo?.src && archiveFiles.has(runtime.openingVideo.src), 'Opening video is mapped into the standalone game');
       assert.ok(archiveFiles.has('sources/video.json')); assert.ok(archiveFiles.has(`sources/${video.openingVideo.src}`));
       assert.deepEqual(archiveFiles.get(runtime.openingVideo.src), archiveFiles.get(`sources/${video.openingVideo.src}`), 'Export preserves opening video bytes');
       report.openingVideo = runtime.openingVideo; report.checks.push('opening video manifest and original media retained');
     }
+    if (video?.titleVideo) {
+      assert.ok(runtime.titleVideo?.src && archiveFiles.has(runtime.titleVideo.src), 'Animated title is mapped into the standalone game');
+      assert.ok(archiveFiles.has('sources/video.json')); assert.ok(archiveFiles.has(`sources/${video.titleVideo.src}`));
+      assert.deepEqual(archiveFiles.get(runtime.titleVideo.src), archiveFiles.get(`sources/${video.titleVideo.src}`), 'Animated title bytes are preserved');
+      report.titleVideo = runtime.titleVideo; report.checks.push('animated title manifest and original media retained');
+    }
+    for (const intro of video?.fighterIntros || []) {
+      const target = runtime.fighters.find(fighter => fighter.id === intro.fighter)?.introVideo;
+      assert.ok(target?.src && archiveFiles.has(target.src), `Introduction video is mapped: ${intro.fighter}`);
+      assert.deepEqual(archiveFiles.get(target.src), archiveFiles.get(`sources/${intro.src}`), 'Introduction video bytes are preserved');
+    }
+    if (video?.fighterIntros?.length) report.checks.push(`${video.fighterIntros.length} fighter introduction videos mapped and retained`);
     report.poseCount = poseCount; report.exportedFiles = archiveFiles.size; report.zipBytes = fs.statSync(archive).size;
     report.checks.push('ZIP record bounds and CRC checksums', 'all source artwork retained', `${poseCount} mapped fighter poses`);
     saveReport();
@@ -219,12 +236,34 @@ async function main(options) {
     const failedRequests = [];
     game.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('/favicon.ico')) failedRequests.push(`${response.status()} ${response.url()}`); });
     await game.goto(gameServer.url);
-    const expectedLoaded = runtime.fighters.reduce((count, fighter) => count + Object.keys(fighter.poses).length + ['portrait', 'hero', 'cutin'].filter(kind => fighter[kind]).length, 0)
+    const expectedLoaded = runtime.fighters.reduce((count, fighter) => count + Object.keys(fighter.poses).length + ['portrait', 'hero', 'cutin', 'endingArt'].filter(kind => fighter[kind]).length, 0)
       + runtime.stages.filter(stage => stage.src).length + Object.keys(runtime.ui).length + Object.keys(runtime.effects).length;
     await game.waitForFunction(count => Number(document.querySelector('#asset-count').textContent) === count, expectedLoaded, { timeout: 60000 });
     assert.equal(await game.title(), report.title); assert.equal(await game.locator('#placeholder-label').isVisible(), false);
     assert.equal(await game.locator('#fighter-one option').count(), runtime.fighters.length);
-    if (video) {
+    if (video?.fighterIntros?.length) {
+      report.introVideoDurations = await game.evaluate(async clips => {
+        const durations = {};
+        for (const clip of clips) durations[clip.fighter] = await new Promise((resolve, reject) => {
+          const media = document.createElement('video'), timer = setTimeout(() => reject(new Error(`Intro video metadata timeout: ${clip.fighter}`)), 20000);
+          media.preload = 'metadata'; media.onloadedmetadata = () => { clearTimeout(timer); resolve(media.duration); };
+          media.onerror = () => { clearTimeout(timer); reject(new Error(`Intro video decode failed: ${clip.fighter}`)); }; media.src = clip.src;
+        });
+        return durations;
+      }, runtime.fighters.filter(fighter => fighter.introVideo).map(fighter => ({ fighter: fighter.id, ...fighter.introVideo })));
+      for (const clip of video.fighterIntros) assert.ok(Math.abs(report.introVideoDurations[clip.fighter] - clip.duration) < .3, `Intro duration for ${clip.fighter}`);
+      report.checks.push('fighter introduction videos decode with their mapped durations');
+    }
+    if (video?.titleVideo) {
+      report.titleVideoDuration = await game.evaluate(src => new Promise((resolve, reject) => {
+        const media = document.createElement('video'), timer = setTimeout(() => reject(new Error('Title video metadata timeout')), 20000);
+        media.preload = 'metadata'; media.onloadedmetadata = () => { clearTimeout(timer); resolve(media.duration); };
+        media.onerror = () => { clearTimeout(timer); reject(new Error('Title video decode failed')); }; media.src = src;
+      }), runtime.titleVideo.src);
+      assert.ok(Number.isFinite(report.titleVideoDuration) && Math.abs(report.titleVideoDuration - video.titleVideo.duration) < .5, 'Animated title duration must match its manifest');
+      report.checks.push('animated title MP4 decodes with its mapped duration');
+    }
+    if (video?.openingVideo) {
       report.videoDuration = await game.evaluate(src => new Promise((resolve, reject) => {
         const media = document.createElement('video'), timer = setTimeout(() => reject(new Error('Opening video metadata timeout')), 20000);
         media.preload = 'metadata'; media.onloadedmetadata = () => { clearTimeout(timer); resolve(media.duration); };
@@ -284,7 +323,7 @@ async function main(options) {
     await game.waitForFunction(() => { const f = window.FighterDebug.snapshot().fighters[0]; return f.move === 'heavy' && f.moveFrame >= 9; });
     report.combatSnapshot = await game.evaluate(() => window.FighterDebug.snapshot());
     await game.screenshot({ path: path.join(output, 'gameplay.png'), fullPage: true }); report.screenshots.push('gameplay.png');
-    await game.click('[data-tab="lab"]'); await game.selectOption('#lab-filter', 'fighters');
+    await game.click('#settings-open'); await game.click('[data-tab="lab"]'); await game.click('#settings-open'); await game.selectOption('#lab-filter', 'fighters'); await game.click('#settings-close');
     assert.equal(await game.locator('.asset-card img').count(), poseCount);
     await game.screenshot({ path: path.join(output, 'sprite-gallery.png'), fullPage: true }); report.screenshots.push('sprite-gallery.png');
     assert.deepEqual(failedRequests, []); assert.deepEqual(report.browserErrors, []);

@@ -51,6 +51,14 @@
       "sourceMode": "Invent fictional reference",
       "reference": "",
       "sourceInput": ""
+    },
+    {
+      "id": "bylaw",
+      "name": "Baron Bylaw",
+      "enabled": true,
+      "sourceMode": "Invent fictional reference",
+      "reference": "",
+      "sourceInput": ""
     }
   ],
   "environments": [
@@ -65,7 +73,7 @@
     {
       "id": "rooftop",
       "name": "Sunset Rooftop",
-      "enabled": false,
+      "enabled": true,
       "sourceMode": "Invent fictional reference",
       "reference": "",
       "sourceInput": ""
@@ -73,7 +81,7 @@
     {
       "id": "arcade",
       "name": "Midnight Arcade",
-      "enabled": false,
+      "enabled": true,
       "sourceMode": "Invent fictional reference",
       "reference": "",
       "sourceInput": ""
@@ -89,6 +97,11 @@
       "id": "sheet",
       "label": "One sprite sheet",
       "url": "/builder/templates/sprite-sheet.json"
+    },
+    {
+      "id": "expansion",
+      "label": "Arcade expansion for an accepted cast",
+      "url": "/builder/templates/arcade-expansion.json"
     },
     {
       "id": "environment",

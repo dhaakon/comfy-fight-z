@@ -1,0 +1,255 @@
+{
+  "id": "84276c72-44fd-498d-bb46-b1d648e47781",
+  "revision": 0,
+  "last_node_id": 4,
+  "last_link_id": 4,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        320,
+        374
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-ltx-new-title-reference.png",
+        "image"
+      ],
+      "title": "Upload a NEW fictional group image"
+    },
+    {
+      "id": 2,
+      "type": "ImageScale",
+      "title": "Scale to 1280 x 720",
+      "pos": [
+        350,
+        0
+      ],
+      "size": [
+        290,
+        190
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale"
+      },
+      "widgets_values": [
+        "lanczos",
+        1280,
+        720,
+        "center"
+      ],
+      "widgets_values_named": {
+        "upscale_method": "lanczos",
+        "width": 1280,
+        "height": 720,
+        "crop": "center"
+      }
+    },
+    {
+      "id": 3,
+      "type": "LtxApi25ImageToVideo",
+      "pos": [
+        720,
+        0
+      ],
+      "size": [
+        400,
+        310
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        },
+        {
+          "name": "last_frame",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LtxApi25ImageToVideo"
+      },
+      "widgets_values": [
+        "LTX-2.5 (Fast)",
+        "8",
+        "1280x720",
+        "24",
+        false,
+        "Original hand-inked 2D cel-animated late 1990s arcade fighting game. Use the supplied image as the exact first frame. Exactly the same six fictional fighters stand together in their original positions in the same invented backyard. Preserve every fighter face, skin color, hair, clothing, complete silhouette, hands and body proportions. No extra people or body parts. Keep the camera at the original wide group framing throughout, all six in frame. Retain the warm lamps and hand-drawn ink, restrained charcoal, ivory, brick red and blue palette. No words, logos, UI, subtitles, borders, watermark, scene cuts, photorealism, or camera flash. This is an elegant looping arcade title background, not a character fight. The six heroes hold their poses with only very subtle breathing and small natural body shifts; lantern light gently flickers and leaves shift slightly in a breeze. Camera stays completely fixed. Motion is calm, consistent and cyclic. Return every figure and the background to their original pose and position for a seamless loop. No energy blasts, motion streaks, jumps, zooms, cutaways or transformations.",
+        63261104,
+        "fixed"
+      ],
+      "color": "#432",
+      "bgcolor": "#653",
+      "title": "Animated title loop / LTX Fast 8 seconds",
+      "widgets_values_named": {
+        "model": "LTX-2.5 (Fast)",
+        "model.duration": "8",
+        "model.resolution": "1280x720",
+        "model.fps": "24",
+        "model.generate_audio": false,
+        "prompt": "Original hand-inked 2D cel-animated late 1990s arcade fighting game. Use the supplied image as the exact first frame. Exactly the same six fictional fighters stand together in their original positions in the same invented backyard. Preserve every fighter face, skin color, hair, clothing, complete silhouette, hands and body proportions. No extra people or body parts. Keep the camera at the original wide group framing throughout, all six in frame. Retain the warm lamps and hand-drawn ink, restrained charcoal, ivory, brick red and blue palette. No words, logos, UI, subtitles, borders, watermark, scene cuts, photorealism, or camera flash. This is an elegant looping arcade title background, not a character fight. The six heroes hold their poses with only very subtle breathing and small natural body shifts; lantern light gently flickers and leaves shift slightly in a breeze. Camera stays completely fixed. Motion is calm, consistent and cyclic. Return every figure and the background to their original pose and position for a seamless loop. No energy blasts, motion streaks, jumps, zooms, cutaways or transformations.",
+        "seed": 63261104,
+        "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 4,
+      "type": "SaveVideo",
+      "pos": [
+        1190,
+        0
+      ],
+      "size": [
+        490,
+        150
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "comfy-fighter-z/ltx-title-opening-NEW_RUN/title",
+        "auto",
+        "auto"
+      ],
+      "title": "Save title MP4",
+      "widgets_values_named": {
+        "filename_prefix": "comfy-fighter-z/ltx-title-opening-NEW_RUN/title",
+        "format": "auto",
+        "format.codec": "auto"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      2,
+      0,
+      3,
+      1,
+      "IMAGE"
+    ],
+    [
+      4,
+      3,
+      0,
+      4,
+      0,
+      "VIDEO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.65,
+      "offset": [
+        0,
+        0
+      ]
+    },
+    "cfzLtxTitleOpening": {
+      "mutedByDefault": true,
+      "kind": "title",
+      "reference": "Upload your own fresh fictional ensemble. All nodes muted until reviewed.",
+      "model": "LTX-2.5 (Fast)",
+      "duration": 8,
+      "resolution": "1280x720",
+      "fps": 24,
+      "generatedAudio": false,
+      "seamlessLastFrame": true
+    }
+  },
+  "version": 0.4
+}

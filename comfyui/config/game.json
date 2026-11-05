@@ -26,7 +26,14 @@
       "referencePrompt": "Create one original fictional adult anime fighting-game character, with no image inputs and no resemblance to a real person or existing character. Griddle is a cheerful barbecue dad in his late forties: short broad powerful build, round face, warm brown skin, bald head, compact triangular auburn beard. Brick-red sleeveless utility apron ending above the knees over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs, dark brown ankle boots. No hat or handheld props. Full-body three-quarter side view facing RIGHT, relaxed boxing guard, visible friendly face, separated arms and legs, complete hands and shoes. Original 1990s shonen anime model art, bold ink and clean two-tone cel shading. One figure only, centered with generous padding, flat uniform chroma green RGB(0,255,0) background; no green on the character, shadows, lettering, labels, logos, grid, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.",
       "sourceMode": "Invent fictional reference",
       "sampleSourceImage": "comfyui/ref/demo/characters/griddle.png",
-      "sampleSourceInput": "cfz-demo-griddle.png"
+      "sampleSourceInput": "cfz-demo-griddle.png",
+      "style": "grappler",
+      "superMove": {
+        "name": "Five-Alarm Cookout",
+        "description": "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave."
+      },
+      "winQuote": "Well done. Just how I like my steaks, and my opponents.",
+      "ending": "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes."
     },
     {
       "id": "rivet",
@@ -45,7 +52,14 @@
       "referencePrompt": "Create one original fictional adult anime fighting-game character entirely from text, with no real-person or franchise reference. Rivet is a workshop dad in his early fifties: tall muscular build, deep umber skin, long angular face, short tightly curled silver hair and an assertive half-smile. Indigo mechanic jumpsuit with sleeves rolled to elbows, wide copper belt, compact copper forearm bracers and steel-gray work boots. No hanging tools, goggles, hat or writing. Full-body three-quarter side view facing RIGHT, grounded open-hand fighting guard, clear separated limbs, complete visible hands and both shoes. Original 1990s shonen anime model art with bold black ink and clean two-tone cel shading. Exactly one figure centered with generous padding on flat uniform chroma green RGB(0,255,0); no green clothing, floor shadows, text, logos, grids, panels or watermark.",
       "sourceMode": "Invent fictional reference",
       "sampleSourceImage": "comfyui/ref/demo/characters/rivet.png",
-      "sampleSourceInput": "cfz-demo-rivet.png"
+      "sampleSourceInput": "cfz-demo-rivet.png",
+      "style": "balanced",
+      "superMove": {
+        "name": "Full Overhaul",
+        "description": "Rivet snaps both copper bracers together and drives one palm toward the right, firing a tight cyan magnetic spiral with copper fragments orbiting its core. Keep the spiral compact near the palm in sprite art."
+      },
+      "winQuote": "Tightened every loose bolt. You were the last one.",
+      "ending": "Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner."
     },
     {
       "id": "tempo",
@@ -64,7 +78,14 @@
       "referencePrompt": "Create one entirely fictional adult anime fighter from text only; do not use or resemble a real person or existing character. Tempo is a music-teacher parent in their late thirties with a compact athletic build, light olive skin, a heart-shaped face, short swept coral-red pixie hair and expressive dark eyebrows. Cropped magenta track jacket, plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers, simple violet padded wristbands and small rounded headphones resting snugly at the collar with no cable. Full-body three-quarter side view facing RIGHT in an upright kickboxing guard. Show exactly one complete figure with separated limbs, both hands and both shoes, generous outer padding and a clear silhouette. Original 1990s battle-anime model art, strong economical black ink and two-tone cel shading. Flat uniform chroma green RGB(0,255,0) background; no green costume details, ground shadow, instruments, text, logos, grids, panels or watermark.",
       "sourceMode": "Invent fictional reference",
       "sampleSourceImage": "comfyui/ref/demo/characters/tempo.png",
-      "sampleSourceInput": "cfz-demo-tempo.png"
+      "sampleSourceInput": "cfz-demo-tempo.png",
+      "style": "speed",
+      "superMove": {
+        "name": "Encore Fortissimo",
+        "description": "Tempo spins into a forward kick toward the right that releases a large magenta-and-violet sound shockwave of three concentric rings. Keep the rings close to the kicking foot in sprite art."
+      },
+      "winQuote": "You were off-beat from the very first round.",
+      "ending": "Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune."
     },
     {
       "id": "nimbus",
@@ -83,7 +104,14 @@
       "referencePrompt": "Generate one wholly fictional adult anime fighting-game character from text, with no photo input and no real-person likeness. Nimbus is a community-garden mom in her mid forties: medium-height sturdy build, golden-brown skin, square kind face, thick cream-colored braid tucked into a short loop at the back of the head and a determined smile. Plum-purple short-sleeve work coveralls, broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No hat, plants, watering can, loose trailing fabric or writing. Full-body three-quarter side view facing RIGHT, calm balanced open-hand martial-arts guard, both arms separated from torso and both complete boots visible. Original hand-drawn 1990s shonen anime model art, bold ink and clear two-tone cel shadows. Exactly one centered figure with ample padding on a flat uniform chroma green RGB(0,255,0) background. No green on the character, ground shadows, text, logos, grids, panels or watermark.",
       "sourceMode": "Invent fictional reference",
       "sampleSourceImage": "comfyui/ref/demo/characters/nimbus.png",
-      "sampleSourceInput": "cfz-demo-nimbus.png"
+      "sampleSourceInput": "cfz-demo-nimbus.png",
+      "style": "zoner",
+      "superMove": {
+        "name": "Thunderhead Bloom",
+        "description": "Nimbus raises both open palms toward the right and launches a dense lavender storm cloud crackling with pale blue lightning. Keep the cloud compact and attached to her palms in sprite art."
+      },
+      "winQuote": "Storms pass. Gardens grow. You lost.",
+      "ending": "Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own."
     },
     {
       "id": "switchback",
@@ -102,7 +130,14 @@
       "referencePrompt": "Create one original fictional adult anime fighter from text alone, unrelated to any real person or franchise character. Switchback is a bicycle-courier dad in his early forties: tall lean build, cool dark-brown skin, narrow expressive face, shaved head and a thin silver eyebrow notch. Smooth amber bicycle helmet with fully open face and no visor, bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bike, bag, loose straps, glasses or logos. Full-body three-quarter side view facing RIGHT, springy forward-leaning boxing guard, clear separated limbs and complete visible shoes and fingers. Original 1990s shonen anime model art with bold black ink, clean two-tone shading and a simple readable silhouette. Exactly one centered figure, generous padding, flat uniform chroma green RGB(0,255,0) background. No green costume pieces, shadows, text, grids, panels or watermark.",
       "sourceMode": "Invent fictional reference",
       "sampleSourceImage": "comfyui/ref/demo/characters/switchback.png",
-      "sampleSourceInput": "cfz-demo-switchback.png"
+      "sampleSourceInput": "cfz-demo-switchback.png",
+      "style": "trickster",
+      "superMove": {
+        "name": "Rush Hour Relay",
+        "description": "Switchback bursts forward in a blur of short golden streaks and finishes with a sharp palm strike toward the right that releases a long golden arrow pulse. Keep the streaks hugging his body in sprite art."
+      },
+      "winQuote": "Delivered. No signature required.",
+      "ending": "Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner."
     },
     {
       "id": "brick",
@@ -121,7 +156,41 @@
       "referencePrompt": "Create one wholly invented adult anime fighting-game character from text only, without any real-person photo, likeness or existing franchise design. Brick is a neighborhood caretaker granddad in his early sixties: very tall square heavyweight build, pale freckled skin, broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Sleeveless rose-red quilted work vest over a fitted charcoal shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or writing. Full-body three-quarter side view facing RIGHT in a wide upright wrestling guard; warm stubborn grin, clear separated hands and legs, complete visible boots. Original 1990s shonen battle-anime model art with bold black ink and strong two-tone cel shading. Exactly one centered figure with generous padding on flat uniform chroma green RGB(0,255,0). No green clothing, floor shadow, text, logos, grids, panels or watermark.",
       "sourceMode": "Invent fictional reference",
       "sampleSourceImage": "comfyui/ref/demo/characters/brick.png",
-      "sampleSourceInput": "cfz-demo-brick.png"
+      "sampleSourceInput": "cfz-demo-brick.png",
+      "style": "power",
+      "superMove": {
+        "name": "Load-Bearing Avalanche",
+        "description": "Brick slams both wrapped fists down and sends a massive rose-red pressure wave edged in pale gold rolling along the ground toward the right. Keep the wave compact near his fists in sprite art."
+      },
+      "winQuote": "Built to last. You were not.",
+      "ending": "Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin."
+    },
+    {
+      "id": "bylaw",
+      "name": "Baron Bylaw",
+      "color": "#d4a72c",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
+      "specialMove": {
+        "name": "Ordinance Orb",
+        "description": "Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Final Notice",
+        "description": "Baron Bylaw raises his golden gauntlet overhead and hurls a towering wall of golden light edged in burgundy toward the right. Keep the light attached to the gauntlet in sprite art."
+      },
+      "introTagline": "This tournament is now in violation. Prepare for enforcement.",
+      "introVoice": "George (male, british)",
+      "style": "boss",
+      "boss": true,
+      "winQuote": "Appeal denied. Permanently.",
+      "ending": "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
+      "referencePrompt": "Create one original fictional adult anime fighting-game boss character entirely from text, with no real-person or franchise reference. Baron Bylaw is an imposing neighborhood-association president in his late fifties: very tall broad-shouldered build, light olive skin, sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Charcoal double-breasted coat with gold piping ending at mid-thigh over a burgundy vest, white high-collared shirt, charcoal trousers, polished black knee boots and one ornate golden gauntlet on the right forearm and hand. No hat, cape, props, lettering or insignia. Full-body three-quarter side view facing RIGHT in a commanding upright fighting guard with the gauntlet raised, clearly separated limbs, complete hands and both boots. Original 1990s shonen anime model art with bold black ink and clean two-tone cel shading. Exactly one figure centered with generous padding on flat uniform chroma green RGB(0,255,0); no green clothing, floor shadows, text, logos, grids, panels or watermark. This is a text-only fictional reference design, not a transformation of a photograph.",
+      "sourceMode": "Invent fictional reference",
+      "sampleSourceImage": "comfyui/ref/demo/characters/bylaw.png",
+      "sampleSourceInput": "cfz-demo-bylaw.png"
     }
   ],
   "stages": [
@@ -136,6 +205,30 @@
       "sourceMode": "Invent fictional reference",
       "sampleSourceImage": "comfyui/ref/demo/levels/yard.png",
       "sampleSourceInput": "cfz-demo-yard.png"
+    },
+    {
+      "id": "rooftop",
+      "name": "Sunset Rooftop",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
+      "referencePrompt": "Generate a wholly invented environment from text alone: Sunset Rooftop, a community-center roof arena in an imaginary town. Wide 16:9 side-on fighting-game view, flat unobstructed blue-gray deck with horizontal fighting line at 82 percent image height. Far behind the fight plane are a low coral parapet, two compact solar-panel arrays and one round water tank. An original low-rise skyline and peach sunset clouds form the background; no recognizable city landmarks. Hand-painted 1990s anime background, economical ink, warm coral and violet light, clean cel-shaded surfaces. No people, real venue reference, readable signs, logos, floor symbols, furniture in the fight plane, speed lines, graphic borders, vignette, panels or letterboxing. Fill all four edges with natural scenery.",
+      "sourceMode": "Invent fictional reference",
+      "sampleSourceImage": "comfyui/ref/demo/levels/rooftop.png",
+      "sampleSourceInput": "cfz-demo-rooftop.png"
+    },
+    {
+      "id": "arcade",
+      "name": "Midnight Arcade",
+      "sourceImage": "",
+      "sourceInput": "",
+      "enabled": true,
+      "description": "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.",
+      "referencePrompt": "Create one fictional environment using text only: Midnight Arcade, an imaginary neighborhood amusement room after closing. Wide 16:9 side-on fighting-game camera with a large empty dark-plum rubber floor and a horizontal fighting line at 82 percent image height. Chunky generic arcade cabinets sit against the rear wall far behind the arena, glowing cyan and pink; include square acoustic ceiling tiles and one rounded purple ticket counter behind the action. Cabinet screens contain only abstract color shapes, with no words, recognizable games or copied trademarks. Original 1990s hand-painted anime background, bold simple geometry and rich neon cel shading. No people, real venue recreation, brands, signs, lettering, floor emblems, foreground obstacles, graphic borders, speed lines, vignette or letterboxing. Natural architecture fills every edge.",
+      "sourceMode": "Invent fictional reference",
+      "sampleSourceImage": "comfyui/ref/demo/levels/arcade.png",
+      "sampleSourceInput": "cfz-demo-arcade.png"
     }
   ],
   "sheets": {
@@ -171,6 +264,30 @@
       "getup",
       "powerup",
       "entrance"
+    ]
+  },
+  "extraSheets": {
+    "sheetD": [
+      "walk3",
+      "walk4",
+      "run",
+      "run2",
+      "backstep",
+      "jumpfall",
+      "crouchblock",
+      "hitlow",
+      "hitheavy"
+    ],
+    "sheetE": [
+      "punchwind",
+      "kickwind",
+      "heavywind",
+      "roll",
+      "blowback",
+      "super",
+      "dizzy",
+      "win2",
+      "lose"
     ]
   }
 }

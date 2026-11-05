@@ -2,26 +2,36 @@
 
 Repository paths in this guide start at the repository root. Paths inside a portable `assets.json`, `audio.json`, `video.json` or runtime manifest remain relative to that bundle or exported game; moving the repository folders does not change those contracts.
 
-The example game is Comfy Fighter Z — Higgsfield Open Source Saga: six fictional characters and one fictional stage, The Yard. Its complete image bundle has 56 records: 49 generated game-art images and seven `source` records preserving the reference designs. The default **Invent fictional reference** mode generates those seven sources internally from text, then derives the game art from them. It requires 56 paid image calls and loads no external images.
+The canonical game is Comfy Fighter Z — Higgsfield Open Source Saga. It has six fictional characters, the fictional final boss Baron Bylaw and three fictional arenas: The Yard, Sunset Rooftop and Midnight Arcade. Its complete image bundle has 89 records: 79 generated game-art images and ten `source` records preserving the reference designs. The default **Invent fictional reference** mode generates those ten sources internally from text, then derives the game art from them. It requires 89 paid image calls and loads no external images. The included `example/bundle/` is this complete release. The earlier classic release used the same IDs for a subset: six fighters, The Yard, 27 poses each, no endings and 56 records.
 
-The [compact factory](workflow-factory.md) is configured separately in `comfyui/config/factory.json`: six character factories and three environment factories. Each supports inventing a reference from its text description or explicitly selecting **Upload reference** for a new supplied image. All image selectors start empty. Only The Yard is enabled initially; the other two environments remain disabled and produce nothing until enabled. Never fill an empty environment slot with The Yard implicitly. A custom bundle can contain up to three environments; this does not change the installed game's one-stage configuration.
+The [compact factory](workflow-factory.md) is configured separately in `comfyui/config/factory.json`: six character factories, a final-boss factory and three environment factories. Each supports inventing a reference from its text description or explicitly selecting **Upload reference** for a new supplied image. All image selectors start empty and all three environments are enabled. A disabled environment produces nothing. Never fill an empty environment slot with The Yard implicitly. A bundle can contain up to three environments and at most one final boss.
 
 | Source mode | Enabled environments | Paid image calls | Mapped image records |
 | --- | --- | --- | --- |
-| Invent fictional reference (default) | One | 56 | 56 |
-| Invent fictional reference | Three | 60 | 60 |
-| Upload reference | One | 49 | 56 |
-| Upload reference | Three | 51 | 60 |
+| Invent fictional reference (default) | Three | 89 | 89 |
+| Invent fictional reference | One | 85 | 85 |
+| Upload reference | Three | 79 | 89 |
+| Upload reference | One | 77 | 85 |
+| Classic: Invent, no arcade art or boss | One | 56 | 56 |
 
-Upload mode saves the seven or nine supplied references without generating them again. A separate nine-image sample-reference workflow is also available when preparing references before the art batch. The complete reviewed fictional demo is included in `example/bundle/`, with 56 images and 22 audio clips; `npm run example` builds it without cloud generation. It contains no opening movie or earlier session's photos or photo-derived art. The lightweight canonical source preview remains separate.
+Upload mode saves the eight or ten supplied references without generating them again. A separate nine-image sample-reference workflow is also available when preparing references before the art batch. The complete reviewed fictional demo is included in `example/bundle/` as the arcade release, with 89 images and 99 audio clips; `npm run example` builds it without cloud generation. It contains no opening movie or earlier session's photos or photo-derived art. The lightweight canonical source preview remains separate.
 
-`game.title`, `game.subtitle` and fighter `description`, `specialMove: {name, description}` and `introTagline` metadata pass through ComfyUI, the builder and the runtime. The runtime stores the title/subtitle at the top of `assets/manifest.json` and the character fields on each fighter. Special descriptions drive the special pose and cut-in prompts; combat mechanics remain shared. `introTagline` supplies the on-screen introduction and the exact spoken line. The optional `introVoice` in `comfyui/config/game.json` selects a stock ElevenLabs voice during workflow preparation; it is generation configuration, not a required runtime field.
+`game.title`, `game.subtitle` and fighter metadata pass through ComfyUI, the builder and the runtime. The fighter fields are `description`, `specialMove: {name, description}`, `introTagline`, and the optional arcade fields `superMove: {name, description}`, `winQuote` (up to 200 characters), `ending` (up to 800), `style` and `boss: true`. The runtime stores the title/subtitle at the top of `assets/manifest.json` and the character fields on each fighter, with `endingArt` pointing at the processed ending illustration. Special and super descriptions drive the special/super poses and the cut-in prompt. `style` picks one of `balanced`, `power`, `speed`, `zoner`, `grappler`, `trickster` or `boss`; it sets speed, damage, defense, jump and the second special move. Unknown styles are rejected, and a missing style means balanced. `introTagline` supplies the on-screen introduction and the exact spoken line. The optional `introVoice` in `comfyui/config/game.json` selects a stock ElevenLabs voice during workflow preparation; it is generation configuration, not a required runtime field.
 
 ## Audio bundle
 
-`comfyui/workflows/comfy-audio.json` writes `audio.json` beside `assets.json`, using schema `comfy-fighter-audio/v1`, `root: "."`, `title`, and an `assets` array. Every entry has `id`, `kind: "audio"`, `category: "music" | "sfx" | "voice"`, a relative WAV `src`, SHA-256, sample rate, channel count and duration. Music records have `loop: true`; character special calls also have `fighter`.
+`comfyui/workflows/comfy-audio.json` writes `audio.json` beside `assets.json`, using schema `comfy-fighter-audio/v1`, `root: "."`, `title`, and an `assets` array. Every entry has `id`, `kind: "audio"`, `category: "music" | "sfx" | "voice"`, a relative WAV `src`, SHA-256, sample rate, channel count and duration. Looping music has `loop: true`; fighter lines have `fighter`. An arena's theme is named `<stage-id>_music`, which is how the game finds it.
 
-Runtime IDs are `menu_music`, `yard_music`, `ann_select`, `ann_fight`, `ann_ko`, `ann_victory`, `sfx_punch`, `sfx_kick`, `sfx_block`, `sfx_special`, `fighter_<id>_special` and `fighter_<id>_intro` for each character. The complete workflow prepares **22 clips**: two music tracks, four announcer calls, four effects, six special calls and six intro taglines. Intro clips use six distinct stock voices for fictional performances, with no voice cloning. A text introduction still displays when its audio clip is absent from an accepted bundle.
+The complete workflow prepares **99 clips**:
+
+| Group | Runtime IDs |
+| --- | --- |
+| Music (10) | `menu_music`, `select_music`, `<stage-id>_music` per arena, `boss_music`, `victory_music`, `continue_music`, `gameover_music`, `ending_music` |
+| Announcer (20) | `ann_title`, `ann_select`, `ann_versus`, `ann_round1`–`ann_round3`, `ann_final`, `ann_ready`, `ann_go`, `ann_ko`, `ann_doubleko`, `ann_timeover`, `ann_perfect`, `ann_draw`, `ann_victory`, `ann_youwin`, `ann_youlose`, `ann_continue`, `ann_gameover`, `ann_finalbattle` |
+| Effects (20) | `sfx_punch`, `sfx_kick`, `sfx_heavy`, `sfx_block`, `sfx_special`, `sfx_projectile_hit`, `sfx_whiff`, `sfx_whiff_heavy`, `sfx_jump`, `sfx_land`, `sfx_dash`, `sfx_throw`, `sfx_super`, `sfx_ko`, `sfx_counter`, `sfx_dizzy`, `sfx_menu_move`, `sfx_menu_select`, `sfx_menu_back`, `sfx_timer` |
+| Fighter voices (7 each) | `fighter_<id>_intro`, `_special`, `_super`, `_attack`, `_hurt`, `_ko`, `_win` |
+
+Each fighter speaks in their configured stock `introVoice` and the announcer uses one stock voice, with no voice cloning. Every clip is optional at runtime: the game plays what the bundle maps and skips the rest. The classic 22-clip set (including its earlier `ann_fight`) still plays, and a text introduction still displays without its audio. A `--saga` merge onto a classic bundle retires clips the current plan no longer lists.
 
 The builder automatically reads both JSON files from the selected root. It copies audio to `assets/audio/`, maps it under runtime `audio`, and preserves `sources/audio.json` plus source audio for re-import. Sources may be WAV, MP3, OGG or FLAC; the included example uses MP3. Audio paths and hashes are validated. Missing files in a supplied audio map fail strict export. If audio.json is absent, the builder explicitly reports that audio was not supplied. Local image and audio processing do not perform model inference.
 
@@ -70,15 +80,17 @@ Builder customizations change the game title, displayed fighter/stage names, ros
 
 ## Fighter pose sheets
 
-Each fighter has three square 3×3 sheets. Read cells left to right, then top to bottom. Every pose faces right; the renderer mirrors it for an opponent facing left.
+Each fighter has three required square 3×3 sheets and, in the arcade release, two optional ones (`extraSheets`). Read cells left to right, then top to bottom. Every pose faces right; the renderer mirrors it for an opponent facing left.
 
 | Sheet | Top row | Middle row | Bottom row |
 | --- | --- | --- | --- |
 | `sheet` | idle, walk, punch | kick, block, hit | special, down, win |
 | `sheetB` | stance2, crouch, sweep | launcher, jump, airkick | hpunch, dash, tumble |
 | `sheetC` | walk2, lkick, cjab | airpunch, throw, taunt | getup, powerup, entrance |
+| `sheetD` (optional) | walk3, walk4, run | run2, backstep, jumpfall | crouchblock, hitlow, hitheavy |
+| `sheetE` (optional) | punchwind, kickwind, heavywind | roll, blowback, super | dizzy, win2, lose |
 
-These are 27 key poses, not 27 consecutive animation frames. The game chooses and holds poses according to combat state. `stance2` is a second upright guard; `crouch` is the low guard. Keep these definitions distinct when editing prompts.
+These are 27 required key poses plus 18 optional arcade poses, not consecutive animation frames. The game chooses and holds poses according to combat state. When an optional pose is missing, the animation layer substitutes a key pose: walk3/walk4 → stance2, run/run2 → dash, backstep/jumpfall → jump, crouchblock → crouch, hitlow/hitheavy/dizzy → hit, punchwind → stance2, kickwind → lkick, heavywind → block, roll → tumble, blowback → hpunch, super → special, win2 → win and lose → getup. Strict builds still require all 27 key poses; optional sheets are all-or-nothing per sheet. `stance2` is a second upright guard; `crouch` is the low guard. Keep these definitions distinct when editing prompts.
 
 Generate all sheets from the same accepted character reference. Maintain face, proportions, outfit, palette, camera, and body scale. The saga prompts choose a common scale that accommodates the widest attack, request at least 12% empty margin on every cell edge, and keep standing feet near 82% of cell height. Both shoes must remain visible in the bottom row. Sweeps and airborne attacks must also point right. Use solid `#00ff00` with no grid lines, labels, ground shadows or detached aura clouds. Green garments and effects will be removed by the chroma keyer.
 
@@ -108,7 +120,8 @@ Each pose is written as `assets/fighters/<fighter-id>_<pose>.webp` and described
 | Source | One generated fictional reference per character/stage | Preserved source design; used as a visibly marked preview when game artwork is absent |
 | Portrait | Square character close-up | 320px select portrait and HUD portrait |
 | Hero | Full-body selection art | 760px tall selection illustration |
-| Cut-in | Wide attack illustration | 960px wide special-attack overlay |
+| Cut-in | Wide attack illustration | 960px wide super-attack overlay |
+| Ending | Optional 16:9 epilogue scene per fighter, no lettering | 960px wide Arcade ending illustration beside the ending text |
 | Stage | 16:9 side-on arena | 1600px wide fight background |
 | UI | Title, select backdrop, logo, HUD frame, emblem | Manifest-driven screen decorations |
 | Effects | One square 3×3 atlas | Keyed, sliced individual combat effects |

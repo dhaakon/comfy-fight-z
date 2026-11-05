@@ -6,7 +6,11 @@ function files(folder){return fs.existsSync(folder)?fs.readdirSync(folder,{withF
 test('demo runtime contains only the fictional roster and explicitly mapped media',()=>{
  const manifest=JSON.parse(fs.readFileSync(path.join(root,'build/public/assets/manifest.json'),'utf8'));
  const fictional=JSON.parse(fs.readFileSync(path.join(root,'comfyui/config/fictional-demo.json'),'utf8'));
- assert.deepEqual(manifest.fighters.map(f=>f.id),fictional.fighters.map(f=>f.id));
+ // The preview roster is the canonical fictional cast: the six demo heroes plus the invented final boss.
+ const canonical=JSON.parse(fs.readFileSync(path.join(root,'comfyui/config/game.json'),'utf8'));
+ assert.deepEqual(manifest.fighters.map(f=>f.id),canonical.fighters.map(f=>f.id));
+ assert.deepEqual(manifest.fighters.filter(f=>!f.boss).map(f=>f.id),fictional.fighters.map(f=>f.id));
+ assert.ok(canonical.fighters.every(f=>/completely invented/i.test(f.description)),'Every fighter is invented from text');
  const mapped=new Set(runtimeSources(manifest).map(src=>path.resolve(root,'build/public',src)));
  const metadata=new Set(['manifest.json','production.json','source-manifest.json']);
  for(const file of files(path.join(root,'build/public/assets'))){

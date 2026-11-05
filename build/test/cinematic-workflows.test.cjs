@@ -22,14 +22,16 @@ test('opening alternatives each wire seven designs to one 25-second Seedance clo
     assert.equal(generation.widgets_values_named['model.resolution'], resolution);
     assert.equal(generation.widgets_values_named['model.generate_audio'], true);
     assert.deepEqual(generation.widgets_values, Object.values(generation.widgets_values_named));
-    for (const [index, item] of [...config.fighters, config.stages[0]].entries()) {
+    const heroes = config.fighters.filter(fighter => !fighter.boss);
+    for (const [index, item] of [...heroes, config.stages[0]].entries()) {
       const link = graph.links.find(link => link[0] === generation.inputs[index].link);
       const source = graph.nodes.find(node => node.id === link[1]);
       assert.equal(source.widgets_values_named.prompt, item.referencePrompt);
       assert.equal(source.type,'CFZFictionalReference');
       assert.equal(generation.inputs[index].name, `model.reference_images.image_${index + 1}`);
     }
-    for (const fighter of config.fighters) assert.ok(generation.widgets_values_named['model.prompt'].includes(fighter.specialMove.name));
+    for (const fighter of heroes) assert.ok(generation.widgets_values_named['model.prompt'].includes(fighter.specialMove.name));
+    assert.ok(!generation.widgets_values_named['model.prompt'].includes(config.fighters.find(f => f.boss).name), 'The final boss stays out of the opening');
     assert.match(generation.widgets_values_named['model.prompt'], /Photorealistic LIVE-ACTION/);
   }
 });
@@ -56,7 +58,7 @@ test('cinematic cast, duels and stage mapping follow fictional configuration', (
   config.stages = [{ id: 'sky-temple', name: 'Floating Crystal Temple', description: 'A sky island with luminous crystal arches and a flat stone floor.', sourceInput: 'sky-temple.png' }];
   const graph = makeOpeningGraph(config, load('comfyui/workflows/templates/cloud-seedance-reference.json'));
   const prompt = graph.nodes.find(node => node.type === 'ByteDance2ReferenceNodeV2').widgets_values_named['model.prompt'];
-  for (const fighter of config.fighters) assert.ok(prompt.includes(`${fighter.name} demonstrates`) || prompt.includes(`${fighter.name} answers`));
+  for (const fighter of config.fighters.filter(f => !f.boss)) assert.ok(prompt.includes(`${fighter.name} demonstrates`) || prompt.includes(`${fighter.name} answers`));
   assert.ok(prompt.includes(config.stages[0].description));
   assert.match(prompt, /entirely imaginary adult performers/);
   const edit = makeYardEditGraph(config, load('comfyui/workflows/templates/cloud-image.json'), { acceptedYardInput: 'accepted-temple.png', outputRoot: 'output/test-output/temple' });

@@ -184,3 +184,251 @@ kbd { color: var(--paper); background: #303536; border-color: #62675f; }
 @media(prefers-reduced-motion:reduce) {
   .fighter-tile:hover, .primary:hover { transform: none; }
 }
+/* Arcade cabinet front: artwork carries the frame; labels stay crisp and accessible. */
+.settings-open { position:relative; z-index:4; width:44px; height:44px; margin-left:auto; border:1px solid #c4a25e; background:#171a1c; color:#ece8dc; font-size:24px; cursor:pointer; }
+.settings-open:hover,.settings-open:focus-visible { background:#803b33; outline:2px solid #e5c886; }
+.settings-dialog { width:min(520px,calc(100% - 28px)); max-height:calc(100dvh - 28px); overflow:auto; padding:32px; border:2px solid #c4a25e; color:#ece8dc; background:#17191b; font:14px/1.7 Arial,sans-serif; }
+.settings-dialog::backdrop { background:#080a0de8; }.settings-heading { display:flex; align-items:center; justify-content:space-between; }.settings-heading h2 { font:italic 38px Impact,sans-serif; margin:0; color:#ece8dc; }.settings-heading button { color:#fff; font-size:20px; }
+.settings-actions,.settings-dialog nav { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }.settings-dialog nav button,.settings-dialog nav a { color:#ece8dc; background:#292d2f; padding:10px; border:1px solid #656961; font-size:11px; font-weight:bold; cursor:pointer; }.settings-dialog h3 { color:#c4a25e; font-size:11px; letter-spacing:2px; }.settings-credit { color:#a9a79e; font-size:10px; letter-spacing:1px; }
+.cfz-arcade-art .title-backdrop { background-image:url('arcade/title-backdrop.webp') !important; filter:none; opacity:.9; }
+.cfz-arcade-art .selection-screen { background-image:url('arcade/select-backdrop.webp') !important; background-blend-mode:normal; }
+.cfz-arcade-art .title-copy h1 { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.arcade-logo:not([hidden]) { display:block; position:relative; width:min(74vw,900px); max-height:34vh; object-fit:contain; margin:0 auto; filter:drop-shadow(4px 6px 0 #101314); }
+.title-copy .eyebrow,.title-pitch,.title-rule,.title-bottom,.title-hint { display:none; }
+.title-copy .saga-subtitle { margin:0 0 18px; font-size:clamp(13px,1.6vw,24px); letter-spacing:2px; }
+.title-network-modes { justify-content:center; }.title-network-modes .text-button { min-width:160px; background:#8b3933; border:2px solid #d0a969; box-shadow:3px 4px #080a0c; color:#fff4df; font-size:13px; }
+.cfz-arcade-art .settings-dialog,.cfz-arcade-art .network-dialog { background:#17191b url('arcade/menu-frame.webp') center/100% 100% no-repeat; }
+body[data-scene=title] .settings-open { position:fixed; right:16px; top:16px; }
+@media(max-width:800px) { .arcade-logo:not([hidden]) { width:min(94vw,700px); max-height:29vh; } .title-network-modes .text-button { min-width:120px; } .settings-dialog { padding:26px; } }
+@media(max-height:540px) and (orientation:landscape) { .arcade-logo:not([hidden]) { max-height:32vh; }.title-copy .saga-subtitle { font-size:12px; margin:0; }.title-network-modes { margin-top:5px; }.settings-open { width:36px; height:36px; } }
+/* Character select: art first, with just a roster, two seat tabs and fight. */
+.selection-title { background:transparent; border:0; clip-path:none; padding:4px 0; }
+.selection-title h2 { color:#f1e9d4; font-size:clamp(24px,2.8vw,40px); text-shadow:3px 3px #111; }
+.selection-title p,.fighter-card-body,.art-type,.pick-hint,.stage-preview,.control-panel,.selection-art-status { display:none!important; }
+.selection-home { background:transparent; border:0; color:#eee3ce; }
+.fighter-card,.fighter-card:first-child,.fighter-card:last-child { border:0; background:transparent; box-shadow:none; overflow:visible; }
+.fighter-card .fighter-art { background:transparent; overflow:visible; }
+.fighter-card .fighter-art:after { display:none; }
+.fighter-card .fighter-art img { filter:drop-shadow(3px 5px 0 #151719); }
+.fighter-nameplate { bottom:4px; }.fighter-nameplate .mini-tag { background:transparent!important; color:#e9c981; padding:0; }
+.roster-panel { gap:8px; }.player-switch { display:flex!important; justify-content:center; gap:8px; }
+.player-switch button { flex:0 1 90px; background:transparent; border:0; border-bottom:3px solid transparent; padding:4px; font-size:20px; }
+.player-switch button.active { background:transparent; border-color:#c4a25e; color:#f2d58a; }
+.player-switch button[data-pick-slot="1"].active { background:transparent; border-color:#7894a5; color:#b6d3dd; }
+.fighter-grid { gap:5px; }.fighter-tile { border:0; background:#222a2e; box-shadow:none; }
+.fighter-tile.picked-one { outline:3px solid #e2c172; outline-offset:-3px; box-shadow:none; }.fighter-tile.picked-two { box-shadow:inset 0 0 0 3px #94b9ca; }
+.battle-ready { background:transparent; border:0; padding:0; min-height:0; justify-content:center; }
+.battle-options { justify-content:center; }.battle-options .primary { min-width:200px; }
+.settings-dialog .stage-selector:not([hidden]) { display:grid; gap:6px; color:#c4a25e; margin:18px 0; font-size:11px; }
+.network-play-modes { display:flex; gap:10px; border:0; padding:0; margin:20px 0; }.network-play-modes legend { margin-bottom:8px; font-size:10px; letter-spacing:1px; color:#b5b2a8; }.network-play-modes label { display:block; flex:1; position:relative; cursor:pointer; }.network-play-modes input { position:absolute; width:1px; height:1px; opacity:0; }.network-play-modes span { display:block; padding:14px; color:#eee8d8; background:#23272b; text-align:center; }.network-play-modes input:checked+span { color:#151719; background:#c4a25e; }.network-play-modes input:focus-visible+span { outline:3px solid #eee8d8; outline-offset:2px; }
+.title-fighters { inset:4% 2% 29%; z-index:0; opacity:1; pointer-events:none; }
+.title-fighters img { width:16.66%; height:100%; margin:0; opacity:1; }
+.title-copy { z-index:2; }
+@media(max-width:800px) { .title-fighters { inset:10% 0 34%; gap:0; }.title-fighters img { width:16.66%; margin:0; }.player-switch { display:flex!important; }.select-board { bottom:125px; }.battle-ready { bottom:32px; }.fighter-card h3 { font-size:clamp(22px,5vw,36px); } }
+@media(max-width:900px) and (orientation:landscape) { .title-fighters { inset:0 2% 14%; }.title-fighters img { width:16.66%; margin:0; }.select-board { bottom:70px; }.battle-ready { bottom:8px; }.player-switch { display:flex!important; }.player-switch button { font-size:15px; } }
+/* Keep all six silhouettes together above the logo, including narrow displays. */
+.title-fighters { inset:3% 1% 53%; }
+.arcade-logo:not([hidden]) { max-height:24vh; }
+#generated-logo { display:none!important; }
+@media(max-width:800px) { .title-fighters { inset:5% 0 52%; }.arcade-logo:not([hidden]) { max-height:24vh; } }
+@media(max-width:900px) and (orientation:landscape) { .title-fighters { inset:0 2% 18%; }.arcade-logo:not([hidden]) { max-height:25vh; } }
+
+/* Arcade character select: portraits and large opposing fighters do the talking. */
+.selection-screen:before { background:#090e11a8; }
+.select-heading { opacity:.78; }
+.selection-title { left:0; right:0; padding:8px 5%; align-items:center; }
+.selection-title h2 { color:#f4ead2; font-family:Impact,'Arial Narrow',sans-serif; font-style:italic; text-shadow:3px 3px 0 #16181a,5px 5px 0 #68312b; letter-spacing:1px; }
+.selection-home { font:italic 14px Impact,'Arial Narrow',sans-serif; letter-spacing:1px; text-decoration:none; }
+.selection-home:hover,.selection-home:focus-visible { color:#f1ca76; }
+.select-board { gap:clamp(5px,1vw,18px); }
+.fighter-card .fighter-art img { filter:drop-shadow(4px 5px 0 #111416); }
+.fighter-card h3 { color:#fff4d6; letter-spacing:1px; text-shadow:3px 3px 0 #151719,5px 5px 0 #69332d; }
+.fighter-card:last-child h3 { text-shadow:3px 3px 0 #151719,5px 5px 0 #354f5b; }
+.fighter-nameplate .mini-tag { font-size:10px; letter-spacing:1.2px; color:#edd18d; }
+.fighter-card:last-child .mini-tag { color:#b8d4dc; }
+.roster-panel { gap:12px; }
+.player-switch { justify-content:center; gap:12px; }
+.player-switch button { font-size:24px; line-height:1; border:0; min-height:40px; color:#9b9a92; position:relative; }
+.player-switch button.active { color:#ffe8a2; border:0; background:none; }
+.player-switch button[data-pick-slot="1"].active { color:#c5e7ed; border:0; background:none; }
+.player-switch button.active:after { content:''; position:absolute; left:16%; right:16%; bottom:0; height:3px; transform:skewX(-24deg); background:#dbb963; }
+.player-switch button[data-pick-slot="1"].active:after { background:#8bb4c3; }
+.player-switch .versus { font-size:38px; color:#ae4035; text-shadow:2px 3px #111; }
+.fighter-grid { gap:6px; }
+.fighter-tile { clip-path:polygon(7% 0,100% 0,93% 100%,0 100%); border:0; outline:0; background:#252b2b; }
+.fighter-tile:after { background:linear-gradient(transparent 45%,#121212e6); }
+.fighter-tile img { filter:saturate(.9) contrast(1.05); }
+.fighter-tile .tile-name { bottom:8px; font-family:Impact,'Arial Narrow',sans-serif; font-size:clamp(13px,1.3vw,19px); font-style:italic; color:#fff4d6; text-shadow:2px 2px #141414; }
+.fighter-tile.picked-one { outline:0; box-shadow:inset 0 0 0 4px #e2c172; filter:drop-shadow(2px 3px 0 #161719); }
+.fighter-tile.picked-two { box-shadow:inset 0 0 0 4px #8aafbd; }
+.fighter-tile.picked-one:before,.fighter-tile.picked-two:before { content:''; position:absolute; inset:0; z-index:3; pointer-events:none; border:4px solid #f2d67e; clip-path:polygon(7% 0,100% 0,93% 100%,0 100%); }
+.fighter-tile.picked-two:before { border-color:#9cc6d4; }
+.fighter-tile:focus-visible { outline:3px solid #fff4d6; outline-offset:3px; }
+.pick-badge { background:#eac766; color:#151719; clip-path:polygon(0 0,100% 0,82% 100%,0 100%); padding:4px 10px 4px 5px; }
+.pick-badge.two { background:#9bbdcc; }
+.battle-ready { background:none; border:0; box-shadow:none; }
+.battle-options .primary,.settings-dialog .sound-button,.settings-dialog nav button,.settings-dialog nav a { border:0; clip-path:polygon(8% 0,100% 0,92% 100%,0 100%); box-shadow:4px 4px 0 #0a0c0d; font-family:Impact,'Arial Narrow',sans-serif; font-style:italic; font-size:20px; letter-spacing:1px; }
+.battle-options .primary:hover,.battle-options .primary:focus-visible { background:#f1d28a; }
+.fight-heading { opacity:.85; }
+.versus-overlay { background:#11191bee; backdrop-filter:none; }
+.versus-overlay b { color:#d6b569; text-shadow:4px 4px #331c19; }
+.match-overlay,.pause-overlay { background:#111719ed; backdrop-filter:none; }
+.match-overlay h2,.pause-overlay h2 { font-family:Impact,'Arial Narrow',sans-serif; color:#f5e7c5; text-shadow:4px 4px #642e29; }
+.settings-dialog,.cfz-arcade-art .settings-dialog { background:#171b1e; border:0; border-top:6px solid #a3483c; box-shadow:8px 8px 0 #090b0d; }
+.settings-dialog h2 { text-shadow:3px 3px 0 #69332d; }
+.settings-dialog nav button,.settings-dialog nav a,.settings-dialog .sound-button { font-size:14px; background:#c6a45f; color:#161719; padding:10px 20px; text-decoration:none; }
+.settings-dialog nav button:hover,.settings-dialog nav a:hover,.settings-dialog .sound-button:hover { background:#f0d49a; }
+.settings-open { border:0; background:#a3483c; color:#fff4de; font:italic 26px Impact,sans-serif; clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%); }
+@media(max-width:800px) {
+  .selection-title { padding:4px 12px; }.selection-title h2 { font-size:clamp(21px,6vw,30px); }
+  .fighter-nameplate .mini-tag { font-size:8px; }.player-switch button { min-height:30px; font-size:19px; }.player-switch .versus { font-size:26px; }
+  .fighter-grid { gap:4px; }.fighter-tile .tile-name { font-size:clamp(9px,2.5vw,15px); }
+}
+@media(max-width:900px) and (orientation:landscape) {
+  .player-switch button { min-height:24px; font-size:16px; }.player-switch .versus { font-size:22px; }
+  .fighter-tile .tile-name { bottom:4px; font-size:clamp(9px,1.7vw,14px); }.fighter-nameplate .mini-tag { font-size:7px; }
+  .battle-options .primary { font-size:17px; }
+}
+@media(prefers-reduced-motion:reduce) { .fighter-tile:hover { transform:none; } }
+/* A single ComfyUI-composed scene is used for the included fictional cast. */
+.cfz-ensemble .title-backdrop { background-image:url('arcade/title-ensemble.webp') !important; background-size:cover; background-position:center center; opacity:1; filter:none; }
+.cfz-ensemble .title-screen:after { background:linear-gradient(to bottom,transparent 38%,#11151820 54%,#111518ef 94%); }
+.cfz-ensemble .title-copy { justify-content:flex-end; padding-bottom:4vh; }
+.cfz-ensemble .arcade-logo:not([hidden]) { max-height:19vh; }
+.cfz-ensemble .title-start { margin-top:8px; }
+@media(max-width:800px) and (orientation:portrait) {
+  .cfz-ensemble .title-screen { background:#171a1d; }
+  .cfz-ensemble .title-backdrop { background-size:100% auto; background-position:center 24%; background-repeat:no-repeat; }
+  .cfz-ensemble .title-screen:after { background:linear-gradient(to bottom,#171a1d 0%,transparent 24%,transparent 43%,#171a1d 60%); }
+  .cfz-ensemble .title-copy { padding-bottom:9vh; }
+  .cfz-ensemble .arcade-logo:not([hidden]) { max-height:18vh; }
+}
+/* Optional generated fighter introduction: one full-motion plate under the name and tagline. */
+.intro-video { position:absolute; inset:0; z-index:0; display:block; width:100%; height:100%; object-fit:cover; background:#101416; }
+.fighter-intro.has-intro-video .intro-energy,.fighter-intro.has-intro-video .intro-number,.fighter-intro.has-intro-video .intro-portrait { display:none; }
+.fighter-intro.has-intro-video .intro-copy-block { left:0; right:0; top:auto; bottom:50px; padding:55px 5% 12px; background:linear-gradient(transparent,#111719e8); border:0; z-index:1; }
+.fighter-intro.has-intro-video .intro-copy-block h2 { font-size:clamp(36px,5vw,72px); }
+.fighter-intro.has-intro-video .intro-copy-block blockquote { margin:5px 0 0; max-width:75%; font-size:clamp(13px,1.5vw,20px); }
+.fighter-intro.has-intro-video .intro-bottom { background:#101416c9; border:0; }
+@media(max-width:800px) and (orientation:portrait) { .fighter-intro.has-intro-video .intro-copy-block { bottom:52px; padding:48px 5% 8px; background:linear-gradient(transparent,#111719ed); } .fighter-intro.has-intro-video .intro-copy-block blockquote { max-width:90%; } }
+/* Keep the tagline above the lower skip strip on video entrances. */
+.fighter-intro.has-intro-video .intro-copy-block { bottom:82px; }
+@media(max-width:800px) and (orientation:portrait) { .fighter-intro.has-intro-video .intro-copy-block { bottom:80px; } }
+/* A moving title plate stays behind the game wordmark and controls. */
+.title-video { position:absolute; inset:0; z-index:-2; width:100%; height:100%; object-fit:cover; object-position:center; pointer-events:none; opacity:0; transition:opacity .24s linear; }
+.title-video-ready .title-video { opacity:1; }
+.title-video-ready .title-backdrop { opacity:0; }
+.title-copy .primary.title-start { position:relative; isolation:isolate; border:0; color:#1a1815; background:#d9b469; font-family:Impact,'Arial Narrow',sans-serif; font-style:italic; letter-spacing:1.5px; clip-path:polygon(7% 0,100% 0,93% 100%,0 100%); box-shadow:none; }
+.title-copy .primary.title-start:before { content:''; position:absolute; z-index:-1; inset:4px; border-top:2px solid #ffebbd; border-bottom:2px solid #75532a; clip-path:polygon(7% 0,100% 0,93% 100%,0 100%); }
+.title-copy .primary.title-start:hover,.title-copy .primary.title-start:focus-visible { background:#f4d692; }
+.title-network-modes .text-button { position:relative; border:0; background:#1b2024e8; color:#f5ead2; font:italic 15px Impact,'Arial Narrow',sans-serif; letter-spacing:.8px; clip-path:polygon(7% 0,100% 0,93% 100%,0 100%); }
+.title-network-modes .text-button:hover,.title-network-modes .text-button:focus-visible { background:#a3483c; color:#fff; }
+@media(max-width:800px) and (orientation:portrait) {
+  .title-video { height:auto; aspect-ratio:16/9; top:24%; bottom:auto; object-fit:contain; }
+  .title-network-modes .text-button { font-size:12px; }
+}
+@media(prefers-reduced-motion:reduce) { .title-video { transition:none; } }
+/* Keep selection navigation above oversized character illustrations. */
+.selection-title { z-index:3; pointer-events:none; }
+.selection-home { pointer-events:auto; }
+/* Make the game emblem read as the title rather than a small web-page mark. */
+.cfz-ensemble .arcade-logo:not([hidden]) { max-height:28vh; }
+@media(max-width:800px) and (orientation:portrait) { .cfz-ensemble .arcade-logo:not([hidden]) { max-height:22vh; } }
+@media(max-height:540px) and (orientation:landscape) { .cfz-ensemble .arcade-logo:not([hidden]) { max-height:25vh; } }
+/* Arcade mode screens: restrained Neo Geo palette of charcoal, ivory, oxblood, navy and brass. */
+.title-modes { display:flex; gap:10px; justify-content:center; margin-top:10px; }
+.title-modes .text-button { position:relative; border:0; background:#22344ae8; color:#f5ead2; font:italic 15px Impact,'Arial Narrow',sans-serif; letter-spacing:.8px; padding:9px 22px; clip-path:polygon(7% 0,100% 0,93% 100%,0 100%); }
+.title-modes .text-button:hover,.title-modes .text-button:focus-visible { background:#a3483c; color:#fff; }
+.title-hiscore { margin:12px 0 0; font:italic 13px Impact,'Arial Narrow',sans-serif; letter-spacing:2px; color:#f4d692; text-shadow:2px 2px 0 #111; }
+.settings-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px 14px; margin:14px 0; }
+.settings-options label { display:flex; flex-direction:column; gap:5px; font-size:9px; font-weight:800; letter-spacing:1.5px; color:#d9cfb8; }
+.settings-options select,.training-panel select { background:#15191c; color:#f5ead2; border:1px solid #c9a25e66; padding:6px; }
+.settings-options input[type=range] { accent-color:#c9a25e; }
+.stage-cycle { display:flex; align-items:center; gap:6px; }
+.stage-cycle span { min-width:150px; text-align:center; font:italic 16px Impact,sans-serif; letter-spacing:1px; color:#f5ead2; text-shadow:2px 2px 0 #111; }
+.stage-cycle button { background:#15191cde; color:#f5ead2; border:1px solid #c9a25e88; width:34px; height:30px; font-size:12px; }
+.stage-cycle button:hover,.stage-cycle button:focus-visible { background:#a3483c; }
+.device-status { text-align:center; font-size:11px; letter-spacing:1px; color:#f4d692; margin:6px 0 0; }
+.pause-menu { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+.pause-menu .text-button { background:#1b2024e8; border:1px solid #c9a25e66; color:#f5ead2; padding:8px 14px; font-size:11px; letter-spacing:1px; }
+.vs-screen,.win-screen,.continue-screen,.gameover-screen,.ending-screen,.name-entry,.movelist-overlay { position:absolute; inset:0; z-index:6; color:#f5ead2; }
+.vs-screen { display:grid; grid-template-columns:1fr auto 1fr; align-items:end; background:linear-gradient(100deg,#7a2420f2 0 46%,#0d0f11 46% 54%,#22344af2 54%); overflow:hidden; animation:vs-in .35s ease-out both; }
+.vs-side { position:relative; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; padding-bottom:6%; }
+.vs-side img { position:absolute; bottom:0; height:96%; max-width:100%; object-fit:contain; filter:drop-shadow(6px 0 0 #0009); }
+.vs-right img { transform:scaleX(-1); }
+.vs-side strong { position:relative; font:italic clamp(26px,4.4vw,60px) Impact,'Arial Black',sans-serif; text-shadow:3px 4px 0 #111; letter-spacing:1px; }
+.vs-side span { position:relative; font-size:10px; letter-spacing:2px; font-weight:800; color:#f4d692; text-transform:uppercase; }
+.vs-mark { align-self:center; font:italic clamp(48px,8vw,120px) Impact,'Arial Black',sans-serif; color:#f4d692; text-shadow:4px 5px 0 #111; text-align:center; padding:0 10px; }
+.vs-mark small { display:block; font:800 10px 'Segoe UI',sans-serif; letter-spacing:3px; color:#f5ead2; }
+.vs-round { position:absolute; top:6%; left:0; right:0; text-align:center; font:italic 18px Impact,sans-serif; letter-spacing:3px; color:#f5ead2; text-shadow:2px 2px 0 #111; margin:0; }
+@keyframes vs-in { from { transform:scale(1.08); opacity:0; } to { transform:none; opacity:1; } }
+.win-screen { display:grid; grid-template-columns:42% 1fr; background:linear-gradient(90deg,#15191cf5,#22344af0); }
+.win-art { position:relative; overflow:hidden; }
+.win-art img { position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:100%; object-fit:contain; }
+.win-copy { display:flex; flex-direction:column; justify-content:center; gap:10px; padding:0 6% 0 2%; }
+.win-copy h2 { margin:0; font:italic clamp(34px,5vw,72px) Impact,'Arial Black',sans-serif; color:#f4d692; text-shadow:3px 4px 0 #7a2420; }
+.win-copy blockquote { margin:0; padding:12px 16px; border-left:4px solid #a3483c; background:#0d0f11aa; font-size:clamp(14px,1.6vw,20px); line-height:1.35; }
+.win-tally { display:grid; grid-template-columns:auto auto; gap:2px 18px; margin:6px 0; font:italic 15px Impact,sans-serif; letter-spacing:1px; }
+.win-tally dt { color:#d9cfb8; } .win-tally dd { margin:0; text-align:right; color:#f4d692; }
+.win-copy .primary { align-self:flex-start; }
+.continue-screen,.gameover-screen,.name-entry { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:#0d0f11f0; text-align:center; }
+.continue-screen img { position:absolute; inset:auto auto 0 50%; transform:translateX(-50%); height:80%; opacity:.28; filter:grayscale(1) contrast(1.1); pointer-events:none; }
+.continue-screen > * { position:relative; }
+.continue-screen strong { font:italic clamp(90px,16vw,200px) Impact,'Arial Black',sans-serif; color:#f4d692; text-shadow:6px 6px 0 #7a2420; line-height:1; }
+.continue-hint { font-size:11px; letter-spacing:2px; color:#d9cfb8; }
+.continue-screen div { display:flex; gap:14px; }
+.gameover-screen h2 { font:italic clamp(54px,10vw,130px) Impact,'Arial Black',sans-serif; color:#a3483c; text-shadow:5px 5px 0 #111; margin:0; }
+.gameover-screen p { font:italic 20px Impact,sans-serif; letter-spacing:2px; color:#f4d692; }
+.ending-screen { background:#0d0f11; overflow:hidden; }
+.ending-screen > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.85; animation:ending-pan 18s ease-in-out both; }
+@keyframes ending-pan { from { transform:scale(1.08) translateX(-1.5%); } to { transform:scale(1) translateX(1.5%); } }
+.ending-copy { position:absolute; left:4%; right:4%; bottom:5%; padding:16px 22px; background:#0d0f11cc; border-top:3px solid #c9a25e; }
+.ending-copy h2 { margin:0 0 6px; font:italic clamp(26px,3.6vw,48px) Impact,'Arial Black',sans-serif; color:#f4d692; }
+.ending-copy p:not(.eyebrow) { margin:0; font-size:clamp(13px,1.5vw,18px); line-height:1.45; min-height:3em; }
+.staff-roll { position:absolute; inset:0; background:#0d0f11f2; overflow:hidden; }
+.staff-roll > div { position:absolute; left:0; right:0; top:100%; text-align:center; animation:staff-roll 26s linear forwards; }
+.staff-roll h3 { font:italic 34px Impact,'Arial Black',sans-serif; color:#f4d692; margin:0 0 30px; }
+.staff-roll h4 { font-size:10px; letter-spacing:3px; color:#c9a25e; margin:28px 0 8px; }
+.staff-roll p { margin:4px 0; font-size:15px; letter-spacing:1px; }
+@keyframes staff-roll { to { transform:translateY(calc(-100% - 120vh)); } }
+.ending-screen > .text-button { position:absolute; top:12px; right:14px; z-index:2; background:#1b2024e8; border:1px solid #c9a25e66; color:#f5ead2; padding:6px 12px; }
+.name-letters { display:flex; gap:14px; }
+.name-letters span { width:62px; height:76px; display:grid; place-items:center; background:#1b2024; border:2px solid #c9a25e66; font:italic 50px Impact,'Arial Black',sans-serif; color:#f5ead2; }
+.name-letters span.active { border-color:#f4d692; color:#f4d692; box-shadow:0 0 0 3px #a3483c; }
+.name-entry strong { font:italic 34px Impact,sans-serif; color:#f4d692; letter-spacing:3px; }
+.movelist-overlay { display:flex; flex-direction:column; align-items:center; gap:10px; padding:3%; background:#0d0f11f2; overflow:auto; }
+.movelist-overlay h2 { margin:0; font:italic 38px Impact,'Arial Black',sans-serif; color:#f4d692; }
+.movelist-body { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; width:100%; }
+.movelist-body section { background:#1b2024; border-top:3px solid var(--accent,#c9a25e); padding:10px 14px; }
+.movelist-body h3 { margin:0 0 6px; font:italic 22px Impact,sans-serif; color:#f5ead2; }
+.movelist-body h3 small { font:800 9px 'Segoe UI',sans-serif; letter-spacing:2px; color:#c9a25e; margin-left:8px; }
+.movelist-body ul { list-style:none; margin:0; padding:0; }
+.movelist-body li { display:grid; grid-template-columns:1fr auto; gap:2px 10px; padding:5px 0; border-bottom:1px solid #ffffff12; font-size:12px; }
+.movelist-body li b { color:#f4d692; font-weight:700; } .movelist-body li kbd { font:12px Consolas,monospace; color:#f5ead2; }
+.movelist-body li small { grid-column:1/-1; color:#b8ad96; font-size:10px; }
+.training-panel { position:absolute; right:12px; top:90px; z-index:6; display:flex; flex-direction:column; gap:8px; width:250px; padding:14px; background:#15191cf2; border:1px solid #c9a25e66; color:#f5ead2; font-size:10px; font-weight:800; letter-spacing:1.4px; }
+.training-panel h3 { margin:0; font:italic 20px Impact,sans-serif; color:#f4d692; letter-spacing:1px; }
+.training-panel label { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.training-panel label.check { justify-content:flex-start; }
+.training-panel div { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+.training-panel .text-button { background:#1b2024; border:1px solid #c9a25e66; color:#f5ead2; padding:6px 10px; }
+.demo-label { position:absolute; left:50%; bottom:9%; transform:translateX(-50%); z-index:5; font:italic 30px Impact,'Arial Black',sans-serif; letter-spacing:3px; color:#f4d692; text-shadow:3px 3px 0 #111; pointer-events:none; animation:demo-blink 1.4s steps(2) infinite; }
+.demo-label span { display:block; text-align:center; font:800 11px 'Segoe UI',sans-serif; letter-spacing:4px; color:#f5ead2; }
+@keyframes demo-blink { 50% { opacity:.55; } }
+/* Optional arcade display filters over the fight canvas. */
+.canvas-wrap.filter-scanlines:after,.canvas-wrap.filter-crt:after { content:''; position:absolute; inset:0; z-index:4; pointer-events:none; background:repeating-linear-gradient(0deg,#0000 0 2px,#00000040 2px 3px); }
+.canvas-wrap.filter-crt:after { background:repeating-linear-gradient(0deg,#0000 0 2px,#0000004d 2px 3px),radial-gradient(ellipse at center,#0000 58%,#0000008c 100%); box-shadow:inset 0 0 70px #000c; }
+.canvas-wrap.filter-crt canvas { filter:saturate(1.12) contrast(1.06); }
+@media(max-width:800px) { .win-screen { grid-template-columns:1fr; } .win-art { display:none; } .training-panel { top:auto; bottom:8px; right:8px; width:220px; } }
+@media(prefers-reduced-motion:reduce) { .vs-screen,.ending-screen > img,.staff-roll > div,.demo-label { animation:none; } }
+/* Keep the fight back button clear of the KOF-style top HUD band. */
+body[data-scene=fight] .fight-heading,body[data-scene=intro] .fight-heading { top:112px; left:16px; opacity:.75; }
+.title-modes { pointer-events:auto; flex-wrap:wrap; }
+.title-hiscore { pointer-events:none; }
+.movelist-overlay,.training-panel { z-index:60; }
+.vs-screen,.win-screen,.continue-screen,.gameover-screen,.ending-screen,.name-entry { z-index:55; }
+/* Fit each selection-tile name to its own tile (Impact capitals average about 0.6em). */
+.fighter-tile { container-type:inline-size; }
+#fighter-grid .fighter-tile .tile-name { font-size:clamp(7px,calc(145cqw / var(--name-chars,8)),18px); white-space:nowrap; letter-spacing:0; }
+/* The VS screen takes focus so Enter advances it; it is not a control, so no focus ring. */
+.vs-screen:focus { outline: none; }

@@ -9,28 +9,78 @@ const write = (file, value) => { fs.mkdirSync(path.dirname(path.join(ROOT, file)
 // Fictional performances using stock voices, never recordings of real people.
 const INTRO_VOICES = ['River (neutral, american)', 'Daniel (male, british)', 'Jessica (female, american)', 'Charlie (male, australian)', 'Brian (male, american)', 'Adam (male, american)'];
 
+// The exporter node accepts at most 100 mapped clips (ComfyUI autogrow limit).
+const MAX_AUDIO_CLIPS = 100;
+const ANNOUNCER_VOICE = 'Roger (male, american)';
+// Arcade announcer calls. IDs are stable runtime names; game.js falls back when one is absent.
+const ANNOUNCER = [
+  ['ann_title', 'Comfy Fighter Z!'], ['ann_select', 'Choose your fighter!'], ['ann_versus', 'Versus!'],
+  ['ann_round1', 'Round one!'], ['ann_round2', 'Round two!'], ['ann_round3', 'Round three!'], ['ann_final', 'Final round!'],
+  ['ann_ready', 'Ready?'], ['ann_go', 'GO!'], ['ann_ko', 'K! O!'], ['ann_doubleko', 'Double K! O!'], ['ann_timeover', 'Time over!'],
+  ['ann_perfect', 'Perfect!'], ['ann_draw', 'Draw game!'], ['ann_victory', 'Victory!'], ['ann_youwin', 'You win!'], ['ann_youlose', 'You lose.'],
+  ['ann_continue', 'Continue?'], ['ann_gameover', 'Game over.'], ['ann_finalbattle', 'Final battle!']
+];
+const SFX = [
+  ['sfx_punch', 0.6, 'One isolated stylized anime fighting-game light punch impact: fast airy swoosh then a sharp solid thwack and tiny energy snap.'],
+  ['sfx_kick', 0.8, 'One isolated arcade fighting-game medium kick impact: short fast swish followed by a punchy slam with a crisp crack.'],
+  ['sfx_heavy', 1.0, 'One isolated heavy arcade fighting-game strike: deep whoomp, bone-rattling bass slam and a short crunchy crack.'],
+  ['sfx_block', 0.6, 'One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark.'],
+  ['sfx_special', 1.2, 'One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay.'],
+  ['sfx_projectile_hit', 0.9, 'One isolated energy-ball impact in an arcade fighting game: crackling burst, bright shatter and a quick electric fizzle.'],
+  ['sfx_whiff', 0.5, 'One isolated quick light air whoosh of a fast punch missing its target.'],
+  ['sfx_whiff_heavy', 0.6, 'One isolated heavy swinging whoosh of a big kick missing its target, low and airy.'],
+  ['sfx_jump', 0.5, 'One isolated light springy hop sound of a fighter leaving the ground: sneaker scuff and short air puff.'],
+  ['sfx_land', 0.5, 'One isolated fighter landing on a hard patio: firm double footstep thud with tiny dust scatter.'],
+  ['sfx_dash', 0.6, 'One isolated quick dash in an arcade fighting game: rapid scuffing footsteps and a short rushing whoosh.'],
+  ['sfx_throw', 1.0, 'One isolated fighting-game throw: cloth grab rustle, heave whoosh and a heavy body slam on the ground.'],
+  ['sfx_super', 1.6, 'One isolated super-move activation flash: dramatic rising energy charge, bright shimmering chime and a deep impact boom.'],
+  ['sfx_ko', 1.6, 'One isolated final knockout blow in an arcade fighting game: massive impact boom with a short reverberant echo tail.'],
+  ['sfx_counter', 0.6, 'One isolated counter-hit accent: bright sharp metallic clang with a quick sparkle.'],
+  ['sfx_dizzy', 1.2, 'One isolated cartoon dizzy daze: light swirling chirps and twinkling stars circling.'],
+  ['sfx_menu_move', 0.5, 'One isolated crisp retro arcade menu cursor tick, short and clean.'],
+  ['sfx_menu_select', 0.6, 'One isolated retro arcade menu confirm: punchy bright chord stab with a short sparkle.'],
+  ['sfx_menu_back', 0.5, 'One isolated retro arcade menu cancel: short soft descending blip.'],
+  ['sfx_timer', 0.5, 'One isolated urgent digital timer warning beep, single short tone.']
+];
+
 function makeAudioJobs(config) {
   const announcer = '[excited, powerful arcade announcer, crisp and energetic] ';
-  const stage = config.stages?.[0] || {name:'The Yard',description:'An original neighborhood tournament arena.'};
-  return [
-    { id: 'menu_music', category: 'music', duration: 45, loop: true, prompt: 'Original instrumental anime arcade fighting-game character selection music. Bright electric guitar riffs, punchy bass, energetic drums, heroic synth brass, playful competitive energy, 148 BPM. Confident memorable original melody, no vocals, no speech, no existing game or anime melody. Steady groove, clean loop-friendly ending without a long fade. For Comfy Fighter Z.' },
-    { id: 'yard_music', category: 'music', duration: 60, loop: true, prompt: `Original instrumental 1990s battle-anime fighting-game theme for ${stage.name}: ${stage.description || 'An original tournament arena.'} Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, 162 BPM. Upbeat, dramatic and playful. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.` },
-    { id: 'ann_select', category: 'voice', prompt: announcer + 'Choose your fighter!' },
-    { id: 'ann_fight', category: 'voice', prompt: announcer + 'Ready? FIGHT!' },
-    { id: 'ann_ko', category: 'voice', prompt: announcer + 'K! O!' },
-    { id: 'ann_victory', category: 'voice', prompt: announcer + 'Victory!' },
-    { id: 'sfx_punch', category: 'sfx', duration: 0.6, prompt: 'One isolated stylized anime fighting-game punch impact: fast airy swoosh then sharp solid thwack and tiny energy snap. Immediate attack, short clean decay, no voice, no music, no ambience.' },
-    { id: 'sfx_kick', category: 'sfx', duration: 0.8, prompt: 'One isolated heavy arcade fighting-game kick impact: short fast swish followed by deep punchy slam with a crisp crack. Immediate attack and short clean tail. No voice, no music, no ambience.' },
-    { id: 'sfx_block', category: 'sfx', duration: 0.6, prompt: 'One isolated anime fighting-game guard block: tight metallic energy clink with a bass thump and bright brief spark. Immediate and concise. No voices, no music, no ambience.' },
-    { id: 'sfx_special', category: 'sfx', duration: 1.2, prompt: 'One isolated anime arcade energy projectile release: quick rising electrical charge followed by a powerful rushing blast and sparkling decay. Immediate start, compact clean tail. No voice, no music, no ambience.' },
-    ...config.fighters.map(fighter => ({ id: `fighter_${fighter.id}_special`, category: 'voice', fighter: fighter.id,
-      prompt: announcer + (fighter.specialMove?.name || 'Special attack') + '!',
-      characterDescription: fighter.description, specialMove: fighter.specialMove })),
-    ...config.fighters.flatMap((fighter, index) => fighter.introTagline ? [{ id: `fighter_${fighter.id}_intro`, category: 'voice', fighter: fighter.id,
-      prompt: '[confident, energetic anime tournament fighter, crisp delivery] ' + fighter.introTagline,
-      voice: fighter.introVoice || INTRO_VOICES[index % INTRO_VOICES.length], introTagline: fighter.introTagline,
-      characterDescription: fighter.description, specialMove: fighter.specialMove }] : []),
+  const stages = config.stages?.length ? config.stages.filter(stage => stage.enabled !== false) : [{ id: 'yard', name: 'The Yard', description: 'An original neighborhood tournament arena.' }];
+  const boss = config.fighters.find(fighter => fighter.boss);
+  const tempos = [162, 154, 170];
+  const music = [
+    { id: 'menu_music', duration: 60, loop: true, prompt: 'Original instrumental anime arcade fighting-game title and menu theme. Bright electric guitar riffs, punchy bass, energetic drums, heroic synth brass, 148 BPM, confident memorable original melody. No vocals, no speech, no existing game or anime melody. Clean loop-friendly ending without a long fade. For Comfy Fighter Z.' },
+    { id: 'select_music', duration: 45, loop: true, prompt: 'Original instrumental 1990s arcade fighting-game character select music: tense driving synth bass, staccato guitar chugs, crisp drums and a rising brass hook, 150 BPM, anticipation before battle. No vocals or speech, no existing game melody. Loop-friendly ending.' },
+    ...stages.map((stage, index) => ({ id: `${stage.id}_music`, duration: 75, loop: true,
+      prompt: `Original instrumental 1990s battle-anime fighting-game stage theme for ${stage.name}: ${(stage.description || 'An original tournament arena.').split('. ')[0]}. Fast electric guitar, tight breakbeat drums, driving bass, triumphant synth lead and energetic orchestral stabs, ${tempos[index % tempos.length]} BPM. Upbeat, dramatic and memorable. No vocals or speech, no existing game or anime melody. Steady full-energy groove with a clean loop-friendly ending.` })),
+    ...(boss ? [{ id: 'boss_music', duration: 75, loop: true, prompt: `Original instrumental final-boss battle theme for an arcade fighting game: imposing pipe-organ chords, heavy distorted guitar, pounding orchestral drums, dark brass and a menacing minor-key melody, 140 BPM, grand and villainous yet playful. The boss is ${boss.name}. No vocals or speech, no existing game melody. Loop-friendly ending.` }] : []),
+    { id: 'victory_music', duration: 10, loop: false, prompt: 'Original short triumphant arcade fighting-game victory jingle: bright brass fanfare and guitar flourish ending on a strong final chord. No vocals, no existing melody.' },
+    { id: 'continue_music', duration: 20, loop: true, prompt: 'Original tense arcade continue-countdown music: ticking percussion, suspenseful pulsing synth bass and a pleading melodic motif, 120 BPM. No vocals, no existing melody. Loop-friendly.' },
+    { id: 'gameover_music', duration: 8, loop: false, prompt: 'Original short melancholy arcade game-over sting: slow descending synth and soft piano, ending in a quiet minor chord. No vocals, no existing melody.' },
+    { id: 'ending_music', duration: 60, loop: true, prompt: 'Original warm, nostalgic arcade ending credits theme: gentle electric piano, hopeful guitar melody, soft drums and a sunset feeling of a neighborhood celebrating together, 96 BPM. No vocals, no existing melody. Loop-friendly.' }
+  ].map(job => ({ ...job, category: 'music' }));
+  const fighterLines = config.fighters.flatMap((fighter, index) => {
+    const voice = fighter.introVoice || INTRO_VOICES[index % INTRO_VOICES.length];
+    const base = { category: 'voice', fighter: fighter.id, voice, characterDescription: fighter.description };
+    const line = (id, prompt, extra = {}) => ({ ...base, id: `fighter_${fighter.id}_${id}`, prompt, ...extra });
+    return [
+      line('special', '[shouting the attack name with fierce energy] ' + (fighter.specialMove?.name || 'Special attack') + '!', { specialMove: fighter.specialMove }),
+      line('super', '[roaring at full power, dramatic] ' + (fighter.superMove?.name || fighter.specialMove?.name || 'Super attack') + '!', fighter.superMove ? { superMove: fighter.superMove } : {}),
+      line('attack', '[sharp fierce battle cry] Hyaah!'),
+      line('hurt', '[pained grunt, short] Ugh!'),
+      line('ko', '[long anguished defeated cry, fading] Nooooo...!'),
+      line('win', '[confident, satisfied] ' + (fighter.winQuote || 'Better luck next time.'), { winQuote: fighter.winQuote || '' }),
+      ...(fighter.introTagline ? [line('intro', '[confident, energetic anime tournament fighter, crisp delivery] ' + fighter.introTagline, { introTagline: fighter.introTagline, specialMove: fighter.specialMove })] : [])
+    ];
+  });
+  const result = [
+    ...music,
+    ...ANNOUNCER.map(([id, text]) => ({ id, category: 'voice', voice: ANNOUNCER_VOICE, prompt: announcer + text })),
+    ...SFX.map(([id, duration, prompt]) => ({ id, category: 'sfx', duration, prompt: prompt + ' Immediate attack, short clean decay. No voice, no music, no ambience.' })),
+    ...fighterLines
   ].map(job => ({ ...job, kind: 'audio', model: job.category === 'music' ? 'SoniloTextToMusic' : job.category === 'sfx' ? 'ElevenLabsTextToSoundEffects' : 'ElevenLabsTextToSpeech' }));
+  if (result.length > MAX_AUDIO_CLIPS) throw new Error(`The audio exporter supports ${MAX_AUDIO_CLIPS} clips; this configuration needs ${result.length}.`);
+  return result;
 }
 
 function audioRecord(job) {
@@ -86,7 +136,7 @@ function makeAudioGraph(jobs, config, templates, { rootDirectory, title = 'Comfy
     exporter.inputs.push({ name: `assets.audio_${index}`, type: 'CFZ_AUDIO_ASSET', link: null }); connect(save, exporter, exporter.inputs.length - 1, 'CFZ_AUDIO_ASSET');
   });
   const note = node('MarkdownNote', title, [-550, -250], [], [], [
-    `# ${title}\n\n${jobs.length} paid cloud audio jobs. Music: Sonilo. Effects: ElevenLabs SFX. Announcer, move names and fighter intro taglines: Eleven v4. Each intro uses a distinct stock preset voice for a fictional performance; it does not imitate any real person. No local model weights and no voice cloning.\n\nSet Asset Root to the SAME folder as the image graph. Audio saves are PCM WAVs under raw/. The exporter writes audio.json only after every track finishes; assets.json remains unchanged. Load the full folder in the builder to include both maps.\n\nMusic is requested as loop-friendly; audition the joins before release. Preparing this workflow spends nothing. Running it requires cloud credits and spending authorization.`
+    `# ${title}\n\n${jobs.length} paid cloud audio jobs. Music: Sonilo (title, select, every stage, boss, victory, continue, game over and ending). Effects: ElevenLabs SFX. Announcer calls and every fighter line (special and super shouts, attack, hurt, KO, win quote and intro tagline): Eleven v4. Each fighter keeps one distinct stock preset voice for a fictional performance; it does not imitate any real person. No local model weights and no voice cloning.\n\nSet Asset Root to the SAME folder as the image graph. Audio saves are PCM WAVs under raw/. The exporter writes audio.json only after every track finishes; assets.json remains unchanged. Load the full folder in the builder to include both maps.\n\nMusic is requested as loop-friendly; audition the joins before release. Preparing this workflow spends nothing. Running it requires cloud credits and spending authorization.`
   ]); note.size = [1000, 330];
   nodes.forEach((item, index) => item.order = index);
   const digest = createHash('sha256').update(title).digest('hex');

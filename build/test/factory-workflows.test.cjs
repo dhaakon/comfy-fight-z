@@ -2,18 +2,19 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { factoryCounts, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, builderMetadata } = require('../../comfyui/tools/prepare-factory-workflows.cjs');
+const { factoryCounts, expansionCounts, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata } = require('../../comfyui/tools/prepare-factory-workflows.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8'));
 const config = read('comfyui/config/factory.json');
 const functional = graph => graph.nodes.filter(n => n.type !== 'MarkdownNote');
 
-test('main factory has six character uploads, three environment uploads and one complete mapped export', () => {
+test('main factory has six fighters, a final boss, three environments and one complete mapped export', () => {
   const graph = makeFactoryGraph(config);
-  assert.equal(functional(graph).length, 12);
+  assert.equal(functional(graph).length, 13);
   const characters = graph.nodes.filter(n => n.type === 'CFZCharacterFactory');
   const environments = graph.nodes.filter(n => n.type === 'CFZEnvironmentFactory');
-  assert.equal(characters.length, 6); assert.equal(environments.length, 3);
+  assert.equal(characters.length, 7); assert.equal(environments.length, 3);
+  assert.deepEqual(characters.map(n => n.widgets_values_named.role), [...Array(6).fill('Fighter'), 'Final boss']);
   characters.forEach((node, i) => {
     assert.equal(node.widgets_values_named.image, config.fighters[i].sourceInput);
     assert.equal(node.widgets_values_named.source_mode,'Invent fictional reference');
@@ -21,34 +22,66 @@ test('main factory has six character uploads, three environment uploads and one 
     assert.equal(node.widgets_values_named.special_description, config.fighters[i].specialMove.description);
     assert.equal(node.widgets_values_named.intro_tagline, config.fighters[i].introTagline);
     assert.equal(node.widgets_values_named.include_sprite_sheets, true);
+    assert.equal(node.widgets_values_named.include_arcade_art, true);
+    assert.equal(node.widgets_values_named.fighting_style, config.fighters[i].style);
+    assert.equal(node.widgets_values_named.super_name, config.fighters[i].superMove.name);
+    assert.equal(node.widgets_values_named.win_quote, config.fighters[i].winQuote);
+    assert.equal(node.widgets_values_named.ending, config.fighters[i].ending);
   });
-  assert.equal(environments[0].widgets_values_named.image, config.stages[0].sourceInput);
-  for (const node of environments.slice(1)) {
-    assert.equal(node.widgets_values_named.enabled, false);
+  for (const [i, node] of environments.entries()) {
+    assert.equal(node.widgets_values_named.enabled, true);
     assert.equal(node.widgets_values_named.image, '');
     assert.equal(node.widgets_values_named.source_mode,'Invent fictional reference');
+    assert.equal(node.widgets_values_named.stage_id, config.stages[i].id);
   }
   const exporter = graph.nodes.find(n => n.type === 'CFZExportGameAssets');
-  assert.equal(exporter.inputs.filter(i => i.type === 'CFZ_BUNDLE').length, 10);
+  assert.equal(exporter.inputs.filter(i => i.type === 'CFZ_BUNDLE').length, 11);
   const shared = graph.nodes.find(n => n.type === 'CFZSharedArtFactory');
   const stageLink = graph.links.find(l => l[0] === shared.inputs.find(i => i.name === 'stage_reference').link);
   assert.equal(stageLink[1], environments[0].id); assert.equal(stageLink[2], 1);
 });
 
-test('default and full factory counts are transparent without changing released one-stage configuration', () => {
-  assert.deepEqual(factoryCounts(config), {paidImages:56,sourceSaves:7,mappedAssets:56,oneK:35,twoK:21,estimatedUSD:3.195192});
-  assert.deepEqual(factoryCounts(config, true), {paidImages:60,sourceSaves:9,mappedAssets:60,oneK:35,twoK:25,estimatedUSD:3.48348});
-  assert.equal(read('comfyui/config/game.json').stages.length, 1);
+test('factory and expansion counts are transparent for the arcade roster', () => {
+  const full = {paidImages:89,sourceSaves:10,mappedAssets:89,oneK:47,twoK:42,estimatedUSD:5.28528};
+  assert.deepEqual(factoryCounts(config), full);
+  assert.deepEqual(factoryCounts(config, true), full);
+  // Without the optional arcade art the original per-fighter pack remains eight images.
+  const classic = { ...config, extraSheets: undefined, fighters: config.fighters.slice(0, 6), stages: config.stages.map((s, i) => ({ ...s, enabled: i === 0 })) };
+  assert.deepEqual(factoryCounts(classic), {paidImages:56,sourceSaves:7,mappedAssets:56,oneK:35,twoK:21,estimatedUSD:3.195192});
+  assert.deepEqual(expansionCounts(config), {paidImages:33,oneK:12,twoK:21,mappedAssets:33,estimatedUSD:2.090088});
+  assert.equal(read('comfyui/config/game.json').stages.length, 3);
   assert.equal(config.assetRoot, read('comfyui/config/game.json').assetRoot, 'Default image and audio bundles share their output root');
-  assert.deepEqual(builderMetadata(config).environments.slice(1).map(e => [e.enabled,e.reference,e.sourceInput]), [[false,'',''],[false,'','']]);
+  assert.deepEqual(builderMetadata(config).environments.map(e => [e.enabled,e.reference,e.sourceInput]), [[true,'',''],[true,'',''],[true,'','']]);
 });
 
-test('focused character template reuses one identity across exactly three explicit sheet nodes', () => {
+test('arcade expansion adds in-betweens and endings from muted accepted identities plus the boss and new stages', () => {
+  const graph = makeExpansionGraph(config);
+  assert.equal(graph.extra.cfzArcadeExpansion.mutedByDefault, true);
+  assert.ok(functional(graph).every(node => node.mode === 2));
+  const uploads = graph.nodes.filter(n => n.type === 'LoadImage');
+  assert.deepEqual(uploads.map(n => n.widgets_values[0]), config.fighters.filter(f => !f.boss).map(f => `cfz-accepted-${f.id}-reference.png`));
+  const sheets = graph.nodes.filter(n => n.type === 'CFZSpriteSheet'), boss = graph.nodes.filter(n => n.type === 'CFZCharacterFactory');
+  const bossSheets = sheets.filter(sheet => graph.links.some(link => link[1] === boss[0].id && link[3] === sheet.id));
+  assert.equal(sheets.length, 12 + 5);
+  assert.deepEqual([...new Set(sheets.filter(n => !bossSheets.includes(n)).map(n => n.widgets_values_named.sheet))], ['sheetD', 'sheetE']);
+  // The boss's five sheets are visible nodes fed by its identity, so its factory runs at most four art calls at once.
+  assert.deepEqual(bossSheets.map(n => n.widgets_values_named.sheet), ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE']);
+  assert.equal(graph.nodes.filter(n => n.type === 'CFZCharacterArt' && n.widgets_values_named.kind === 'ending').length, 6);
+  assert.equal(boss.length, 1); assert.equal(boss[0].widgets_values_named.role, 'Final boss'); assert.equal(boss[0].widgets_values_named.source_mode, 'Invent fictional reference');
+  assert.equal(boss[0].widgets_values_named.include_sprite_sheets, false); assert.equal(boss[0].widgets_values_named.include_arcade_art, true);
+  assert.deepEqual(graph.nodes.filter(n => n.type === 'CFZEnvironmentFactory').map(n => n.widgets_values_named.stage_id), ['rooftop', 'arcade']);
+  const exporter = graph.nodes.find(n => n.type === 'CFZExportAssetPatch');
+  assert.equal(exporter.inputs.filter(i => i.type === 'CFZ_BUNDLE').length, 6 * 3 + 1 + 5 + 2);
+  assert.equal(graph.nodes.filter(n => n.type === 'CFZExportGameAssets').length, 0, 'An expansion writes only a partial patch');
+});
+
+test('focused character template reuses one identity across five explicit sheet nodes', () => {
   const graph = makeCharacterTemplate(config), character = graph.nodes.find(n => n.type === 'CFZCharacterFactory');
-  assert.equal(functional(graph).length, 6);
+  assert.equal(functional(graph).length, 8);
   assert.equal(character.widgets_values_named.include_sprite_sheets, false);
+  assert.equal(character.widgets_values_named.include_arcade_art, true);
   const sheets = graph.nodes.filter(n => n.type === 'CFZSpriteSheet');
-  assert.deepEqual(sheets.map(n => n.widgets_values_named.sheet), ['sheet','sheetB','sheetC']);
+  assert.deepEqual(sheets.map(n => n.widgets_values_named.sheet), ['sheet','sheetB','sheetC','sheetD','sheetE']);
   for (const node of sheets) {
     for (const [name, slot] of [['reference',1], ['character',2]]) {
       const link = graph.links.find(l => l[0] === node.inputs.find(i => i.name === name).link);
@@ -69,7 +102,7 @@ test('focused sheet invents a reference without any stale file and environment d
 });
 
 test('all generated sockets link consistently and named widgets match positional values', () => {
-  for (const make of [makeFactoryGraph,makeCharacterTemplate,makeSheetTemplate,makeEnvironmentTemplate]) {
+  for (const make of [makeFactoryGraph,makeCharacterTemplate,makeSheetTemplate,makeEnvironmentTemplate,makeExpansionGraph]) {
     const graph = make(config);
     assert.deepEqual(graph, make(config));
     for (const node of functional(graph)) {
@@ -86,19 +119,19 @@ test('all generated sockets link consistently and named widgets match positional
 
 test('browser downloads match canonical workflows exactly and advanced native graph remains available', () => {
   for (const [canonical,download] of [['comfyui/workflows/comfy-hackathon.json','comfy-hackathon.json'],
-    ...['character-factory','sprite-sheet','environment-factory'].map(name=>[`comfyui/workflows/factory/${name}.json`,`${name}.json`])]) {
+    ...['character-factory','sprite-sheet','environment-factory','arcade-expansion'].map(name=>[`comfyui/workflows/factory/${name}.json`,`${name}.json`])]) {
     assert.equal(fs.readFileSync(path.join(ROOT,canonical),'utf8'), fs.readFileSync(path.join(ROOT,'build/public/builder/templates',download),'utf8'));
   }
   assert.deepEqual(read('comfyui/workflows/comfy-hackathon.json'),makeFactoryGraph(config));
   assert.deepEqual(read('build/public/builder/factory-template.json'),builderMetadata(config));
   const advanced = read('comfyui/workflows/advanced/full-image-graph.json');
-  assert.equal(functional(advanced).length, 114);
-  assert.equal(advanced.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,56);
+  assert.equal(functional(advanced).length, 180);
+  assert.equal(advanced.nodes.filter(n=>n.type==='GeminiNanoBanana2V2').length,89);
   assert.equal(advanced.nodes.filter(n=>n.type==='LoadImage').length,0);
-  assert.equal(advanced.nodes.filter(n=>n.type==='CFZSaveAsset').length,56);
+  assert.equal(advanced.nodes.filter(n=>n.type==='CFZSaveAsset').length,89);
 });
 
-test('shipped demos are text-only except the explicitly muted new-photo upload template', () => {
+test('shipped recipes use text-only fictional art or explicitly muted upload templates', () => {
   const files = directory => fs.readdirSync(path.join(ROOT,directory),{withFileTypes:true}).flatMap(entry =>
     entry.isDirectory() ? files(path.join(directory,entry.name)) : [path.join(directory,entry.name)]);
   const recipes = [...files('comfyui/workflows'),...files('build/public/builder/templates'),
@@ -106,17 +139,64 @@ test('shipped demos are text-only except the explicitly muted new-photo upload t
   for (const file of recipes.filter(file=>file.endsWith('.json'))) {
     const workflow=read(file);
     const phoneUpload=file.replaceAll('\\','/')==='comfyui/workflows/phone-photo-demo/02-photos-to-game.json';
+    const ensembleUpload=file.replaceAll('\\','/')==='comfyui/workflows/ensemble-title.json';
+    const ltxSingle=file.replaceAll('\\','/')==='comfyui/workflows/ltx-intro-single.json';
+    const ltxBatch=file.replaceAll('\\','/')==='comfyui/workflows/ltx-intro-six-fighters.json';
+    const ltxTitle=file.replaceAll('\\','/')==='comfyui/workflows/ltx-title-animation.json';
+    const ltxOpening=file.replaceAll('\\','/')==='comfyui/workflows/ltx-opening-animation.json';
+    const expansion=/(^|\/)arcade-expansion\.json$/.test(file.replaceAll('\\','/'));
+    if(expansion) {
+      assert.equal(workflow.extra.cfzArcadeExpansion.mutedByDefault,true);
+      assert.ok(functional(workflow).every(node=>node.mode===2),`${file} must stay muted until accepted identities are uploaded`);
+      for(const node of workflow.nodes.filter(node=>node.type==='LoadImage')) assert.match(node.widgets_values[0],/^cfz-accepted-[a-z0-9-]+-reference\.png$/);
+    }
     if(phoneUpload) {
       assert.equal(workflow.extra.cfzPhonePhotoDemo.phase,2);
       assert.ok(functional(workflow).every(node=>node.mode===2),`${file} upload template must remain muted`);
     }
+    if(ensembleUpload) {
+      assert.equal(workflow.extra.cfzEnsembleTitle.defaultMuted,true);
+      assert.ok(functional(workflow).every(node=>node.mode===2),`${file} must remain muted until references are chosen`);
+      const uploads=workflow.nodes.filter(node=>node.type==='LoadImage');
+      assert.equal(uploads.length,6);
+      uploads.forEach((node,index)=>assert.equal(node.widgets_values[0],`cfz-title-upload-${index+1}.png`));
+    }
+    if(ltxSingle || ltxBatch) {
+      assert.equal(workflow.extra.cfzLtxIntros.mutedByDefault,true);
+      assert.ok(functional(workflow).every(node=>node.mode===2),`${file} must stay muted until fresh references are selected`);
+      const ids=ltxSingle?['griddle']:['griddle','rivet','tempo','nimbus','switchback','brick'];
+      const uploads=workflow.nodes.filter(node=>node.type==='LoadImage');
+      const models=workflow.nodes.filter(node=>node.type==='LtxApi25ImageToVideo');
+      assert.equal(uploads.length,ids.length); assert.equal(models.length,ids.length);
+      uploads.forEach((node,index)=>assert.equal(node.widgets_values[0],`cfz-ltx-new-frame-${ids[index]}.png`));
+      models.forEach(node=>{
+        const w=node.widgets_values_named;
+        assert.equal(w.model,'LTX-2.5 (Fast)'); assert.equal(w['model.duration'],'8');
+        assert.equal(w['model.resolution'],'1280x720'); assert.equal(w['model.fps'],'24'); assert.equal(w['model.generate_audio'],false);
+      });
+    }
+    if(ltxTitle || ltxOpening) {
+      const kind=ltxTitle?'title':'opening';
+      assert.equal(workflow.extra.cfzLtxTitleOpening.mutedByDefault,true);
+      assert.equal(workflow.extra.cfzLtxTitleOpening.kind,kind);
+      assert.ok(functional(workflow).every(node=>node.mode===2),`${file} must stay muted until a new fictional reference is selected`);
+      const uploads=workflow.nodes.filter(node=>node.type==='LoadImage');
+      const models=workflow.nodes.filter(node=>node.type==='LtxApi25ImageToVideo');
+      assert.equal(uploads.length,1); assert.equal(models.length,1);
+      assert.equal(uploads[0].widgets_values[0],`cfz-ltx-new-${kind}-reference.png`);
+      const w=models[0].widgets_values_named;
+      assert.equal(w.model,'LTX-2.5 (Fast)'); assert.equal(w['model.duration'],'8');
+      assert.equal(w['model.resolution'],'1280x720'); assert.equal(w['model.fps'],'24'); assert.equal(w['model.generate_audio'],false);
+      const lastFrame=models[0].inputs.find(input=>input.name==='last_frame');
+      assert.equal(lastFrame.link !== null,ltxTitle,`${file} title loop uses the same start/end frame`);
+    }
     for (const node of workflow.nodes || []) {
-      assert.notEqual(node.type,'LoadImage',`${file} must not load a previous session image`);
+      if(!ensembleUpload && !ltxSingle && !ltxBatch && !ltxTitle && !ltxOpening && !expansion) assert.notEqual(node.type,'LoadImage',`${file} must not load a previous session image`);
       if(phoneUpload && node.widgets_values_named?.image) {
         assert.ok(['CFZCharacterFactory','CFZEnvironmentFactory'].includes(node.type));
         assert.equal(node.widgets_values_named.source_mode,'Upload reference');
         assert.match(node.widgets_values_named.image,/^cfz-phone-NEW_RUN-(griddle|rivet|tempo|nimbus|switchback|brick|yard)\.png$/);
-      } else assert.ok(!node.widgets_values_named?.image,`${file} must not preselect an external image`);
+      } else if(!(expansion && node.type==='LoadImage')) assert.ok(!node.widgets_values_named?.image,`${file} must not preselect an external image`);
       if (['CFZProjectSettings','CFZAssetRoot'].includes(node.type)) {
         const outputRoot=node.widgets_values_named?.root_directory || node.widgets_values[0];
         if(phoneUpload) assert.equal(outputRoot,'__PHONE_PHOTO_DEMO_BUNDLE_ROOT__');

@@ -72,7 +72,9 @@ test('online fighters share authoritative state, pause through introductions, an
   const { app, url } = await fixture(t);
   const { a, b, host, guest } = await onlinePair(url);
   assert.equal(host.side, 0); assert.equal(guest.side, 1); assert.notEqual(host.token, guest.token);
-  assert.equal(host.catalog.fighters.length, 6);
+  // Six fighters plus the final boss; styles travel with the catalog for online movesets.
+  assert.equal(host.catalog.fighters.length, 7); assert.equal(host.catalog.fighters.filter(f => f.boss).length, 1);
+  assert.ok(host.catalog.fighters.every(f => typeof f.style === 'string'));
   assert.ok(!JSON.stringify(guest.room).includes(host.token));
   const [first, second] = await ready(a, b);
   assert.equal(first.matchId, second.matchId); assert.deepEqual(first.state, second.state); assert.equal(first.state.cpu, false);
@@ -163,7 +165,7 @@ test('two phones own distinct seats; replacing and refreshing pairings revoke pr
   assert.equal(wa.side, 0); assert.equal(wb.side, 1);
   await ready(a, b); screen.send({ type: 'skip_intro' }); await screen.wait('snapshot', m => m.state.phase === 'fight');
   a.send({ type: 'input', seq: 1, side: 1, keys: { right: 1 } }); b.send({ type: 'input', seq: 1, side: 0, keys: { left: 1 } });
-  await screen.wait('snapshot', m => m.state.fighters[0].x > 300 && m.state.fighters[1].x < 660);
+  await screen.wait('snapshot', m => m.state.fighters[0].x > 540 && m.state.fighters[1].x < 900);
   screen.clear(); screen.send({ type: 'release_controller', side: 1 });
   const renewed = await screen.wait('pairing', m => !!m.seats[1]); assert.ok(renewed.seats[1]);
   assert.equal(app.rooms.get(owner.room.code).phase, 'lobby');

@@ -52,7 +52,9 @@ function updateReadiness() {
   else status.textContent = `All ${found} source images are available. Ready to build ${activeFighters.length} fighters and ${activeStages.length} playable environment${activeStages.length === 1 ? '' : 's'}.`;
   const audioCount = audioManifest?.assets.filter(a => files.has(a.src)).length || 0;
   status.textContent += audioManifest ? ` Audio: ${audioCount}/${audioManifest.assets.length} files available.` : ' Audio is not loaded; include audio.json in this folder to add music, voices and effects.';
-  if (videoManifest) status.textContent += files.has(videoManifest.openingVideo.src) ? ` Opening film: ${videoManifest.openingVideo.duration} seconds.` : ' Opening film file is missing.';
+  if (videoManifest?.openingVideo) status.textContent += files.has(videoManifest.openingVideo.src) ? ` Opening film: ${videoManifest.openingVideo.duration} seconds.` : ' Opening film file is missing.';
+  if (videoManifest?.titleVideo) status.textContent += files.has(videoManifest.titleVideo.src) ? ` Animated title: ${videoManifest.titleVideo.duration} seconds.` : ' Animated title file is missing.';
+  if (videoManifest?.fighterIntros?.length) { const ready = videoManifest.fighterIntros.filter(video => files.has(video.src)).length; status.textContent += ` Fighter introductions: ${ready}/${videoManifest.fighterIntros.length} files.`; }
 }
 function customization() { return { title: $('game-title').value.trim(), fighters: structuredClone(fighters), stages: structuredClone(stages), allowPlaceholders: $('allow-placeholders').checked }; }
 function renderFighters() {
@@ -123,11 +125,11 @@ function renderAssets() {
     const meta = make('div', 'asset-meta'); meta.append(make('strong', '', asset.id), make('small', url ? 'found' : 'missing', `${asset.category.toUpperCase()} · ${url ? 'AVAILABLE' : 'MISSING'}`));
     card.append(preview, meta); $('asset-grid').append(card);
   }
-  if (filter === 'all' && videoManifest) {
-    const asset = videoManifest.openingVideo, card = make('article', 'asset-card'), preview = make('div', 'asset-preview'), url = previewURL(asset.src);
-    if (url) { const video = document.createElement('video'); video.controls = true; video.preload = 'metadata'; video.playsInline = true; video.src = url; video.style.width = '100%'; video.setAttribute('aria-label', 'Opening film'); preview.append(video); }
-    else preview.textContent = 'OPENING FILM MISSING';
-    const meta = make('div', 'asset-meta'); meta.append(make('strong', '', 'Opening film'), make('small', url ? 'found' : 'missing', `${asset.duration} SECONDS · ${url ? 'AVAILABLE' : 'MISSING'}`));
+  if (filter === 'all' && videoManifest) for (const asset of [...(videoManifest.openingVideo ? [videoManifest.openingVideo] : []), ...(videoManifest.titleVideo ? [videoManifest.titleVideo] : []), ...(videoManifest.fighterIntros || [])]) {
+    const title = asset.fighter ? `${asset.fighter} intro` : asset.id === 'title' ? 'Animated title' : 'Opening film', card = make('article', 'asset-card'), preview = make('div', 'asset-preview'), url = previewURL(asset.src);
+    if (url) { const video = document.createElement('video'); video.controls = true; video.preload = 'metadata'; video.playsInline = true; video.src = url; video.style.width = '100%'; video.setAttribute('aria-label', title); preview.append(video); }
+    else preview.textContent = 'VIDEO MISSING';
+    const meta = make('div', 'asset-meta'); meta.append(make('strong', '', title), make('small', url ? 'found' : 'missing', `${asset.duration} SECONDS · ${url ? 'AVAILABLE' : 'MISSING'}`));
     card.append(preview, meta); $('asset-grid').append(card);
   }
 }
@@ -137,7 +139,7 @@ function mapFolder(folderFiles, manifestFolder = null) {
     const original = (file.webkitRelativePath || file.name).replaceAll('\\', '/');
     const candidates = manifestFolder !== null ? (original.startsWith(manifestFolder) ? [original.slice(manifestFolder.length)] : []) : [original, original.split('/').slice(1).join('/')];
     for (const relative of candidates.filter(Boolean)) {
-      if (![...(manifest?.assets || []), ...(audioManifest?.assets || []), ...(videoManifest ? [videoManifest.openingVideo] : [])].some(a => a.src === relative)) continue;
+      if (![...(manifest?.assets || []), ...(audioManifest?.assets || []), ...(videoManifest?.openingVideo ? [videoManifest.openingVideo] : []), ...(videoManifest?.titleVideo ? [videoManifest.titleVideo] : []), ...(videoManifest?.fighterIntros || [])].some(a => a.src === relative)) continue;
       if (map.has(relative) && map.get(relative) !== file) throw new Error(`More than one file maps to ${relative}. Choose the exact asset root folder.`);
       map.set(relative, file);
     }

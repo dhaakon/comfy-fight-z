@@ -24,6 +24,11 @@ function syntheticManifest() {
     effects: Object.fromEntries(['hit','block','projectile','dust','ko','powerup'].map(id => [id, { src: 'fixture.png', w: 120, h: 180, ax: 60, ay: 179 }]))
   };
 }
+// Lab and arena tabs live in the help and settings dialog; open it before switching.
+async function tab(page, name) {
+  if (!(await page.locator('#settings-dialog').evaluate(dialog => dialog.open))) await page.click('#settings-open');
+  await page.click(`[data-tab="${name}"]`);
+}
 async function skipOptionalOpening(page) {
   await page.waitForFunction(() => !document.querySelector('#title-start').disabled);
   if (await page.locator('#opening-screen').isVisible()) await page.keyboard.press('Space');
@@ -53,14 +58,20 @@ async function skipOptionalOpening(page) {
     assert.equal(await page.locator('#fighter-one option').count(), config.fighters.length);
     assert.equal(await page.evaluate(() => window.FighterDebug.presentation().screen), 'title');
     assert.equal(await page.locator('#title-screen').isVisible(), true);
+    // Fullscreen lives in the help and settings dialog.
+    await page.click('#settings-open');
     await page.click('#fullscreen-button'); await page.waitForFunction(() => !!document.fullscreenElement);
     await page.click('#fullscreen-button'); await page.waitForFunction(() => !document.fullscreenElement);
+    await page.click('#settings-close');
     await page.click('#title-start');
     assert.equal(await page.evaluate(() => window.FighterDebug.presentation().screen), 'selection');
+    assert.equal(await page.evaluate(() => window.FighterDebug.presentation().mode), 'arcade');
     await page.click('#title-return');
     assert.equal(await page.locator('#title-screen').isVisible(), true);
-    await page.keyboard.press('Enter');
+    // Versus without a second gamepad keeps the chosen opponent and hands it to the CPU.
+    await page.click('#title-versus');
     await page.waitForFunction(() => window.FighterDebug.presentation().screen === 'selection');
+    assert.equal(await page.evaluate(() => window.FighterDebug.presentation().mode), 'versus');
     assert.equal(await page.evaluate(() => window.FighterDebug.presentation().humanPlayers), 1);
     assert.equal(await page.locator('#mode option[value="local"]').count(), 0);
     await page.click('#start-button');
@@ -90,14 +101,15 @@ async function skipOptionalOpening(page) {
     await page.waitForTimeout(150); assert.equal(await page.evaluate(() => window.FighterDebug.snapshot().frame), pausedFrame);
     await page.click('#resume-button'); await page.waitForFunction(frame => window.FighterDebug.snapshot().frame > frame, pausedFrame);
     await page.click('#back-select'); await page.click('#start-button');
+    await page.waitForFunction(() => window.FighterDebug.presentation().screen === 'intro');
     await page.click('#intro-skip');
     await page.waitForFunction(() => window.FighterDebug.snapshot()?.phase === 'fight');
     assert.equal(await page.evaluate(() => window.FighterDebug.snapshot().cpu), true);
     await page.keyboard.press('KeyD'); await page.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].move === 'heavy');
-    await page.waitForFunction(() => window.FighterDebug.snapshot().fighters[1].x < 650);
-    await page.click('[data-tab="lab"]'); assert.equal(await page.locator('#lab-view').isVisible(), true);
+    await page.waitForFunction(() => window.FighterDebug.snapshot().fighters[1].x < 880);
+    await tab(page, 'lab'); assert.equal(await page.locator('#lab-view').isVisible(), true);
     assert.equal(await page.locator('#arena-view').isVisible(), false);
-    await page.click('[data-tab="arena"]'); await page.click('#resume-button'); await page.click('#back-select');
+    await tab(page, 'arena'); await page.click('#resume-button'); await page.click('#back-select');
     fs.mkdirSync(path.join(root, 'output/diagnostics'), { recursive: true });
     await page.screenshot({ path: path.join(root, 'output/diagnostics/browser-smoke.png'), fullPage: true });
     assert.deepEqual(errors, []);
@@ -119,21 +131,22 @@ async function skipOptionalOpening(page) {
     await artPage.goto(url); await artPage.waitForFunction(() => Number(document.querySelector('#asset-count').textContent) > 0);
     await skipOptionalOpening(artPage);
     assert.equal(await artPage.locator('#placeholder-label').isVisible(), false);
-    assert.equal(await artPage.locator('.fighter-card img').count(), 2);
+    // Arcade (the default) previews the hidden ladder instead of a chosen opponent.
+    assert.equal(await artPage.locator('.fighter-card img').count(), 1); assert.equal(await artPage.locator('.mystery-card').count(), 1);
     await artPage.click('#title-start');
-    await artPage.click('[data-tab="lab"]');
+    await tab(artPage, 'lab');
     for (const group of ['fighters','portraits','stages','ui','effects']) {
-      await artPage.selectOption('#lab-filter', group);
+      await artPage.click('#settings-open'); await artPage.selectOption('#lab-filter', group); await artPage.click('#settings-close');
       assert.ok(await artPage.locator('.asset-card img').count() > 0, `${group} must load artwork`);
     }
-    await artPage.click('[data-tab="arena"]'); await artPage.click('#start-button');
+    await tab(artPage, 'arena'); await artPage.click('#title-return'); await artPage.click('#title-versus'); await artPage.click('#start-button');
     assert.ok((await artPage.locator('#intro-tagline').textContent()).includes(synthetic.fighters[0].introTagline));
     await artPage.waitForFunction(() => window.FighterDebug.presentation().introSlot === 1, null, { timeout: 10000 });
     assert.ok((await artPage.locator('#intro-tagline').textContent()).includes(synthetic.fighters[1].introTagline));
     assert.equal(await artPage.evaluate(() => window.FighterDebug.snapshot().frame), 0);
     // Let this match finish both introductions naturally; the first match exercised skip.
     await artPage.waitForFunction(() => window.FighterDebug.snapshot()?.phase === 'fight');
-    await artPage.keyboard.press('KeyF'); await artPage.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].energy < 40);
+    await artPage.keyboard.press('KeyF'); await artPage.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].move === 'special');
     await artPage.waitForTimeout(450);
     await artPage.waitForFunction(() => { const f = window.FighterDebug.snapshot().fighters[0]; return !f.move && !f.stun; });
     await artPage.keyboard.press('KeyS'); await artPage.waitForFunction(() => window.FighterDebug.snapshot().fighters[0].move === 'kick');
@@ -153,22 +166,24 @@ async function skipOptionalOpening(page) {
     });
     const playingIntro = () => interaction.evaluate(() => window.testAudio.filter(a => a.src.includes('_intro') && !a.paused).length);
     await interaction.goto(url); await interaction.waitForFunction(() => !document.querySelector('#title-start').disabled);
-    await interaction.click('[data-tab="lab"]'); await interaction.locator('body').click({ position: { x: 5, y: 5 } }); await interaction.keyboard.press('Space');
+    await tab(interaction, 'lab'); await interaction.locator('body').click({ position: { x: 5, y: 5 } }); await interaction.keyboard.press('Space');
     assert.equal(await interaction.locator('#title-screen').isVisible(), false, 'Lab Space must not reveal a hidden title');
-    await interaction.click('[data-tab="arena"]'); await interaction.click('#title-start');
+    await tab(interaction, 'arena'); await interaction.click('#title-versus');
     await interaction.locator('.fighter-tile').nth(1).focus(); await interaction.keyboard.press('Space');
     assert.equal(await interaction.evaluate(() => document.activeElement.dataset.fighter), 'beta', 'Roster selection must retain keyboard focus');
     await interaction.click('#start-button'); assert.equal(await playingIntro(), 1);
+    // Sound lives in the settings dialog, which pauses the local intro while it is open.
+    await interaction.click('#settings-open'); assert.equal(await playingIntro(), 0, 'Opening settings pauses the intro voice');
     await interaction.locator('#audio-button').focus(); await interaction.keyboard.press('Enter');
-    assert.equal(await playingIntro(), 0);
     assert.equal(await interaction.evaluate(() => window.FighterDebug.presentation().introSlot), 0, 'Sound-button Enter must not skip the intro');
-    await interaction.keyboard.press('Enter'); assert.equal(await playingIntro(), 1);
-    await interaction.keyboard.press('Enter'); assert.equal(await playingIntro(), 0, 'Muting again must stop a resumed voice');
-    await interaction.keyboard.press('Enter'); assert.equal(await playingIntro(), 1);
-    await interaction.locator('[data-tab="lab"]').focus(); await interaction.keyboard.press('Enter');
+    await interaction.click('#settings-close'); assert.equal(await playingIntro(), 0, 'A muted intro stays silent after settings close');
+    await interaction.click('#settings-open'); await interaction.locator('#audio-button').focus(); await interaction.keyboard.press('Enter');
+    await interaction.click('#settings-close'); assert.equal(await playingIntro(), 1, 'Unmuting resumes the intro voice');
+    assert.equal(await interaction.evaluate(() => window.FighterDebug.presentation().introSlot), 0);
+    await interaction.click('#settings-open'); await interaction.locator('[data-tab="lab"]').focus(); await interaction.keyboard.press('Enter');
     assert.equal(await interaction.locator('#lab-view').isVisible(), true); assert.equal(await playingIntro(), 0);
     await interaction.keyboard.press('Escape'); assert.equal(await playingIntro(), 0, 'Lab Escape must not resume a hidden fight');
-    await interaction.click('[data-tab="arena"]'); assert.equal(await interaction.locator('#pause-overlay').isVisible(), true);
+    await tab(interaction, 'arena'); assert.equal(await interaction.locator('#pause-overlay').isVisible(), true);
     await interaction.locator('#resume-button').focus(); await interaction.keyboard.press('Enter');
     assert.equal(await interaction.locator('#pause-overlay').isVisible(), false);
     assert.equal(await interaction.evaluate(() => window.FighterDebug.presentation().introSlot), 0, 'Resume-button Enter must preserve the intro');
@@ -180,10 +195,10 @@ async function skipOptionalOpening(page) {
     await interaction.click('#back-select'); assert.equal(await interaction.evaluate(() => document.activeElement.dataset.fighter), 'beta');
     // A tiny, locally encoded test clip exercises real browser media events only.
     const videoPage = await browser.newPage({ viewport: { width: 1280, height: 720 } }); videoPage.on('pageerror', error => errors.push(error.message));
-    const videoManifest = { ...synthetic, openingVideo: { id: 'opening', src: 'opening-fixture.mp4', duration: 2 } };
+    const videoManifest = { ...synthetic, openingVideo: { id: 'opening', src: 'assets/video/opening-fixture.mp4', duration: 2 } };
     await videoPage.route('**/assets/manifest.json', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify(videoManifest) }));
     await videoPage.route('**/fixture.png', route => route.fulfill({ contentType: 'image/png', body: png }));
-    await videoPage.route('**/opening-fixture.mp4', route => route.fulfill({ contentType: 'video/mp4', body: fs.readFileSync(path.join(__dirname, 'fixtures/opening.mp4')) }));
+    await videoPage.route('**/assets/video/opening-fixture.mp4', route => route.fulfill({ contentType: 'video/mp4', body: fs.readFileSync(path.join(__dirname, 'fixtures/opening.mp4')) }));
     await videoPage.goto(url); await videoPage.waitForFunction(() => window.FighterDebug.presentation().screen === 'opening');
     await videoPage.waitForFunction(() => document.querySelector('#opening-video').currentTime > .05);
     assert.equal(await videoPage.evaluate(() => window.FighterDebug.snapshot()), null, 'Opening video must not start combat');
@@ -209,7 +224,7 @@ async function skipOptionalOpening(page) {
     await mobile.click('#start-button'); await mobile.click('#intro-skip');
     await mobile.waitForFunction(() => window.FighterDebug.snapshot()?.phase === 'fight');
     assert.equal(await mobile.locator('.touch-controls').isVisible(), true);
-    await mobile.click('[data-tab="lab"]'); assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await tab(mobile, 'lab'); assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     assert.deepEqual(errors, []);
     console.log('Browser smoke passed: opening video skip/end/error, title navigation, taglines, frozen intros, voice lifecycle, keyboard focus, one human vs CPU, arrow movement and ASDF attacks, pause/resume, all asset categories, mobile layout, no page errors.');
     console.log('Screenshot: output/diagnostics/browser-smoke.png');

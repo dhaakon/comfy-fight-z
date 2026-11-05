@@ -39,7 +39,8 @@ test('main fictional factory uses six generated references and one stage, keepin
 
 test('fictional audio follows configured identities, taglines and invented environment',()=>{
  const jobs=fictionalAudioJobs(config);
- assert.equal(jobs.length,22);
+ // Same audio generator as the main game: six fighters, one arena, no final boss.
+ assert.equal(jobs.length,2+1+4+20+20+6*7);
  const intros=jobs.filter(job=>job.id.endsWith('_intro'));
  assert.equal(intros.length,6);assert.equal(new Set(intros.map(job=>job.voice)).size,6);
  assert.match(jobs.find(job=>job.id==='yard_music').prompt,/fictional neighborhood backyard/);

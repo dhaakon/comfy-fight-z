@@ -2,6 +2,8 @@
 
 This path improves the existing game while retaining accepted identities, stage and unaffected assets. It prepares cloud workflows, collects reviewed replacements in a separate folder, then merges by asset ID. It never automatically submits a paid job.
 
+The refresh only replaces IDs the accepted bundle already has, so its base must match the current configuration: with the arcade cast in `comfyui/config/game.json`, that is a complete arcade bundle. To grow a classic six-fighter bundle into the arcade cast, use the arcade expansion instead (`npm run workflows:expansion`; see the [README](../../README.md#optional-expand-a-classic-bundle-to-the-arcade-cast)). Reference images must be unpackaged PNG source bundles; the expansion tool converts a packaged example's WebP identities to PNG uploads itself.
+
 ## Prepare the patch
 
 Start with a complete accepted fictional source bundle containing `assets.json`, optional `audio.json` and `raw/`. The refresh uses the roster and arena in `comfyui/config/game.json`. Edit that file for permanent art direction, subtitle, descriptions, specials and `introTagline` changes, then prepare. An explicit `--base` is required so preparation cannot silently reuse an older photo-based bundle:
@@ -19,12 +21,12 @@ The preparation tool writes these paths inside the new run folder:
 | Output | Contents |
 | --- | --- |
 | `plan.json` | Replacement IDs, retained IDs, reference upload paths/hashes, prompts and estimates |
-| `workflows/saga-images.json` | 38 image replacements: 18 pose sheets, six portraits, six heroes, six cut-ins, title background and logo |
-| `workflows/saga-intros.json` | Six `fighter_<id>_intro` clips from configured taglines and stock voices |
+| `workflows/saga-images.json` | One replacement per sheet, portrait, hero and cut-in, plus the title background and logo: 58 images for the arcade cast (35 sheets, 7 portraits, 7 heroes, 7 cut-ins) |
+| `workflows/saga-intros.json` | One `fighter_<id>_intro` clip per fighter from configured taglines and stock voices |
 | `workflows/repairs/*.json` | Optional individual sprite-sheet repairs; never run automatically |
 | `patch/` | Output root embedded in the two main patch workflows; populated only when run |
 
-The six accepted fictional identity PNGs and configured stage load directly into the patch graph. Upload the exact files and filenames listed in `plan.json.uploads` through the ComfyUI MCP. The source designs, identities, stage, selection background, HUD, emblem, effects and unaffected audio are retained during the final merge. Never use this replacement-only path to anonymize an old photo-based game: create a complete fictional bundle first so no previous likenesses, source photos or film survive.
+The accepted fictional identity PNGs and configured stage load directly into the patch graph. Upload the exact files and filenames listed in `plan.json.uploads` through the ComfyUI MCP. The source designs, identities, stage, selection background, HUD, emblem, effects and unaffected audio are retained during the final merge. Never use this replacement-only path to anonymize an old photo-based game: create a complete fictional bundle first so no previous likenesses, source photos or film survive.
 
 Open and validate the workflows against the running ComfyUI before submission. The main `comfyui/workflows/comfy-hackathon.json` remains the complete factory; do not run it to perform a partial refresh.
 
@@ -32,7 +34,7 @@ Open and validate the workflows against the running ComfyUI before submission. T
 
 ## Review and repair
 
-Inspect every new sheet for nine ordered poses, recognizable identity, consistent scale, right-facing attacks and complete hands/feet inside the cells. Pay particular attention to the bottom-right entrance pose, low sweep direction and duplicated accessories. Check portraits/cut-ins, title spelling and all six spoken lines. A technically valid manifest cannot judge visual quality.
+Inspect every new sheet for nine ordered poses, recognizable identity, consistent scale, right-facing attacks and complete hands/feet inside the cells. Pay particular attention to the bottom-right entrance pose, low sweep direction and duplicated accessories. Check portraits/cut-ins, title spelling and every spoken line. A technically valid manifest cannot judge visual quality.
 
 Use a single-sheet repair only when a real defect remains. The prepared variants take their IDs from the first four configured fighters and target `sheetC`, `sheetB`, `sheet` and `sheetC`, respectively. For another sheet or a specific defect, substitute the actual fighter ID below:
 
@@ -50,9 +52,9 @@ Once image and intro outputs are accepted, merge them with the original bundle. 
 npm run merge:assets -- --base "$repoRoot\output\test-runs\accepted-bundle" --patch "$repoRoot\output\test-runs\saga-run\patch" --out "$repoRoot\output\test-runs\saga-complete"
 ```
 
-For an accepted repair, add another `--patch "$repoRoot\output\test-runs\saga-run\repairs\<fighter-id>_sheetB"` before `--out`. Patches apply in order; later records replace earlier records with the same ID. The tool verifies each source hash, retains unaffected files and optional audio/video, carries consistent edited metadata from the patch, checks completeness against the base roster/pose contract and writes `update-report.json`. Replacement IDs must already exist in the complete base; use the full factory for a new roster or additional venues. A six-fighter, one-stage bundle has 56 image records; the full audio workflow adds 22 clips. Never load a partial patch directly as the complete builder input.
+For an accepted repair, add another `--patch "$repoRoot\output\test-runs\saga-run\repairs\<fighter-id>_sheetB"` before `--out`. Patches apply in order; later records replace earlier records with the same ID. The tool verifies each source hash, retains unaffected files and optional audio/video, carries consistent edited metadata from the patch, checks completeness against the base roster/pose contract and writes `update-report.json`. Replacement IDs must already exist in the complete base; use the full factory for a new roster or additional venues. The canonical arcade bundle has 89 image records and the full audio workflow adds 99 clips; the classic six-fighter, one-stage release has 56 and 22. Never load a partial patch directly as the complete builder input.
 
-For the canonical six-fighter, one-Yard release, add `--saga` to enforce `comfyui/assets/plan.json`, all 22 clips in `comfyui/assets/audio-plan.json`, and metadata from `comfyui/config/game.json`. Leave that flag off for custom factory bundles.
+For the canonical release, add `--saga` to enforce `comfyui/assets/plan.json` (89 images), all 99 clips in `comfyui/assets/audio-plan.json` and metadata from `comfyui/config/game.json`. A saga merge also migrates an older base: base records the plan no longer lists, or maps differently (such as the classic `ann_fight` call), are retired and listed in `update-report.json`, and the result must still contain every planned ID. Leave that flag off for custom factory bundles.
 
 Build the merged folder through the strict browser compiler:
 

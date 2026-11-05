@@ -42,7 +42,8 @@ test('custom three-environment factory merges an individual sheet without audio 
   write(path.join(item.patch, 'assets.json'), item.patchMap);
   merge(item);
   const result = read(path.join(item.out, 'assets.json'));
-  assert.equal(result.assets.length, 28);
+  // Two fighters with optional arcade art (11 records each), three stages (2 each) and shared art (6).
+  assert.equal(result.assets.length, 34); assert.equal(result.assets.length, item.manifest.assets.length);
   assert.equal(result.game.title, 'Personal Tournament');
   assert.equal(result.game.fighters[0].name, 'Renamed Hero');
   assert.equal(result.game.fighters[0].specialMove.name, 'Custom Flash');
