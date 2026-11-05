@@ -64,7 +64,7 @@
         <div class="fight-heading"><span id="fight-stage-label" class="eyebrow">COMFY FIGHTER Z / THE YARD</span><button id="back-select" class="text-button">← CHARACTER SELECT</button></div>
         <div class="arena-shell">
           <div class="arena-top"><span><i class="live-dot"></i> <span id="arena-label">ARCADE / VS CPU</span></span><span id="stage-label">THE YARD</span></div>
-          <div class="canvas-wrap"><canvas id="arena" width="960" height="540" tabindex="0" aria-label="Fighting game arena"></canvas>
+          <div class="canvas-wrap"><canvas id="arena" width="960" height="540" tabindex="0" aria-label="Fighting game arena"></canvas><canvas id="arena-hud" class="arena-hud" width="960" height="540" aria-hidden="true"></canvas>
             <section id="intro-screen" class="fighter-intro" hidden aria-label="Fighter introduction" aria-live="polite">
               <div class="intro-half" data-slot="0"><video id="intro-video" class="intro-video" muted playsinline preload="auto" aria-hidden="true" hidden></video><div class="intro-rays" aria-hidden="true"></div><span id="intro-number" class="intro-number" aria-hidden="true">01</span><div id="intro-portrait" class="intro-stage"></div><div class="intro-text"><p id="intro-slot" class="eyebrow">PLAYER ONE ENTERS</p><h2 id="intro-name"></h2><p id="intro-special" class="intro-special"></p><blockquote id="intro-tagline"></blockquote></div></div>
               <div class="intro-half" data-slot="1"><video id="intro-video-2" class="intro-video" muted playsinline preload="auto" aria-hidden="true" hidden></video><div class="intro-rays" aria-hidden="true"></div><span id="intro-number-2" class="intro-number" aria-hidden="true">02</span><div id="intro-portrait-2" class="intro-stage"></div><div class="intro-text"><p id="intro-slot-2" class="eyebrow">THE CHALLENGER ANSWERS</p><h2 id="intro-name-2"></h2><p id="intro-special-2" class="intro-special"></p><blockquote id="intro-tagline-2"></blockquote></div></div>
@@ -99,5 +99,5 @@
   </main>
   <footer><span>COMFY FIGHTER Z <b>©</b> HIGGSFIELD OPEN SOURCE SAGA</span><span>6 FIGHTERS. 1 YARD. ZERO EXCUSES.</span></footer>
 </div>
-<script src="runtime-config.js"></script><script src="session-client.js"></script><script src="multiplayer.js"></script><script src="engine.js"></script><script src="anim.js"></script><script src="game.js"></script>
+<script src="runtime-config.js"></script><script src="session-client.js"></script><script src="multiplayer.js"></script><script src="engine.js"></script><script src="anim.js"></script><script src="vendor/pixi.min.js"></script><script src="render/canvas-renderer.js"></script><script src="render/pixi-renderer.js"></script><script src="render/arena.js"></script><script src="game.js"></script>
 </body></html>

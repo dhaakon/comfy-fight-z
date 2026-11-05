@@ -6,7 +6,7 @@ const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'end
 const STYLES = new Set(['balanced', 'power', 'speed', 'zoner', 'grappler', 'trickster', 'boss']);
 // A complete arcade cast (seven fighters, three arenas, PNG/WAV sources) exports at roughly 550 MB.
 const MAX_BYTES = 1024 * 1024 * 1024;
-const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'style.css', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
+const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'render/arena.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'style.css', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
 const ARCADE_ART = ['arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp', 'arcade/title-logo.webp'];
 const REQUIRED_POSES = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win', 'stance2', 'crouch', 'sweep', 'launcher', 'jump', 'airkick', 'hpunch', 'dash', 'tumble', 'walk2', 'lkick', 'cjab', 'airpunch', 'throw', 'taunt', 'getup', 'powerup', 'entrance'];
 const encoder = new TextEncoder();

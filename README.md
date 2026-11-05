@@ -93,6 +93,10 @@ Restart ComfyUI, reload its editor, then open **`comfyui/workflows/comfy-hackath
 
 The tested setup is ComfyUI 0.43.2 with frontend 1.57.4. See [Comfy's Partner-node requirements](https://docs.comfy.org/tutorials/partner-nodes/overview) for authentication and network setup.
 
+### Renderer
+
+The arena draws with PixiJS (WebGL) when the browser supports it, and falls back to Canvas 2D otherwise; the HUD stays on a 2D overlay either way. Add `?renderer=canvas` to the game URL to force the fallback. The library is vendored in the exported game (`vendor/pixi.min.js`, MIT), so nothing is installed or fetched at play time.
+
 ## 3. Generate your artwork
 
 ![Main Comfy Fighter Z asset workflow](comfyui/docs/images/01-factory-overview.png)

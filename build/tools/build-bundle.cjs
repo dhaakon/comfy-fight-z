@@ -51,6 +51,13 @@ function browserExecutable() {
   throw new Error('Chromium is unavailable. Run npx playwright install chromium or set PLAYWRIGHT_EXECUTABLE_PATH.');
 }
 
+// Headless Chromium has no WebGL unless ANGLE/SwiftShader is enabled; the suites run the Pixi path that way.
+// CFZ_FORCE_CANVAS=1 leaves WebGL off so the Canvas 2D fallback is exercised instead.
+const WEBGL_ARGS = ['--use-angle=swiftshader', '--use-gl=angle', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'];
+function browserLaunchOptions(extraArgs = []) {
+  return { headless: true, executablePath: browserExecutable(), args: [...(process.env.CFZ_FORCE_CANVAS ? [] : WEBGL_ARGS), ...extraArgs] };
+}
+
 async function serveProject() {
   const root = path.join(PROJECT, 'build/public');
   const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp' };
@@ -164,7 +171,7 @@ async function main(options) {
   try {
     projectServer = await serveProject();
     const executablePath = browserExecutable(); report.browserExecutable = executablePath;
-    browser = await chromium.launch({ headless: true, executablePath });
+    browser = await chromium.launch(browserLaunchOptions());
     builderPage = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
     builderPage.on('pageerror', error => report.browserErrors.push(error.message));
     await builderPage.goto(`${projectServer.url}/builder/`);
@@ -369,4 +376,4 @@ if (require.main === module) {
     return main(options);
   }).catch(error => { console.error(error.message); process.exitCode = 1; });
 }
-module.exports = { parseArgs, extractStoredZip, browserExecutable, main };
+module.exports = { parseArgs, extractStoredZip, browserExecutable, browserLaunchOptions, main };

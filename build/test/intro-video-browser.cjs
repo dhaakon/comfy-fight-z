@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
-const { browserExecutable } = require('../tools/build-bundle.cjs');
+const { browserLaunchOptions } = require('../tools/build-bundle.cjs');
 const { createGameServer } = require('../server/server.cjs');
 const project = path.resolve(__dirname, '../..');
 const root = path.resolve(process.env.CFZ_BROWSER_GAME_ROOT || path.join(project, 'output/game'));
@@ -14,7 +14,7 @@ const originalManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/mani
 (async () => {
   const server = createGameServer({ root });
   const address = await server.listen(0, '127.0.0.1');
-  const browser = await chromium.launch({ executablePath: browserExecutable(), headless: true, args: ['--disable-features=LocalNetworkAccessChecks'] });
+  const browser = await chromium.launch(browserLaunchOptions(['--disable-features=LocalNetworkAccessChecks']));
   const errors = [];
   async function pageFor(clips, opts = {}) {
     const page = await browser.newPage({ viewport: { width: 1366, height: 768 }, reducedMotion: 'reduce' });
@@ -27,8 +27,8 @@ const originalManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/mani
     });
     // Exercise current source against a reviewed export without overwriting it.
     await page.route('**/*', route => {
-      const name = new URL(route.request().url()).pathname.split('/').at(-1) || 'index.html';
-      if (['index.html', 'game.js', 'style.css', 'anim.js', 'engine.js'].includes(name)) {
+      const name = new URL(route.request().url()).pathname.replace(/^\//, '') || 'index.html';
+      if (['index.html', 'game.js', 'style.css', 'anim.js', 'engine.js', 'render/arena.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js'].includes(name)) {
         const type = name.endsWith('.html') ? 'text/html' : name.endsWith('.css') ? 'text/css' : 'text/javascript';
         return route.fulfill({ contentType: type, body: fs.readFileSync(path.join(project, 'build/public', name)) });
       }

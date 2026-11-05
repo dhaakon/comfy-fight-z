@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
-const { browserExecutable } = require('../tools/build-bundle.cjs');
+const { browserLaunchOptions } = require('../tools/build-bundle.cjs');
 const { createGameServer } = require('../server/server.cjs');
 const project = path.resolve(__dirname, '../..');
 const root = path.resolve(process.env.CFZ_BROWSER_GAME_ROOT || path.join(project, 'output/game'));
@@ -11,7 +11,7 @@ const fixture = fs.readFileSync(path.join(__dirname, 'fixtures/opening.mp4'));
 const baseManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/manifest.json')));
 (async () => {
   const server = createGameServer({ root }); const address = await server.listen(0, '127.0.0.1');
-  const browser = await chromium.launch({ executablePath: browserExecutable(), headless: true, args: ['--disable-features=LocalNetworkAccessChecks'] });
+  const browser = await chromium.launch(browserLaunchOptions(['--disable-features=LocalNetworkAccessChecks']));
   const errors = [];
   async function pageFor({ opening = null, title = { src: 'assets/video/title.mp4', duration: 2 }, missing = false, reducedMotion = 'no-preference' } = {}) {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion });

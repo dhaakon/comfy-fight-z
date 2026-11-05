@@ -44,6 +44,13 @@ game.js  ──frame state──▶  render/arena.js  ──▶  render/pixi-ren
 - `pack.js` `TEMPLATE_FILES` and the static-site tool include `vendor/pixi.min.js`, so the exported game and `npm start` work offline with no install.
 - `index.html` loads it with `<script src="vendor/pixi.min.js" defer>` before `game.js`. If it fails to load, the Canvas renderer is used.
 
+## Status (2026-11-05)
+
+- Steps 1–3 done on `pixi-port`: `render/canvas-renderer.js` (extracted Canvas path with `beginFrame`/`updateCamera`/`observeEffects`/`stepParticles`/`drawScreen`/`drawHitboxes`), `render/pixi-renderer.js` (Pixi v8 world: stage parallax, fighter sprites from `anim.sample`, afterimages, hit-flash and palette filters, effects, projectiles, sparks, placeholder stick figures, fallback skyline) and `render/arena.js` (chooser; Pixi initializes asynchronously, the 2D overlay draws everything until then and the HUD afterwards). `vendor/pixi.min.js` (8.22.0) ships in exports, the static site and the game server whitelist. `FighterDebug.renderer()`, `pixel()` and `rendererStats()` exist; `?renderer=canvas` forces the fallback.
+- Step 4: browser suites launch headless Chromium with ANGLE/SwiftShader (`browserLaunchOptions()` in `build/tools/build-bundle.cjs`); `CFZ_FORCE_CANVAS=1` runs them on the fallback.
+- Step 5 done: motion layer (auras while charging or at MAX power, dash and rush speed lines, impact flashes and rings, super and KO bursts, projectile glow trails, rotational shake) in `pixi-renderer.js`, off under reduced motion.
+- Step 6: in Edge on this machine the renderer spends 1.6 ms per frame on Pixi against 0.3 ms on Canvas (both far under the 16 ms budget; the test harness window itself caps rAF at about 34 fps). Eleven textures are resident for a two-fighter match. All suites pass on both paths; the strict export ships `render/` and `vendor/`.
+
 ## Steps
 
 1. **Extract** today's drawing from `game.js` into `render/canvas-renderer.js` behind the `arena.js` interface. No visual change; all suites pass. (`game.js` loses roughly a hundred `ctx.` calls.)

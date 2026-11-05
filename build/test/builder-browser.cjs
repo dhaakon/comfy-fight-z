@@ -94,7 +94,7 @@ function unzipStored(bytes, destination) {
   let browser;
   try {
     const server = await startServer('build/tools/serve.cjs', root); servers.push(server.child);
-    browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
+    browser = await chromium.launch(require('../tools/build-bundle.cjs').browserLaunchOptions());
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true }), errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(`${server.url}/builder/`);
@@ -241,7 +241,7 @@ function unzipStored(bytes, destination) {
       assert.ok((await game.locator('#fight-stage-label').textContent()).includes(name.toUpperCase()));
       assert.equal(await game.locator('#result-stage-label').textContent(), `${name.toUpperCase()} HAS A CHAMPION`);
       await game.click('#start-button'); await game.click('#intro-skip'); await game.waitForFunction(() => window.FighterDebug.snapshot().phase === 'fight');
-      const pixel = await game.evaluate(() => [...document.querySelector('#arena').getContext('2d').getImageData(20, 110, 1, 1).data].slice(0, 3));
+      const pixel = await game.evaluate(() => window.FighterDebug.pixel(20, 110));
       assert.deepEqual(pixel, color, `Gameplay canvas must render selected environment ${id}`);
     }
     await game.click('#back-select'); await game.setViewportSize({ width: 390, height: 844 }); await game.click('#stage-prev');

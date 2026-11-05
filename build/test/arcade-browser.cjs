@@ -23,7 +23,7 @@ async function unusedPort() {
       server.once('exit', code => { clearTimeout(timeout); reject(new Error(`Test server exited (${code})`)); });
       server.stdout.on('data', chunk => { if (String(chunk).includes(`127.0.0.1:${port}`)) { clearTimeout(timeout); resolve(); } });
     });
-    browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
+    browser = await chromium.launch(require('../tools/build-bundle.cjs').browserLaunchOptions());
     const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     // A simulated standard gamepad lets local versus run without hardware.

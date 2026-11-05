@@ -6,13 +6,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
 const { createGameServer } = require('../server/server.cjs');
-const { browserExecutable } = require('../tools/build-bundle.cjs');
+const { browserLaunchOptions } = require('../tools/build-bundle.cjs');
 const project = path.resolve(__dirname, '../..');
 const args = process.argv.slice(2), option = name => { const index = args.indexOf(name); return index < 0 ? null : args[index + 1]; };
 const screenshotRoot = path.resolve(project, option('--screenshots') || 'output/diagnostics/multiplayer');
 const runtimeRoot = path.join(project, 'build/public');
 const root = path.resolve(process.env.CFZ_BROWSER_GAME_ROOT || runtimeRoot);
-const sourceFiles = new Set(['index.html', 'game.js', 'anim.js', 'engine.js', 'style.css', 'network.css', 'multiplayer.js', 'session-client.js', 'controller.html', 'controller.js']);
+// Keyed by file name; renderer and vendor files live in subfolders of the runtime root.
+const sourceFiles = new Map(['index.html', 'game.js', 'anim.js', 'engine.js', 'render/arena.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'style.css', 'network.css', 'multiplayer.js', 'session-client.js', 'controller.html', 'controller.js'].map(file => [path.posix.basename(file), file]));
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript' };
 let server, browser, base;
 const errors = [], checks = [];
@@ -32,7 +33,7 @@ async function device(options = {}) {
   if (!option('--url') && root !== runtimeRoot) await context.route('**/*', route => {
     const url = new URL(route.request().url());
     const name = url.pathname === '/' || url.pathname === '/phone-photo-demo/' ? 'index.html' : path.posix.basename(url.pathname);
-    if (sourceFiles.has(name)) return route.fulfill({ contentType: mime[path.extname(name)], body: fs.readFileSync(path.join(runtimeRoot, name)) });
+    if (sourceFiles.has(name)) return route.fulfill({ contentType: mime[path.extname(name)], body: fs.readFileSync(path.join(runtimeRoot, sourceFiles.get(name))) });
     return route.continue();
   });
   const page = await context.newPage(); page.on('websocket', ws => { ws.on('socketerror', error => console.log('socket error:', error)); ws.on('close', () => console.log('socket closed')); ws.on('framereceived', event => { try { const m=JSON.parse(event.payload); if(m.type==='error') console.log('server error:',m.code,m.message); } catch (_) {} }); }); page.on('pageerror', error => errors.push(error.message));
@@ -78,7 +79,7 @@ async function projection(mode) {
   fs.mkdirSync(screenshotRoot, { recursive: true });
   if (option('--url')) base = new URL(option('--url')).href.replace(/\/?$/, '/');
   else { server = createGameServer({ root, mounts: { '/': root, '/phone-photo-demo/': root } }); const address = await server.listen(0, '127.0.0.1'); base = 'http://127.0.0.1:' + address.port + '/phone-photo-demo/'; }
-  browser = await chromium.launch({ executablePath: browserExecutable(), headless: true, args: option('--url') ? [] : ['--disable-features=LocalNetworkAccessChecks'] });
+  browser = await chromium.launch(browserLaunchOptions(option('--url') ? [] : ['--disable-features=LocalNetworkAccessChecks']));
   try {
     const offline = await device(); await title(offline); await screenshot(offline, 'title');
     // Arcade (the default) shows its versus screen before the introductions.

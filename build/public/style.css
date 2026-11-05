@@ -541,3 +541,6 @@ body[data-scene=fight] .fight-heading,body[data-scene=intro] .fight-heading { to
   .selection-screen:not([hidden]) .fighter-card, .selection-screen:not([hidden]) .roster-panel, .selection-screen:not([hidden]) .selection-title, .selection-screen:not([hidden]) .battle-ready,
   .fighter-tile, .player-switch .versus, .fighter-card h3, .vs-screen:not([hidden]) *, .win-screen:not([hidden]) *, .continue-screen:not([hidden]) *, .gameover-screen:not([hidden]) *, .match-overlay:not([hidden]) *, .pause-overlay:not([hidden]) * { animation:none !important; transition:none !important; }
 }
+/* The HUD and callouts draw on a 2D canvas above the arena; clicks and focus go to the arena underneath. */
+.canvas-wrap { position:relative; }
+.arena-hud { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }

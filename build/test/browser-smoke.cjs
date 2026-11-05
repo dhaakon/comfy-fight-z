@@ -45,7 +45,7 @@ async function skipOptionalOpening(page) {
       server.stdout.on('data', chunk => { if (String(chunk).includes(url)) { clearTimeout(timeout); resolve(); } });
       server.stderr.on('data', chunk => process.stderr.write(chunk));
     });
-    browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
+    browser = await chromium.launch(require('../tools/build-bundle.cjs').browserLaunchOptions());
     const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     await page.goto(url); await page.waitForFunction(() => document.querySelector('#fighter-one').options.length >= 2);
