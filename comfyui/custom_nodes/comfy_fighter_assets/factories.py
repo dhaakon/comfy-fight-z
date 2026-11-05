@@ -206,6 +206,15 @@ def _description(project, character):
             "Keep one consistent complete character, recognizable hair, outfit and accessories. Exactly one of each accessory.")
 
 
+def _reroll_input():
+    return io.Int.Input("reroll", default=0, min=0, max=99, optional=True, advanced=True,
+                        tooltip="Raise to redraw this node's images and clips with fresh seeds; every other node stays cached and unbilled.")
+
+
+def _rerolled(project, reroll):
+    return project if not reroll else {**project, "seed": (project["seed"] + int(reroll) * 1000) % (2 ** 64)}
+
+
 class CFZProjectSettings(io.ComfyNode):
     @classmethod
     def define_schema(cls):
@@ -285,7 +294,8 @@ class CFZCharacterFactory(io.ComfyNode):
                     io.Boolean.Input("include_sprite_sheets", default=True, advanced=True, tooltip="Disable only when connecting the identity and character outputs to individual CFZ Sprite Sheet nodes."),
                     _source_mode_input(), *_arcade_inputs(),
                     io.Boolean.Input("include_arcade_art", default=True, optional=True, advanced=True,
-                                     tooltip="Adds the optional sheetD/sheetE in-between poses (when sheets are included) and a 16:9 arcade ending illustration: up to 3 more paid images.")],
+                                     tooltip="Adds the optional sheetD/sheetE in-between poses (when sheets are included) and a 16:9 arcade ending illustration: up to 3 more paid images."),
+                    _reroll_input()],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="identity"), Character.Output(display_name="character")],
             enable_expand=True, is_api_node=True)
 
@@ -304,7 +314,8 @@ class CFZCharacterFactory(io.ComfyNode):
             return str(error)
 
     @classmethod
-    def execute(cls, project, image, name, description, special_name, special_description, intro_tagline, color, character_id, include_sprite_sheets=True, source_mode="Upload reference", include_arcade_art=True, **kwargs):
+    def execute(cls, project, image, name, description, special_name, special_description, intro_tagline, color, character_id, include_sprite_sheets=True, source_mode="Upload reference", include_arcade_art=True, reroll=0, **kwargs):
+        project = _rerolled(project, reroll)
         _project(project); _source_mode(source_mode)
         character = _character(name, description, special_name, special_description, intro_tagline, color, character_id, *_arcade_values(kwargs))
         members = _members(character=character); graph = GraphBuilder()
@@ -337,11 +348,13 @@ class CFZSpriteSheet(io.ComfyNode):
         return io.Schema(node_id="CFZSpriteSheet", display_name="CFZ Sprite Sheet", category="Comfy Fighter Z",
             description="PAID cloud generation: exactly one 2K 3x3 sheet for nine named poses, saved with an exact mapped pose layout. sheet, sheetB and sheetC hold the 27 required poses; optional sheetD and sheetE add in-betweens. Native cloud API; no local checkpoint.",
             inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True), io.Combo.Input("sheet", options=list(ALL_SHEETS), default="sheet"),
-                    io.Image.Input("reference_sheet", raw_link=True, optional=True, tooltip="An accepted sheet of the same character; new cells match its body scale, line weight and right-facing direction.")],
+                    io.Image.Input("reference_sheet", raw_link=True, optional=True, tooltip="An accepted sheet of the same character; new cells match its body scale, line weight and right-facing direction."),
+                    _reroll_input()],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="sheet_image")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, character, reference, sheet, reference_sheet=None):
+    def execute(cls, project, character, reference, sheet, reference_sheet=None, reroll=0):
+        project = _rerolled(project, reroll)
         _project(project); character = _checked_character(character)
         if sheet not in ALL_SHEETS:
             raise ValueError("Sheet must be sheet, sheetB, sheetC, sheetD or sheetE")
@@ -392,7 +405,7 @@ class CFZEnvironmentFactory(io.ComfyNode):
         return io.Schema(node_id="CFZEnvironmentFactory", display_name="CFZ Environment Factory", category="Comfy Fighter Z",
             description="PAID when enabled: Upload reference uses 1 stage image; Invent fictional reference uses 2 images (a new text-only source plus the playable stage). Invent never reads the image field or earlier session files. Disabled slots make zero cloud calls.",
             inputs=[Project.Input("project"), _image_input(), io.Boolean.Input("enabled", default=True), io.String.Input("name", default="New Environment"),
-                    io.String.Input("description", default="", multiline=True), io.String.Input("stage_id", default="environment", advanced=True), _source_mode_input()],
+                    io.String.Input("description", default="", multiline=True), io.String.Input("stage_id", default="environment", advanced=True), _source_mode_input(), _reroll_input()],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="stage")], enable_expand=True, is_api_node=True)
 
     @classmethod
@@ -416,7 +429,8 @@ class CFZEnvironmentFactory(io.ComfyNode):
             return str(error)
 
     @classmethod
-    def execute(cls, project, image, enabled, name, description, stage_id, source_mode="Upload reference"):
+    def execute(cls, project, image, enabled, name, description, stage_id, source_mode="Upload reference", reroll=0):
+        project = _rerolled(project, reroll)
         directory = _project(project)
         if not enabled:
             return io.NodeOutput({"_type": "CFZ_BUNDLE", "_root": str(directory), "fighters": [], "stages": [], "assets": []}, None)
@@ -440,11 +454,12 @@ class CFZSharedArtFactory(io.ComfyNode):
     def define_schema(cls):
         return io.Schema(node_id="CFZSharedArtFactory", display_name="CFZ Shared Game Art", category="Comfy Fighter Z",
             description="PAID cloud generation: six images (title, selection, logo, HUD, icons and nine combat effects). Connect the stage image from an ENABLED environment factory as the reference.",
-            inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True)],
+            inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True), _reroll_input()],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="select_image")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, stage_reference):
+    def execute(cls, project, stage_reference, reroll=0):
+        project = _rerolled(project, reroll)
         if stage_reference is None:
             raise ValueError("Shared game art requires the stage image from an enabled environment factory")
         _project(project); graph = GraphBuilder(); members = _members(); assets = []; select_image = None
@@ -510,11 +525,12 @@ class CFZTitleArt(io.ComfyNode):
         fighters = [io.Image.Input(f"fighter_{index}", raw_link=True, optional=True) for index in range(1, 9)]
         return io.Schema(node_id="CFZTitleArt", display_name="CFZ Title Ensemble Art", category="Comfy Fighter Z",
             description="PAID cloud generation: one 2K startup-screen illustration of the cast together in the arena. Connect each character factory's identity image (up to eight) and the stage image. The game shows it behind the title menu, and CFZ Menu Video animates it.",
-            inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True), *fighters],
+            inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True), *fighters, _reroll_input()],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="title_image")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, stage_reference, **fighters):
+    def execute(cls, project, stage_reference, reroll=0, **fighters):
+        project = _rerolled(project, reroll)
         _project(project)
         references = [fighters[name] for name in (f"fighter_{index}" for index in range(1, 9)) if fighters.get(name) is not None]
         if not references or stage_reference is None:
@@ -536,11 +552,12 @@ class CFZTitleVideo(io.ComfyNode):
     def define_schema(cls):
         return io.Schema(node_id="CFZTitleVideo", display_name="CFZ Menu Video", category="Comfy Fighter Z",
             description="PAID cloud generation: one silent 720p LTX clip that loops the title ensemble behind the game menu; the same image is its first and last frame. Still art remains when motion is unavailable or reduced.",
-            inputs=[Project.Input("project"), io.Image.Input("title_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8")],
+            inputs=[Project.Input("project"), io.Image.Input("title_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8"), _reroll_input()],
             outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, title_image, duration="8"):
+    def execute(cls, project, title_image, duration="8", reroll=0):
+        project = _rerolled(project, reroll)
         _project(project)
         if title_image is None:
             raise ValueError("Connect the title image from CFZ Title Ensemble Art")
@@ -558,11 +575,12 @@ class CFZSelectVideo(io.ComfyNode):
     def define_schema(cls):
         return io.Schema(node_id="CFZSelectVideo", display_name="CFZ Select Video", category="Comfy Fighter Z",
             description="PAID cloud generation: one silent 720p LTX loop of the character-select backdrop (lights, embers, camera drift), played behind the roster. The still backdrop stays as the fallback.",
-            inputs=[Project.Input("project"), io.Image.Input("select_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8")],
+            inputs=[Project.Input("project"), io.Image.Input("select_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8"), _reroll_input()],
             outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, select_image, duration="8"):
+    def execute(cls, project, select_image, duration="8", reroll=0):
+        project = _rerolled(project, reroll)
         _project(project)
         if select_image is None:
             raise ValueError("Connect the select backdrop image from CFZ Shared Art")
@@ -580,11 +598,12 @@ class CFZSelectIdleVideo(io.ComfyNode):
         return io.Schema(node_id="CFZSelectIdleVideo", display_name="CFZ Select Idle Video", category="Comfy Fighter Z",
             description="PAID cloud generation: one 1K portrait keyframe of the fighter in a ready stance, then one silent portrait 720p LTX loop (first and last frame identical) that the character-select cards play.",
             inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True),
-                    io.Combo.Input("duration", options=["4", "6", "8"], default="6")],
+                    io.Combo.Input("duration", options=["4", "6", "8"], default="6"), _reroll_input()],
             outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, character, reference, duration="6"):
+    def execute(cls, project, character, reference, duration="6", reroll=0):
+        project = _rerolled(project, reroll)
         _project(project); character = _checked_character(character)
         if reference is None:
             raise ValueError("Connect the fighter's identity image")
@@ -606,11 +625,12 @@ class CFZIntroVideo(io.ComfyNode):
         return io.Schema(node_id="CFZIntroVideo", display_name="CFZ Fighter Intro Video", category="Comfy Fighter Z",
             description="PAID cloud generation: one 1K 16:9 keyframe of the fighter in the arena, then one silent 720p LTX introduction clip played before fights. Voices stay separate; the sprite entrance remains the fallback.",
             inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True), io.Image.Input("stage_reference", raw_link=True),
-                    io.Combo.Input("duration", options=["4", "6", "8"], default="4")],
+                    io.Combo.Input("duration", options=["4", "6", "8"], default="4"), _reroll_input()],
             outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, character, reference, stage_reference, duration="4"):
+    def execute(cls, project, character, reference, stage_reference, duration="4", reroll=0):
+        project = _rerolled(project, reroll)
         _project(project); character = _checked_character(character)
         if reference is None or stage_reference is None:
             raise ValueError("Connect the fighter's identity image and the stage image")

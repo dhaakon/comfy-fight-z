@@ -254,3 +254,19 @@ test('WebSocket origins are enforced; X-Real-IP is trusted only with an explicit
   second.send({ type: 'hello', role: 'player', action: 'create' }); await second.wait('welcome');
   assert.notEqual([...proxied.app.wss.clients][1].address, 'invalid, 203.0.113.3');
 });
+
+test('games.json lists every mounted game with its generated key art so title screens can offer a game select', async t => {
+  const second = temporaryGame(t, ['keystone', 'cheddar']);
+  const manifest = JSON.parse(fs.readFileSync(path.join(second, 'assets/manifest.json'), 'utf8'));
+  fs.writeFileSync(path.join(second, 'assets/manifest.json'), JSON.stringify({ ...manifest, title: 'Comfy Fighter Z', subtitle: 'Blue Wave Saga', ui: { title: { src: 'assets/ui/title.png' }, ensemble: 'assets/ui/ensemble.png', logo: '../escape.png', hud: 'assets/ui/hud.png' } }));
+  const { http } = await fixture(t, { mounts: { '/': sourceRoot, '/blue-wave/': second } });
+  const main = await (await fetch(http + '/games.json')).json();
+  assert.deepEqual(main.games.map(game => [game.basePath, game.current, game.fighters, game.stages]), [['/', true, 7, 3], ['/blue-wave/', false, 2, 2]]);
+  assert.deepEqual(main.games[1].art, { title: 'assets/ui/title.png', ensemble: 'assets/ui/ensemble.png' }, 'only generated interface art under assets/ui is listed');
+  assert.equal(main.games[1].subtitle, 'Blue Wave Saga');
+  const other = await (await fetch(http + '/blue-wave/games.json')).json();
+  assert.deepEqual(other.games.map(game => game.current), [false, true]);
+  const single = await fixture(t);
+  const alone = await (await fetch(single.http + '/games.json')).json();
+  assert.equal(alone.games.length, 1); assert.equal(alone.games[0].current, true);
+});

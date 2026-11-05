@@ -1,0 +1,148 @@
+{
+  "castSchema": "comfy-fighter-cast/v1",
+  "extends": "comfyui/config/factory.json",
+  "id": "blue-wave-2026",
+  "title": "Comfy Fighter Z",
+  "subtitle": "Blue Wave Saga",
+  "about": "Six invented state champions inspired by the map of the November 2026 midterms, where Democrats flipped Senate seats in Kansas, Iowa, Texas, Ohio, Maine, North Carolina and South Carolina, took governorships in Texas, Georgia, Nevada, Ohio and Iowa, and flipped legislative chambers in Pennsylvania, Wisconsin, Texas and Arizona. Four champions come from states that voted blue (Pennsylvania, Wisconsin, Arizona, Maine) and two from deep-red states that flipped (Texas, Kansas). Every fighter and the arena are fictional working heroes and places generated from text; none depicts, names or resembles a real person, candidate or building.",
+  "assetRoot": "output/assets/generated/blue-wave-2026",
+  "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult hometown champions, each a fictional working hero from an invented town, generated from text without any real-person photo or likeness reference and resembling no politician or public figure. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols, party logos, real flags, seals or lettering. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+  "uiStyle": "Original 1990s shonen battle-anime arcade interface illustration for a fictional cross-country hometown-champions tournament under a rolling blue wave motif. Bold brush ink, hard cel shadows, hand-painted energy clouds and sea-foam spray, deep midnight blue and black, vivid gold, electric cyan and white highlights. Strong negative space for readable game controls. All characters and locations are invented; no real faces, real buildings, recognizable real venues, party logos, real flags, seals, brand marks or copied franchise imagery.",
+  "stageStyle": "Original hand-painted 1990s anime environment background for a fictional cross-country champions tournament. Wide side-on eye-level view, rich cel-shaded materials and dramatic atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, real flags, seals, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+  "fighters": [
+    {
+      "id": "keystone",
+      "name": "Keystone",
+      "color": "#3b6fd6",
+      "enabled": true,
+      "state": "Pennsylvania",
+      "description": "A completely invented steel-town foundry forewoman in her mid forties from an imaginary Pennsylvania river city. Tall, heavyset, powerful build with broad shoulders, a square jaw, pale freckled skin and cropped copper-red hair swept back. Wears navy canvas work coveralls with the top half tied around the waist over a charcoal thermal shirt with pushed-up sleeves, a heavy plain brass-buckled belt, thick tan leather forearm guards and steel-toed tan work boots. No hat, gloves, tools, badges, lettering or loose accessories. Her low wide wrestling crouch and open grabbing hands give her an immovable keystone silhouette.",
+      "specialMove": {
+        "name": "Keystone Slam",
+        "description": "Keystone drops into a wide stance and drives both open palms forward and down toward the right, releasing a compact wedge-shaped shockwave of blue-white energy that skims along the ground. Keep the wave close to her hands so the game can launch a separate projectile; preserve the entire body and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Trifecta Crush",
+        "description": "Keystone hoists an unseen opponent overhead and slams downward three times in a blur, each impact bursting a ring of blue-white energy from the ground. In sprite art show the final overhead lift with the energy ring compact at her feet."
+      },
+      "introTagline": "Pennsylvania waited since ninety-four. I don't wait.",
+      "introVoice": "River (neutral, american)",
+      "style": "grappler",
+      "winQuote": "That's what a clean sweep looks like.",
+      "ending": "Keystone takes the trophy back to the river city and melts it down into a railing for the new footbridge, so the whole town can lean on it. Every evening she walks the bridge, nods at the mill lights and finally sits down for a rest she has earned."
+    },
+    {
+      "id": "cheddar",
+      "name": "Cheddar",
+      "color": "#f4c542",
+      "enabled": true,
+      "state": "Wisconsin",
+      "description": "A completely invented cheerful dairy-farm cheesemaker dad in his early fifties from an imaginary Wisconsin lake county. Stocky, thick-armed, barrel-chested build, ruddy pale skin, a broad friendly face with a bushy blond mustache and short side-parted blond hair. Wears a red-and-black buffalo-check flannel shirt with the sleeves rolled past the elbows, dark denim work trousers held by wide black suspenders, mustard-yellow knit wristbands and worn tan leather boots. No hat, apron, gloves, props, lettering or loose accessories. His upright classic boxing stance and easy grin give him a sturdy all-rounder silhouette.",
+      "specialMove": {
+        "name": "Cold Front",
+        "description": "Cheddar plants his boots, twists at the hips and shoves one flannel-sleeved forearm forward toward the right, releasing a tight swirl of frosty white-and-pale-blue winter air with tiny ice crystals. Keep the frost close to his fist so the game can launch a separate projectile; preserve the entire body and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Lake Effect",
+        "description": "Cheddar stomps once and a towering wall of frost and snow spirals forward along the ground. In sprite art keep the spiral compact in front of his lead fist."
+      },
+      "introTagline": "Both chambers, first time since twenty-ten. Say cheese.",
+      "introVoice": "Brian (male, american)",
+      "style": "balanced",
+      "winQuote": "Aged to perfection. You, not so much.",
+      "ending": "Cheddar hauls the prize home in the back of the farm truck and spends it on a new ice rink behind the creamery. On opening night half the county shows up with skates and the other half with casseroles, and he referees both."
+    },
+    {
+      "id": "saguaro",
+      "name": "Saguaro",
+      "color": "#e2742d",
+      "enabled": true,
+      "state": "Arizona",
+      "description": "A completely invented wiry desert trail-runner mom in her late thirties from an imaginary Arizona canyon town. Lean, long-limbed, athletic build, warm tan brown skin, sharp cheekbones, dark eyes and a long black braid down her back. Wears a sleeveless sand-colored athletic top, terracotta running tights to the ankle under dusty-rose split shorts, coral knit wristbands and lightweight charcoal trail shoes. No hat, sunglasses, water bottle, props, lettering or loose accessories. Her coiled low sprinting guard and sly half-smile give her a quick unpredictable silhouette.",
+      "specialMove": {
+        "name": "Heat Shimmer",
+        "description": "Saguaro twists sideways and flicks one open hand toward the right, releasing a rippling orb of orange-and-gold desert heat haze with a faint mirage double. Keep the orb close to her hand so the game can launch a separate projectile; preserve the entire body and both shoes inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Sixty-Year Monsoon",
+        "description": "Saguaro vanishes into a heat mirage and reappears mid-air, hurling a storm of orange heat orbs that crash down in sequence. In sprite art show the mid-air throw with the orbs compact around her hand."
+      },
+      "introTagline": "Sixty years of desert. The wave finally came through.",
+      "introVoice": "Jessica (female, american)",
+      "style": "trickster",
+      "winQuote": "Hydrate. You look a little dizzy.",
+      "ending": "Saguaro spends the winnings on shade sails and water fountains along the canyon trail, then runs it at dawn with half the town behind her. Nobody keeps up, and nobody minds."
+    },
+    {
+      "id": "beacon",
+      "name": "Beacon",
+      "color": "#2a9fd6",
+      "enabled": true,
+      "state": "Maine",
+      "description": "A completely invented weathered lighthouse keeper in her late fifties from an imaginary Maine harbor village. Tall, rangy, big-boned build, pale wind-burned skin, a long calm face with deep laugh lines and short tousled silver-gray hair. Wears a navy cable-knit sweater with a thick rolled collar and pushed-up sleeves under bright yellow oilskin bib overalls, and tall black rubber deck boots. No hat, lantern, rope, props, lettering or loose accessories. Her upright long-armed stance with one palm raised forward gives her a steady lighthouse silhouette.",
+      "specialMove": {
+        "name": "Foghorn Beam",
+        "description": "Beacon braces her boots, extends one open palm toward the right and fires a tight horizontal lance of white-gold light with a soft cyan halo. Keep the beam short and close to her palm so the game can launch a separate projectile; preserve the entire body and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Full Sweep",
+        "description": "Beacon raises both arms and a rotating lighthouse beam sweeps across the screen in a blinding arc. In sprite art show the raised-arm pose with the light compact around her hands."
+      },
+      "introTagline": "The fog lifted and Maine saw clear.",
+      "introVoice": "River (neutral, american)",
+      "style": "zoner",
+      "winQuote": "Lights on. Storm's over.",
+      "ending": "Beacon fixes the lighthouse lens with the prize money and keeps the rest in a coffee can for the village's winter fuel. The harbor boats blink their lights at the tower every night that season, and she blinks back."
+    },
+    {
+      "id": "bluebonnet",
+      "name": "Bluebonnet",
+      "color": "#1e4fd8",
+      "enabled": true,
+      "state": "Texas",
+      "description": "A completely invented towering ranch-hand dad in his mid forties from an imaginary Texas hill-country town. Very tall, massive, broad-chested build, deep brown skin, a square jaw with a trimmed black beard and short black hair. Wears an indigo pearl-snap western shirt with the sleeves rolled to the elbows, dark blue denim jeans, a wide brown leather belt with a plain oval brass buckle and brown leather western boots with flared tops and no spurs. No hat, lasso, rope, gloves, props, lettering or loose accessories. His planted wide stance and raised heavy fists give him an unstoppable powerhouse silhouette.",
+      "specialMove": {
+        "name": "Hill Country Thunder",
+        "description": "Bluebonnet rears back and hammers one huge fist forward toward the right, releasing a compact crackling burst of deep-blue-and-white lightning. Keep the burst close to his fist so the game can launch a separate projectile; preserve the entire body and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Stampede",
+        "description": "Bluebonnet charges forward through a cloud of blue dust and delivers an earth-splitting double-fist slam. In sprite art show the slam with the dust and lightning compact around his fists."
+      },
+      "introTagline": "Everything is bigger in Texas. Especially the upset.",
+      "introVoice": "Adam (male, american)",
+      "style": "power",
+      "winQuote": "Don't mess with the bluebonnets.",
+      "ending": "Bluebonnet drives the prize back to the hill-country town and buys the old drive-in theater, which reopens with free screenings every Friday. The first feature is a kung-fu double bill, and the whole county brings lawn chairs."
+    },
+    {
+      "id": "sunflower",
+      "name": "Sunflower",
+      "color": "#ffc233",
+      "enabled": true,
+      "state": "Kansas",
+      "description": "A completely invented quick wheat-farm courier in her late twenties from an imaginary Kansas prairie town. Small, compact, springy athletic build, light olive skin with freckles, bright eyes and short sun-bleached brown hair held back by a plain yellow bandana headband. Wears a sleeveless pale chambray work shirt, a mustard-yellow cropped canvas vest, slim dark denim work trousers, yellow knit wristbands and tan lace-up boots. No hat, bag, bicycle, props, lettering or loose accessories. Her bouncing forward-leaning stance with fists high gives her a darting speedster silhouette.",
+      "specialMove": {
+        "name": "Prairie Twister",
+        "description": "Sunflower spins once and snaps one fist forward toward the right, releasing a small tight tan-and-gold dust twister with flecks of yellow petals. Keep the twister close to her fist so the game can launch a separate projectile; preserve the entire body and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Ninety-Year Gale",
+        "description": "Sunflower blurs into a dozen afterimages and finishes with a rising uppercut wrapped in a gold whirlwind. In sprite art show the rising uppercut with the whirlwind compact around her fist."
+      },
+      "introTagline": "Ninety years waiting for a Kansas wind like this.",
+      "introVoice": "Jessica (female, american)",
+      "style": "speed",
+      "winQuote": "Blew right through you.",
+      "ending": "Sunflower spends the prize on a fleet of delivery bicycles for the prairie town and teaches every kid on the route to ride. By harvest the whole town moves at her speed, and she finally slows down enough to watch the fields turn gold."
+    }
+  ],
+  "stages": [
+    {
+      "id": "statehouse",
+      "name": "Statehouse Steps",
+      "enabled": true,
+      "description": "A wholly fictional state capitol plaza at blue dusk right after a rainstorm. A broad wet gray granite plaza forms an empty level fighting plane; behind it rise wide pale marble steps, a colonnade and a modest copper dome of an invented statehouse, lit warm gold against a deep blue sky with the last orange band of sunset. Plain blue-and-white bunting hangs between lamp posts, a row of bare trees lines the far edge and distant city lights glitter beyond. The building is an invented landmark, unrelated to any actual capitol, venue or photograph. No people, flags with real emblems, seals, statues, signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines."
+    }
+  ]
+}

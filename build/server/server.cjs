@@ -51,7 +51,11 @@ function createGameServer(options = {}) {
     if (typeof engine.create !== 'function' || typeof engine.tick !== 'function') throw new Error('Game mount engine must expose create() and tick().');
     // Fighting styles travel with the runtime manifest so online matches use each fighter's moveset.
     const profiles = Object.fromEntries((manifest.fighters || []).map(f => [f.id, { style: f.style, boss: f.boss === true, reaches: engine.artReaches ? engine.artReaches(f.poses) : null }]));
-    return { basePath: basePath(mount), root: gameRoot, engine, profiles, catalog: { fighters, stages }, fighters: new Set(fighters.map(f => f.id)), stages: new Set(stages.map(s => s.id)) };
+    // The game-select listing: generated key art only, as mount-relative asset paths.
+    const artSource = value => { const src = typeof value === 'string' ? value : value?.src; return typeof src === 'string' && /^assets\/ui\/[A-Za-z0-9_-]+\.(?:png|webp|jpg)$/.test(src) ? src : undefined; };
+    const listing = { title: typeof manifest.title === 'string' ? manifest.title : 'Comfy Fighter Z', subtitle: typeof manifest.subtitle === 'string' ? manifest.subtitle : '',
+      fighters: fighters.length, stages: stages.length, art: Object.fromEntries(['title', 'ensemble', 'logo'].map(key => [key, artSource(manifest.ui?.[key])]).filter(([, src]) => src)) };
+    return { basePath: basePath(mount), root: gameRoot, engine, profiles, catalog: { fighters, stages }, listing, fighters: new Set(fighters.map(f => f.id)), stages: new Set(stages.map(s => s.id)) };
   }).sort((a, b) => b.basePath.length - a.basePath.length);
   if (!mounts.length) throw new Error('Configure at least one game mount.');
   const findMount = pathname => mounts.find(game => pathname.startsWith(game.basePath));
@@ -81,6 +85,12 @@ function createGameServer(options = {}) {
       const config = { multiplayer: true, basePath: game.basePath, publicUrl: publicUrl ? canonicalBase(game, publicUrl) : null, wsPath: game.basePath + 'ws', protocol: VERSION };
       res.writeHead(200, { 'Content-Type': MIME['.js'], 'Cache-Control': 'no-store' });
       return res.end(req.method === 'HEAD' ? undefined : 'window.CFZ_CONFIG = ' + JSON.stringify(config) + ';\n');
+    }
+    if (relative === 'games.json') {
+      // Every mounted game, so a title screen can offer the others; a single export lists only itself.
+      const games = [...mounts].sort((a, b) => a.basePath.localeCompare(b.basePath)).map(mount => ({ basePath: mount.basePath, ...mount.listing, current: mount === game }));
+      res.writeHead(200, { 'Content-Type': MIME['.json'], 'Cache-Control': 'no-store' });
+      return res.end(req.method === 'HEAD' ? undefined : JSON.stringify({ games }));
     }
     if (relative === 'healthz') {
       res.writeHead(200, { 'Content-Type': MIME['.json'], 'Cache-Control': 'no-store' });

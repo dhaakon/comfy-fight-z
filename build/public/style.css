@@ -545,3 +545,17 @@ body.cfz-frame .settings-dialog, body.cfz-frame .network-dialog { background-ima
 @keyframes card-breathe { from { transform:scale(1); } to { transform:scale(1.06); } }
 .fighter-card:last-child .fighter-art video.card-idle { animation-name:card-breathe-mirror; }
 @keyframes card-breathe-mirror { from { transform:scaleX(-1) scale(1); } to { transform:scaleX(-1) scale(1.06); } }
+/* Game select: every installed game served beside this one, each a generated bundle on the same engine. */
+.games-screen { position:absolute; inset:0; padding:0; isolation:isolate; background:radial-gradient(ellipse at 50% 0,#34205d 0,transparent 60%),var(--bg); }
+.games-screen .selection-title { position:absolute; top:72px; left:0; right:0; padding:10px 24px; }
+.games-grid { position:absolute; top:150px; left:24px; right:24px; bottom:60px; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; align-content:center; }
+.game-card { display:flex; flex-direction:column; border:1px solid #5a3d78; background:linear-gradient(150deg,#1e1538,#150d29 70%); padding:0; overflow:hidden; text-align:left; min-height:220px; color:inherit; }
+.game-card.current, .game-card:hover, .game-card:focus-visible { border-color:var(--orange); }
+.game-card.current { box-shadow:0 0 0 1px var(--orange) inset; }
+.game-art { flex:1; min-height:140px; background:#0b0718 center/cover no-repeat; }
+.game-copy { padding:10px 12px; display:flex; flex-direction:column; gap:3px; }
+.game-copy strong { font-family:var(--display); font-size:22px; letter-spacing:1px; color:var(--orange); }
+.game-copy span { font-size:10px; font-weight:800; letter-spacing:1.6px; color:var(--teal); }
+.game-copy small { font-size:9px; font-weight:800; letter-spacing:1px; color:var(--muted); }
+.games-hint { position:absolute; bottom:18px; left:0; right:0; margin:0; text-align:center; font-size:8px; font-weight:800; letter-spacing:2px; color:#8c7ca8; }
+@media (max-width:720px) { .games-grid { top:120px; left:12px; right:12px; bottom:44px; gap:10px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); } .game-card { min-height:150px; } .game-art { min-height:80px; } .games-screen .selection-title { top:55px; padding:6px 12px; } }

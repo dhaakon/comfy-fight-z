@@ -147,6 +147,19 @@ node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/my-duo
 
 It covers two fighters in The Yard: all game art, the startup image, the menu video, two fight intros and 61 audio clips. That is 36 images, 6 clips and 61 audio clips, about **$7.68** (a run with six-second intros on November 4, 2026 billed $5.79). Run its `workflow.api.json` with the sequential runner described above, then export `bundle/` in step 4.
 
+**Make a whole new game from a cast file.** Describe a cast once (`comfyui/casts/blue-wave-2026.json` is the reference: six invented hometown champions and one arena) and let the pipeline do the rest. Each step is one command, only `run` spends credits, and it refuses without an explicit approval at or above the prepared estimate:
+
+```sh
+node build/tools/new-game.cjs prepare --cast comfyui/casts/blue-wave-2026.json --out output/test-runs/blue-wave   # free: workflow + estimate (about $15.6 with videos and audio)
+node build/tools/new-game.cjs run     --run output/test-runs/blue-wave --approve-usd 16                               # paid: one node at a time
+node build/tools/new-game.cjs review  --run output/test-runs/blue-wave                                                # contact sheets + flags to read
+node build/tools/new-game.cjs reroll  --run output/test-runs/blue-wave --node "Keystone | sheet C" --approve-usd 0.08 # redraw one node, cache keeps the rest
+node build/tools/new-game.cjs export  --run output/test-runs/blue-wave                                                # strict export with gameplay checks
+node build/tools/new-game.cjs install --run output/test-runs/blue-wave --slot blue-wave-2026                          # served at /blue-wave-2026/ by npm start
+```
+
+[`comfyui/docs/new-game-runbook.md`](comfyui/docs/new-game-runbook.md) spells out every step, the cast-file fields and the cost formula so an agent can follow it unattended. Every slot installed this way appears under **GAME SELECT** on every title screen `npm start` serves.
+
 The completed folder contains:
 
 ```text
@@ -277,6 +290,8 @@ npm start
 Open the printed URL, normally `http://127.0.0.1:8080/`. No `npm install`, ComfyUI or cloud account is needed to play. Stop the earlier preview server with Ctrl+C if it already uses that port.
 
 Choose **ARCADE**, pick your fighter, then **START ARCADE**. Combat waits for the introductions to finish.
+
+**Game select.** `npm start` serves the main game at `/` and every game installed with `--slot <id>` at `/<id>/`; each title screen then shows a GAME SELECT button that lists all of them with their generated key art (the server's `games.json`). A single exported game hides the button. Exports can do the same with `GAME_MOUNTS`.
 
 ### Game modes
 

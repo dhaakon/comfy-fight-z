@@ -51,13 +51,18 @@ function verifiedExport(game) {
   return { source, manifest, sources, poseCount };
 }
 
-function installGame({ game, root = ROOT } = {}) {
+const SLOT = /^[a-z0-9][a-z0-9-]{1,31}$/;
+
+// Without a slot the export becomes the main preview (output/game); with one it is served beside it at /<slot>/.
+function installGame({ game, root = ROOT, slot = null } = {}) {
   if (!game || !path.isAbsolute(game)) throw new Error('Supply --game <absolute verified export/game directory>.');
+  if (slot !== null && !SLOT.test(slot)) throw new Error('Slot ids use 2-32 lowercase letters, digits or dashes.');
   root = fs.realpathSync(root);
-  const verified = verifiedExport(game), destination = path.join(root, 'output/game');
+  const verified = verifiedExport(game), destination = slot ? path.join(root, 'output/games', slot) : path.join(root, 'output/game');
   const diagnostics = path.join(root, 'output/diagnostics'), builder = path.join(root, 'build/public/builder');
+  if (slot) fs.mkdirSync(path.dirname(destination), { recursive: true });
   for (const folder of [destination, diagnostics, builder]) if (directoryTarget(folder) !== folder) throw new Error(`Project path is redirected: ${folder}`);
-  if (verified.source === destination || isInside(destination, verified.source) || isInside(verified.source, destination)) throw new Error('Export must be separate from output/game.');
+  if (verified.source === destination || isInside(destination, verified.source) || isInside(verified.source, destination)) throw new Error(`Export must be separate from ${slot ? `output/games/${slot}` : 'output/game'}.`);
   plainTree(builder);
   fs.mkdirSync(diagnostics, { recursive: true });
   const stage = fs.mkdtempSync(path.join(diagnostics, 'game-install-'));
@@ -65,11 +70,11 @@ function installGame({ game, root = ROOT } = {}) {
   fs.cpSync(verified.source, stagedGame, { recursive: true });
   fs.cpSync(builder, path.join(stagedGame, 'builder'), { recursive: true });
   const receipt = {
-    version: 1, source: verified.source, title: verified.manifest.title,
+    version: 1, source: verified.source, title: verified.manifest.title, slot,
     fighters: verified.manifest.fighters.length, stages: verified.manifest.stages.length, poses: verified.poseCount,
     runtimeMedia: new Set(verified.sources).size, builderIncluded: true,
     installedAt: new Date().toISOString(), previousGame: fs.existsSync(destination) ? backup : null,
-    note: 'npm start serves this installed game. npm run build restores the canonical build/public preview.'
+    note: slot ? `npm start serves this game at /${slot}/ beside the main game; every title screen lists it under GAME SELECT.` : 'npm start serves this installed game. npm run build restores the canonical build/public preview.'
   };
   fs.writeFileSync(path.join(stagedGame, 'installation.json'), JSON.stringify(receipt, null, 2) + '\n');
   if (fs.existsSync(destination)) {
@@ -79,19 +84,25 @@ function installGame({ game, root = ROOT } = {}) {
   try { fs.renameSync(stagedGame, destination); }
   catch (error) { if (fs.existsSync(backup)) fs.renameSync(backup, destination); throw error; }
   fs.writeFileSync(path.join(stage, 'installation.json'), JSON.stringify(receipt, null, 2) + '\n');
-  console.log(`Installed ${receipt.title}: ${receipt.fighters} fighters, ${receipt.stages} arena(s), ${receipt.poses} generated poses into output/game/.`);
+  console.log(`Installed ${receipt.title}: ${receipt.fighters} fighters, ${receipt.stages} arena(s), ${receipt.poses} generated poses into ${slot ? `output/games/${slot}/` : 'output/game/'}.`);
   console.log(receipt.note);
-  if (receipt.previousGame) console.log(`Previous preview retained at ${receipt.previousGame}`);
+  if (receipt.previousGame) console.log(`Previous installation retained at ${receipt.previousGame}`);
   return receipt;
 }
 
+const USAGE = 'Usage: npm run install:game -- --game <absolute verified export/game directory> [--slot <id>]';
 if (require.main === module) {
   const args = process.argv.slice(2);
-  if (args.length === 1 && args[0] === '--help') console.log('Usage: npm run install:game -- --game <absolute verified export/game directory>\nRequires a successful build:bundle export. Preserves the builder route and backs up output/game; canonical media is unchanged.');
+  if (args.length === 1 && args[0] === '--help') console.log(`${USAGE}\nRequires a successful build:bundle export. Preserves the builder route and backs up the previous installation; canonical media is unchanged.\n--slot <id> installs beside the main game (output/games/<id>, served at /<id>/ by npm start).`);
   else {
     try {
-      if (args.length !== 2 || args[0] !== '--game') throw new Error('Usage: npm run install:game -- --game <absolute verified export/game directory>');
-      installGame({ game: args[1] });
+      const options = {};
+      for (let i = 0; i < args.length; i += 2) {
+        if (!['--game', '--slot'].includes(args[i]) || !args[i + 1] || options[args[i].slice(2)] !== undefined) throw new Error(USAGE);
+        options[args[i].slice(2)] = args[i + 1];
+      }
+      if (!options.game) throw new Error(USAGE);
+      installGame({ game: options.game, slot: options.slot ?? null });
     } catch (error) { console.error(error.message); process.exitCode = 1; }
   }
 }

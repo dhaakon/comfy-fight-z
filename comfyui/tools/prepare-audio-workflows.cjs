@@ -191,4 +191,4 @@ function attachAudioGraph(workflow, project, audio, { seed }) {
   return audioRoot;
 }
 
-module.exports = { attachAudioGraph, makeAudioJobs, makeAudioGraph, audioRecord, prepareAudio };
+module.exports = { attachAudioGraph, makeAudioJobs, makeAudioGraph, audioRecord, prepareAudio, INTRO_VOICES };

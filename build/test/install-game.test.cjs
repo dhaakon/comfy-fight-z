@@ -81,3 +81,15 @@ test('install refuses redirected destinations and cannot replace its own source'
   assert.throws(() => installGame({ game: sourceRuntime, root: item.root }), /separate from output/);
   assert.equal(fs.readFileSync(path.join(saved, 'index.html'), 'utf8'), 'previous preview');
 });
+
+test('a slot installs the export beside the main game for the game select instead of replacing the preview', t => {
+  const item = fixture(t), receipt = installGame({ game: item.source, root: item.root, slot: 'blue-wave-2026' });
+  assert.equal(receipt.slot, 'blue-wave-2026'); assert.match(receipt.note, /\/blue-wave-2026\//);
+  assert.equal(fs.readFileSync(path.join(item.root, 'output/games/blue-wave-2026/index.html'), 'utf8'), 'exported index.html');
+  assert.equal(fs.readFileSync(path.join(item.root, 'output/games/blue-wave-2026/builder/index.html'), 'utf8'), 'current builder');
+  assert.equal(fs.readFileSync(path.join(item.root, 'output/game/index.html'), 'utf8'), 'previous preview', 'the main preview is untouched');
+  assert.equal(receipt.previousGame, null);
+  const again = installGame({ game: item.source, root: item.root, slot: 'blue-wave-2026' });
+  assert.ok(again.previousGame, 'reinstalling a slot keeps the previous copy');
+  assert.throws(() => installGame({ game: item.source, root: item.root, slot: 'Bad Slot' }), /Slot ids/);
+});

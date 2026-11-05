@@ -35,6 +35,8 @@
     "bundle:server": "node build/tools/bundle-server.cjs",
     "test:arcade": "npm run build && node build/test/arcade-browser.cjs",
     "workflows:expansion": "node comfyui/tools/prepare-arcade-expansion.cjs",
-    "test:expansion": "node build/test/expansion-pipeline.cjs"
+    "test:expansion": "node build/test/expansion-pipeline.cjs",
+    "new-game": "node build/tools/new-game.cjs",
+    "test:games": "npm run build && node build/test/games-select-browser.cjs"
   }
 }

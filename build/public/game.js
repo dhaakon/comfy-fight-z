@@ -48,7 +48,7 @@
     ...debugHooks,
     snapshot: () => state ? JSON.parse(JSON.stringify(state)) : null,
     renderer: () => arena.kind, pixel: (x, y) => arena.pixel(x, y), rendererStats: () => arena.stats(), reducedMotion: () => reducedMotion.matches,
-    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', titleMedia: $('title-screen').classList.contains('title-video-ready') ? 'video' : 'image', introSlot: introScene ? 0 : null, introMedia: introMedia(), introHalves: introScene?.halves.map(half => half.media) || null, controls: 'arrows-asdf', mode, overlay: overlay?.type || null, arcade: arcade ? { index: arcade.index, ladder: arcade.ladder.map(i => manifest.fighters[i].id), score: arcade.score, continues: arcade.continues } : null, gamepads: gamepads().length, humanPlayers: network?.active && !state?.cpu || mode === 'versus' && state && !state.cpu ? 2 : 1, stageId: manifest.stages[stageIndex]?.id, network: network?.active ? { role: networkRole, side: networkSide, matchId: networkMatchId, phase: network.room.phase, connected: network.client.ready, paused: !!network.room.paused } : null })
+    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : !$('games-screen').hidden ? 'games' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', games: games.map(entry => entry.basePath), titleMedia: $('title-screen').classList.contains('title-video-ready') ? 'video' : 'image', introSlot: introScene ? 0 : null, introMedia: introMedia(), introHalves: introScene?.halves.map(half => half.media) || null, controls: 'arrows-asdf', mode, overlay: overlay?.type || null, arcade: arcade ? { index: arcade.index, ladder: arcade.ladder.map(i => manifest.fighters[i].id), score: arcade.score, continues: arcade.continues } : null, gamepads: gamepads().length, humanPlayers: network?.active && !state?.cpu || mode === 'versus' && state && !state.cpu ? 2 : 1, stageId: manifest.stages[stageIndex]?.id, network: network?.active ? { role: networkRole, side: networkSide, matchId: networkMatchId, phase: network.room.phase, connected: network.client.ready, paused: !!network.room.paused } : null })
   });
   const controls = [
     { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyF: 'special', KeyG: 'taunt' }, {}
@@ -228,10 +228,41 @@
   }
   function showTitle() {
     endDemo(false); closeOverlay(); arcade = null;
-    reset(); $('selection-screen').hidden = true; $('title-screen').hidden = false;
+    reset(); $('selection-screen').hidden = true; $('games-screen').hidden = true; $('title-screen').hidden = false;
     setScene('title'); sceneMusic('title'); idleTime = 0; refreshHiScore();
     $('controls-panel').hidden = true; $('touch-panel').hidden = true;
     $('title-start').focus();
+  }
+  // Game select: the other games the server mounts beside this one (npm start serves every output/games/<id>).
+  // Each is a complete generated bundle on the same engine; static exports have no listing and hide the screen.
+  let games = [];
+  async function loadGames() {
+    try {
+      const response = await fetch('games.json', { cache: 'no-store' });
+      const listing = response.ok ? await response.json() : null;
+      games = Array.isArray(listing?.games) ? listing.games.filter(entry => typeof entry.basePath === 'string' && /^\/(?:[A-Za-z0-9_-]+\/)*$/.test(entry.basePath) && typeof entry.title === 'string') : [];
+    } catch (_) { games = []; }
+    $('title-games').hidden = games.length < 2;
+  }
+  function showGames() {
+    if (games.length < 2) return;
+    endDemo(false); closeOverlay(); reset();
+    $('title-screen').hidden = true; $('selection-screen').hidden = true; $('games-screen').hidden = false;
+    setScene('games'); sceneMusic('select'); playSound('sfx_menu_select', .5);
+    const grid = $('games-grid'); grid.replaceChildren(); $('games-count').textContent = games.length;
+    const numberWord = count => ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT'][count] || String(count);
+    games.forEach(entry => {
+      const card = document.createElement('button'); card.type = 'button'; card.className = 'game-card' + (entry.current ? ' current' : '');
+      const key = [entry.art?.title, entry.art?.ensemble].find(src => typeof src === 'string' && /^assets\/ui\/[A-Za-z0-9_-]+\.(?:png|webp|jpg)$/.test(src));
+      const plate = document.createElement('div'); plate.className = 'game-art'; if (key) plate.style.backgroundImage = `url("${entry.basePath}${key}")`;
+      const copy = document.createElement('div'); copy.className = 'game-copy';
+      const title = document.createElement('strong'); title.textContent = entry.title; const subtitle = document.createElement('span'); subtitle.textContent = entry.subtitle || '';
+      const meta = document.createElement('small'); meta.textContent = `${numberWord(entry.fighters)} ${entry.fighters === 1 ? 'FIGHTER' : 'FIGHTERS'} · ${numberWord(entry.stages)} ${entry.stages === 1 ? 'ARENA' : 'ARENAS'}${entry.current ? ' · NOW PLAYING' : ''}`;
+      copy.append(title, subtitle, meta); card.append(plate, copy);
+      card.addEventListener('click', () => { playSound('sfx_menu_select', .5); if (entry.current) showTitle(); else location.assign(entry.basePath); });
+      grid.append(card);
+    });
+    (grid.querySelector('.current') || grid.querySelector('button'))?.focus();
   }
   function refreshHiScore() {
     const best = storage.get(SCORES_KEY, [])[0];
@@ -1034,6 +1065,7 @@
     refreshCards(); renderGallery(); setMusic('menu_music');
     $('title-start').disabled = false; $('title-versus').disabled = false; $('title-training').disabled = false; refreshHiScore(); $('title-load-status').textContent = manifest.generationPending ? 'FICTIONAL ART AWAITING GENERATION · PLAY THE PROTOTYPE' : 'PRESS ENTER OR TAP TO START';
     $('opening-replay').hidden = !assetSource(manifest.openingVideo);
+    loadGames();
     $('opening-skip').addEventListener('click', finishOpening); $('opening-continue').addEventListener('click', finishOpening);
     $('opening-play').addEventListener('click', () => playOpening(true)); $('opening-replay').addEventListener('click', () => playOpening(audioEnabled));
     $('opening-video').addEventListener('ended', finishOpening); $('opening-video').addEventListener('error', finishOpening);
@@ -1063,6 +1095,7 @@
     });
     document.addEventListener('fullscreenchange', () => { $('fullscreen-button').textContent = document.fullscreenElement ? '⛶ EXIT FULLSCREEN' : '⛶ FULLSCREEN'; $('fullscreen-button').setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen'); });
     $('title-start').addEventListener('click', () => enterSaga('arcade')); $('title-return').addEventListener('click', showTitle);
+    $('title-games').addEventListener('click', showGames); $('games-return').addEventListener('click', showTitle);
     $('title-versus').addEventListener('click', () => enterSaga('versus')); $('title-training').addEventListener('click', () => enterSaga('training'));
     $('stage-prev').addEventListener('click', () => cycleStage(-1)); $('stage-next').addEventListener('click', () => cycleStage(1));
     $('pause-moves').addEventListener('click', showMoveList);
@@ -1131,6 +1164,15 @@
       }
       if (openingActive) {
         if (!event.repeat && (event.code === 'Escape' || event.code === 'Space' && (!interactiveTarget || event.target.closest('#opening-skip')))) { event.preventDefault(); finishOpening(); }
+        return;
+      }
+      if (selectedTab === 'arena' && !$('games-screen').hidden) {
+        if (!event.repeat && event.code === 'Escape') { event.preventDefault(); showTitle(); return; }
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
+          event.preventDefault();
+          const cards = [...$('games-grid').querySelectorAll('button')], at = Math.max(0, cards.indexOf(document.activeElement));
+          cards[(at + (['ArrowLeft', 'ArrowUp'].includes(event.code) ? -1 : 1) + cards.length) % cards.length]?.focus(); playSound('sfx_menu_move', .4);
+        }
         return;
       }
       if (selectedTab === 'arena' && !$('selection-screen').hidden) {
