@@ -31,7 +31,7 @@ Descriptions control artwork and introductions. Implement different combat mecha
 | Upload reference | 1 | 77 | 85 | $4.59 |
 | Classic set: Invent, `include_arcade_art` off, no boss | 1 | 56 | 56 | $3.20 |
 | Arcade expansion of an accepted classic bundle | 2 new | 33 | 33 | $2.09 |
-| Startup image and videos in the main template (seven fighters) | — | 8 + 9 LTX clips (44 s) | 1 + `video.json` | $6.07 |
+| Startup image and videos in the main template (seven fighters) | — | 15 + 16 LTX clips (86 s) | 1 + `video.json` | $11.81 |
 
 These describe complete uncached runs at recorded November 3, 2026 rates. They are estimates, not billing caps. Disabled environments make no calls. Upload mode preserves supplied references without regenerating them; Invent mode creates its source designs internally. The first five rows are game art only; the main template adds the startup media row. Audio, the separate opening film and repairs cost extra.
 
@@ -41,7 +41,7 @@ The full bundle contains 77 character records (11 per fighter: source, identity,
 
 ## Try a complete two-fighter game first
 
-`node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/my-duo [--fighters griddle,rivet]` writes one workflow for two fighters in The Yard. It includes every game image, the startup ensemble, the menu video, both fight intros and the full 61-clip audio set. That is 33 images, 4 clips (24 seconds) and 61 audio clips, estimated at $5.99 (a run with six-second intros on November 4, 2026 billed $5.79). Sprite sheets are visible nodes, so the sequential runner below paces every paid call. Preparation submits nothing; review `plan.json`, approve the spend, then run `workflow.api.json` with `comfyui/tools/run-sequential.cjs`. The finished `bundle/` holds `assets.json`, `audio.json` and `video.json` for `npm run build:bundle`.
+`node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/my-duo [--fighters griddle,rivet]` writes one workflow for two fighters in The Yard. It includes every game image, the startup ensemble, the menu video, both fight intros and the full 61-clip audio set. That is 35 images, 6 clips (36 seconds) and 61 audio clips, estimated at $7.63 (a run with six-second intros on November 4, 2026 billed $5.79). Sprite sheets are visible nodes, so the sequential runner below paces every paid call. Preparation submits nothing; review `plan.json`, approve the spend, then run `workflow.api.json` with `comfyui/tools/run-sequential.cjs`. The finished `bundle/` holds `assets.json`, `audio.json` and `video.json` for `npm run build:bundle`.
 
 ## Try a smaller generation first
 

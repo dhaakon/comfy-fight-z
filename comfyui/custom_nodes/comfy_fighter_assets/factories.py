@@ -323,8 +323,10 @@ class CFZCharacterFactory(io.ComfyNode):
             assets.append(_artwork(graph, project, character, identity.out(0), kind, index))
         bundles = []
         if include_sprite_sheets:
+            first = None
             for sheet in (ALL_SHEETS if include_arcade_art else SHEETS):
-                bundles.append(graph.node("CFZSpriteSheet", project=project, character=character, reference=identity.out(0), sheet=sheet).out(0))
+                node = graph.node("CFZSpriteSheet", project=project, character=character, reference=identity.out(0), sheet=sheet, **({"reference_sheet": first.out(1)} if first is not None else {}))
+                bundles.append(node.out(0)); first = first or node
         bundle = _collect(graph, project, members, assets, bundles)
         return io.NodeOutput(bundle, identity.out(0), character, expand=graph.finalize())
 
@@ -334,11 +336,12 @@ class CFZSpriteSheet(io.ComfyNode):
     def define_schema(cls):
         return io.Schema(node_id="CFZSpriteSheet", display_name="CFZ Sprite Sheet", category="Comfy Fighter Z",
             description="PAID cloud generation: exactly one 2K 3x3 sheet for nine named poses, saved with an exact mapped pose layout. sheet, sheetB and sheetC hold the 27 required poses; optional sheetD and sheetE add in-betweens. Native cloud API; no local checkpoint.",
-            inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True), io.Combo.Input("sheet", options=list(ALL_SHEETS), default="sheet")],
+            inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True), io.Combo.Input("sheet", options=list(ALL_SHEETS), default="sheet"),
+                    io.Image.Input("reference_sheet", raw_link=True, optional=True, tooltip="An accepted sheet of the same character; new cells match its body scale, line weight and right-facing direction.")],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="sheet_image")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, character, reference, sheet):
+    def execute(cls, project, character, reference, sheet, reference_sheet=None):
         _project(project); character = _checked_character(character)
         if sheet not in ALL_SHEETS:
             raise ValueError("Sheet must be sheet, sheetB, sheetC, sheetD or sheetE")
@@ -357,8 +360,9 @@ class CFZSpriteSheet(io.ComfyNode):
                   "Every hand, shoe, hair tip, accessory and attached energy accent stays inside the central 76% of its cell, with at least 12% clear green on all four sides. The bottom row includes both feet and green below. "
                   "Keep canvas bands from 30% to 37% and 63% to 70% entirely empty green, with matching vertical green corridors between columns. No limbs cross cell boundaries. "
                   "Keep common body scale and consistent identity across all nine cells. Sweep kicks point right, launcher strikes upward-right, stance2 is an upright guard, crouch a low guard, down is a complete fallen body. "
-                  "Keep special energy compact and attached to the palms; the game supplies the traveling projectile. These are named key poses, not a nine-frame animation loop. No duplicate bodies, detached props, labels or visible cell borders. " + KEY)
-        generated = _cloud(graph, project, prompt, reference, "1:1", "2K", 10 + list(ALL_SHEETS).index(sheet))
+                  "Keep special energy compact and attached to the palms; the game supplies the traveling projectile. These are named key poses, not a nine-frame animation loop. No duplicate bodies, detached props, labels or visible cell borders. "
+                  + ("The second reference image is an accepted sheet of this character: match its body scale, line weight, colors and RIGHT-facing direction exactly, with the same cell padding. " if reference_sheet is not None else "") + KEY)
+        generated = _cloud(graph, project, prompt, [reference, reference_sheet] if reference_sheet is not None else reference, "1:1", "2K", 10 + list(ALL_SHEETS).index(sheet))
         asset = _save(graph, project, generated.out(0), {"id": f"{character['id']}_{sheet}", "kind": "sprites", "fighter": character["id"], "sheet": sheet, "poses": poses, "key": True}, members)
         return io.NodeOutput(_collect(graph, project, members, [asset]), generated.out(0), expand=graph.finalize())
 
@@ -474,8 +478,8 @@ ANIMATION_STYLE = ("Hand-drawn 2D cel animation in the style of a late-1990s sho
                    "flat cel shading, high-energy action with radial speed lines, impact frames and glowing aura effects.")
 
 
-def _animate(graph, prompt, first_frame, duration, seed, last_frame=None):
-    inputs = {"image": first_frame, "model": VIDEO_MODEL, "model.duration": duration, "model.resolution": "1280x720",
+def _animate(graph, prompt, first_frame, duration, seed, last_frame=None, resolution="1280x720"):
+    inputs = {"image": first_frame, "model": VIDEO_MODEL, "model.duration": duration, "model.resolution": resolution,
               "model.fps": "24", "model.generate_audio": False, "prompt": prompt, "seed": seed % 4294967296}
     if last_frame is not None:
         inputs["last_frame"] = last_frame
@@ -486,10 +490,10 @@ def _video_record(value):
     identity = _slug(value.get("id"), "Video id"); record = {"id": identity}
     if "fighter" in value:
         record["fighter"] = _slug(value["fighter"], "Video fighter")
-        if identity != f"intro-{record['fighter']}":
-            raise ValueError("Fighter introduction videos use the ID intro-<fighter id>")
+        if identity not in {f"intro-{record['fighter']}", f"idle-{record['fighter']}"}:
+            raise ValueError("Fighter videos use the ID intro-<fighter id> (introduction) or idle-<fighter id> (select-screen idle loop)")
     elif identity not in {"title", "select", "opening"}:
-        raise ValueError("A video is the title loop, the select loop, the opening or intro-<fighter id>")
+        raise ValueError("A video is the title loop, the select loop, the opening, intro-<fighter id> or idle-<fighter id>")
     return record
 
 
@@ -565,6 +569,31 @@ class CFZSelectVideo(io.ComfyNode):
                   "and the camera drifts slowly with gentle parallax before returning to the opening framing. No people, no new objects, no text or logos.")
         video = _animate(graph, prompt, select_image, duration, project["seed"] + 95, last_frame=select_image)
         return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": "select"}), expand=graph.finalize())
+
+
+class CFZSelectIdleVideo(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZSelectIdleVideo", display_name="CFZ Select Idle Video", category="Comfy Fighter Z",
+            description="PAID cloud generation: one 1K portrait keyframe of the fighter in a ready stance, then one silent portrait 720p LTX loop (first and last frame identical) that the character-select cards play.",
+            inputs=[Project.Input("project"), Character.Input("character"), io.Image.Input("reference", raw_link=True),
+                    io.Combo.Input("duration", options=["4", "6", "8"], default="6")],
+            outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, character, reference, duration="6"):
+        _project(project); character = _checked_character(character)
+        if reference is None:
+            raise ValueError("Connect the fighter's identity image")
+        graph = GraphBuilder()
+        keyframe = _cloud(graph, project, _description(project, character) + "\nOne portrait 9:16 full-body picture of this character alone, standing in a relaxed ready fighting stance facing RIGHT, "
+                          "centered with clear space above the head and below the shoes, on a dark neutral tournament-floor backdrop lit by one soft spotlight. "
+                          "Same face, hair, body, outfit, accessories and colors as the reference. No other people, no text, logos or interface.", [reference], "9:16", "1K", offset=75)
+        prompt = (ANIMATION_STYLE + " Seamless looping character-select idle animation. Use the supplied image as the exact first and last frame. "
+                  f"{character['name']} holds the ready stance in place: slow breathing, weight shifting from foot to foot, fists flexing, a small head turn, "
+                  "hair and clothing stirring in a light breeze, then returns exactly to the opening pose. Fixed camera, no cuts, no other people, no text or logos, no speech.")
+        video = _animate(graph, prompt, keyframe.out(0), duration, project["seed"] + 85, last_frame=keyframe.out(0), resolution="720x1280")
+        return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": f"idle-{character['id']}", "fighter": character["id"]}), expand=graph.finalize())
 
 
 class CFZIntroVideo(io.ComfyNode):
@@ -651,7 +680,7 @@ class CFZExportVideos(io.ComfyNode):
 
 
 def _export_videos(directory, items):
-    manifest = {"schema": "comfy-fighter-video/v1", "root": "."}; intros = []; seen = set()
+    manifest = {"schema": "comfy-fighter-video/v1", "root": "."}; intros = []; idles = []; seen = set()
     for item in items:
         if not isinstance(item, dict) or item.get("_root") != str(directory):
             raise ValueError("Every video must be saved under the same CFZ Project Settings root")
@@ -663,11 +692,13 @@ def _export_videos(directory, items):
             raise ValueError(f"Duplicate video: {record['id']}")
         seen.add(record["id"])
         if "fighter" in record:
-            intros.append(record)
+            (idles if record["id"].startswith("idle-") else intros).append(record)
         else:
             manifest[f"{record['id']}Video"] = record
     if intros:
         manifest["fighterIntros"] = intros
+    if idles:
+        manifest["selectIdles"] = idles
     destination = _inside(directory, "video.json")
     _atomic_write(destination, (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
     return str(destination), ui.PreviewText(str(destination))
@@ -833,4 +864,4 @@ class CFZExportAssetPatch(io.ComfyNode):
 
 
 FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZCharacterArt, CFZEnvironmentFactory,
-                 CFZSharedArtFactory, CFZTitleArt, CFZTitleVideo, CFZSelectVideo, CFZIntroVideo, CFZSaveVideo, CFZExportVideos, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]
+                 CFZSharedArtFactory, CFZTitleArt, CFZTitleVideo, CFZSelectVideo, CFZSelectIdleVideo, CFZIntroVideo, CFZSaveVideo, CFZExportVideos, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]

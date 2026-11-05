@@ -26,10 +26,11 @@ function factoryCounts(config, allEnvironments = false) {
 
 // Startup art and videos: the cast ensemble (2K), one 16:9 intro keyframe per fighter (1K) and silent
 // 720p LTX-2.5 Fast clips (an eight-second menu loop and four-second fight introductions).
-const LTX_720P_PER_SECOND = 0.1287, MENU_SECONDS = 8, SELECT_SECONDS = 8, INTRO_SECONDS = 4;
+const LTX_720P_PER_SECOND = 0.1287, MENU_SECONDS = 8, SELECT_SECONDS = 8, INTRO_SECONDS = 4, IDLE_SECONDS = 6;
 function mediaCounts(config) {
-  const fighters = config.fighters.length, oneK = fighters, twoK = 1, videoSeconds = MENU_SECONDS + SELECT_SECONDS + fighters * INTRO_SECONDS;
-  return { paidImages: oneK + twoK, oneK, twoK, clips: 2 + fighters, videoSeconds, mappedAssets: 1,
+  // Per fighter: an intro keyframe and clip plus a portrait idle keyframe and loop for the select screen.
+  const fighters = config.fighters.length, oneK = fighters * 2, twoK = 1, videoSeconds = MENU_SECONDS + SELECT_SECONDS + fighters * (INTRO_SECONDS + IDLE_SECONDS);
+  return { paidImages: oneK + twoK, oneK, twoK, clips: 2 + fighters * 2, videoSeconds, mappedAssets: 1,
     estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072 + videoSeconds * LTX_720P_PER_SECOND).toFixed(6)) };
 }
 
@@ -136,11 +137,16 @@ function attachMedia(b, project, characters, fighters, stage, [x, y], shared = n
   });
   const select = shared ? b.node('CFZSelectVideo', 'Select video | looping roster backdrop', { duration: String(SELECT_SECONDS) }, [x, y + 680], [440, 170]) : null;
   if (select) { b.connect(project, 0, select, 'project'); b.connect(shared, 1, select, 'select_image'); }
-  const clips = [menu, ...(select ? [select] : []), ...intros];
+  const idles = characters.map((character, i) => {
+    const idle = b.node('CFZSelectIdleVideo', `Select idle | ${fighters[i].name}`, { duration: String(IDLE_SECONDS) }, [x + 960, y + i * 230], [420, 200]);
+    b.connect(project, 0, idle, 'project'); b.connect(character, 2, idle, 'character'); b.connect(character, 1, idle, 'reference');
+    return idle;
+  });
+  const clips = [menu, ...(select ? [select] : []), ...intros, ...idles];
   const exporter = b.node('CFZExportVideos', 'Export video.json', {}, [x, y + 880], [440, 230], clips.length);
   b.connect(project, 0, exporter, 'project');
   clips.forEach((video, i) => b.connect(video, 0, exporter, `videos.video_${i}`));
-  b.group('Startup image + menu and fight-intro videos', [x - 25, y - 75, 960, Math.max(1050, characters.length * 230 + 120)], '#6f4f7f');
+  b.group('Startup image + menu, select and fight videos', [x - 25, y - 75, 1430, Math.max(1050, characters.length * 230 + 120)], '#6f4f7f');
   return title;
 }
 

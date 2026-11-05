@@ -151,6 +151,14 @@ export function validateVideoManifest(input, game = null) {
     if (game && !game.fighters.some(f => f.id === video.fighter)) throw new Error(`Unknown intro fighter: ${video.fighter}`);
     fighters.add(video.fighter.toLowerCase()); check(video, 'Fighter introduction', 30);
   }
+  // Select-screen idle loops: one portrait clip per fighter, id idle-<fighter>.
+  const idles = manifest.selectIdles ?? [], idleFighters = new Set();
+  if (!Array.isArray(idles) || idles.length > 64) throw new Error('Invalid select idle list.');
+  for (const video of idles) {
+    if (!ID.test(video?.fighter || '') || video.id !== `idle-${video.fighter}` || idleFighters.has(video.fighter.toLowerCase())) throw new Error('Invalid or duplicate select idle.');
+    if (game && !game.fighters.some(f => f.id === video.fighter)) throw new Error(`Unknown idle fighter: ${video.fighter}`);
+    idleFighters.add(video.fighter.toLowerCase()); check(video, 'Select idle', 30);
+  }
   return manifest;
 }
 
@@ -296,7 +304,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   const allow = customization.allowPlaceholders === true, missing = jobs.filter(job => !files.has(job.src)), warnings = [], output = new Map(), built = [];
   if (missing.length && !allow) throw new Error(`Missing ${missing.length} source image(s): ${missing.map(j => j.src).join(', ')}. Select the full asset root or explicitly allow placeholders.`);
   if (missing.length) warnings.push(`Missing artwork: ${missing.map(j => j.id).join(', ')}. The game uses labeled placeholders.`);
-  const videoJobs = [...(videoSource?.openingVideo ? [videoSource.openingVideo] : []), ...(videoSource?.titleVideo ? [videoSource.titleVideo] : []), ...(videoSource?.selectVideo ? [videoSource.selectVideo] : []), ...(videoSource?.fighterIntros || []).filter(video => selectedFighters.has(video.fighter))];
+  const videoJobs = [...(videoSource?.openingVideo ? [videoSource.openingVideo] : []), ...(videoSource?.titleVideo ? [videoSource.titleVideo] : []), ...(videoSource?.selectVideo ? [videoSource.selectVideo] : []), ...(videoSource?.fighterIntros || []).filter(video => selectedFighters.has(video.fighter)), ...(videoSource?.selectIdles || []).filter(video => selectedFighters.has(video.fighter))];
   for (const video of videoJobs) if (!files.has(video.src)) throw new Error(`Missing video file: ${video.src}. Select the complete asset root.`);
   const unmapped = [];
   for (const fighter of runtime.fighters) {
@@ -322,15 +330,15 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
     const digest = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
     const actual = [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
     if (actual !== video.sha256.toLowerCase()) throw new Error(`Video SHA-256 mismatch: ${video.id}`);
-    const src = video.fighter ? `assets/video/intro-${video.fighter}.mp4` : `assets/video/${video.id}.mp4`;
-    if (video.fighter) selectedFighters.get(video.fighter).introVideo = { ...video, src };
+    const src = `assets/video/${video.id}.mp4`;
+    if (video.fighter) selectedFighters.get(video.fighter)[video.id.startsWith('idle-') ? 'selectVideo' : 'introVideo'] = { ...video, src };
     else if (video.id === 'title') runtime.titleVideo = { ...video, src };
     else if (video.id === 'select') runtime.selectVideo = { ...video, src };
     else runtime.openingVideo = { ...video, src };
     output.set(src, blob); output.set(`sources/${video.src}`, blob);
     done++;
   }
-  if (videoSource && videoJobs.length) output.set('sources/video.json', jsonBlob({ ...videoSource, ...(videoSource.fighterIntros ? { fighterIntros: videoJobs.filter(video => video.fighter) } : {}) }));
+  if (videoSource && videoJobs.length) output.set('sources/video.json', jsonBlob({ ...videoSource, ...(videoSource.fighterIntros ? { fighterIntros: videoJobs.filter(video => video.fighter && !video.id.startsWith('idle-')) } : {}), ...(videoSource.selectIdles ? { selectIdles: videoJobs.filter(video => video.id.startsWith('idle-')) } : {}) }));
   for (const job of jobs) {
     onProgress({ done, total, message: `Processing ${job.id}` });
     const blob = files.get(job.src); let image;
@@ -424,7 +432,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   for (const file of ARCADE_ART) { const response = await fetch(new URL(`../${file}`, import.meta.url)); if (!response.ok) throw new Error(`Arcade artwork unavailable: ${file}`); output.set(file, await response.blob()); }
   output.set('assets/manifest.json', jsonBlob(runtime));
   const sourceGame = { ...source.game, title: runtime.title,
-    fighters: runtime.fighters.map(({ poses, portrait, hero, cutin, endingArt, introVideo, ...f }) => ({ ...source.game.fighters.find(item => item.id === f.id), ...f })),
+    fighters: runtime.fighters.map(({ poses, portrait, hero, cutin, endingArt, introVideo, selectVideo, ...f }) => ({ ...source.game.fighters.find(item => item.id === f.id), ...f })),
     stages: runtime.stages.map(({ src, ...s }) => ({ ...source.game.stages.find(item => item.id === s.id), ...s })) };
   if (sourceGame.expectedAssets) sourceGame.expectedAssets = jobs.map(job => job.id);
   output.set('sources/assets.json', jsonBlob({ ...source, root: '.', game: sourceGame, assets: jobs }));

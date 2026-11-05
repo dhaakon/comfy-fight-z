@@ -2,7 +2,7 @@
 
 Paths and command examples in this guide start at the repository root. Generation sources live in `comfyui/`, the game and builder source live in `build/`, and generated runs belong under `output/test-runs/`.
 
-Enable Nodes 2.0 in the ComfyUI editor and open `comfyui/workflows/comfy-hackathon.json`. Its 24 functional nodes are encapsulated custom nodes. Thirteen make the game art: Project Settings, six Character Factories, a Final boss Character Factory, three Environment Factories, Shared Art and Export Game Assets. The other eleven make the startup screen and videos: Title Ensemble Art, Menu Video, Select Video, one Fighter Intro Video per character and Export Videos. They expand into native cloud generation and mapped saves when run; there are no local model checkpoints.
+Enable Nodes 2.0 in the ComfyUI editor and open `comfyui/workflows/comfy-hackathon.json`. Its 31 functional nodes are encapsulated custom nodes. Thirteen make the game art: Project Settings, six Character Factories, a Final boss Character Factory, three Environment Factories, Shared Art and Export Game Assets. The other eighteen make the startup screen and videos: Title Ensemble Art, Menu Video, Select Video, one Fighter Intro Video and one Select Idle Video per character, and Export Videos. They expand into native cloud generation and mapped saves when run; there are no local model checkpoints.
 
 The template describes the arcade cast: six fictional fighters, the fictional final boss Baron Bylaw and three fictional arenas (The Yard, Sunset Rooftop and Midnight Arcade). A complete reviewed example is included in `example/bundle/`; `npm run example` builds it without generation. `comfyui/config/factory.json` contains seven character definitions and three environment definitions, all enabled. Every image selector is empty. The default **Invent fictional reference** mode generates a fresh design from text and never loads, hashes or validates a selected image, even if a stale selection exists in an older editor tab.
 
@@ -28,10 +28,11 @@ Each Character Factory generates a saved source and one accepted anime identity 
 | CFZ Title Ensemble Art | 1 image, 2K | `ui/ensemble`: the cast caught mid-clash in the first arena, from each character's identity output. The title screen uses it for any cast. |
 | CFZ Menu Video | 1 LTX-2.5 Fast clip, 8 s at 720p, silent | `titleVideo`: the ensemble as the first and last frame of a looping flurry-of-blows animation behind the title menu. |
 | CFZ Select Video | 1 LTX-2.5 Fast clip, 8 s at 720p, silent | `selectVideo`: the shared select backdrop as the first and last frame of a looping lights-and-embers animation behind the roster. |
+| CFZ Select Idle Video | 1 image (1K 9:16 keyframe) + 1 clip, 6 s at portrait 720p, silent | `idle-<fighter id>` in `selectIdles`: the fighter holding a ready stance, first and last frame identical. The select cards play it to the end, hold a beat, and restart. |
 | CFZ Fighter Intro Video | 1 image (1K 16:9 keyframe) + 1 clip, 4 s at 720p, silent | `intro-<fighter id>`: an aura burst, dash and signature strike in the shonen battle-anime style. The game plays both fighters' clips side by side before the match. Voices stay separate game audio. |
 | CFZ Export Videos | none | `video.json` beside `assets.json`, with hashed MP4 paths under `raw/`. |
 
-For seven fighters this adds 8 image calls and 44 seconds of video, about $6.07 at November 2026 rates. Clip length is a widget on each video node. If a clip is missing or can't play, the game keeps the still ensemble and the animated sprite entrance.
+For seven fighters this adds 15 image calls and 86 seconds of video, about $11.81 at November 2026 rates. Clip length is a widget on each video node. If a clip is missing or can't play, the game keeps the still ensemble and the animated sprite entrance.
 
 ## Cost and output counts
 

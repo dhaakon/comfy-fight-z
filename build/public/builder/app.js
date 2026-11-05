@@ -55,6 +55,7 @@ function updateReadiness() {
   if (videoManifest?.openingVideo) status.textContent += files.has(videoManifest.openingVideo.src) ? ` Opening film: ${videoManifest.openingVideo.duration} seconds.` : ' Opening film file is missing.';
   if (videoManifest?.titleVideo) status.textContent += files.has(videoManifest.titleVideo.src) ? ` Animated title: ${videoManifest.titleVideo.duration} seconds.` : ' Animated title file is missing.';
   if (videoManifest?.selectVideo) status.textContent += files.has(videoManifest.selectVideo.src) ? ` Select loop: ${videoManifest.selectVideo.duration} seconds.` : ' Select loop file is missing from the chosen folder.';
+  if (videoManifest?.selectIdles?.length) { const ready = videoManifest.selectIdles.filter(video => files.has(video.src)).length; status.textContent += ` Select idle loops: ${ready} of ${videoManifest.selectIdles.length}.`; }
   if (videoManifest?.fighterIntros?.length) { const ready = videoManifest.fighterIntros.filter(video => files.has(video.src)).length; status.textContent += ` Fighter introductions: ${ready}/${videoManifest.fighterIntros.length} files.`; }
 }
 function customization() { return { title: $('game-title').value.trim(), fighters: structuredClone(fighters), stages: structuredClone(stages), allowPlaceholders: $('allow-placeholders').checked }; }
@@ -140,7 +141,7 @@ function mapFolder(folderFiles, manifestFolder = null) {
     const original = (file.webkitRelativePath || file.name).replaceAll('\\', '/');
     const candidates = manifestFolder !== null ? (original.startsWith(manifestFolder) ? [original.slice(manifestFolder.length)] : []) : [original, original.split('/').slice(1).join('/')];
     for (const relative of candidates.filter(Boolean)) {
-      if (![...(manifest?.assets || []), ...(audioManifest?.assets || []), ...(videoManifest?.openingVideo ? [videoManifest.openingVideo] : []), ...(videoManifest?.titleVideo ? [videoManifest.titleVideo] : []), ...(videoManifest?.selectVideo ? [videoManifest.selectVideo] : []), ...(videoManifest?.fighterIntros || [])].some(a => a.src === relative)) continue;
+      if (![...(manifest?.assets || []), ...(audioManifest?.assets || []), ...(videoManifest?.openingVideo ? [videoManifest.openingVideo] : []), ...(videoManifest?.titleVideo ? [videoManifest.titleVideo] : []), ...(videoManifest?.selectVideo ? [videoManifest.selectVideo] : []), ...(videoManifest?.fighterIntros || []), ...(videoManifest?.selectIdles || [])].some(a => a.src === relative)) continue;
       if (map.has(relative) && map.get(relative) !== file) throw new Error(`More than one file maps to ${relative}. Choose the exact asset root folder.`);
       map.set(relative, file);
     }

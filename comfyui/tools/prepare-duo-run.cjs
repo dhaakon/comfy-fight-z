@@ -1,5 +1,5 @@
 // Prepare a complete two-fighter game run without submitting it: every game image, the startup
-// ensemble, a looping menu video, a looping select-screen video, two fight introductions and the full audio set in ONE workflow
+// ensemble, a looping menu video, a looping select-screen video, two fight introductions, two select-screen idle loops and the full audio set in ONE workflow
 // that writes assets.json, audio.json and video.json into <out>/bundle. Sprite sheets are visible
 // nodes so comfyui/tools/run-sequential.cjs can pace the run on a one-job workspace.
 //   node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/<fresh-name> [--fighters griddle,rivet]
@@ -27,9 +27,12 @@ function buildDuo(config, fighterIds, bundleRoot, { seed = 42 } = {}) {
     // Internal sheets off: five visible sheet nodes reuse the identity, so the factory runs at most four art calls at once.
     const character = b.node('CFZCharacterFactory', `Character ${i + 1} | ${fighter.name}`, characterValues(fighter, false, true), [0, 120 + i * 1250], [440, 720]);
     b.connect(project, 0, character, 'project'); bundles.push(character);
+    // Sheets B-E take sheet A as a second reference so scale, line weight and facing stay consistent.
+    let first = null;
     SHEETS.forEach((sheet, j) => {
       const node = b.node('CFZSpriteSheet', `${fighter.name} | sheet ${'ABCDE'[j]}`, { sheet }, [490, 120 + i * 1250 + j * 235], [420, 170]);
       b.connect(project, 0, node, 'project'); b.connect(character, 2, node, 'character'); b.connect(character, 1, node, 'reference'); bundles.push(node);
+      if (first) b.connect(first, 1, node, 'reference_sheet'); else first = node;
     });
     return character;
   });
@@ -47,7 +50,7 @@ function buildDuo(config, fighterIds, bundleRoot, { seed = 42 } = {}) {
     const generation = b.graph.nodes.find(node => node.title === `${job.id} | cloud audio`), save = b.graph.nodes.find(node => node.title === `Save + map ${job.id}`);
     generation.pos = [2600 + Math.floor(index / 8) * 500, 120 + (index % 8) * 420]; save.pos = [generation.pos[0], generation.pos[1] + 250];
   });
-  b.note(`# ${config.title}: two-fighter complete run\n\n${fighters.map(f => f.name).join(' and ')} in ${stage.name}: every game image, the startup ensemble, a looping menu video, a looping select-screen video, two fight introductions and ${jobs.length} audio clips, written to one bundle folder. **CLOUD ONLY / PAID.** Validate and approve the spend before queueing; on a one-job workspace run the API file with comfyui/tools/run-sequential.cjs.`, [-510, -260], [1940, 220]);
+  b.note(`# ${config.title}: two-fighter complete run\n\n${fighters.map(f => f.name).join(' and ')} in ${stage.name}: every game image, the startup ensemble, a looping menu video, a looping select-screen video, two fight introductions, two select-screen idle loops and ${jobs.length} audio clips, written to one bundle folder. **CLOUD ONLY / PAID.** Validate and approve the spend before queueing; on a one-job workspace run the API file with comfyui/tools/run-sequential.cjs.`, [-510, -260], [1940, 220]);
   b.graph.nodes.forEach((node, index) => { node.order = index; });
   // Paid calls: per fighter a text source, identity, portrait, hero, cut-in and ending (1K) and five 2K sheets;
   // the arena source and stage (2K); five 1K interface images and the 2K effects atlas; then the startup media.

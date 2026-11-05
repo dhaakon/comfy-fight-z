@@ -132,7 +132,7 @@ Stages should leave the central fight plane clear and put their ground line near
 
 ## Reviewing generated art
 
-The main template's **CFZ Export Videos** node writes `video.json` beside `assets.json`. It maps the looping menu video as `titleVideo`, the looping select-screen backdrop as `selectVideo` and one silent clip per fighter in `fighterIntros` (`intro-<fighter id>`), with hashed MP4 paths under `raw/`. The startup ensemble is an ordinary image record, `{"id": "ensemble", "kind": "ui"}`, mapped to runtime `ui.ensemble`. It is optional in a complete export, and the title screen shows it for any cast when present.
+The main template's **CFZ Export Videos** node writes `video.json` beside `assets.json`. It maps the looping menu video as `titleVideo`, the looping select-screen backdrop as `selectVideo`, one silent clip per fighter in `fighterIntros` (`intro-<fighter id>`) and one portrait idle loop per fighter in `selectIdles` (`idle-<fighter id>`), with hashed MP4 paths under `raw/`. The startup ensemble is an ordinary image record, `{"id": "ensemble", "kind": "ui"}`, mapped to runtime `ui.ensemble`. It is optional in a complete export, and the title screen shows it for any cast when present.
 
 A sprite-sheet record may carry `"mirror": ["run2"]`, a reviewed list of cells the builder flips horizontally because the model drew them facing left. The builder also normalizes every standing pose to the idle cel per sheet, because generated sheets drift in body scale.
 

@@ -382,7 +382,7 @@
     // Generated clips: the menu loop, an optional opening and each fighter's introduction.
     const clip = (name, video, info) => { if (assetSource(video)) entries.push({ group: 'video', name, src: assetSource(video), info: `${info} · ${Math.round(video.duration || 0)} s` }); };
     clip('Menu loop', manifest.titleVideo, 'Title and menu animation'); clip('Select loop', manifest.selectVideo, 'Character-select animation'); clip('Opening', manifest.openingVideo, 'Startup film');
-    manifest.fighters.forEach(f => clip(`${f.name} / introduction`, f.introVideo, 'Fight introduction'));
+    manifest.fighters.forEach(f => { clip(`${f.name} / introduction`, f.introVideo, 'Fight introduction'); clip(`${f.name} / select idle`, f.selectVideo, 'Select-screen idle loop'); });
     return entries;
   }
   function setBackground(element, image) {
@@ -407,11 +407,15 @@
       const frame = document.createElement('div'); frame.className = 'fighter-art';
       const source = portraitSource(f, true), generated = generatedPortrait(f);
       if (source) { const img = document.createElement('img'); img.src = source; img.alt = f.name; img.classList.toggle('reference', !generated); frame.append(img); }
-      // The fighter's introduction clip previews on the card; the hero art stays underneath as the fallback.
-      const motion = assetSource(f.introVideo);
-      if (generated && typeof motion === 'string' && /^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(motion) && !reducedMotion.matches) {
-        const clip = document.createElement('video'); clip.className = 'card-motion'; clip.muted = true; clip.loop = true; clip.playsInline = true; clip.autoplay = true; clip.preload = 'metadata';
-        clip.setAttribute('aria-hidden', 'true'); clip.onerror = () => clip.remove(); clip.src = motion; frame.append(clip);
+      // The fighter's generated idle stance plays on the card: start to finish, a beat of stillness, then again.
+      // Without an idle loop the introduction clip stands in, darkened behind the hero art.
+      const idle = assetSource(f.selectVideo), motion = idle || assetSource(f.introVideo);
+      if (generated && typeof motion === 'string' && /^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(motion)) {
+        const clip = document.createElement('video'); clip.className = idle ? 'card-motion card-idle' : 'card-motion'; clip.muted = true; clip.playsInline = true; clip.autoplay = true; clip.preload = 'auto';
+        clip.setAttribute('aria-hidden', 'true'); clip.onerror = () => clip.remove();
+        if (idle) { clip.loop = false; clip.onended = () => setTimeout(() => { if (clip.isConnected && !$('selection-screen').hidden) { clip.currentTime = 0; clip.play().catch(() => {}); } }, 650); }
+        else clip.loop = true;
+        clip.src = motion; frame.append(clip);
       }
       else { const placeholder = document.createElement('div'); placeholder.className = 'fallback-portrait'; placeholder.textContent = String(index + 1).padStart(2, '0'); frame.append(placeholder); }
       const plate = document.createElement('div'); plate.className = 'fighter-nameplate';
@@ -595,7 +599,11 @@
     img.hidden = !src; if (src) img.src = src; else img.removeAttribute('src');
   }
   function showVersus(roundLabel, boss, done) {
+    // The split-screen introduction is the only pre-fight screen now; the announcer still calls the match.
     closeOverlay(); clearIntro(); state = null;
+    playSound(audioId(boss && 'ann_finalbattle', 'ann_versus') || '', .9);
+    done(); return;
+    // eslint-disable-next-line no-unreachable
     $('title-screen').hidden = true; $('selection-screen').hidden = true; $('fight-screen').hidden = false; setScene('fight');
     const [one, two] = [fighterData(0), fighterData(1)];
     setArt($('vs-art-one'), [one.hero, one.portrait]); setArt($('vs-art-two'), [two.hero, two.portrait]);

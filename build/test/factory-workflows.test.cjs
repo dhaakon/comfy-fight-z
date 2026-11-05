@@ -12,7 +12,7 @@ const SCHEMAS = read('comfyui/workflows/templates/compact-factory-schema.json');
 test('main factory has six fighters, a final boss, three environments and one complete mapped export', () => {
   const graph = makeFactoryGraph(config);
   // 13 game-art nodes plus the startup ensemble, menu video, seven fight introductions and video.json.
-  assert.equal(functional(graph).length, 24);
+  assert.equal(functional(graph).length, 31);
   assert.equal(functional(makeFactoryGraph(config, { media: false })).length, 13);
   const characters = graph.nodes.filter(n => n.type === 'CFZCharacterFactory');
   const environments = graph.nodes.filter(n => n.type === 'CFZEnvironmentFactory');
@@ -50,7 +50,10 @@ test('main factory has six fighters, a final boss, three environments and one co
   const videos = graph.nodes.find(n => n.type === 'CFZExportVideos');
   const select = graph.nodes.find(n => n.type === 'CFZSelectVideo'), sharedArt = graph.nodes.find(n => n.type === 'CFZSharedArtFactory');
   assert.deepEqual(source(select, 'select_image'), [sharedArt.id, 1]); assert.equal(select.widgets_values_named.duration, '8');
-  assert.deepEqual(videos.inputs.filter(i => i.type === 'CFZ_VIDEO').map(i => source(videos, i.name)[0]), [menu.id, select.id, ...intros.map(n => n.id)]);
+  const idles = graph.nodes.filter(n => n.type === 'CFZSelectIdleVideo');
+  assert.equal(idles.length, characters.length);
+  idles.forEach((idle, i) => { assert.deepEqual(source(idle, 'character'), [characters[i].id, 2]); assert.deepEqual(source(idle, 'reference'), [characters[i].id, 1]); assert.equal(idle.widgets_values_named.duration, '6'); });
+  assert.deepEqual(videos.inputs.filter(i => i.type === 'CFZ_VIDEO').map(i => source(videos, i.name)[0]), [menu.id, select.id, ...intros.map(n => n.id), ...idles.map(n => n.id)]);
   const shared = graph.nodes.find(n => n.type === 'CFZSharedArtFactory');
   const stageLink = graph.links.find(l => l[0] === shared.inputs.find(i => i.name === 'stage_reference').link);
   assert.equal(stageLink[1], environments[0].id); assert.equal(stageLink[2], 1);

@@ -51,12 +51,12 @@ async function unusedPort() {
     assert.equal(await page.locator(`.fighter-tile[data-fighter="${boss.id}"]`).count(), 0);
     assert.equal(await page.locator('.mystery-card').count(), 1);
     await page.click('#start-button');
-    await page.waitForFunction(() => window.FighterDebug.presentation().overlay === 'vs');
+    await page.waitForFunction(() => window.FighterDebug.presentation().screen === 'intro');
     const ladder = (await present()).arcade.ladder;
     assert.equal(ladder.length, config.fighters.length - 1); assert.equal(ladder[ladder.length - 1], boss.id);
     await toFight();
-    // Enter on the VS screen advances it; it must not re-click the hidden start button and reshuffle the ladder.
-    assert.deepEqual((await present()).arcade.ladder, ladder, 'Enter on the VS screen keeps the announced ladder');
+    // Enter on the introduction skips it; it must not re-click the hidden start button and reshuffle the ladder.
+    assert.deepEqual((await present()).arcade.ladder, ladder, 'Enter on the introduction keeps the announced ladder');
     // Win a match: KO twice, then the win screen and the next ladder stage.
     for (let round = 0; round < 2 && (await snap())?.phase !== 'matchover'; round++) {
       await page.evaluate(() => window.FighterDebug.setHealth(1, 0));
@@ -76,7 +76,7 @@ async function unusedPort() {
     }
     await page.waitForFunction(() => window.FighterDebug.presentation().overlay === 'continue', null, { timeout: 20000 });
     await page.click('#continue-yes');
-    await page.waitForFunction(() => window.FighterDebug.presentation().overlay === 'vs');
+    await page.waitForFunction(() => window.FighterDebug.presentation().screen === 'intro');
     assert.equal((await present()).arcade.continues, 1); assert.equal((await present()).arcade.index, 1);
     await page.keyboard.press('Escape'); await toFight();
     await page.keyboard.press('Escape'); await page.click('#pause-quit');

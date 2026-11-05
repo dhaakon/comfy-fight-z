@@ -28,7 +28,7 @@ Workflow preparation writes recipes and matching browser downloads without calli
 
 The default Invent fictional reference mode ignores the image selector and creates every source from text. The full arcade cast needs 89 paid image calls (85 with The Yard only): six fighters and the final boss with 45 poses and ending art each, plus three arenas. Explicit Upload mode needs 79 (77). The classic 27-pose set without a boss or endings needs 56. All three environments are enabled by default. No earlier photographs or character sheets are default inputs.
 
-The startup ensemble, looping menu video and one fight introduction per fighter add 8 image calls and 9 silent 720p LTX clips, including the select-screen loop (about $6.07 for seven fighters). `node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/<fresh>` prepares a cheaper complete two-fighter run that includes audio (about $5.99).
+The startup ensemble, looping menu video and one fight introduction per fighter add 15 image calls and 16 silent 720p LTX clips, including the select-screen loop and a portrait idle loop per fighter (about $11.81 for seven fighters). `node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/<fresh>` prepares a cheaper complete two-fighter run that includes audio (about $7.63).
 
 To add the arcade material to an accepted classic bundle without redrawing its fighters, run `npm run workflows:expansion -- --base example/bundle --out output/test-runs/<fresh>`. It prepares 33 image calls and the 99-clip audio set, and submits nothing.
 

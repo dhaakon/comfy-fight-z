@@ -396,7 +396,8 @@
             "default": "",
             "multiselect": false,
             "options": [
-              ""
+              "",
+              "example.png"
             ],
             "image_upload": true,
             "image_folder": "input"
@@ -610,7 +611,7 @@
     "name": "CFZCharacterFactory",
     "display_name": "CFZ Character Factory",
     "description": "PAID cloud generation: Upload reference uses 10 images (7 without the optional arcade art; 4 or 5 without sheets); Invent fictional reference adds one source image. Arcade art adds two in-between sheets and an ending illustration. Invent creates its source from text and never reads the image field or earlier session files. Uses native Comfy cloud authentication.",
-    "python_module": null,
+    "python_module": "custom_nodes.comfy_fighter_assets",
     "category": "Comfy Fighter Z",
     "output_node": false,
     "deprecated": false,
@@ -654,6 +655,15 @@
           }
         ]
       },
+      "optional": {
+        "reference_sheet": [
+          "IMAGE",
+          {
+            "tooltip": "An accepted sheet of the same character; new cells match its body scale, line weight and right-facing direction.",
+            "rawLink": true
+          }
+        ]
+      },
       "hidden": {
         "auth_token_comfy_org": [
           "AUTH_TOKEN_COMFY_ORG"
@@ -672,6 +682,9 @@
         "character",
         "reference",
         "sheet"
+      ],
+      "optional": [
+        "reference_sheet"
       ],
       "hidden": [
         "auth_token_comfy_org",
@@ -700,7 +713,7 @@
     "name": "CFZSpriteSheet",
     "display_name": "CFZ Sprite Sheet",
     "description": "PAID cloud generation: exactly one 2K 3x3 sheet for nine named poses, saved with an exact mapped pose layout. sheet, sheetB and sheetC hold the 27 required poses; optional sheetD and sheetE add in-betweens. Native cloud API; no local checkpoint.",
-    "python_module": null,
+    "python_module": "custom_nodes.comfy_fighter_assets",
     "category": "Comfy Fighter Z",
     "output_node": false,
     "deprecated": false,
@@ -1847,6 +1860,90 @@
     "name": "CFZSelectVideo",
     "display_name": "CFZ Select Video",
     "description": "PAID cloud generation: one silent 720p LTX loop of the character-select backdrop (lights, embers, camera drift), played behind the roster. The still backdrop stays as the fallback.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZSelectIdleVideo": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "character": [
+          "CFZ_CHARACTER",
+          {}
+        ],
+        "reference": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "duration": [
+          "COMBO",
+          {
+            "default": "6",
+            "multiselect": false,
+            "options": [
+              "4",
+              "6",
+              "8"
+            ]
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "character",
+        "reference",
+        "duration"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_VIDEO"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "video_asset"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZSelectIdleVideo",
+    "display_name": "CFZ Select Idle Video",
+    "description": "PAID cloud generation: one 1K portrait keyframe of the fighter in a ready stance, then one silent portrait 720p LTX loop (first and last frame identical) that the character-select cards play.",
     "python_module": "custom_nodes.comfy_fighter_assets",
     "category": "Comfy Fighter Z",
     "output_node": false,

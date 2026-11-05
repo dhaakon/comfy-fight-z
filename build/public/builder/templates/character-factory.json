@@ -184,6 +184,11 @@
           "name": "reference",
           "type": "IMAGE",
           "link": 4
+        },
+        {
+          "name": "reference_sheet",
+          "type": "IMAGE",
+          "link": null
         }
       ],
       "outputs": [
@@ -240,6 +245,11 @@
           "name": "reference",
           "type": "IMAGE",
           "link": 7
+        },
+        {
+          "name": "reference_sheet",
+          "type": "IMAGE",
+          "link": null
         }
       ],
       "outputs": [
@@ -296,6 +306,11 @@
           "name": "reference",
           "type": "IMAGE",
           "link": 10
+        },
+        {
+          "name": "reference_sheet",
+          "type": "IMAGE",
+          "link": null
         }
       ],
       "outputs": [
@@ -352,6 +367,11 @@
           "name": "reference",
           "type": "IMAGE",
           "link": 13
+        },
+        {
+          "name": "reference_sheet",
+          "type": "IMAGE",
+          "link": null
         }
       ],
       "outputs": [
@@ -408,6 +428,11 @@
           "name": "reference",
           "type": "IMAGE",
           "link": 16
+        },
+        {
+          "name": "reference_sheet",
+          "type": "IMAGE",
+          "link": null
         }
       ],
       "outputs": [

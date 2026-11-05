@@ -33,7 +33,39 @@
     motionLines.blendMode = 'add'; burstLines.blendMode = 'add';
     world.addChild(auraLayer, trailLayer, fighterLayer, motionLines, projectileLayer, effectLayer, fxLines, burstLines, sparks);
     const flash = new PIXI.Graphics(); flash.rect(0, 0, 960, 540).fill(0xffffff); flash.alpha = 0; flash.blendMode = 'add';
+    const sparkLayer = new PIXI.Container(); world.addChild(sparkLayer);
     app.stage.addChild(stageLayer, titleTint, shaker, flash);
+    // Impact shader on the world: chromatic aberration, radial blur, a shockwave ring and a negative flash,
+    // driven per frame and attached only while something is happening. Filter space is the full screen.
+    shaker.filterArea = new PIXI.Rectangle(0, 0, 960, 540);
+    const shockFragment = `
+precision highp float;
+in vec2 vTextureCoord; out vec4 finalColor;
+uniform sampler2D uTexture; uniform vec4 uInputSize; uniform vec4 uInputClamp;
+uniform float uAberration; uniform float uBlur; uniform vec2 uCenter; uniform float uRing; uniform float uRingWidth; uniform float uRingStrength; uniform float uInvert;
+vec4 sampleClamped(vec2 uv) { return texture(uTexture, clamp(uv, uInputClamp.xy, uInputClamp.zw)); }
+void main() {
+  vec2 uv = vTextureCoord; vec2 dir = uv - uCenter; vec2 aspect = vec2(uInputSize.x / uInputSize.y, 1.0);
+  float dist = length(dir * aspect);
+  float ring = smoothstep(uRingWidth, 0.0, abs(dist - uRing)) * uRingStrength;
+  uv += normalize(dir + vec2(1e-5)) * ring;
+  vec4 color = vec4(0.0);
+  for (int i = 0; i < 6; i++) color += sampleClamped(uv - dir * uBlur * float(i) / 5.0);
+  color /= 6.0;
+  vec2 off = dir * uAberration;
+  color.r = mix(color.r, sampleClamped(uv + off).r, 0.85); color.b = mix(color.b, sampleClamped(uv - off).b, 0.85);
+  color.rgb = mix(color.rgb, (vec3(1.0) - color.rgb) * color.a, uInvert);
+  finalColor = color;
+}`;
+    let shock = null;
+    try {
+      shock = new PIXI.Filter({ glProgram: PIXI.GlProgram.from({ vertex: PIXI.defaultFilterVert, fragment: shockFragment, name: 'cfz-shock' }),
+        resources: { shockUniforms: { uAberration: { value: 0, type: 'f32' }, uBlur: { value: 0, type: 'f32' }, uCenter: { value: [.5, .5], type: 'vec2<f32>' }, uRing: { value: 0, type: 'f32' }, uRingWidth: { value: .08, type: 'f32' }, uRingStrength: { value: 0, type: 'f32' }, uInvert: { value: 0, type: 'f32' } } } });
+    } catch (error) { console.warn('[CFZ pixi] impact shader unavailable:', error); }
+    const impact = { aberration: 0, blur: 0, ring: -1, ringStrength: 0, invert: 0, center: [.5, .5], desaturate: 0 };
+    const stageTone = new PIXI.ColorMatrixFilter();
+    // World position to shader space (0..1 across the screen), following the current camera.
+    const toScreen = (x, y) => [((x - view.x) * view.zoom + (view.shakeX || 0)) / 960, (y * view.zoom + FLOOR * (1 - view.zoom) + view.lift + (view.shakeY || 0)) / 540];
     // Soft radial glow for auras and projectile trails, drawn once.
     const glowCanvas = root.document.createElement('canvas'); glowCanvas.width = glowCanvas.height = 128;
     const glowContext = glowCanvas.getContext('2d'), gradient = glowContext.createRadialGradient(64, 64, 0, 64, 64, 64);
@@ -181,14 +213,37 @@
           }
         }
       });
-      // New engine effects: impact frames, rings and bursts, once each.
+      // New engine effects: impact frames, rings, bursts, shader shocks and camera punches, once each.
       for (const e of state.effects) if (!motion.seen.has(e)) {
         motion.seen.add(e);
-        if (e.type === 'hit') { motion.flashAlpha = Math.max(motion.flashAlpha, e.heavy ? .55 : .18); burst(e.x, e.y, 0xfff1c9, e.heavy ? 12 : 6, e.heavy ? 150 : 70, e.heavy ? 12 : 8); }
-        if (e.type === 'super') { motion.flashAlpha = .85; const data = fighterData(e.slot); burst(e.x ?? fighters[e.slot]?.x ?? 480, e.y ?? E.GROUND - 110, colorOf(data?.color), 18, 320, 26); }
-        if (e.type === 'ko') { motion.flashAlpha = .9; burst(e.x ?? 480, e.y ?? E.GROUND - 110, 0xffffff, 16, 420, 34); }
+        if (e.type === 'hit') {
+          motion.flashAlpha = Math.max(motion.flashAlpha, e.heavy ? .55 : .18); burst(e.x, e.y, 0xfff1c9, e.heavy ? 12 : 6, e.heavy ? 150 : 70, e.heavy ? 12 : 8);
+          Object.assign(impact, { aberration: e.heavy ? .012 : .005, blur: e.heavy ? .04 : .015, ring: .02, ringStrength: e.heavy ? .02 : .008, center: toScreen(e.x, e.y) });
+          view.zoom += e.heavy ? .06 : .02;
+        }
+        if (e.type === 'super') {
+          motion.flashAlpha = .85; const data = fighterData(e.slot), x = e.x ?? fighters[e.slot]?.x ?? 480, y = e.y ?? E.GROUND - 110;
+          burst(x, y, colorOf(data?.color), 18, 320, 26);
+          Object.assign(impact, { aberration: .02, blur: .06, ring: .02, ringStrength: .035, invert: 1, center: toScreen(x, y) }); view.zoom += .1;
+        }
+        if (e.type === 'ko') {
+          const loser = fighters.find(f => f.hp <= 0) || fighters[0], x = loser.x, y = E.GROUND - loser.y - 110;
+          motion.flashAlpha = .9; burst(x, y, 0xffffff, 16, 420, 34);
+          Object.assign(impact, { aberration: .025, blur: .08, ring: .02, ringStrength: .05, invert: 1, desaturate: 1, center: toScreen(x, y) }); view.zoom += .12;
+        }
         if (e.type === 'powerup') burst(e.x, e.y, colorOf(fighterData(e.slot ?? 0)?.color), 10, 120, 16);
       }
+      // Shader parameters decay; the ring keeps expanding until it fades.
+      impact.aberration *= .78; impact.blur *= .78; impact.ringStrength *= .86; impact.invert = impact.invert > .5 ? impact.invert - .5 : 0; impact.desaturate *= .97;
+      if (impact.ring >= 0) impact.ring += .045; if (impact.ringStrength < .0008) { impact.ring = -1; impact.ringStrength = 0; }
+      const shockActive = shock && (impact.aberration > .0005 || impact.blur > .002 || impact.ringStrength > 0 || impact.invert > 0);
+      if (shock) {
+        const u = shock.resources.shockUniforms.uniforms;
+        u.uAberration = impact.aberration; u.uBlur = impact.blur; u.uCenter = impact.center; u.uRing = Math.max(0, impact.ring); u.uRingStrength = impact.ringStrength; u.uInvert = impact.invert;
+      }
+      if (shockActive !== !!shaker.filters) shaker.filters = shockActive ? [shock] : null;
+      if (impact.desaturate > .02) { stageTone.reset(); stageTone.saturate(-.7 * impact.desaturate, true); if (!stageLayer.filters) stageLayer.filters = [stageTone]; }
+      else if (stageLayer.filters) stageLayer.filters = null;
       // Projectiles trail a fading line of glows along their path.
       let used = 0;
       for (const p of state.projectiles) {
@@ -256,14 +311,21 @@
         });
       }
       trim(projectileLayer, projectiles); trim(effectLayer, effects);
+      // Sparks are additive glows rather than squares, sized by the hit's weight.
+      let sparkIndex = 0;
+      for (const pt of view.particles) {
+        let sprite = sparkLayer.children[sparkIndex++];
+        if (!sprite) { sprite = new PIXI.Sprite(glowTexture); sprite.anchor.set(.5); sprite.blendMode = 'add'; sparkLayer.addChild(sprite); }
+        sprite.visible = true; sprite.position.set(pt.x, pt.y); sprite.tint = PIXI.Color.shared.setValue(pt.color).toNumber(); sprite.alpha = Math.max(0, pt.life / pt.max); sprite.scale.set(pt.size * .09);
+      }
+      for (let i = sparkIndex; i < sparkLayer.children.length; i++) sparkLayer.children[i].visible = false;
       sparks.clear();
-      for (const pt of view.particles) sparks.rect(pt.x - pt.size / 2, pt.y - pt.size / 2, pt.size, pt.size).fill({ color: PIXI.Color.shared.setValue(pt.color).toNumber(), alpha: Math.max(0, pt.life / pt.max) });
       app.renderer.render(app.stage);
       // HUD, callouts, cut-in and training read-outs on the overlay canvas.
       if (state && frame.mode === 'training' && frame.training?.boxes) screen.drawHitboxes();
       screen.drawScreen(fighters);
     }
-    function reset() { screen.reset(); for (const entry of slots) { entry.history = null; entry.clock = -1; } motion.particles.length = 0; motion.bursts.length = 0; motion.flashAlpha = 0; flash.alpha = 0; shaker.rotation = 0; }
+    function reset() { screen.reset(); for (const entry of slots) { entry.history = null; entry.clock = -1; } motion.particles.length = 0; motion.bursts.length = 0; motion.flashAlpha = 0; flash.alpha = 0; shaker.rotation = 0; Object.assign(impact, { aberration: 0, blur: 0, ring: -1, ringStrength: 0, invert: 0, desaturate: 0 }); shaker.filters = null; stageLayer.filters = null; }
     return { kind: 'pixi', draw, reset, pixel, view, app, stats: () => ({ resizes, textures: textures.size, resolution: app.renderer.resolution }) };
   }
   root.CFZPixiRenderer = { create };

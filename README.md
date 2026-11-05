@@ -101,11 +101,12 @@ The arena draws with PixiJS (WebGL) when the browser supports it, and falls back
 
 ![Main Comfy Fighter Z asset workflow](comfyui/docs/images/01-factory-overview.png)
 
-The main workflow contains Project Settings, six Character Factories, a **Final boss** factory, three Environment Factories, Shared Art and the art exporter. Generated sheets drift in body scale, so the builder normalizes every standing pose to the idle cel per sheet; a reviewed sheet record can also list cells to flip in `"mirror": ["run2"]` when the model drew them facing the wrong way. It also generates the startup screen and videos:
+The main workflow contains Project Settings, six Character Factories, a **Final boss** factory, three Environment Factories, Shared Art and the art exporter. Sheets B to E take sheet A as a second reference so scale, line weight and facing stay consistent, and the builder normalizes every standing pose to the idle cel per sheet; a reviewed sheet record can also list cells to flip in `"mirror": ["run2"]` when the model drew them facing the wrong way. It also generates the startup screen and videos:
 
 - **CFZ Title Ensemble Art**: one key illustration of the cast caught mid-battle in the arena, shown behind the title menu.
 - **CFZ Menu Video**: an eight-second silent loop of that picture, with the fighters trading a flurry of blows before slamming back into the opening clash.
-- **CFZ Select Video**: an eight-second silent loop of the character-select backdrop (lights, embers, camera drift). Each fighter card also plays that fighter's introduction clip.
+- **CFZ Select Video**: an eight-second silent loop of the character-select backdrop (lights, embers, camera drift).
+- **CFZ Select Idle Video**: one portrait keyframe and a six-second idle-stance loop per fighter; the character-select cards play it start to finish, hold a beat, and start again.
 - **CFZ Fighter Intro Video**: one four-second, Dragon Ball Z-style clip per fighter (aura burst, dash, signature strike). Both fighters' clips play together on a split screen before the fight.
 - **CFZ Export Videos**: writes `video.json` beside `assets.json`.
 
@@ -134,9 +135,9 @@ Descriptions guide the artwork. The fighting style selects each character's spec
 | Six invented fighters + final boss + three arenas, 45 poses each | 89 | $5.29 |
 | The same cast with The Yard only | 85 | $5.00 |
 | Classic set: six fighters + The Yard, 27 poses, no boss or endings | 56 | $3.20 |
-| Startup image and videos for seven fighters (8 images + 9 silent LTX clips, 44 seconds) | 8 | $6.07 |
+| Startup image and videos for seven fighters (15 images + 16 silent LTX clips, 86 seconds) | 15 | $11.81 |
 
-Each fighter costs 11 image calls with arcade art (source, identity, five sheets, portrait, hero, cut-in, ending), or 8 for the classic 27-pose set. The startup media add one intro keyframe and one four-second 720p clip per fighter (about $0.56), plus the ensemble, its eight-second loop and the eight-second select-screen loop (about $2.13). To build the classic set, disable `include_arcade_art`, delete the boss factory and disable the extra arenas. Estimates use recorded November 3, 2026 rates; actual billing may vary. Audio, video and repairs cost extra. Running generation spends credits; opening or editing a workflow does not. If an agent submits it for you, approve the specific batch first.
+Each fighter costs 11 image calls with arcade art (source, identity, five sheets, portrait, hero, cut-in, ending), or 8 for the classic 27-pose set. The startup media add one intro keyframe and one four-second clip plus one portrait idle keyframe and one six-second loop per fighter (about $1.39), plus the ensemble, its eight-second loop and the eight-second select-screen loop (about $2.13). To build the classic set, disable `include_arcade_art`, delete the boss factory and disable the extra arenas. Estimates use recorded November 3, 2026 rates; actual billing may vary. Audio, video and repairs cost extra. Running generation spends credits; opening or editing a workflow does not. If an agent submits it for you, approve the specific batch first.
 
 **Try everything with two fighters first.** This command prepares one priced workflow and submits nothing:
 
@@ -144,7 +145,7 @@ Each fighter costs 11 image calls with arcade art (source, identity, five sheets
 node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/my-duo
 ```
 
-It covers two fighters in The Yard: all game art, the startup image, the menu video, two fight intros and 61 audio clips. That is 33 images, 4 clips and 61 audio clips, about **$5.99** (a run with six-second intros on November 4, 2026 billed $5.79). Run its `workflow.api.json` with the sequential runner described above, then export `bundle/` in step 4.
+It covers two fighters in The Yard: all game art, the startup image, the menu video, two fight intros and 61 audio clips. That is 35 images, 6 clips and 61 audio clips, about **$7.63** (a run with six-second intros on November 4, 2026 billed $5.79). Run its `workflow.api.json` with the sequential runner described above, then export `bundle/` in step 4.
 
 The completed folder contains:
 

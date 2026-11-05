@@ -1,8 +1,8 @@
 {
   "id": "639ad575-5713-40cb-a53e-5f33127b2774",
   "revision": 0,
-  "last_node_id": 26,
-  "last_link_id": 76,
+  "last_node_id": 33,
+  "last_link_id": 104,
   "nodes": [
     {
       "id": 1,
@@ -47,7 +47,14 @@
             48,
             52,
             54,
-            64
+            57,
+            60,
+            63,
+            66,
+            69,
+            72,
+            75,
+            92
           ]
         }
       ],
@@ -102,7 +109,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            65
+            93
           ]
         },
         {
@@ -110,14 +117,16 @@
           "type": "IMAGE",
           "links": [
             15,
-            26
+            26,
+            56
           ]
         },
         {
           "name": "character",
           "type": "CFZ_CHARACTER",
           "links": [
-            25
+            25,
+            55
           ]
         }
       ],
@@ -192,7 +201,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            66
+            94
           ]
         },
         {
@@ -200,14 +209,16 @@
           "type": "IMAGE",
           "links": [
             16,
-            30
+            30,
+            59
           ]
         },
         {
           "name": "character",
           "type": "CFZ_CHARACTER",
           "links": [
-            29
+            29,
+            58
           ]
         }
       ],
@@ -282,7 +293,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            67
+            95
           ]
         },
         {
@@ -290,14 +301,16 @@
           "type": "IMAGE",
           "links": [
             17,
-            34
+            34,
+            62
           ]
         },
         {
           "name": "character",
           "type": "CFZ_CHARACTER",
           "links": [
-            33
+            33,
+            61
           ]
         }
       ],
@@ -372,7 +385,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            68
+            96
           ]
         },
         {
@@ -380,14 +393,16 @@
           "type": "IMAGE",
           "links": [
             18,
-            38
+            38,
+            65
           ]
         },
         {
           "name": "character",
           "type": "CFZ_CHARACTER",
           "links": [
-            37
+            37,
+            64
           ]
         }
       ],
@@ -462,7 +477,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            69
+            97
           ]
         },
         {
@@ -470,14 +485,16 @@
           "type": "IMAGE",
           "links": [
             19,
-            42
+            42,
+            68
           ]
         },
         {
           "name": "character",
           "type": "CFZ_CHARACTER",
           "links": [
-            41
+            41,
+            67
           ]
         }
       ],
@@ -552,7 +569,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            70
+            98
           ]
         },
         {
@@ -560,14 +577,16 @@
           "type": "IMAGE",
           "links": [
             20,
-            46
+            46,
+            71
           ]
         },
         {
           "name": "character",
           "type": "CFZ_CHARACTER",
           "links": [
-            45
+            45,
+            70
           ]
         }
       ],
@@ -642,7 +661,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            71
+            99
           ]
         },
         {
@@ -650,14 +669,16 @@
           "type": "IMAGE",
           "links": [
             21,
-            50
+            50,
+            74
           ]
         },
         {
           "name": "character",
           "type": "CFZ_CHARACTER",
           "links": [
-            49
+            49,
+            73
           ]
         }
       ],
@@ -732,7 +753,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            72
+            100
           ]
         },
         {
@@ -800,7 +821,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            73
+            101
           ]
         },
         {
@@ -858,7 +879,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            74
+            102
           ]
         },
         {
@@ -921,7 +942,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            75
+            103
           ]
         },
         {
@@ -1010,7 +1031,7 @@
           "name": "bundle",
           "type": "CFZ_BUNDLE",
           "links": [
-            76
+            104
           ]
         },
         {
@@ -1059,7 +1080,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            55
+            76
           ]
         }
       ],
@@ -1115,7 +1136,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            57
+            78
           ]
         }
       ],
@@ -1171,7 +1192,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            58
+            79
           ]
         }
       ],
@@ -1227,7 +1248,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            59
+            80
           ]
         }
       ],
@@ -1283,7 +1304,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            60
+            81
           ]
         }
       ],
@@ -1339,7 +1360,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            61
+            82
           ]
         }
       ],
@@ -1395,7 +1416,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            62
+            83
           ]
         }
       ],
@@ -1451,7 +1472,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            63
+            84
           ]
         }
       ],
@@ -1497,7 +1518,7 @@
           "name": "video_asset",
           "type": "CFZ_VIDEO",
           "links": [
-            56
+            77
           ]
         }
       ],
@@ -1513,15 +1534,15 @@
     },
     {
       "id": 23,
-      "type": "CFZExportVideos",
-      "title": "Export video.json",
+      "type": "CFZSelectIdleVideo",
+      "title": "Select idle | Griddle",
       "pos": [
-        2060,
-        1000
+        3020,
+        120
       ],
       "size": [
-        440,
-        230
+        420,
+        200
       ],
       "flags": {},
       "order": 22,
@@ -1533,49 +1554,441 @@
           "link": 54
         },
         {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 55
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_asset",
+          "type": "CFZ_VIDEO",
+          "links": [
+            85
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSelectIdleVideo"
+      },
+      "widgets_values": [
+        "6"
+      ],
+      "widgets_values_named": {
+        "duration": "6"
+      }
+    },
+    {
+      "id": 24,
+      "type": "CFZSelectIdleVideo",
+      "title": "Select idle | Rivet",
+      "pos": [
+        3020,
+        350
+      ],
+      "size": [
+        420,
+        200
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 57
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 58
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 59
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_asset",
+          "type": "CFZ_VIDEO",
+          "links": [
+            86
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSelectIdleVideo"
+      },
+      "widgets_values": [
+        "6"
+      ],
+      "widgets_values_named": {
+        "duration": "6"
+      }
+    },
+    {
+      "id": 25,
+      "type": "CFZSelectIdleVideo",
+      "title": "Select idle | Tempo",
+      "pos": [
+        3020,
+        580
+      ],
+      "size": [
+        420,
+        200
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 60
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 61
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 62
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_asset",
+          "type": "CFZ_VIDEO",
+          "links": [
+            87
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSelectIdleVideo"
+      },
+      "widgets_values": [
+        "6"
+      ],
+      "widgets_values_named": {
+        "duration": "6"
+      }
+    },
+    {
+      "id": 26,
+      "type": "CFZSelectIdleVideo",
+      "title": "Select idle | Nimbus",
+      "pos": [
+        3020,
+        810
+      ],
+      "size": [
+        420,
+        200
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 63
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 64
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 65
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_asset",
+          "type": "CFZ_VIDEO",
+          "links": [
+            88
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSelectIdleVideo"
+      },
+      "widgets_values": [
+        "6"
+      ],
+      "widgets_values_named": {
+        "duration": "6"
+      }
+    },
+    {
+      "id": 27,
+      "type": "CFZSelectIdleVideo",
+      "title": "Select idle | Switchback",
+      "pos": [
+        3020,
+        1040
+      ],
+      "size": [
+        420,
+        200
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 66
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 67
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 68
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_asset",
+          "type": "CFZ_VIDEO",
+          "links": [
+            89
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSelectIdleVideo"
+      },
+      "widgets_values": [
+        "6"
+      ],
+      "widgets_values_named": {
+        "duration": "6"
+      }
+    },
+    {
+      "id": 28,
+      "type": "CFZSelectIdleVideo",
+      "title": "Select idle | Brick",
+      "pos": [
+        3020,
+        1270
+      ],
+      "size": [
+        420,
+        200
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 69
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 70
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 71
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_asset",
+          "type": "CFZ_VIDEO",
+          "links": [
+            90
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSelectIdleVideo"
+      },
+      "widgets_values": [
+        "6"
+      ],
+      "widgets_values_named": {
+        "duration": "6"
+      }
+    },
+    {
+      "id": 29,
+      "type": "CFZSelectIdleVideo",
+      "title": "Select idle | Baron Bylaw",
+      "pos": [
+        3020,
+        1500
+      ],
+      "size": [
+        420,
+        200
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 72
+        },
+        {
+          "name": "character",
+          "type": "CFZ_CHARACTER",
+          "link": 73
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_asset",
+          "type": "CFZ_VIDEO",
+          "links": [
+            91
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSelectIdleVideo"
+      },
+      "widgets_values": [
+        "6"
+      ],
+      "widgets_values_named": {
+        "duration": "6"
+      }
+    },
+    {
+      "id": 30,
+      "type": "CFZExportVideos",
+      "title": "Export video.json",
+      "pos": [
+        2060,
+        1000
+      ],
+      "size": [
+        440,
+        230
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 75
+        },
+        {
           "name": "videos.video_0",
           "type": "CFZ_VIDEO",
-          "link": 55
+          "link": 76
         },
         {
           "name": "videos.video_1",
           "type": "CFZ_VIDEO",
-          "link": 56
+          "link": 77
         },
         {
           "name": "videos.video_2",
           "type": "CFZ_VIDEO",
-          "link": 57
+          "link": 78
         },
         {
           "name": "videos.video_3",
           "type": "CFZ_VIDEO",
-          "link": 58
+          "link": 79
         },
         {
           "name": "videos.video_4",
           "type": "CFZ_VIDEO",
-          "link": 59
+          "link": 80
         },
         {
           "name": "videos.video_5",
           "type": "CFZ_VIDEO",
-          "link": 60
+          "link": 81
         },
         {
           "name": "videos.video_6",
           "type": "CFZ_VIDEO",
-          "link": 61
+          "link": 82
         },
         {
           "name": "videos.video_7",
           "type": "CFZ_VIDEO",
-          "link": 62
+          "link": 83
         },
         {
           "name": "videos.video_8",
           "type": "CFZ_VIDEO",
-          "link": 63
+          "link": 84
+        },
+        {
+          "name": "videos.video_9",
+          "type": "CFZ_VIDEO",
+          "link": 85
+        },
+        {
+          "name": "videos.video_10",
+          "type": "CFZ_VIDEO",
+          "link": 86
+        },
+        {
+          "name": "videos.video_11",
+          "type": "CFZ_VIDEO",
+          "link": 87
+        },
+        {
+          "name": "videos.video_12",
+          "type": "CFZ_VIDEO",
+          "link": 88
+        },
+        {
+          "name": "videos.video_13",
+          "type": "CFZ_VIDEO",
+          "link": 89
+        },
+        {
+          "name": "videos.video_14",
+          "type": "CFZ_VIDEO",
+          "link": 90
+        },
+        {
+          "name": "videos.video_15",
+          "type": "CFZ_VIDEO",
+          "link": 91
         }
       ],
       "outputs": [
@@ -1592,7 +2005,7 @@
       "widgets_values_named": {}
     },
     {
-      "id": 24,
+      "id": 31,
       "type": "CFZExportGameAssets",
       "title": "Export complete assets.json",
       "pos": [
@@ -1604,73 +2017,73 @@
         340
       ],
       "flags": {},
-      "order": 23,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "project",
           "type": "CFZ_PROJECT",
-          "link": 64
+          "link": 92
         },
         {
           "name": "bundles.bundle_0",
           "type": "CFZ_BUNDLE",
-          "link": 65
+          "link": 93
         },
         {
           "name": "bundles.bundle_1",
           "type": "CFZ_BUNDLE",
-          "link": 66
+          "link": 94
         },
         {
           "name": "bundles.bundle_2",
           "type": "CFZ_BUNDLE",
-          "link": 67
+          "link": 95
         },
         {
           "name": "bundles.bundle_3",
           "type": "CFZ_BUNDLE",
-          "link": 68
+          "link": 96
         },
         {
           "name": "bundles.bundle_4",
           "type": "CFZ_BUNDLE",
-          "link": 69
+          "link": 97
         },
         {
           "name": "bundles.bundle_5",
           "type": "CFZ_BUNDLE",
-          "link": 70
+          "link": 98
         },
         {
           "name": "bundles.bundle_6",
           "type": "CFZ_BUNDLE",
-          "link": 71
+          "link": 99
         },
         {
           "name": "bundles.bundle_7",
           "type": "CFZ_BUNDLE",
-          "link": 72
+          "link": 100
         },
         {
           "name": "bundles.bundle_8",
           "type": "CFZ_BUNDLE",
-          "link": 73
+          "link": 101
         },
         {
           "name": "bundles.bundle_9",
           "type": "CFZ_BUNDLE",
-          "link": 74
+          "link": 102
         },
         {
           "name": "bundles.bundle_10",
           "type": "CFZ_BUNDLE",
-          "link": 75
+          "link": 103
         },
         {
           "name": "bundles.bundle_11",
           "type": "CFZ_BUNDLE",
-          "link": 76
+          "link": 104
         }
       ],
       "outputs": [
@@ -1687,7 +2100,7 @@
       "widgets_values_named": {}
     },
     {
-      "id": 25,
+      "id": 32,
       "type": "MarkdownNote",
       "pos": [
         -510,
@@ -1698,17 +2111,17 @@
         290
       ],
       "flags": {},
-      "order": 24,
+      "order": 31,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# Comfy Fighter Z\n## Invent fictional fighters and a final boss. Build your arcade game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Six fighter slots plus one Final boss slot close Arcade mode. Environment 1 supplies the title/select venue; disable slots 2 and 3 to build a one-stage game. Each fighter's arcade art adds two in-between sheets (45 poses) and an ending illustration. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 89 image calls / 89 mapped assets (about $5.285). Source-reference generation is included when Invent is selected. The startup image and videos add 8 image calls and 9 silent LTX clips (44 seconds), about $6.071. Audio is the separate comfy-audio.json. Opening this graph spends nothing."
+        "# Comfy Fighter Z\n## Invent fictional fighters and a final boss. Build your arcade game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Six fighter slots plus one Final boss slot close Arcade mode. Environment 1 supplies the title/select venue; disable slots 2 and 3 to build a one-stage game. Each fighter's arcade art adds two in-between sheets (45 poses) and an ending illustration. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 89 image calls / 89 mapped assets (about $5.285). Source-reference generation is included when Invent is selected. The startup image and videos add 15 image calls and 16 silent LTX clips (86 seconds), about $11.813. Audio is the separate comfy-audio.json. Opening this graph spends nothing."
       ]
     },
     {
-      "id": 26,
+      "id": 33,
       "type": "MarkdownNote",
       "pos": [
         1510,
@@ -1719,7 +2132,7 @@
         440
       ],
       "flags": {},
-      "order": 25,
+      "order": 32,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2164,78 +2577,22 @@
     ],
     [
       55,
-      14,
-      0,
+      2,
+      2,
       23,
       1,
-      "CFZ_VIDEO"
+      "CFZ_CHARACTER"
     ],
     [
       56,
-      22,
-      0,
+      2,
+      1,
       23,
       2,
-      "CFZ_VIDEO"
+      "IMAGE"
     ],
     [
       57,
-      15,
-      0,
-      23,
-      3,
-      "CFZ_VIDEO"
-    ],
-    [
-      58,
-      16,
-      0,
-      23,
-      4,
-      "CFZ_VIDEO"
-    ],
-    [
-      59,
-      17,
-      0,
-      23,
-      5,
-      "CFZ_VIDEO"
-    ],
-    [
-      60,
-      18,
-      0,
-      23,
-      6,
-      "CFZ_VIDEO"
-    ],
-    [
-      61,
-      19,
-      0,
-      23,
-      7,
-      "CFZ_VIDEO"
-    ],
-    [
-      62,
-      20,
-      0,
-      23,
-      8,
-      "CFZ_VIDEO"
-    ],
-    [
-      63,
-      21,
-      0,
-      23,
-      9,
-      "CFZ_VIDEO"
-    ],
-    [
-      64,
       1,
       0,
       24,
@@ -2243,98 +2600,378 @@
       "CFZ_PROJECT"
     ],
     [
-      65,
+      58,
+      3,
       2,
-      0,
       24,
       1,
-      "CFZ_BUNDLE"
+      "CFZ_CHARACTER"
+    ],
+    [
+      59,
+      3,
+      1,
+      24,
+      2,
+      "IMAGE"
+    ],
+    [
+      60,
+      1,
+      0,
+      25,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      61,
+      4,
+      2,
+      25,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      62,
+      4,
+      1,
+      25,
+      2,
+      "IMAGE"
+    ],
+    [
+      63,
+      1,
+      0,
+      26,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      64,
+      5,
+      2,
+      26,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      65,
+      5,
+      1,
+      26,
+      2,
+      "IMAGE"
     ],
     [
       66,
-      3,
+      1,
       0,
-      24,
-      2,
-      "CFZ_BUNDLE"
+      27,
+      0,
+      "CFZ_PROJECT"
     ],
     [
       67,
-      4,
-      0,
-      24,
-      3,
-      "CFZ_BUNDLE"
+      6,
+      2,
+      27,
+      1,
+      "CFZ_CHARACTER"
     ],
     [
       68,
-      5,
-      0,
-      24,
-      4,
-      "CFZ_BUNDLE"
+      6,
+      1,
+      27,
+      2,
+      "IMAGE"
     ],
     [
       69,
-      6,
+      1,
       0,
-      24,
-      5,
-      "CFZ_BUNDLE"
+      28,
+      0,
+      "CFZ_PROJECT"
     ],
     [
       70,
       7,
+      2,
+      28,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      71,
+      7,
+      1,
+      28,
+      2,
+      "IMAGE"
+    ],
+    [
+      72,
+      1,
       0,
+      29,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      73,
+      8,
+      2,
+      29,
+      1,
+      "CFZ_CHARACTER"
+    ],
+    [
+      74,
+      8,
+      1,
+      29,
+      2,
+      "IMAGE"
+    ],
+    [
+      75,
+      1,
+      0,
+      30,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      76,
+      14,
+      0,
+      30,
+      1,
+      "CFZ_VIDEO"
+    ],
+    [
+      77,
+      22,
+      0,
+      30,
+      2,
+      "CFZ_VIDEO"
+    ],
+    [
+      78,
+      15,
+      0,
+      30,
+      3,
+      "CFZ_VIDEO"
+    ],
+    [
+      79,
+      16,
+      0,
+      30,
+      4,
+      "CFZ_VIDEO"
+    ],
+    [
+      80,
+      17,
+      0,
+      30,
+      5,
+      "CFZ_VIDEO"
+    ],
+    [
+      81,
+      18,
+      0,
+      30,
+      6,
+      "CFZ_VIDEO"
+    ],
+    [
+      82,
+      19,
+      0,
+      30,
+      7,
+      "CFZ_VIDEO"
+    ],
+    [
+      83,
+      20,
+      0,
+      30,
+      8,
+      "CFZ_VIDEO"
+    ],
+    [
+      84,
+      21,
+      0,
+      30,
+      9,
+      "CFZ_VIDEO"
+    ],
+    [
+      85,
+      23,
+      0,
+      30,
+      10,
+      "CFZ_VIDEO"
+    ],
+    [
+      86,
       24,
+      0,
+      30,
+      11,
+      "CFZ_VIDEO"
+    ],
+    [
+      87,
+      25,
+      0,
+      30,
+      12,
+      "CFZ_VIDEO"
+    ],
+    [
+      88,
+      26,
+      0,
+      30,
+      13,
+      "CFZ_VIDEO"
+    ],
+    [
+      89,
+      27,
+      0,
+      30,
+      14,
+      "CFZ_VIDEO"
+    ],
+    [
+      90,
+      28,
+      0,
+      30,
+      15,
+      "CFZ_VIDEO"
+    ],
+    [
+      91,
+      29,
+      0,
+      30,
+      16,
+      "CFZ_VIDEO"
+    ],
+    [
+      92,
+      1,
+      0,
+      31,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      93,
+      2,
+      0,
+      31,
+      1,
+      "CFZ_BUNDLE"
+    ],
+    [
+      94,
+      3,
+      0,
+      31,
+      2,
+      "CFZ_BUNDLE"
+    ],
+    [
+      95,
+      4,
+      0,
+      31,
+      3,
+      "CFZ_BUNDLE"
+    ],
+    [
+      96,
+      5,
+      0,
+      31,
+      4,
+      "CFZ_BUNDLE"
+    ],
+    [
+      97,
+      6,
+      0,
+      31,
+      5,
+      "CFZ_BUNDLE"
+    ],
+    [
+      98,
+      7,
+      0,
+      31,
       6,
       "CFZ_BUNDLE"
     ],
     [
-      71,
+      99,
       8,
       0,
-      24,
+      31,
       7,
       "CFZ_BUNDLE"
     ],
     [
-      72,
+      100,
       9,
       0,
-      24,
+      31,
       8,
       "CFZ_BUNDLE"
     ],
     [
-      73,
+      101,
       10,
       0,
-      24,
+      31,
       9,
       "CFZ_BUNDLE"
     ],
     [
-      74,
+      102,
       11,
       0,
-      24,
+      31,
       10,
       "CFZ_BUNDLE"
     ],
     [
-      75,
+      103,
       12,
       0,
-      24,
+      31,
       11,
       "CFZ_BUNDLE"
     ],
     [
-      76,
+      104,
       13,
       0,
-      24,
+      31,
       12,
       "CFZ_BUNDLE"
     ]
@@ -2342,11 +2979,11 @@
   "groups": [
     {
       "id": 1,
-      "title": "Startup image + menu and fight-intro videos",
+      "title": "Startup image + menu, select and fight videos",
       "bounding": [
         2035,
         45,
-        960,
+        1430,
         1730
       ],
       "color": "#6f4f7f",

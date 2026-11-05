@@ -238,6 +238,12 @@ async function main(options) {
       assert.deepEqual(archiveFiles.get(target.src), archiveFiles.get(`sources/${intro.src}`), 'Introduction video bytes are preserved');
     }
     if (video?.fighterIntros?.length) report.checks.push(`${video.fighterIntros.length} fighter introduction videos mapped and retained`);
+    for (const idle of video?.selectIdles || []) {
+      const target = runtime.fighters.find(fighter => fighter.id === idle.fighter)?.selectVideo;
+      assert.ok(target?.src && archiveFiles.has(target.src), `Select idle loop is mapped: ${idle.fighter}`);
+      assert.deepEqual(archiveFiles.get(target.src), archiveFiles.get(`sources/${idle.src}`), 'Select idle bytes are preserved');
+    }
+    if (video?.selectIdles?.length) report.checks.push(`${video.selectIdles.length} select idle loops mapped and retained`);
     report.poseCount = poseCount; report.exportedFiles = archiveFiles.size; report.zipBytes = fs.statSync(archive).size;
     report.checks.push('ZIP record bounds and CRC checksums', 'all source artwork retained', `${poseCount} mapped fighter poses`);
     saveReport();
@@ -342,7 +348,7 @@ async function main(options) {
     await game.click('#settings-open'); await game.click('[data-tab="lab"]'); await game.click('#settings-open'); await game.selectOption('#lab-filter', 'fighters'); await game.click('#settings-close');
     assert.equal(await game.locator('.asset-card img').count(), poseCount);
     await game.screenshot({ path: path.join(output, 'sprite-gallery.png'), fullPage: true }); report.screenshots.push('sprite-gallery.png');
-    const clipCount = [video?.titleVideo, video?.selectVideo, video?.openingVideo].filter(Boolean).length + (video?.fighterIntros?.length || 0);
+    const clipCount = [video?.titleVideo, video?.selectVideo, video?.openingVideo].filter(Boolean).length + (video?.fighterIntros?.length || 0) + (video?.selectIdles?.length || 0);
     if (clipCount) {
       await game.click('#settings-open'); await game.selectOption('#lab-filter', 'video'); await game.click('#settings-close');
       assert.equal(await game.locator('.asset-card video').count(), clipCount, 'Asset lab lists every generated video');

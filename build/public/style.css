@@ -536,3 +536,5 @@ body[data-scene=fight] .fight-heading,body[data-scene=intro] .fight-heading { to
 /* The HUD and callouts draw on a 2D canvas above the arena; clicks and focus go to the arena underneath. */
 .canvas-wrap { position:relative; }
 .arena-hud { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+/* Generated idle loops are the card art; intro clips only ever sit darkened behind the hero. */
+.fighter-card .fighter-art video.card-idle { z-index:1; filter:none; object-position:50% 25%; }

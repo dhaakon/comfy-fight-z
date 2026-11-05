@@ -9,10 +9,10 @@ const ROOT = path.resolve(__dirname, '../..');
 
 test('complete example has six text-only fighters, a final boss, three arenas, both mapped exports and all audio', () => {
   const { workflow, prompt, plan } = buildExample(config, PLACEHOLDER, { seed: 100 });
-  assert.equal(Object.keys(prompt).length, 232);
+  assert.equal(Object.keys(prompt).length, 239);
   // 89 game images plus the startup ensemble; 99 clips; the menu loop and seven fight introductions.
-  assert.equal(plan.expectedAssets, 90); assert.equal(plan.expectedAudio, 99); assert.equal(plan.expectedVideos, 9); assert.equal(plan.runtimePoses, 315);
-  assert.equal(plan.total.estimatedUSD, 13.1179544); assert.equal(plan.media.videoSeconds, 44);
+  assert.equal(plan.expectedAssets, 90); assert.equal(plan.expectedAudio, 99); assert.equal(plan.expectedVideos, 16); assert.equal(plan.runtimePoses, 315);
+  assert.equal(plan.total.estimatedUSD, 18.8596904); assert.equal(plan.media.videoSeconds, 86);
   assert.ok(plan.manifests.includes('bundle/video.json'));
   assert.equal(plan.image.oneK, 47); assert.equal(plan.image.twoK, 42);
   assert.equal(plan.audio.voiceCharacters, 4081); assert.equal(plan.audio.musicSeconds, 503); assert.ok(Math.abs(plan.audio.effectsSeconds - 15.9) < 1e-9);
@@ -50,7 +50,7 @@ test('example preparation is offline by default, portable, and preserves previou
     fs.rmSync(directory, { recursive: true, force: true });
   });
   const result = await prepare({ out: directory, fetchImpl: () => { throw new Error('Offline preparation attempted network access'); } });
-  assert.equal(result.generationSubmitted, false); assert.equal(result.total.paidImages, 97); assert.equal(result.total.paidVideoClips, 9);
+  assert.equal(result.generationSubmitted, false); assert.equal(result.total.paidImages, 104); assert.equal(result.total.paidVideoClips, 16);
   assert.equal(result.bundle, path.join(directory, 'bundle'));
   const file = path.join(directory, 'workflow.api.json'), before = fs.readFileSync(file);
   const prompt = JSON.parse(before), project = Object.values(prompt).find(node => node.class_type === 'CFZProjectSettings');
