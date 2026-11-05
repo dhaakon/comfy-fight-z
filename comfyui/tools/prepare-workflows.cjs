@@ -25,8 +25,29 @@ const POSES = {
   kickwind: 'front knee raised and chambered before a kick to the right', heavywind: 'rear arm pulled far back, torso coiled for a heavy blow',
   roll: 'evasive forward roll, body tucked in a tight ball', blowback: 'powerful two-handed palm strike or spinning kick that blasts the opponent away to the right',
   super: 'dramatic super-move stance, both arms thrust forward to the right with compact energy', dizzy: 'dazed stagger, wobbly knees, hand on forehead',
-  win2: 'second celebratory victory pose, different from the first', lose: 'defeated, kneeling on one knee with the head bowed'
+  win2: 'second celebratory victory pose, different from the first', lose: 'defeated, kneeling on one knee with the head bowed',
+  // Optional sheetF/sheetG motion cels: strike transitions, passing steps, dash, the breathing loop and air/guard reactions.
+  load: 'strike anticipation, weight shifted onto the rear foot, lead shoulder turned in, rear fist chambered at the hip, the same stance width and foot placement as idle',
+  punchwhip: 'straight punch caught halfway through its extension toward the right, elbow still bent, torso rotating into the blow, a short speed streak on the fist',
+  kickwhip: 'roundhouse kick caught halfway, knee chambered high and the foot snapping out toward the right, arms counterbalancing',
+  recoil: 'follow-through after a heavy punch, the punching arm dropping past the hip, torso carried forward beyond the stance, rear heel lifted',
+  settle: 'returning to guard after a strike, both hands rising back toward the chin, knees re-bending, weight centering between the feet',
+  stepin: 'walking passing step, both feet nearly together beneath the hips, body slightly raised, guard up',
+  stepout: 'the opposite walking passing step, the other foot passing beneath the hips, guard up',
+  dashload: 'dash anticipation, deep knee bend with the torso pitched forward and both arms swept back',
+  dashpass: 'mid-dash, a low forward leap with both feet just off the ground, body nearly horizontal, arms trailing',
+  idle1: 'breathing frame 1 of the neutral stance, identical to idle with the chest beginning to rise',
+  idle2: 'breathing frame 2 of the neutral stance, shoulders and fists a few pixels higher than idle',
+  idle3: 'breathing frame 3 of the neutral stance, chest lifted, elbows drifting slightly outward',
+  idle4: 'breathing frame 4 of the neutral stance, near the top of the inhale, fists at their highest',
+  idle5: 'breathing frame 5 of the neutral stance, the deepest inhale with shoulders highest, feet unchanged',
+  apex: 'compact jump apex, knees tucked up, body curled, arms close to the chest, the highest point of the jump',
+  land: 'landing compression, knees deeply bent, feet planted wide, torso low, arms out for balance',
+  kickrecoil: 'follow-through after the roundhouse, the kicking leg sweeping down and across past the body, torso turned, arms counterbalancing',
+  guardhit: 'absorbing a blocked hit, forearms crossed and jolted back, weight pushed onto the rear foot, feet sliding, head tucked',
 };
+// The CLI plan keeps the 45-pose layout (a complete bundle holds at most 100 mapped assets); the optional
+// motion sheets come from the factory and cast pipelines, which generate them per fighter.
 const allSheets = config => ({ ...config.sheets, ...(config.extraSheets || {}) });
 const GREEN = 'Flat uniform chroma green background RGB(0,255,0), no gradient, no floor shadow, no green on the subject, no lettering, borders, watermark, props outside the silhouette or detached debris. All clothing, shoes, soles, skin and accessories are fully opaque in their specified non-green colors: NO green apparel, green footwear, green reflections or translucent green body parts. Chroma green belongs only outside the character. Leave ample clear green padding around the whole subject. Use a solid clean ink silhouette, without a colored outline fringe. Accessories remain attached to the character; exactly one of each visible accessory.';
 

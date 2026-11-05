@@ -20,19 +20,19 @@ test('a cast file extends the canonical art direction and layout and invents eve
 
 test('the six-fighter cast run prices every image, the startup media and the audio in one workflow', () => {
   const { workflow, prompt, plan, game } = buildCast(loadCast(CAST), root, { seed: 9 });
-  assert.deepEqual([count(prompt, 'CFZCharacterFactory'), count(prompt, 'CFZSpriteSheet'), count(prompt, 'CFZEnvironmentFactory'), count(prompt, 'CFZSharedArtFactory')], [6, 30, 1, 1]);
+  assert.deepEqual([count(prompt, 'CFZCharacterFactory'), count(prompt, 'CFZSpriteSheet'), count(prompt, 'CFZEnvironmentFactory'), count(prompt, 'CFZSharedArtFactory')], [6, 42, 1, 1]);
   assert.deepEqual([count(prompt, 'CFZTitleArt'), count(prompt, 'CFZTitleVideo'), count(prompt, 'CFZSelectVideo'), count(prompt, 'CFZIntroVideo'), count(prompt, 'CFZSelectIdleVideo'), count(prompt, 'CFZExportVideos'), count(prompt, 'CFZExportGameAssets')], [1, 1, 1, 6, 6, 1, 1]);
   assert.equal(count(prompt, 'CFZSaveAudio'), 89); assert.equal(count(prompt, 'CFZExportAudioManifest'), 1);
-  // Sheets B-E of every fighter reference sheet A so scale and facing stay consistent.
+  // Sheets B-G of every fighter reference sheet A so scale and facing stay consistent.
   const sheets = Object.values(prompt).filter(node => node.class_type === 'CFZSpriteSheet');
-  assert.equal(sheets.filter(node => node.inputs.reference_sheet).length, 24);
+  assert.equal(sheets.filter(node => node.inputs.reference_sheet).length, 36);
   for (const node of Object.values(prompt)) for (const value of Object.values(node.inputs)) if (Array.isArray(value)) assert.ok(prompt[value[0]], 'Every link resolves');
   const project = Object.values(prompt).find(node => node.class_type === 'CFZProjectSettings');
   assert.equal(project.inputs.root_directory, root); assert.equal(project.inputs.seed, 9); assert.equal(project.inputs.subtitle, 'Blue Wave Saga');
   assert.ok(project.inputs.style.includes('hometown champions'));
-  assert.deepEqual(plan.images, { paidImages: 81, oneK: 48, twoK: 33, mappedAssets: 76, estimatedUSD: 4.68468 });
+  assert.deepEqual(plan.images, { paidImages: 93, oneK: 48, twoK: 45, mappedAssets: 88, estimatedUSD: 5.549544 });
   assert.deepEqual([plan.videos.clips, plan.videos.seconds, plan.videos.model, plan.videos.resolution, plan.videos.estimatedUSD, plan.audio.clips], [14, 76, 'Seedance 1.5 Pro', '1080p', 4.484, 89]);
-  assert.equal(plan.total.estimatedUSD, 10.318226); assert.equal(plan.generationSubmitted, false); assert.equal(plan.runtimePoses, 270);
+  assert.equal(plan.total.estimatedUSD, 11.18309); assert.equal(plan.generationSubmitted, false); assert.equal(plan.runtimePoses, 270);
   assert.deepEqual(plan.fighters, ['keystone', 'cheddar', 'saguaro', 'beacon', 'bluebonnet', 'sunflower']); assert.deepEqual(plan.stages, ['statehouse']);
   assert.equal(game.fighters.length, 6);
   assert.equal(workflow.nodes.filter(node => node.type !== 'MarkdownNote').length, Object.keys(prompt).length);
@@ -43,12 +43,12 @@ test('media and audio can be left out and the plan prices only what remains', ()
   const images = buildCast(cast, root, { media: false, audio: false });
   assert.equal(count(images.prompt, 'CFZTitleArt') + count(images.prompt, 'CFZIntroVideo') + count(images.prompt, 'CFZSaveAudio'), 0);
   assert.equal(images.plan.videos, null); assert.equal(images.plan.audio, null);
-  assert.deepEqual(images.plan.images, { paidImages: 68, oneK: 36, twoK: 32, mappedAssets: 75, estimatedUSD: 4.036032 });
-  assert.equal(images.plan.total.estimatedUSD, 4.036032);
+  assert.deepEqual(images.plan.images, { paidImages: 80, oneK: 36, twoK: 44, mappedAssets: 87, estimatedUSD: 4.900896 });
+  assert.equal(images.plan.total.estimatedUSD, 4.900896);
   const stills = buildCast(cast, root, { media: false });
-  assert.equal(stills.plan.audio.clips, 89); assert.equal(stills.plan.total.estimatedUSD, 5.185578);
+  assert.equal(stills.plan.audio.clips, 89); assert.equal(stills.plan.total.estimatedUSD, 6.050442);
   const ltx = buildCast({ ...cast, videoModel: 'LTX-2.5 (Fast)', videoResolution: '720p' }, root);
-  assert.equal(ltx.plan.videos.estimatedUSD, 9.7812); assert.equal(ltx.plan.total.estimatedUSD, 15.615426);
+  assert.equal(ltx.plan.videos.estimatedUSD, 9.7812); assert.equal(ltx.plan.total.estimatedUSD, 16.48029);
   assert.throws(() => validateCast({ ...cast, videoModel: 'Sora' }), /Unsupported video model/);
 });
 
@@ -87,7 +87,7 @@ test('a satire cast caricatures named public figures from text only and prices t
   assert.ok(cast.fighters.every(f => f.fullName && f.race && !f.sourceImage && !f.sourceInput && f.description.includes('caricature')));
   assert.match(cast.about, /no photographs, voices or other media of the real people/);
   const { plan } = buildCast(cast, root);
-  assert.equal(plan.total.estimatedUSD, 10.313192); assert.equal(plan.images.paidImages, 81);
+  assert.equal(plan.total.estimatedUSD, 11.178056); assert.equal(plan.images.paidImages, 93);
   const plain = JSON.parse(JSON.stringify(cast)); delete plain.publicFigures;
   assert.throws(() => validateCast(plain), /fighters are invented/);
   const anonymous = JSON.parse(JSON.stringify(cast)); delete anonymous.fighters[0].fullName;

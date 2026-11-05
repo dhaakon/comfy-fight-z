@@ -63,7 +63,7 @@ export function validateManifest(input) {
     }
   }
   if (game.fighters.filter(fighter => fighter.boss === true).length > 1) throw new Error('A game can include at most one final boss.');
-  const layouts = { ...(game.sheets || {}), ...(game.extraSheets || {}) };
+  const layouts = { ...(game.sheets || {}), ...(game.extraSheets || {}), ...(game.motionSheets || {}) };
   if (!Array.isArray(manifest.assets) || !manifest.assets.length || manifest.assets.length > 1024) throw new Error('Manifest needs between 1 and 1024 mapped assets.');
   const ids = new Set(), paths = new Set(), outputs = new Set();
   for (const asset of manifest.assets) {

@@ -11,8 +11,10 @@ const write = (file, value) => {
 const SCHEMAS = read('comfyui/workflows/templates/compact-factory-schema.json');
 const WIDGET_TYPES = new Set(['STRING', 'BOOLEAN', 'COMBO', 'INT', 'FLOAT']);
 
-// Arcade art per fighter: two optional in-between sheets (2K) and one ending illustration (1K).
+// Arcade art per fighter: two optional in-between sheets (2K) and one ending illustration (1K);
+// motion art adds two more 2K sheets (strike transitions, breathing loop and air cels).
 const arcade = config => !!config.extraSheets;
+const motion = config => arcade(config) && !!config.motionSheets;
 function factoryCounts(config, allEnvironments = false) {
   const fighters = config.fighters.length, extras = arcade(config);
   const environments = allEnvironments ? config.stages : config.stages.filter(s => s.enabled);
@@ -20,8 +22,9 @@ function factoryCounts(config, allEnvironments = false) {
   const inventedCharacters=config.fighters.filter(item=>item.sourceMode==='Invent fictional reference').length;
   const inventedEnvironments=environments.filter(item=>item.sourceMode==='Invent fictional reference').length;
   // Shared art: title, select, logo, HUD, icons and the menu frame at 1K, plus the 2K effects sheet.
-  const oneK = fighters * (extras ? 5 : 4) + 6 + inventedCharacters, twoK = fighters * (extras ? 5 : 3) + stages + 1 + inventedEnvironments;
-  return { paidImages: oneK + twoK, sourceSaves: fighters + stages, mappedAssets: fighters * (extras ? 11 : 8) + stages * 2 + 7,
+  const sheets = extras ? motion(config) ? 7 : 5 : 3;
+  const oneK = fighters * (extras ? 5 : 4) + 6 + inventedCharacters, twoK = fighters * sheets + stages + 1 + inventedEnvironments;
+  return { paidImages: oneK + twoK, sourceSaves: fighters + stages, mappedAssets: fighters * (sheets + (extras ? 6 : 5)) + stages * 2 + 7,
     oneK, twoK, estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072).toFixed(6)) };
 }
 
@@ -114,12 +117,12 @@ function arcadeValues(fighter) {
   return { fighting_style: fighter.style || 'balanced', super_name: fighter.superMove?.name || '', super_description: fighter.superMove?.description || '',
     win_quote: fighter.winQuote || '', ending: fighter.ending || '', role: fighter.boss ? 'Final boss' : 'Fighter' };
 }
-function characterValues(fighter, includeSheets = true, includeArcade = true) {
+function characterValues(fighter, includeSheets = true, includeArcade = true, includeMotion = true) {
   const source_mode=fighter.sourceMode||'Upload reference';
   return { image: source_mode==='Invent fictional reference'?'':fighter.sourceInput || '', source_mode, name: fighter.name, description: fighter.description,
     special_name: fighter.specialMove.name, special_description: fighter.specialMove.description,
     intro_tagline: fighter.introTagline || '', color: fighter.color, character_id: fighter.id, include_sprite_sheets: includeSheets,
-    ...arcadeValues(fighter), include_arcade_art: includeArcade };
+    ...arcadeValues(fighter), include_arcade_art: includeArcade, include_motion_art: includeArcade && includeMotion };
 }
 function environmentValues(stage) {
   const source_mode=stage.sourceMode||'Upload reference';
@@ -169,7 +172,7 @@ function makeFactoryGraph(config, { media: withMedia = true } = {}) {
   const project = b.node('CFZProjectSettings', 'Project settings | output folder + game title', projectValues(config), [-510, 120], [450, 470]);
   const bundles = [];
   config.fighters.forEach((fighter, i) => {
-    const character = b.node('CFZCharacterFactory', fighter.boss ? `Final boss | ${fighter.name}` : `Character ${i + 1} | ${fighter.name}`, characterValues(fighter, true, arcade(config)),
+    const character = b.node('CFZCharacterFactory', fighter.boss ? `Final boss | ${fighter.name}` : `Character ${i + 1} | ${fighter.name}`, characterValues(fighter, true, arcade(config), motion(config)),
       [(i % 3) * 490, 120 + Math.floor(i / 3) * 820], [440, 720]);
     character.color = fighter.boss ? '#4b2630' : '#26374b'; character.bgcolor = fighter.boss ? '#341720' : '#172334';
     b.connect(project, 0, character, 'project'); bundles.push(character);
@@ -196,7 +199,7 @@ function makeFactoryGraph(config, { media: withMedia = true } = {}) {
 function makeCharacterTemplate(config) {
   const fighter = config.fighters[0], b = graphBuilder(`${config.title}: one character pack`);
   const project = b.node('CFZProjectSettings', 'Separate character patch folder', projectValues(config, `character-${fighter.id}`), [-510, 110], [440, 470]);
-  const character = b.node('CFZCharacterFactory', 'Upload character | identity, selection and ending art', characterValues(fighter, false, arcade(config)), [0, 110], [440, 720]);
+  const character = b.node('CFZCharacterFactory', 'Upload character | identity, selection and ending art', characterValues(fighter, false, arcade(config), motion(config)), [0, 110], [440, 720]);
   b.connect(project, 0, character, 'project');
   const bundles = [character];
   const sheets = arcade(config) ? ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE'] : ['sheet', 'sheetB', 'sheetC'];
@@ -268,7 +271,7 @@ function makeExpansionGraph(config, { rootDirectory } = {}) {
   if (boss) {
     // Internal sheets are off: five visible sheet nodes reuse the boss identity, so at most four
     // art calls run together (workspaces limited to one concurrent job rate-limit larger bursts).
-    const node = b.node('CFZCharacterFactory', `Final boss | ${boss.name}`, characterValues(boss, false, true), [3060, 110], [440, 720]);
+    const node = b.node('CFZCharacterFactory', `Final boss | ${boss.name}`, characterValues(boss, false, true, false), [3060, 110], [440, 720]);
     node.color = '#4b2630'; node.bgcolor = '#341720';
     b.connect(project, 0, node, 'project'); bundles.push(node);
     ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE'].forEach((sheet, i) => {
@@ -319,4 +322,4 @@ function prepareFactory() {
   console.log(`Prepared compact ${main.nodes.filter(node => node.type !== 'MarkdownNote').length}-node factory (six fighters, final boss, three environments, startup image and videos), four focused templates and matching builder downloads. No generation submitted.`);
 }
 if (require.main === module) prepareFactory();
-module.exports = { factoryCounts, mediaCounts, videoRate, VIDEO_RATES, expansionCounts, attachMedia, graphBuilder, characterValues, environmentValues, projectValues, attachExporter, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };
+module.exports = { factoryCounts, mediaCounts, motion, videoRate, VIDEO_RATES, expansionCounts, attachMedia, graphBuilder, characterValues, environmentValues, projectValues, attachExporter, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };

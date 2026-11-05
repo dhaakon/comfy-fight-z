@@ -39,9 +39,9 @@ Satire casts are the one exception: `"publicFigures": true` plus a `fullName` pe
 node build/tools/new-game.cjs prepare --cast comfyui/casts/<name>.json --out output/test-runs/<name>-<date>
 ```
 
-Writes `workflow.json` (open it in ComfyUI to inspect), `workflow.api.json` (what runs), `plan.json` (the estimate), `cast.json` (the merged configuration) and `pipeline.json` (the step log). The estimate for six fighters and one arena with everything is about **$10.3** with Seedance 1.5 Pro at 1080p: 81 images ($4.68), 14 silent clips / 76 s ($4.48), 89 audio clips ($1.15); the same run on LTX-2.5 Fast is about $15.6 ($9.78 of video). `--no-media` drops the ensemble, menu loop, select loop, intros and idle loops (still art is used instead, ≈ $5.8); `--no-audio` drops the music, calls, effects and voices.
+Writes `workflow.json` (open it in ComfyUI to inspect), `workflow.api.json` (what runs), `plan.json` (the estimate), `cast.json` (the merged configuration) and `pipeline.json` (the step log). The estimate for six fighters and one arena with everything is about **$11.2** with Seedance 1.5 Pro at 1080p: 93 images ($5.55), 14 silent clips / 76 s ($4.48), 89 audio clips ($1.15); the same run on LTX-2.5 Fast is about $16.5 ($9.78 of video). `--no-media` drops the ensemble, menu loop, select loop, intros and idle loops (still art is used instead, ≈ $6.1); `--no-audio` drops the music, calls, effects and voices.
 
-Formula (list prices in `plan.rates`): per fighter 6 × 1K + 5 × 2K images, per arena 2 × 2K, shared art 6 × 1K + 1 × 2K; media adds 2 × 1K per fighter, one 2K ensemble, 8 s + 8 s loops and 4 s + 6 s per fighter at the video model's per-second rate.
+Formula (list prices in `plan.rates`): per fighter 6 × 1K + 7 × 2K images (five key/in-between sheets plus the two motion sheets: sheetF strike transitions, sheetG breathing loop and air cels), per arena 2 × 2K, shared art 6 × 1K + 1 × 2K; media adds 2 × 1K per fighter, one 2K ensemble, 8 s + 8 s loops and 4 s + 6 s per fighter at the video model's per-second rate. A cast without `motionSheets` skips the two motion sheets ($0.14 per fighter) and plays with the 45-pose fallbacks.
 
 ## 3. Run (paid, explicit approval)
 
@@ -76,7 +76,13 @@ node build/tools/new-game.cjs reroll-art --run output/test-runs/<name>-<date> --
 node build/tools/new-game.cjs reroll-art --run output/test-runs/<name>-<date> --asset marshall_intro --approve-usd 0.57   # keyframe + 4 s clip
 ```
 
-It uploads the fighter's accepted identity (and the stage, for an intro) from the bundle to ComfyUI, rebuilds the character from the cast text with the free definition node, generates with an offset seed, and patches the record in `assets.json` or `video.json` itself. `--asset title_video` and `--asset select_video` redraw the menu loops from the accepted ensemble and select art the same way. `--video-model` / `--video-resolution` override the run's project settings for that clip (this is how a run made on LTX moves its clips to Seedance). Do these after any whole-workflow re-roll, because the whole-workflow exporters rewrite the manifests from their own cached records.
+It uploads the fighter's accepted identity (and the stage, for an intro) from the bundle to ComfyUI, rebuilds the character from the cast text with the free definition node, generates with an offset seed, and patches the record in `assets.json` or `video.json` itself. A run made before the motion sheets existed gets them the same way:
+
+```
+node build/tools/new-game.cjs add-sheets --run output/test-runs/<name>-<date> --approve-usd 0.87   # sheetF + sheetG for every fighter, $0.144 per fighter
+```
+
+It uploads each fighter's identity and accepted sheet A (as `reference_sheet`), generates the two sheets one node at a time, appends their records and `game.motionSheets` to `assets.json`, and leaves everything else untouched. `--asset title_video` and `--asset select_video` redraw the menu loops from the accepted ensemble and select art the same way. `--video-model` / `--video-resolution` override the run's project settings for that clip (this is how a run made on LTX moves its clips to Seedance). Do these after any whole-workflow re-roll, because the whole-workflow exporters rewrite the manifests from their own cached records.
 
 ## 5. Export and install
 

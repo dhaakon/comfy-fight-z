@@ -25,10 +25,10 @@ Descriptions control artwork and introductions. Implement different combat mecha
 
 | Source mode | Environments | Paid image calls | Mapped records | Approximate cost |
 | --- | ---: | ---: | ---: | ---: |
-| Invent fictional reference | 3 | 90 | 90 | $5.33 |
-| Invent fictional reference | 1 | 86 | 86 | $5.05 |
-| Upload reference | 3 | 80 | 90 | $4.78 |
-| Upload reference | 1 | 78 | 86 | $4.64 |
+| Invent fictional reference | 3 | 104 | 104 | $6.34 |
+| Invent fictional reference | 1 | 100 | 100 | $6.05 |
+| Upload reference | 3 | 94 | 104 | $5.79 |
+| Upload reference | 1 | 90 | 100 | $5.50 |
 | Classic set: Invent, `include_arcade_art` off, no boss | 1 | 57 | 57 | $3.24 |
 | Arcade expansion of an accepted classic bundle | 2 new | 33 | 33 | $2.09 |
 | Startup image and videos in the main template (seven fighters) | — | 15 + 16 LTX clips (86 s) | 1 + `video.json` | $11.81 |

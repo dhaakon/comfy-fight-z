@@ -71,14 +71,16 @@ function buildSmoke(input, directory, preparedAt = new Date().toISOString()) {
   // Count paid calls from the selected nodes: optional arcade art adds two 2K sheets and a 1K ending per fighter.
   const invents = node => node.widgets_values_named.source_mode === 'Invent fictional reference';
   const arcade = node => node.widgets_values_named.include_arcade_art !== false;
+  // Motion art (sheetF/sheetG) rides on the arcade art: two more 2K sheets per fighter.
+  const motion = node => arcade(node) && node.widgets_values_named.include_motion_art !== false;
   const oneK = fighters.reduce((sum, node) => sum + 4 + (arcade(node) ? 1 : 0) + (invents(node) ? 1 : 0), 0) + 6;
-  const twoK = fighters.reduce((sum, node) => sum + 3 + (arcade(node) ? 2 : 0), 0) + 1 + (invents(stage) ? 1 : 0) + 1;
-  const mappedAssets = fighters.reduce((sum, node) => sum + 8 + (arcade(node) ? 3 : 0), 0) + 2 + 7;
+  const twoK = fighters.reduce((sum, node) => sum + 3 + (arcade(node) ? 2 : 0) + (motion(node) ? 2 : 0), 0) + 1 + (invents(stage) ? 1 : 0) + 1;
+  const mappedAssets = fighters.reduce((sum, node) => sum + 8 + (arcade(node) ? 3 : 0) + (motion(node) ? 2 : 0), 0) + 2 + 7;
   const plan = {
     title: 'Comfy Fighter Z generation smoke test', preparedAt,
     workflow: path.join(directory, 'workflow.api.json'), bundle: path.join(directory, 'bundle'),
     fighters: fighters.map(node => node.widgets_values_named.character_id), stage: stage.widgets_values_named.stage_id,
-    paidImages: oneK + twoK, oneK, twoK, mappedAssets, runtimePoses: fighters.reduce((sum, node) => sum + 27 + (arcade(node) ? 18 : 0), 0),
+    paidImages: oneK + twoK, oneK, twoK, mappedAssets, runtimePoses: fighters.reduce((sum, node) => sum + 27 + (arcade(node) ? 18 : 0) + (motion(node) ? 18 : 0), 0),
     estimatedUSD: Number((oneK * 0.048048 + twoK * 0.072072).toFixed(6)),
     model: project.widgets_values_named.model, source: 'Fresh text-only fictional designs; no image files loaded.',
     audio: false, video: false, paidRetries: 0, generationSubmitted: false,

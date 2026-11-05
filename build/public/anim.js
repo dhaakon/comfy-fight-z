@@ -4,22 +4,32 @@
   else root.FighterAnim = animation;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (E) {
   'use strict';
-  // Pose choreography follows the reference game's wind-up, intermediate, contact,
-  // follow-through and return sequence. Transforms stay visual: hitboxes never move.
+  // Pose choreography follows the arcade reference: a held load, a one-frame whip on heavy strikes,
+  // a contact cel that persists into recovery, a recoil, then a settle back to guard. A strike never
+  // returns to its wind-up drawing. Transforms stay visual: hitboxes never move.
   const SEQUENCES = {
     standing: { punch: ['stance2', 'block', 'punch'], kick: ['stance2', 'lkick', 'kick'], heavy: ['block', 'punch', 'hpunch'],
       rising: ['crouch', 'getup', 'launcher'], rush: ['stance2', 'dash', 'kick'], armorRush: ['stance2', 'dash', 'hpunch'], rekka: ['stance2', 'lkick', 'kick'],
       throw: ['stance2', 'throw', 'throw'], commandGrab: ['stance2', 'throw', 'throw'], blowback: ['block', 'hpunch', 'hpunch'], gcBlowback: ['block', 'hpunch', 'hpunch'] },
-    crouch: { punch: ['crouch', 'crouch', 'cjab'], kick: ['crouch', 'lkick', 'sweep'], heavy: ['crouch', 'getup', 'launcher'] },
+    // Low and aerial attacks keep their posture through the whole move; an upright cel in the middle reads as a flash.
+    crouch: { punch: ['crouch', 'crouch', 'cjab'], kick: ['crouch', 'crouch', 'sweep'], heavy: ['crouch', 'getup', 'launcher'] },
     air: { punch: ['jump', 'jump', 'airpunch'], kick: ['jump', 'lkick', 'airkick'], heavy: ['jump', 'airpunch', 'airpunch'] }
   };
   // Optional sheetD/sheetE poses replace these frames when a fighter has them.
   const WINDUPS = { punch: 'punchwind', kick: 'kickwind', heavy: 'heavywind', blowback: 'heavywind', gcBlowback: 'heavywind' };
+  // Optional motion sheets (sheetF/sheetG): a one-frame whip before heavy contact and a follow-through after it.
+  const HEAVY = new Set(['kick', 'heavy', 'blowback', 'gcBlowback', 'rush', 'armorRush']);
+  const WHIPS = { kick: 'kickwhip', heavy: 'punchwhip', blowback: 'kickwhip', gcBlowback: 'kickwhip', rush: 'punchwhip', armorRush: 'punchwhip' };
+  const RECOILS = { kick: 'kickrecoil', rekka: 'kickrecoil', blowback: 'kickrecoil', gcBlowback: 'kickrecoil' };
   const SHOTS = new Set(['special', 'fireball', 'fastball', 'doubleball', 'skyshot', 'super']);
+  // The neutral loop: six breathing drawings played out and back with eased holds (90 frames), as in the arcade reference.
+  const IDLE_CYCLE = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], IDLE_HOLDS = [15, 9, 6, 6, 9, 15, 9, 6, 6, 9];
   // Missing optional poses fall back to the closest required pose.
   const FALLBACKS = { walk3: 'stance2', walk4: 'stance2', run: 'dash', run2: 'dash', backstep: 'jump', jumpfall: 'jump', crouchblock: 'crouch',
     hitlow: 'hit', hitheavy: 'hit', punchwind: 'stance2', kickwind: 'lkick', heavywind: 'block', roll: 'tumble', blowback: 'hpunch',
-    super: 'special', dizzy: 'hit', win2: 'win', lose: 'getup' };
+    super: 'special', dizzy: 'hit', win2: 'win', lose: 'getup',
+    load: 'stance2', punchwhip: 'punch', kickwhip: 'lkick', recoil: 'hpunch', settle: 'stance2', stepin: 'walk3', stepout: 'walk4', dashload: 'crouch', dashpass: 'dash',
+    idle1: 'idle', idle2: 'idle', idle3: 'idle', idle4: 'idle', idle5: 'idle', apex: 'entrance', land: 'crouch', kickrecoil: 'kick', guardhit: 'block' };
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   function sample(f, state = {}, options = {}) {
     state = state || {};
@@ -53,7 +63,8 @@
     } else if (f.stun > 0) {
       result.phase = f.pose === 'block' ? 'guard' : 'hit';
       const reaction = f.crouching ? pick('hitlow', 'hit') : f.heavyHit ? pick('hitheavy', 'hit') : 'hit';
-      result.pose = f.launched ? f.y > 0 ? 'tumble' : f.stun > 5 ? 'down' : 'getup' : f.pose === 'block' ? f.crouching ? pick('crouchblock', 'crouch') : 'block' : f.stun <= 3 ? 'stance2' : reaction;
+      const guarding = f.crouching ? pick('crouchblock', 'crouch') : pick('guardhit', 'block');
+      result.pose = f.launched ? f.y > 0 ? 'tumble' : f.stun > 5 ? 'down' : 'getup' : f.pose === 'block' ? guarding : f.stun <= 3 ? pick('settle', 'stance2') : reaction;
       // Impact: a sharp shove and squash on the first frames of the reaction.
       const impact = f.pose === 'block' ? 0 : Math.max(0, 1 - (f.hitAge || 0) / 3);
       result.dx = -(f.pose === 'block' ? 5 : 14 + 6 * impact) * Math.min(1, f.stun / 10);
@@ -70,15 +81,27 @@
     } else if (f.move && E.moveData(f)) {
       const move = E.moveData(f), t = f.moveFrame, activeEnd = move.startup + move.active;
       const base = SEQUENCES[f.moveVariant]?.[f.move] || SEQUENCES.standing[f.move] || ['stance2', 'powerup', 'special'];
-      const windup = f.moveVariant === 'standing' && WINDUPS[f.move];
+      const standing = f.moveVariant === 'standing', windup = standing && WINDUPS[f.move];
       const sequence = windup && has(windup) ? [windup, windup, base[2]] : base;
       const recovery = clamp((t - activeEnd) / Math.max(1, move.recovery), 0, 1);
       result.phase = t < move.startup ? 'anticipation' : t < activeEnd ? 'contact' : 'recovery';
-      if (f.move === 'super') result.pose = t < 4 ? 'stance2' : t < move.startup ? 'powerup' : recovery < .6 ? pick('super', 'special') : recovery < .85 ? 'punch' : 'stance2';
-      else if (SHOTS.has(f.move)) result.pose = t < 4 ? 'stance2' : t < move.startup ? 'powerup' : recovery < .55 ? 'special' : recovery < .82 ? 'punch' : 'stance2';
+      // The settle cel returns to guard; without it the stance cel of the base sequence stands in, never the wind-up.
+      const settle = standing ? pick('settle', base[0]) : sequence[0];
+      if (f.move === 'super') result.pose = t < 4 ? 'stance2' : t < move.startup ? 'powerup' : recovery < .6 ? pick('super', 'special') : recovery < .85 ? 'punch' : settle;
+      else if (SHOTS.has(f.move)) result.pose = t < 4 ? 'stance2' : t < move.startup ? 'powerup' : recovery < .55 ? 'special' : recovery < .82 ? 'punch' : settle;
       else if (['blowback', 'gcBlowback'].includes(f.move) && t >= move.startup && recovery < .45) result.pose = pick('blowback', 'hpunch');
-      // The contact cel holds through half the recovery, passes the return cel briefly, then snaps to the stance.
-      else result.pose = t < move.startup * .4 ? sequence[0] : t < move.startup ? sequence[1] : recovery < .5 ? sequence[2] : recovery < .8 ? sequence[1] : sequence[0];
+      else if (t < move.startup) {
+        // The load holds through startup. Heavy strikes draw one whip on the last startup frame so the extension has contrast.
+        const whip = standing && HEAVY.has(f.move) && t === move.startup - 1 && has(WHIPS[f.move]);
+        const load = standing && has('load') && !windup ? 'load' : null;
+        result.pose = whip ? WHIPS[f.move] : load || (t < move.startup * .4 ? sequence[0] : sequence[1]);
+      } else {
+        // Contact persists into recovery, then a recoil (heavy) and a settle; lights go straight from contact to the settle.
+        const hold = HEAVY.has(f.move) ? 3 : 2, recoil = standing && pick(RECOILS[f.move] || 'recoil', null);
+        if (t < activeEnd + hold) result.pose = sequence[2];
+        else if (HEAVY.has(f.move) && recovery < .5) result.pose = recoil || sequence[2];
+        else result.pose = standing ? settle : recovery < .8 ? sequence[1] : sequence[0];
+      }
       const strength = ['heavy', 'rising', 'rush', 'armorRush', 'blowback', 'gcBlowback'].includes(f.move) ? 1.35 : SHOTS.has(f.move) ? .7 : 1;
       if (result.phase === 'anticipation') {
         // A fast coil in the first frames, held until release. Pose art already
@@ -97,17 +120,18 @@
       result.phase = 'dash'; result.pose = pick('backstep', 'jump'); result.trail = true;
       result.rotation = .04 * f.dashDir * f.facing;
     } else if (f.running) {
-      result.phase = 'run'; result.pose = [pick('run', 'dash'), pick('run2', 'dash')][Math.floor(beat / 4) % 2]; result.trail = true;
+      result.phase = 'run'; result.pose = [pick('run', 'dash'), pick('dashpass', pick('run2', 'dash'))][Math.floor(beat / 4) % 2]; result.trail = true;
       result.rotation = .03;
     } else if (f.jumpSquat > 0) {
-      result.phase = 'jumpsquat'; result.pose = 'crouch'; result.sx = 1.08; result.sy = .88;
+      result.phase = 'jumpsquat'; result.pose = pick('land', 'crouch'); result.sx = 1.08; result.sy = .88;
     } else if (f.y > 0) {
       result.phase = 'air';
-      result.pose = f.vy < -2 && has('jumpfall') ? 'jumpfall' : Math.abs(f.vy) < 4 ? 'entrance' : 'jump';
+      result.pose = f.vy < -2 && has('jumpfall') ? 'jumpfall' : Math.abs(f.vy) < 4 ? pick('apex', 'entrance') : 'jump';
       result.sx = 1 - Math.min(.04, Math.abs(f.vy) * .003); result.sy = 1 + Math.min(.05, Math.abs(f.vy) * .004);
       result.rotation = clamp((f.vx || 0) * f.facing * .008, -.03, .03);
     } else if (f.landFrames > 0) {
-      result.phase = 'landing'; result.pose = f.landFrames > 3 ? 'crouch' : 'stance2';
+      // Landing compression, then a brief settle before the stance.
+      result.phase = 'landing'; result.pose = f.landFrames > 3 ? pick('land', 'crouch') : pick('settle', 'stance2');
       result.sx = 1 + .1 * f.landFrames / 6; result.sy = 1 - .13 * f.landFrames / 6;
     } else if (f.crouching || f.pose === 'crouch') {
       result.phase = 'crouch'; result.pose = f.guard ? pick('crouchblock', 'crouch') : 'crouch'; result.sy = 1 + Math.sin(beat / 15) * .005;
@@ -116,13 +140,21 @@
       // the simulation says a hit will be blocked, even if velocity is nonzero.
       result.phase = 'guard'; result.pose = 'block'; result.sy = .99;
     } else if (Math.abs(f.vx || 0) > .1) {
-      result.phase = 'walk'; result.pose = ['walk', pick('walk3', 'stance2'), 'walk2', pick('walk4', 'stance2')][Math.floor(beat / 5) % 4];
+      // A 24-frame stride: stride, passing step, opposite stride, passing step; walking backwards runs it in reverse.
+      const w = f.vx * (f.facing || 1) < 0 ? 23 - beat % 24 : beat % 24;
+      result.phase = 'walk'; result.pose = w < 8 ? 'walk' : w < 12 ? pick('stepin', pick('walk3', 'walk')) : w < 20 ? 'walk2' : pick('stepout', pick('walk4', 'walk2'));
       // The walk poses have individual foot anchors. Translating the entire
       // sprite upward on every step made both feet visibly float off the floor.
       result.dy = 0;
       result.rotation = .024 * Math.sign(f.vx * f.facing); result.sy = 1 + Math.sin(beat * Math.PI / 6) * .01;
+    } else if (has('idle1') && has('idle2') && has('idle3') && has('idle4') && has('idle5')) {
+      // The breathing loop restarts from the neutral drawing whenever the fighter returns to neutral.
+      let phase = (Number.isFinite(f.standFrames) ? f.standFrames + (f.slot || 0) * 9 : beat) % 90, cel = 0;
+      for (let i = 0; i < IDLE_HOLDS.length; i++) { if (phase < IDLE_HOLDS[i]) { cel = IDLE_CYCLE[i]; break; } phase -= IDLE_HOLDS[i]; }
+      result.pose = cel ? `idle${cel}` : 'idle';
     } else {
-      result.pose = Math.floor(beat / 26) % 2 ? 'stance2' : 'idle'; result.sy = 1 + Math.sin(beat / 11) * .012;
+      // One stance held with a breath; alternating two unrelated drawings makes the body pop.
+      result.pose = 'idle'; result.sy = 1 + Math.sin(beat / 11) * .015; result.sx = 1 - Math.sin(beat / 11) * .005;
     }
     if (options.reducedMotion) { result.dx = 0; result.dy = 0; result.sx = 1; result.sy = 1; result.rotation = 0; result.trail = false; result.flash = 0; result.spin = 0; }
     return result;
@@ -182,5 +214,5 @@
     }
     return { draw };
   }
-  return { SEQUENCES, FALLBACKS, sample, resolvePose, createRenderer };
+  return { SEQUENCES, FALLBACKS, IDLE_CYCLE, IDLE_HOLDS, sample, resolvePose, createRenderer };
 });

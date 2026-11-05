@@ -163,10 +163,13 @@
   function resetView() { Object.assign(view, { x: (E.WIDTH - 960) / 2, zoom: 1, lift: 0, shake: 0, particles: [], combos: [null, null], seen: new WeakSet() }); }
   function updateCamera(fighters, snap) {
     const [a, b] = fighters, distance = Math.abs(a.x - b.x), mid = (a.x + b.x) / 2;
-    const targetZoom = reducedMotion.matches ? 1 : Math.max(1, Math.min(1.14, 960 / (distance + 260)));
-    const targetLift = reducedMotion.matches ? 0 : Math.min(70, Math.max(a.y, b.y) * .35);
+    // MvC-style framing: fighters fill over half the frame when close (zoom 1.42, about 59% of the height)
+    // and the camera eases out to the full span as they separate or leave the ground.
+    const highest = Math.max(a.y, b.y), byDistance = 1200 / (distance + 420), byHeight = (FLOOR - 24) / (highest + E.SPRITE_HEIGHT + 30);
+    const targetZoom = reducedMotion.matches ? 1 : Math.max(1, Math.min(1.42, byDistance, byHeight));
+    const targetLift = reducedMotion.matches ? 0 : Math.min(70, highest * .35);
     const ease = snap ? 1 : .12;
-    view.zoom += (targetZoom - view.zoom) * ease; view.lift += (targetLift - view.lift) * ease;
+    view.zoom += (targetZoom - view.zoom) * (snap ? 1 : .08); view.zoom = Math.min(1.6, view.zoom); view.lift += (targetLift - view.lift) * ease;
     const span = 960 / view.zoom, targetX = Math.max(0, Math.min(E.WIDTH - span, mid - span / 2));
     view.x += (targetX - view.x) * (snap ? 1 : .18);
     view.x = Math.max(0, Math.min(E.WIDTH - span, view.x));

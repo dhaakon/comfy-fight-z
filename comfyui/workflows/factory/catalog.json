@@ -8,20 +8,20 @@
   "bossSlots": 1,
   "environmentSlots": 3,
   "defaults": {
-    "paidImages": 90,
+    "paidImages": 104,
     "sourceSaves": 10,
-    "mappedAssets": 90,
+    "mappedAssets": 104,
     "oneK": 48,
-    "twoK": 42,
-    "estimatedUSD": 5.333328
+    "twoK": 56,
+    "estimatedUSD": 6.342336
   },
   "allEnvironments": {
-    "paidImages": 90,
+    "paidImages": 104,
     "sourceSaves": 10,
-    "mappedAssets": 90,
+    "mappedAssets": 104,
     "oneK": 48,
-    "twoK": 42,
-    "estimatedUSD": 5.333328
+    "twoK": 56,
+    "estimatedUSD": 6.342336
   },
   "expansion": {
     "paidImages": 33,

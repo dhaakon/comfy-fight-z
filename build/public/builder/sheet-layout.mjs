@@ -75,7 +75,8 @@ export function segmentSheet(data, width, height) {
 
 // Poses drawn standing on both feet with no raised arm or attached effect; their body height should match the idle cel.
 export const UPRIGHT_POSES = new Set(['idle', 'stance2', 'walk', 'walk2', 'walk3', 'walk4', 'run', 'run2', 'backstep', 'block', 'punch', 'hpunch',
-  'kick', 'lkick', 'punchwind', 'kickwind', 'heavywind', 'blowback', 'throw', 'entrance', 'dizzy']);
+  'kick', 'lkick', 'punchwind', 'kickwind', 'heavywind', 'blowback', 'throw', 'entrance', 'dizzy',
+  'load', 'punchwhip', 'recoil', 'settle', 'stepin', 'stepout', 'idle1', 'idle2', 'idle3', 'idle4', 'idle5', 'guardhit']);
 // Generated sheets drift in body scale from one image to the next. Each sheet is corrected by the median of
 // its upright poses against the idle cel, then every upright pose is trimmed to the idle height (within 12%),
 // so idle/stance and the walk cycle no longer pulse between cels. Other poses keep their own proportions.

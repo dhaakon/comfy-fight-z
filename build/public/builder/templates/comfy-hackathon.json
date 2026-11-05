@@ -154,6 +154,7 @@
         "Well done. Just how I like my steaks, and my opponents.",
         "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
         "Fighter",
+        true,
         true
       ],
       "widgets_values_named": {
@@ -173,7 +174,8 @@
         "win_quote": "Well done. Just how I like my steaks, and my opponents.",
         "ending": "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
         "role": "Fighter",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -246,6 +248,7 @@
         "Tightened every loose bolt. You were the last one.",
         "Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner.",
         "Fighter",
+        true,
         true
       ],
       "widgets_values_named": {
@@ -265,7 +268,8 @@
         "win_quote": "Tightened every loose bolt. You were the last one.",
         "ending": "Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner.",
         "role": "Fighter",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -338,6 +342,7 @@
         "You were off-beat from the very first round.",
         "Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune.",
         "Fighter",
+        true,
         true
       ],
       "widgets_values_named": {
@@ -357,7 +362,8 @@
         "win_quote": "You were off-beat from the very first round.",
         "ending": "Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune.",
         "role": "Fighter",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -430,6 +436,7 @@
         "Storms pass. Gardens grow. You lost.",
         "Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own.",
         "Fighter",
+        true,
         true
       ],
       "widgets_values_named": {
@@ -449,7 +456,8 @@
         "win_quote": "Storms pass. Gardens grow. You lost.",
         "ending": "Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own.",
         "role": "Fighter",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -522,6 +530,7 @@
         "Delivered. No signature required.",
         "Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner.",
         "Fighter",
+        true,
         true
       ],
       "widgets_values_named": {
@@ -541,7 +550,8 @@
         "win_quote": "Delivered. No signature required.",
         "ending": "Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner.",
         "role": "Fighter",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -614,6 +624,7 @@
         "Built to last. You were not.",
         "Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin.",
         "Fighter",
+        true,
         true
       ],
       "widgets_values_named": {
@@ -633,7 +644,8 @@
         "win_quote": "Built to last. You were not.",
         "ending": "Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin.",
         "role": "Fighter",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": true
       },
       "color": "#26374b",
       "bgcolor": "#172334"
@@ -706,6 +718,7 @@
         "Appeal denied. Permanently.",
         "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
         "Final boss",
+        true,
         true
       ],
       "widgets_values_named": {
@@ -725,7 +738,8 @@
         "win_quote": "Appeal denied. Permanently.",
         "ending": "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
         "role": "Final boss",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": true
       },
       "color": "#4b2630",
       "bgcolor": "#341720"
@@ -2121,7 +2135,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# Comfy Fighter Z\n## Invent fictional fighters and a final boss. Build your arcade game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Six fighter slots plus one Final boss slot close Arcade mode. Environment 1 supplies the title/select venue; disable slots 2 and 3 to build a one-stage game. Each fighter's arcade art adds two in-between sheets (45 poses) and an ending illustration. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 90 image calls / 90 mapped assets (about $5.333). Source-reference generation is included when Invent is selected. The startup image and videos add 15 image calls and 16 silent LTX clips (86 seconds), about $11.813. Audio is the separate comfy-audio.json. Opening this graph spends nothing."
+        "# Comfy Fighter Z\n## Invent fictional fighters and a final boss. Build your arcade game.\n\nThe demo cards use Invent fictional reference: they create fresh designs from text and ignore the image selector. No photos or old sheets are loaded. To use your own new image, explicitly switch that card to Upload reference. Six fighter slots plus one Final boss slot close Arcade mode. Environment 1 supplies the title/select venue; disable slots 2 and 3 to build a one-stage game. Each fighter's arcade art adds two in-between sheets (45 poses) and an ending illustration. Set a NEW output folder, then load its assets.json + raw/ in /builder/.\n\n**CLOUD ONLY / PAID:** default 104 image calls / 104 mapped assets (about $6.342). Source-reference generation is included when Invent is selected. The startup image and videos add 15 image calls and 16 silent LTX clips (86 seconds), about $11.813. Audio is the separate comfy-audio.json. Opening this graph spends nothing."
       ]
     },
     {

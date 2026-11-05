@@ -8,16 +8,16 @@
 // for the shared art direction and the sheet layout; see comfyui/docs/new-game-runbook.md.
 const fs = require('node:fs');
 const path = require('node:path');
-const { graphBuilder, characterValues, environmentValues, projectValues, attachExporter, attachMedia, mediaCounts, factoryCounts, videoRate, VIDEO_RATES } = require('./prepare-factory-workflows.cjs');
+const { graphBuilder, characterValues, environmentValues, projectValues, attachExporter, attachMedia, mediaCounts, factoryCounts, motion, videoRate, VIDEO_RATES } = require('./prepare-factory-workflows.cjs');
 const { makeAudioJobs, makeAudioGraph, attachAudioGraph, INTRO_VOICES } = require('./prepare-audio-workflows.cjs');
 const { apiPrompt } = require('./prepare-arcade-expansion.cjs');
 const { directoryTarget } = require('../../build/tools/lib/runtime-validation.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8'));
 const RATES = Object.freeze({ image1K: .048048, image2K: .072072, video: VIDEO_RATES, musicSecond: .0025, effectMinute: .14, speechThousandCharacters: .1144 });
-const SHEETS = ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE'];
+const SHEETS = ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE'], MOTION = ['sheetF', 'sheetG'];
 const STYLES = ['balanced', 'grappler', 'speed', 'zoner', 'trickster', 'power', 'boss'];
-const INHERITED = ['style', 'uiStyle', 'stageStyle', 'model', 'sheets', 'extraSheets'];
+const INHERITED = ['style', 'uiStyle', 'stageStyle', 'model', 'sheets', 'extraSheets', 'motionSheets'];
 const CAST_SCHEMA = 'comfy-fighter-cast/v1';
 const ID = /^[a-z][a-z0-9_]{1,23}$/;
 const round = value => Number(value.toFixed(6));
@@ -42,6 +42,7 @@ function validateCast(config) {
   const layout = read('comfyui/config/game.json');
   if (JSON.stringify(config.sheets) !== JSON.stringify(layout.sheets)) fail('sheets must match comfyui/config/game.json (the 27 required poses)');
   if (JSON.stringify(config.extraSheets) !== JSON.stringify(layout.extraSheets)) fail('extraSheets must match comfyui/config/game.json (the 18 arcade poses)');
+  if (config.motionSheets !== undefined && JSON.stringify(config.motionSheets) !== JSON.stringify(layout.motionSheets)) fail('motionSheets must match comfyui/config/game.json (the 18 motion cels) or be omitted');
   const fighters = (config.fighters || []).filter(f => f.enabled !== false), stages = (config.stages || []).filter(s => s.enabled !== false);
   if (fighters.length < 2 || fighters.length > 8) fail('between two and eight enabled fighters');
   if (stages.length < 1 || stages.length > 3) fail('between one and three enabled stages');
@@ -80,12 +81,12 @@ function buildCast(config, bundleRoot, { seed = 42, media = true, audio = true, 
   const bundles = [];
   const characters = fighters.map((fighter, i) => {
     // Internal sheets off: five visible sheet nodes reuse the identity, so the factory runs at most four art calls at once.
-    const character = b.node('CFZCharacterFactory', `Character ${i + 1} | ${fighter.name}`, characterValues({ ...fighter, sourceMode: 'Invent fictional reference' }, false, true), [0, 120 + i * 1250], [440, 720]);
+    const character = b.node('CFZCharacterFactory', `Character ${i + 1} | ${fighter.name}`, characterValues({ ...fighter, sourceMode: 'Invent fictional reference' }, false, true, motion(config)), [0, 120 + i * 1250], [440, 720]);
     b.connect(project, 0, character, 'project'); bundles.push(character);
     // Sheets B-E take sheet A as a second reference so scale, line weight and facing stay consistent.
     let first = null;
-    SHEETS.forEach((sheet, j) => {
-      const node = b.node('CFZSpriteSheet', `${fighter.name} | sheet ${'ABCDE'[j]}`, { sheet }, [490, 120 + i * 1250 + j * 235], [420, 170]);
+    [...SHEETS, ...(motion(config) ? MOTION : [])].forEach((sheet, j) => {
+      const node = b.node('CFZSpriteSheet', `${fighter.name} | sheet ${'ABCDEFG'[j]}`, { sheet }, [490, 120 + i * 1250 + j * 235], [420, 170]);
       b.connect(project, 0, node, 'project'); b.connect(character, 2, node, 'character'); b.connect(character, 1, node, 'reference'); bundles.push(node);
       if (first) b.connect(first, 1, node, 'reference_sheet'); else first = node;
     });

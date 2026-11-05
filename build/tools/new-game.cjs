@@ -4,6 +4,7 @@
 //   node build/tools/new-game.cjs review  --run output/test-runs/<name>
 //   node build/tools/new-game.cjs reroll  --run output/test-runs/<name> --node <id or title> --approve-usd <amount>
 //   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle>|title_video|select_video --approve-usd <amount> [--video-model <name>] [--video-resolution 720p|1080p]
+//   node build/tools/new-game.cjs add-sheets --run output/test-runs/<name> --approve-usd <amount> [--sheets sheetF,sheetG] [--fighters a,b]
 //   node build/tools/new-game.cjs export  --run output/test-runs/<name> [--out output/exports/<name>]
 //   node build/tools/new-game.cjs install --run output/test-runs/<name> [--slot <id>]
 //   node build/tools/new-game.cjs status  --run output/test-runs/<name>
@@ -20,7 +21,7 @@ const now = () => new Date().toISOString();
 
 function parse(argv) {
   const [command, ...rest] = argv, options = {};
-  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution'];
+  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters'];
   for (let i = 0; i < rest.length; i++) {
     if (rest[i] === '--no-media') options.media = false;
     else if (rest[i] === '--no-audio') options.audio = false;
@@ -30,7 +31,7 @@ function parse(argv) {
   }
   return { command, options };
 }
-const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|export|install|status> ... (see the header of this file).';
+const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|add-sheets|export|install|status> ... (see the header of this file).';
 
 function runDirectory(options) {
   if (!options.run) throw new Error('Supply --run output/test-runs/<name>.');
@@ -328,12 +329,90 @@ async function rerollArt(options) {
   console.log(`Redrew ${options.asset} → ${entry.file}. Review again, then export to a fresh folder.`);
 }
 
+// Add the optional motion sheets (sheetF: strike transitions; sheetG: breathing loop and air cels) to a run that was
+// generated without them. Cache-independent like reroll-art: the accepted identity and sheet A are uploaded from the
+// bundle, the character is rebuilt from the cast text, and the new sheet records join assets.json.
+const MOTION_SHEETS = ['sheetF', 'sheetG'];
+function sheetPlan(workflow, bundleGame, options = {}) {
+  const sheets = (options.sheets ? options.sheets.split(',') : MOTION_SHEETS).map(s => s.trim()).filter(Boolean);
+  const layouts = read(path.join(ROOT, 'comfyui/config/game.json')).motionSheets || {};
+  for (const sheet of sheets) if (!layouts[sheet]) throw new Error(`--sheets must name motion sheets from comfyui/config/game.json (${Object.keys(layouts).join(', ')}).`);
+  const wanted = options.fighters ? options.fighters.split(',').map(s => s.trim()) : bundleGame.fighters.map(f => f.id);
+  const fighters = wanted.map(id => {
+    const factory = Object.keys(workflow).find(key => workflow[key].class_type === 'CFZCharacterFactory' && workflow[key].inputs.character_id === id);
+    if (!factory) throw new Error(`No character factory for ${id} in workflow.api.json.`);
+    return { id, factory };
+  });
+  const estimatedUSD = Number((fighters.length * sheets.length * RATES.image2K).toFixed(6));
+  return { sheets, layouts, fighters, estimatedUSD };
+}
+async function addSheets(options) {
+  const directory = runDirectory(options), bundle = path.join(directory, 'bundle'), workflow = read(path.join(directory, 'workflow.api.json'));
+  const assetsFile = path.join(bundle, 'assets.json');
+  if (!fs.existsSync(assetsFile)) throw new Error('No bundle/assets.json yet; run the generation first.');
+  const assets = read(assetsFile), planned = sheetPlan(workflow, assets.game, options), approved = Number(options.approveUsd);
+  const existing = planned.fighters.flatMap(f => planned.sheets.filter(sheet => assets.assets.some(asset => asset.id === `${f.id}_${sheet}`)).map(sheet => `${f.id}_${sheet}`));
+  if (existing.length) throw new Error(`Already in the bundle: ${existing.join(', ')}. Use reroll-art style redraws for existing sheets.`);
+  if (!Number.isFinite(approved) || approved < planned.estimatedUSD) throw new Error(`Adding ${planned.sheets.join('+')} for ${planned.fighters.length} fighter(s) costs about $${planned.estimatedUSD}; pass --approve-usd ${Math.ceil(planned.estimatedUSD * 100) / 100} (or more) once authorized.`);
+  const server = (options.server || 'http://127.0.0.1:8188').replace(/\/$/, '');
+  const project = Object.values(workflow).find(node => node.class_type === 'CFZProjectSettings');
+  const probe = { probe: { class_type: 'CFZSpriteSheet', inputs: { sheet: planned.sheets[0] } } };
+  const missing = await missingNodes({ ...probe, def: { class_type: 'CFZCharacterDefinition' }, load: { class_type: 'LoadImage' } }, server);
+  if (missing.length) throw new Error(`The running ComfyUI lacks ${missing.join(', ')}; install the node pack and restart it.`);
+  const info = await (await fetch(`${server}/object_info/CFZSpriteSheet`)).json(), choices = info.CFZSpriteSheet?.input?.required?.sheet?.[1]?.options || [];
+  for (const sheet of planned.sheets) if (!choices.includes(sheet)) throw new Error(`The running ComfyUI's CFZSpriteSheet predates ${sheet}; reinstall the node pack and restart ComfyUI.`);
+  const upload = async record => {
+    if (!record) throw new Error('The bundle lacks a reference image this sheet needs.');
+    const name = path.basename(record.src), form = new FormData();
+    form.append('image', new Blob([fs.readFileSync(path.join(bundle, record.src))], { type: 'image/png' }), name); form.append('subfolder', 'cfz-redraw'); form.append('overwrite', 'true');
+    const response = await fetch(`${server}/upload/image`, { method: 'POST', body: form });
+    if (!response.ok) throw new Error(`ComfyUI refused the reference upload (${response.status}).`);
+    const uploaded = await response.json(); return `${uploaded.subfolder ? uploaded.subfolder + '/' : ''}${uploaded.name}`;
+  };
+  const { submit, outcome } = require('../../comfyui/tools/run-sequential.cjs'), { loadImage } = require('@napi-rs/canvas'), crypto = require('node:crypto');
+  const state = pipeline(directory); state.addedSheets = state.addedSheets || [];
+  const prompt = { project: { class_type: 'CFZProjectSettings', inputs: { ...project.inputs }, _meta: { title: `Project settings | motion sheets` } } };
+  const saves = [];
+  for (const fighter of planned.fighters) {
+    const factory = workflow[fighter.factory];
+    const definition = Object.fromEntries(['name', 'description', 'special_name', 'special_description', 'intro_tagline', 'color', 'character_id', 'fighting_style', 'super_name', 'super_description', 'win_quote', 'ending', 'role'].filter(key => factory.inputs[key] !== undefined).map(key => [key, factory.inputs[key]]));
+    prompt[`${fighter.id}_character`] = { class_type: 'CFZCharacterDefinition', inputs: definition, _meta: { title: `Character | ${fighter.id}` } };
+    prompt[`${fighter.id}_reference`] = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.id === `${fighter.id}_reference`)) }, _meta: { title: `Accepted identity | ${fighter.id}` } };
+    prompt[`${fighter.id}_sheetA`] = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.id === `${fighter.id}_sheet`)) }, _meta: { title: `Accepted sheet A | ${fighter.id}` } };
+    for (const sheet of planned.sheets) {
+      const id = `${fighter.id}_${sheet}`;
+      prompt[id] = { class_type: 'CFZSpriteSheet', inputs: { project: ['project', 0], character: [`${fighter.id}_character`, 0], reference: [`${fighter.id}_reference`, 0], reference_sheet: [`${fighter.id}_sheetA`, 0], sheet }, _meta: { title: `${fighter.id} | ${sheet}` } };
+      prompt[`keep_${id}`] = { class_type: 'PreviewAny', inputs: { source: [id, 0] }, _meta: { title: `keep ${id}` } };
+      saves.push({ fighter: fighter.id, sheet, id });
+    }
+  }
+  const file = path.join(directory, `add-sheets-${Date.now()}.api.json`); fs.writeFileSync(file, JSON.stringify(prompt, null, 2) + '\n');
+  const entry = { at: now(), sheets: planned.sheets, fighters: planned.fighters.map(f => f.id), estimatedUSD: planned.estimatedUSD, approvedUSD: approved, prompt: path.basename(file) };
+  state.addedSheets.push(entry); fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
+  console.log(`Generating ${planned.sheets.join(' and ')} for ${planned.fighters.length} fighter(s) (about $${planned.estimatedUSD}), one paid node at a time.`);
+  const status = node([path.join(ROOT, 'comfyui/tools/run-sequential.cjs'), '--workflow', file, '--server', server]);
+  if (status !== 0) { entry.ok = false; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n'); throw new Error('The sequential run did not finish; rerun add-sheets with the same arguments to resume from the cache.'); }
+  // Each sheet node saved its PNG under raw/<id>-<hash>.png; record them like the exporter would.
+  const raw = fs.readdirSync(path.join(bundle, 'raw'));
+  for (const save of saves) {
+    const files = raw.filter(name => name.startsWith(`${save.id}-`) && name.endsWith('.png')).map(name => ({ name, time: fs.statSync(path.join(bundle, 'raw', name)).mtimeMs })).sort((a, b) => b.time - a.time);
+    if (!files.length) throw new Error(`No saved image for ${save.id} in bundle/raw.`);
+    const target = path.join(bundle, 'raw', files[0].name), bytes = fs.readFileSync(target), digest = crypto.createHash('sha256').update(bytes).digest('hex'), image = await loadImage(bytes);
+    assets.assets.push({ id: save.id, kind: 'sprites', fighter: save.fighter, key: true, poses: planned.layouts[save.sheet], sheet: save.sheet, src: `raw/${files[0].name}`, sha256: digest, width: image.width, height: image.height });
+  }
+  assets.game.motionSheets = planned.layouts;
+  if (Array.isArray(assets.game.expectedAssets)) assets.game.expectedAssets.push(...saves.map(save => save.id));
+  fs.writeFileSync(assetsFile, JSON.stringify(assets, null, 2) + '\n');
+  entry.ok = true; entry.added = saves.map(save => save.id); fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
+  console.log(`Added ${saves.length} sheet(s): ${saves.map(save => save.id).join(', ')}. Review again, then export to a fresh folder.`);
+}
+
 async function main(argv) {
   const { command, options } = parse(argv);
-  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, review, export: exportGame, install, status };
+  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, 'add-sheets': addSheets, review, export: exportGame, install, status };
   if (!commands[command]) throw new Error(USAGE);
   await commands[command](options);
 }
 
 if (require.main === module) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
-module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, exportGame, install, pipeline, missingNodes };
+module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, exportGame, install, pipeline, missingNodes };

@@ -132,8 +132,8 @@ Descriptions guide the artwork. The fighting style selects each character's spec
 
 | Complete image batch | Paid image calls | Approximate cost |
 | --- | ---: | ---: |
-| Six invented fighters + final boss + three arenas, 45 poses each | 90 | $5.33 |
-| The same cast with The Yard only | 86 | $5.05 |
+| Six invented fighters + final boss + three arenas, 63 poses each (45 key and in-between poses plus 18 motion cels) | 104 | $6.34 |
+| The same cast with The Yard only | 100 | $6.05 |
 | Classic set: six fighters + The Yard, 27 poses, no boss or endings | 57 | $3.24 |
 | Startup image and videos for seven fighters (15 images + 16 silent LTX clips, 86 seconds) | 15 | $11.81 |
 
@@ -145,12 +145,12 @@ Each fighter costs 11 image calls with arcade art (source, identity, five sheets
 node comfyui/tools/prepare-duo-run.cjs --out output/test-runs/my-duo
 ```
 
-It covers two fighters in The Yard: all game art, the startup image, the menu video, two fight intros and 61 audio clips. That is 36 images, 6 clips and 61 audio clips, about **$7.68** (a run with six-second intros on November 4, 2026 billed $5.79). Run its `workflow.api.json` with the sequential runner described above, then export `bundle/` in step 4.
+It covers two fighters in The Yard: all game art including the motion sheets, the startup image, the menu video, two fight intros and 61 audio clips. That is 40 images, 6 clips and 61 audio clips, about **$7.97** (a run with six-second intros on November 4, 2026 billed $5.79). Run its `workflow.api.json` with the sequential runner described above, then export `bundle/` in step 4.
 
 **Make a whole new game from a cast file.** Describe a cast once (`comfyui/casts/blue-wave-2026.json` is the reference: six invented hometown champions and one arena) and let the pipeline do the rest. Each step is one command, only `run` spends credits, and it refuses without an explicit approval at or above the prepared estimate:
 
 ```sh
-node build/tools/new-game.cjs prepare --cast comfyui/casts/blue-wave-2026.json --out output/test-runs/blue-wave   # free: workflow + estimate (about $10.3 with Seedance 1.5 Pro clips and audio)
+node build/tools/new-game.cjs prepare --cast comfyui/casts/blue-wave-2026.json --out output/test-runs/blue-wave   # free: workflow + estimate (about $11.2 with motion sheets, Seedance 1.5 Pro clips and audio)
 node build/tools/new-game.cjs run     --run output/test-runs/blue-wave --approve-usd 16                               # paid: one node at a time
 node build/tools/new-game.cjs review  --run output/test-runs/blue-wave                                                # contact sheets + flags to read
 node build/tools/new-game.cjs reroll  --run output/test-runs/blue-wave --node "Keystone | sheet C" --approve-usd 0.08 # redraw one node, cache keeps the rest
@@ -189,7 +189,7 @@ Prepare PNG, JPEG or WebP images with clear designs:
 3. Update `name` and `description` to match your character, then edit `special_name`, `special_description` and `intro_tagline`. Keep a unique, stable `character_id` and leave **`include_sprite_sheets` enabled** in the advanced fields.
 4. Repeat for each character you want to replace. Other slots can stay in **Invent fictional reference** mode to generate their designs from text. That mode ignores the `image` selection.
 
-Each character factory uses the reference to generate an anime identity and five 3×3 sheets containing **45 poses**: 27 key poses plus 18 arcade in-betweens. It also creates a selection portrait, a full-body hero, a super-move cut-in and an ending illustration. The description, special-move, super-move and ending fields guide those images. With `include_arcade_art` off, a factory makes the classic three sheets and no ending.
+Each character factory uses the reference to generate an anime identity and seven 3×3 sheets containing **63 poses**: 27 key poses, 18 arcade in-betweens and 18 motion cels (strike load, whip, recoil and settle, passing steps, dash, a six-drawing breathing loop, jump apex, landing and guard hit) that give the fight its anticipation, contact holds and follow-through. It also creates a selection portrait, a full-body hero, a super-move cut-in and an ending illustration. The description, special-move, super-move and ending fields guide those images. With `include_arcade_art` off, a factory makes the classic three sheets and no ending.
 
 **Add your backgrounds:**
 

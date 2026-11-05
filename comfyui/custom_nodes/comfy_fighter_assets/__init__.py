@@ -39,7 +39,13 @@ EXTRA_SHEETS = {
     "sheetD": ["walk3", "walk4", "run", "run2", "backstep", "jumpfall", "crouchblock", "hitlow", "hitheavy"],
     "sheetE": ["punchwind", "kickwind", "heavywind", "roll", "blowback", "super", "dizzy", "win2", "lose"],
 }
-ALL_SHEETS = {**SHEETS, **EXTRA_SHEETS}
+# Optional motion sheets: strike transitions (load, whip, recoil, settle, passing steps, dash) and the
+# breathing loop with the jump apex, landing, kick follow-through and guard reaction. Also optional per fighter.
+MOTION_SHEETS = {
+    "sheetF": ["load", "punchwhip", "kickwhip", "recoil", "settle", "stepin", "stepout", "dashload", "dashpass"],
+    "sheetG": ["idle1", "idle2", "idle3", "idle4", "idle5", "apex", "land", "kickrecoil", "guardhit"],
+}
+ALL_SHEETS = {**SHEETS, **EXTRA_SHEETS, **MOTION_SHEETS}
 
 
 def _json_object(value, label):
@@ -109,6 +115,10 @@ def _config(value):
         if value["extraSheets"] != EXTRA_SHEETS:
             raise ValueError("config_json.extraSheets must match the optional sheetD/sheetE pose layouts")
         result["extraSheets"] = {name: list(poses) for name, poses in EXTRA_SHEETS.items()}
+    if "motionSheets" in value:
+        if value["motionSheets"] != MOTION_SHEETS:
+            raise ValueError("config_json.motionSheets must match the optional sheetF/sheetG pose layouts")
+        result["motionSheets"] = {name: list(poses) for name, poses in MOTION_SHEETS.items()}
     if sum(1 for fighter in result["fighters"] if fighter.get("boss")) > 1:
         raise ValueError("config_json can mark at most one final boss")
     for field in ("expectedAssets", "expectedAudio"):
@@ -194,7 +204,7 @@ def _metadata(value, config):
         result["poses"] = poses
         if kind == "sprites":
             sheet = value.get("sheet")
-            layouts = {**config["sheets"], **config.get("extraSheets", {})}
+            layouts = {**config["sheets"], **config.get("extraSheets", {}), **config.get("motionSheets", {})}
             if sheet not in layouts or poses != layouts[sheet]:
                 raise ValueError("Sprite sheet metadata must match its configured pose order")
             result["sheet"] = sheet

@@ -60,7 +60,8 @@ test('main factory has six fighters, a final boss, three environments and one co
 });
 
 test('factory and expansion counts are transparent for the arcade roster', () => {
-  const full = {paidImages:90,sourceSaves:10,mappedAssets:90,oneK:48,twoK:42,estimatedUSD:5.333328};
+  // Seven fighters × (6 at 1K + 7 sheets at 2K), three invented arenas, shared art, the menu frame and the invented sources.
+  const full = {paidImages:104,sourceSaves:10,mappedAssets:104,oneK:48,twoK:56,estimatedUSD:6.342336};
   assert.deepEqual(factoryCounts(config), full);
   assert.deepEqual(factoryCounts(config, true), full);
   // Without the optional arcade art the original per-fighter pack remains eight images.

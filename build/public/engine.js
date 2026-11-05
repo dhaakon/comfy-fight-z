@@ -99,7 +99,7 @@
       hitDone: false, connected: false, stun: 0, blockStun: false, guard: false, crouching: false, lastInput: {},
       dash: 0, dashDir: 0, invulnerable: 0, juggle: 0, combo: 0, comboDamage: 0, counter: false,
       running: false, skid: 0, jumpSquat: 0, hop: false, armor: 0, rekka: 0, dizzy: 0, dizzyMeter: 0,
-      quickRise: false, hardKnockdown: false, neutralFrames: 0,
+      quickRise: false, hardKnockdown: false, neutralFrames: 0, standFrames: 0,
       motions: [], taps: { left: -99, right: -99 }, pressAt: { heavy: -99 },
       buffer: { punch: 0, kick: 0, heavy: 0, special: 0, jump: 0, taunt: 0 } };
   }
@@ -187,7 +187,8 @@
     if (move.startup && source.y === 0) source.x = clamp(source.x - direction * Math.abs(pushedX - target.x), WALL, WIDTH - WALL);
     gainEnergy(target, blocked ? 4 : 7);
     gainEnergy(source, blocked ? 3 : 5);
-    state.hitstop = Math.max(state.hitstop, blocked ? 2 : move.launch || move.knockdown ? 9 : damage >= 13 ? 7 : 5);
+    // Contact pauses: 5 light, 7 heavy, 9 for launches and knockdowns, 4 on a guard, with poses, camera and effects held together.
+    state.hitstop = Math.max(state.hitstop, blocked ? 4 : move.launch || move.knockdown ? 9 : damage >= 13 ? 7 : 5);
     emit(state, blocked ? 'block' : 'hit', impactX, GROUND - target.y - 110, direction, 18, { heavy: !blocked && (damage >= 12 || !!move.launch), damage: dealt, attacker: source.slot });
     if (!blocked) {
       const slot = source.slot ?? state.fighters.indexOf(source);
@@ -562,6 +563,8 @@
         if (f.move === 'armorRush' && f.moveFrame >= move.startup + move.active) f.armor = 0;
         if (f.moveFrame >= move.startup + move.active + move.recovery && (f.move !== 'rising' || f.y === 0)) { f.move = null; f.armor = 0; f.rekka = 0; f.pose = 'idle'; }
       }
+      // Consecutive frames standing in neutral; the animation layer restarts the breathing loop from it. Visual only.
+      f.standFrames = !f.move && f.y === 0 && !f.stun && !f.dash && !f.running && !f.jumpSquat && !f.crouching && !f.dizzy && f.landFrames === 0 && Math.abs(f.vx) < .1 ? f.standFrames + 1 : 0;
       gainEnergy(f, .035);
     });
     const contacts = strikes.filter(({ source, target, move, direction }) =>

@@ -575,6 +575,14 @@
             "advanced": true,
             "default": true
           }
+        ],
+        "include_motion_art": [
+          "BOOLEAN",
+          {
+            "tooltip": "Adds the optional sheetF/sheetG motion cels (strike load, whip, recoil, settle, passing steps, dash, a six-drawing breathing loop, jump apex, landing, guard hit): two more paid 2K sheets when sheets are included.",
+            "advanced": true,
+            "default": true
+          }
         ]
       },
       "hidden": {
@@ -610,7 +618,8 @@
         "win_quote",
         "ending",
         "role",
-        "include_arcade_art"
+        "include_arcade_art",
+        "include_motion_art"
       ],
       "hidden": [
         "auth_token_comfy_org",
@@ -682,7 +691,9 @@
               "sheetB",
               "sheetC",
               "sheetD",
-              "sheetE"
+              "sheetE",
+              "sheetF",
+              "sheetG"
             ]
           }
         ]

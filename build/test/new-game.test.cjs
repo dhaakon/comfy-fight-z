@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createCanvas } = require('@napi-rs/canvas');
-const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, exportGame, install, pipeline } = require('../tools/new-game.cjs');
+const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, exportGame, install, pipeline } = require('../tools/new-game.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const CAST = 'comfyui/casts/blue-wave-2026.json';
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -35,7 +35,7 @@ test('prepare records the estimate and run refuses to spend without a sufficient
   const state = pipeline(directory);
   assert.equal(state.schema, 'comfy-fighter-pipeline/v1'); assert.equal(state.cast.id, 'blue-wave-2026'); assert.equal(state.cast.fighters.length, 6);
   assert.equal(state.steps.prepared.estimatedUSD, plan.total.estimatedUSD); assert.equal(state.steps.prepared.clips, 0);
-  await assert.rejects(run({ run: out }), /estimated at \$4\.036032; pass --approve-usd 4\.04/);
+  await assert.rejects(run({ run: out }), /estimated at \$4\.900896; pass --approve-usd 4\.91/);
   await assert.rejects(run({ run: out, approveUsd: '4' }), /pass --approve-usd/);
   assert.equal(pipeline(directory).steps.approved, undefined, 'a refused approval is not recorded');
   assert.rejects(review({ run: out }), /No bundle/);
@@ -69,13 +69,13 @@ test('a re-roll prices the node and everything downstream of it before anything 
   const out = freshRun(t), { directory } = prepare({ cast: CAST, out });
   const workflow = read(path.join(directory, 'workflow.api.json'));
   const sheetA = rerollPlan(workflow, 'Keystone | sheet A'), sheetC = rerollPlan(workflow, 'Keystone | sheet C');
-  assert.equal(sheetA.paid.length, 5, 'sheets B-E reference sheet A'); assert.equal(sheetA.estimatedUSD, 0.36036);
+  assert.equal(sheetA.paid.length, 7, 'sheets B-G reference sheet A'); assert.equal(sheetA.estimatedUSD, 0.504504);
   assert.equal(sheetC.paid.length, 1); assert.equal(sheetC.estimatedUSD, 0.072072);
   const factory = rerollPlan(workflow, 'Character 1 | Keystone');
   assert.ok(factory.paid.length >= 1 + 5 + 2 + 2, 'the factory, its sheets, intro, idle, ensemble and menu loop'); assert.ok(factory.estimatedUSD > 1.5 && factory.estimatedUSD < 3, 'Seedance clips are cheaper than LTX');
   assert.throws(() => rerollPlan(workflow, 'Export video.json'), /cannot be re-rolled/);
   assert.throws(() => rerollPlan(workflow, 'nope'), /exact title/);
-  await assert.rejects(reroll({ run: out, node: 'Keystone | sheet A', approveUsd: '0.1' }), /about \$0\.36036; pass --approve-usd 0\.37/);
+  await assert.rejects(reroll({ run: out, node: 'Keystone | sheet A', approveUsd: '0.1' }), /about \$0\.504504; pass --approve-usd 0\.51/);
   assert.equal(read(path.join(directory, 'workflow.api.json'))[sheetA.id].inputs.reroll, undefined, 'a refused re-roll changes nothing');
 });
 
@@ -96,4 +96,18 @@ test('a single-image redraw prices one derived image or clip and refuses without
   assert.throws(() => artPlan(workflow, 'nobody_cutin'), /No character factory/);
   await assert.rejects(rerollArt({ run: out, asset: 'keystone_cutin', approveUsd: '0.01' }), /about \$0\.048048; pass --approve-usd 0\.05/);
   assert.equal(pipeline(directory).artRerolls, undefined);
+});
+
+test('adding motion sheets to an existing run prices two 2K sheets per fighter and refuses without approval', async t => {
+  const out = freshRun(t), { directory } = prepare({ cast: CAST, out, media: false, audio: false });
+  const workflow = read(path.join(directory, 'workflow.api.json')), cast = read(path.join(directory, 'cast.json'));
+  const all = sheetPlan(workflow, cast), two = sheetPlan(workflow, cast, { sheets: 'sheetF', fighters: 'keystone,cheddar' });
+  assert.deepEqual([all.sheets, all.fighters.length, all.estimatedUSD], [['sheetF', 'sheetG'], 6, 0.864864]);
+  assert.deepEqual([two.sheets, two.fighters.map(f => f.id), two.estimatedUSD], [['sheetF'], ['keystone', 'cheddar'], 0.144144]);
+  assert.throws(() => sheetPlan(workflow, cast, { sheets: 'sheetD' }), /motion sheets/);
+  assert.throws(() => sheetPlan(workflow, cast, { fighters: 'nobody' }), /No character factory/);
+  fs.mkdirSync(path.join(directory, 'bundle'), { recursive: true });
+  fs.writeFileSync(path.join(directory, 'bundle/assets.json'), JSON.stringify({ schema: 'comfy-fighter-assets/v1', root: '.', game: cast, assets: [] }));
+  await assert.rejects(addSheets({ run: out, approveUsd: '0.5' }), /about \$0\.864864; pass --approve-usd 0\.87/);
+  assert.equal(pipeline(directory).addedSheets, undefined, 'a refused request records nothing');
 });

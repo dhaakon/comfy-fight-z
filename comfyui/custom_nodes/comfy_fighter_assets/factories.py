@@ -11,7 +11,7 @@ from PIL import Image
 from comfy_api.latest import Types, io, ui
 from comfy_execution.graph_utils import GraphBuilder
 
-from . import SHEETS, EXTRA_SHEETS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
+from . import SHEETS, EXTRA_SHEETS, MOTION_SHEETS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
 
 Project = io.Custom("CFZ_PROJECT")
 Character = io.Custom("CFZ_CHARACTER")
@@ -38,6 +38,24 @@ POSE_HINTS = {
     "roll": "evasive forward roll, body tucked in a tight ball", "blowback": "powerful two-handed palm strike or spinning kick that blasts the opponent away to the right",
     "super": "dramatic super-move stance, both arms thrust forward to the right with compact energy", "dizzy": "dazed stagger, wobbly knees, hand on forehead",
     "win2": "second celebratory victory pose, different from the first", "lose": "defeated, kneeling on one knee with the head bowed",
+    "load": "strike anticipation, weight shifted onto the rear foot, lead shoulder turned in, rear fist chambered at the hip, the same stance width and foot placement as idle",
+    "punchwhip": "straight punch caught halfway through its extension toward the right, elbow still bent, torso rotating into the blow, a short speed streak on the fist",
+    "kickwhip": "roundhouse kick caught halfway, knee chambered high and the foot snapping out toward the right, arms counterbalancing",
+    "recoil": "follow-through after a heavy punch, the punching arm dropping past the hip, torso carried forward beyond the stance, rear heel lifted",
+    "settle": "returning to guard after a strike, both hands rising back toward the chin, knees re-bending, weight centering between the feet",
+    "stepin": "walking passing step, both feet nearly together beneath the hips, body slightly raised, guard up",
+    "stepout": "the opposite walking passing step, the other foot passing beneath the hips, guard up",
+    "dashload": "dash anticipation, deep knee bend with the torso pitched forward and both arms swept back",
+    "dashpass": "mid-dash, a low forward leap with both feet just off the ground, body nearly horizontal, arms trailing",
+    "idle1": "breathing frame 1 of the neutral stance, identical to idle with the chest beginning to rise",
+    "idle2": "breathing frame 2 of the neutral stance, shoulders and fists a few pixels higher than idle",
+    "idle3": "breathing frame 3 of the neutral stance, chest lifted, elbows drifting slightly outward",
+    "idle4": "breathing frame 4 of the neutral stance, near the top of the inhale, fists at their highest",
+    "idle5": "breathing frame 5 of the neutral stance, the deepest inhale with shoulders highest, feet unchanged",
+    "apex": "compact jump apex, knees tucked up, body curled, arms close to the chest, the highest point of the jump",
+    "land": "landing compression, knees deeply bent, feet planted wide, torso low, arms out for balance",
+    "kickrecoil": "follow-through after the roundhouse, the kicking leg sweeping down and across past the body, torso turned, arms counterbalancing",
+    "guardhit": "absorbing a blocked hit, forearms crossed and jolted back, weight pushed onto the rear foot, feet sliding, head tucked",
 }
 # Arcade art beyond the 27 required poses: two optional in-between sheets and an ending illustration.
 ARTWORK = {
@@ -165,7 +183,7 @@ def _image_hash(filename):
 
 
 def _members(character=None, stage=None):
-    return {"fighters": [character] if character else [], "stages": [stage] if stage else [], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS}
+    return {"fighters": [character] if character else [], "stages": [stage] if stage else [], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS, "motionSheets": MOTION_SHEETS}
 
 
 def _artwork(graph, project, character, identity, kind, offset):
@@ -306,6 +324,8 @@ class CFZCharacterFactory(io.ComfyNode):
                     _source_mode_input(), *_arcade_inputs(),
                     io.Boolean.Input("include_arcade_art", default=True, optional=True, advanced=True,
                                      tooltip="Adds the optional sheetD/sheetE in-between poses (when sheets are included) and a 16:9 arcade ending illustration: up to 3 more paid images."),
+                    io.Boolean.Input("include_motion_art", default=True, optional=True, advanced=True,
+                                     tooltip="Adds the optional sheetF/sheetG motion cels (strike load, whip, recoil, settle, passing steps, dash, a six-drawing breathing loop, jump apex, landing, guard hit): two more paid 2K sheets when sheets are included."),
                     _reroll_input()],
             outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="identity"), Character.Output(display_name="character")],
             enable_expand=True, is_api_node=True)
@@ -325,7 +345,7 @@ class CFZCharacterFactory(io.ComfyNode):
             return str(error)
 
     @classmethod
-    def execute(cls, project, image, name, description, special_name, special_description, intro_tagline, color, character_id, include_sprite_sheets=True, source_mode="Upload reference", include_arcade_art=True, reroll=0, **kwargs):
+    def execute(cls, project, image, name, description, special_name, special_description, intro_tagline, color, character_id, include_sprite_sheets=True, source_mode="Upload reference", include_arcade_art=True, include_motion_art=True, reroll=0, **kwargs):
         project = _rerolled(project, reroll)
         _project(project); _source_mode(source_mode)
         character = _character(name, description, special_name, special_description, intro_tagline, color, character_id, *_arcade_values(kwargs))
@@ -346,11 +366,21 @@ class CFZCharacterFactory(io.ComfyNode):
         bundles = []
         if include_sprite_sheets:
             first = None
-            for sheet in (ALL_SHEETS if include_arcade_art else SHEETS):
+            for sheet in {**SHEETS, **(EXTRA_SHEETS if include_arcade_art else {}), **(MOTION_SHEETS if include_motion_art else {})}:
                 node = graph.node("CFZSpriteSheet", project=project, character=character, reference=identity.out(0), sheet=sheet, **({"reference_sheet": first.out(1)} if first is not None else {}))
                 bundles.append(node.out(0)); first = first or node
         bundle = _collect(graph, project, members, assets, bundles)
         return io.NodeOutput(bundle, identity.out(0), character, expand=graph.finalize())
+
+
+def _sheet_note(sheet):
+    """Key-pose sheets are not loops; the motion sheets are transition frames that must sit on the existing key poses."""
+    if sheet == "sheetG":
+        return ("Cells 1 to 5 are five consecutive breathing frames of the neutral idle stance: the identical silhouette, stance width, foot placement, head size and outfit, "
+                "changing only the chest, shoulders, elbows and fists by a few pixels, progressively deeper from cell 1 to cell 5. Cells 6 to 9 are transition frames at the same scale. ")
+    if sheet == "sheetF":
+        return "These nine cells are transition frames between this character's existing key poses: match the key-pose scale, line weight and stance exactly. "
+    return "These are named key poses, not a nine-frame animation loop. "
 
 
 class CFZSpriteSheet(io.ComfyNode):
@@ -368,7 +398,7 @@ class CFZSpriteSheet(io.ComfyNode):
         project = _rerolled(project, reroll)
         _project(project); character = _checked_character(character)
         if sheet not in ALL_SHEETS:
-            raise ValueError("Sheet must be sheet, sheetB, sheetC, sheetD or sheetE")
+            raise ValueError("Sheet must be one of " + ", ".join(ALL_SHEETS))
         poses = ALL_SHEETS[sheet]; graph = GraphBuilder(); members = _members(character=character)
         def hint(pose):
             if pose == "special":
@@ -384,7 +414,7 @@ class CFZSpriteSheet(io.ComfyNode):
                   "Every hand, shoe, hair tip, accessory and attached energy accent stays inside the central 76% of its cell, with at least 12% clear green on all four sides. The bottom row includes both feet and green below. "
                   "Keep canvas bands from 30% to 37% and 63% to 70% entirely empty green, with matching vertical green corridors between columns. No limbs cross cell boundaries. "
                   "Keep common body scale and consistent identity across all nine cells. Sweep kicks point right, launcher strikes upward-right, stance2 is an upright guard, crouch a low guard, down is a complete fallen body. "
-                  "Keep special energy compact and attached to the palms; the game supplies the traveling projectile. These are named key poses, not a nine-frame animation loop. No duplicate bodies, detached props, labels or visible cell borders. "
+                  "Keep special energy compact and attached to the palms; the game supplies the traveling projectile. " + _sheet_note(sheet) + "No duplicate bodies, detached props, labels or visible cell borders. "
                   + ("The second reference image is an accepted sheet of this character: match its body scale, line weight, colors and RIGHT-facing direction exactly, with the same cell padding. " if reference_sheet is not None else "") + KEY)
         generated = _cloud(graph, project, prompt, [reference, reference_sheet] if reference_sheet is not None else reference, "1:1", "2K", 10 + list(ALL_SHEETS).index(sheet))
         asset = _save(graph, project, generated.out(0), {"id": f"{character['id']}_{sheet}", "kind": "sprites", "fighter": character["id"], "sheet": sheet, "poses": poses, "key": True}, members)
@@ -810,7 +840,7 @@ def _export(project, bundles, complete):
         raise ValueError("Connect at least one generated asset bundle")
     if complete and (len(bundle["fighters"]) < 2 or not bundle["stages"]):
         raise ValueError("A complete game requires at least two fighters and one enabled environment")
-    config = {"title": project["title"], "subtitle": project["subtitle"], "fighters": bundle["fighters"], "stages": bundle["stages"], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS}
+    config = {"title": project["title"], "subtitle": project["subtitle"], "fighters": bundle["fighters"], "stages": bundle["stages"], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS, "motionSheets": MOTION_SHEETS}
     if sum(1 for fighter in config["fighters"] if fighter.get("boss")) > 1:
         raise ValueError("A game can include at most one final boss")
     records = []
@@ -841,7 +871,7 @@ def _export(project, bundles, complete):
                 if suffix in ALL_SHEETS:
                     expected_mapping.update(sheet=suffix, poses=ALL_SHEETS[suffix], key=True)
                 mappings[f"{fighter['id']}_{suffix}"] = expected_mapping
-                if suffix in EXTRA_SHEETS or suffix == "ending":
+                if suffix in EXTRA_SHEETS or suffix in MOTION_SHEETS or suffix == "ending":
                     optional.add(f"{fighter['id']}_{suffix}")
         for stage in config["stages"]:
             mappings[stage["id"]] = {"kind": "stage", "stage": stage["id"]}

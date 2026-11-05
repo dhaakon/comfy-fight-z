@@ -136,6 +136,7 @@
         "Well done. Just how I like my steaks, and my opponents.",
         "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
         "Fighter",
+        true,
         true
       ],
       "widgets_values_named": {
@@ -155,7 +156,8 @@
         "win_quote": "Well done. Just how I like my steaks, and my opponents.",
         "ending": "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
         "role": "Fighter",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": true
       }
     },
     {

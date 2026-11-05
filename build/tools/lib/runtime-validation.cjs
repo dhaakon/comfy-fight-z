@@ -49,7 +49,7 @@ function runtimeSources(manifest, { config, plan, strict = false } = {}) {
     const sameIds = (actual, expected) => actual.length === expected.length && new Set(actual).size === actual.length && expected.every(id => actual.includes(id));
     if (!sameIds(manifest.fighters.map(f => f.id), config.fighters.map(f => f.id)) || !sameIds(manifest.stages.map(s => s.id), config.stages.map(s => s.id))) throw new Error('Strict runtime roster and stages must match config.');
     // The 27 required poses are mandatory; optional arcade in-betweens are all-or-nothing per sheet.
-    const poses = Object.values(config.sheets).flat(), extras = Object.values(config.extraSheets || {});
+    const poses = Object.values(config.sheets).flat(), extras = [...Object.values(config.extraSheets || {}), ...Object.values(config.motionSheets || {})];
     for (const fighter of manifest.fighters) {
       const names = Object.keys(fighter.poses), expected = [...poses, ...extras.filter(sheet => sheet.some(pose => names.includes(pose))).flat()];
       if (!sameIds(names, expected)) throw new Error(`Strict runtime requires all configured pose names: ${fighter.id}`);

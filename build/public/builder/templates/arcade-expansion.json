@@ -1848,7 +1848,8 @@
         "Appeal denied. Permanently.",
         "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
         "Final boss",
-        true
+        true,
+        false
       ],
       "widgets_values_named": {
         "image": "",
@@ -1867,7 +1868,8 @@
         "win_quote": "Appeal denied. Permanently.",
         "ending": "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
         "role": "Final boss",
-        "include_arcade_art": true
+        "include_arcade_art": true,
+        "include_motion_art": false
       },
       "color": "#4b2630",
       "bgcolor": "#341720"

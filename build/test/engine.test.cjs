@@ -361,7 +361,8 @@ test('S and D together throw a knockdown blowback', () => {
 test('a stock guard-cancels blockstun into an invulnerable roll', () => {
   const s = ready(), defender = s.fighters[1]; defender.stocks = 1;
   step(s, { heavy: true }, { right: true }, 9); assert.equal(defender.blockStun, true);
-  step(s, {}, { punch: true, kick: true }); step(s, {}, {}, 3);
+  // The cancel press is buffered through the four-frame guard pause and comes out as soon as play resumes.
+  step(s, {}, { punch: true, kick: true }); step(s, {}, {}, s.hitstop + 1);
   assert.equal(defender.move, 'gcRoll'); assert.equal(defender.stocks, 0); assert.equal(defender.blockStun, false);
 });
 

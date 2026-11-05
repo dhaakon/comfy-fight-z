@@ -5,12 +5,57 @@ const E = require('../public/engine.js');
 const A = require('../public/anim.js');
 function scene() { const state = E.create(['a', 'b'], { cpu: false }); state.phase = 'fight'; return { state, fighter: state.fighters[0] }; }
 
-test('jab choreography anticipates, contacts and returns rather than holding one attack sprite', () => {
+test('jab choreography anticipates, contacts, holds briefly and settles without revisiting the wind-up', () => {
   const { state, fighter } = scene(); fighter.move = 'punch';
-  const samples = [1, 3, 5, 17, 20].map(frame => { fighter.moveFrame = frame; return A.sample(fighter, state); });
-  assert.deepEqual(samples.map(s => s.pose), ['stance2', 'block', 'punch', 'block', 'stance2']);
-  assert.deepEqual(samples.map(s => s.phase), ['anticipation', 'anticipation', 'contact', 'recovery', 'recovery']);
-  assert.ok(samples[1].dx < 0 && samples[2].dx > 0 && samples[4].dx < samples[2].dx);
+  const samples = [1, 3, 5, 10, 11, 17, 20].map(frame => { fighter.moveFrame = frame; return A.sample(fighter, state); });
+  assert.deepEqual(samples.map(s => s.pose), ['stance2', 'block', 'punch', 'punch', 'stance2', 'stance2', 'stance2']);
+  assert.deepEqual(samples.map(s => s.phase), ['anticipation', 'anticipation', 'contact', 'recovery', 'recovery', 'recovery', 'recovery']);
+  assert.ok(samples[1].dx < 0 && samples[2].dx > 0 && samples[6].dx < samples[2].dx);
+});
+
+test('heavy strikes load, whip for one frame, hold contact, recoil and settle when the motion cels exist', () => {
+  const { state, fighter } = scene(); fighter.move = 'heavy';
+  const motion = Object.fromEntries(['load', 'punchwhip', 'kickwhip', 'recoil', 'kickrecoil', 'settle', 'heavywind'].map(p => [p, {}]));
+  const { startup, active, recovery } = E.MOVES.heavy, timeline = [];
+  for (let frame = 0; frame < startup + active + recovery; frame++) { fighter.moveFrame = frame; timeline.push(A.sample(fighter, state, { poses: motion }).pose); }
+  const runs = timeline.reduce((list, pose) => { if (list.at(-1)?.pose === pose) list.at(-1).n++; else list.push({ pose, n: 1 }); return list; }, []);
+  assert.deepEqual(runs.map(r => r.pose), ['heavywind', 'punchwhip', 'hpunch', 'recoil', 'settle'], 'wind-up (sheetE) → whip → contact → recoil → settle');
+  assert.equal(runs[1].n, 1, 'The whip is a single frame'); assert.equal(runs[2].n, active + 3, 'Contact persists into recovery');
+  assert.ok(!timeline.slice(startup).includes('heavywind'), 'The wind-up never returns after contact');
+  fighter.move = 'kick'; fighter.moveFrame = E.MOVES.kick.startup - 1;
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kickwhip');
+  fighter.moveFrame = E.MOVES.kick.startup + E.MOVES.kick.active + 4;
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kickrecoil');
+  // Without the motion cels a heavy keeps its contact drawing through the recoil window, then settles on the stance.
+  fighter.move = 'heavy'; fighter.moveFrame = startup + active + 6;
+  assert.equal(A.sample(fighter, state).pose, 'hpunch'); fighter.moveFrame = startup + active + recovery - 1;
+  assert.equal(A.sample(fighter, state).pose, 'block', 'the heavy sequence settles on its own first cel');
+});
+
+test('neutral breathes on one drawing, or cycles six coherent cels with eased holds from the stand timer', () => {
+  const { state, fighter } = scene();
+  const idle = [0, 13, 26, 52].map(frame => { state.motionFrame = frame; return A.sample(fighter, state); });
+  assert.ok(idle.every(s => s.pose === 'idle'), 'No second stance drawing is flipped in while standing');
+  assert.notEqual(idle[0].sy, idle[1].sy, 'The held drawing still breathes');
+  const loop = Object.fromEntries(['idle1', 'idle2', 'idle3', 'idle4', 'idle5'].map(p => [p, {}]));
+  const cels = [];
+  for (let t = 0; t < 90; t++) { fighter.standFrames = t; cels.push(A.sample(fighter, state, { poses: loop }).pose); }
+  const runs = cels.reduce((list, pose) => { if (list.at(-1)?.pose === pose) list.at(-1).n++; else list.push({ pose, n: 1 }); return list; }, []);
+  assert.deepEqual(runs.map(r => r.pose), ['idle', 'idle1', 'idle2', 'idle3', 'idle4', 'idle5', 'idle4', 'idle3', 'idle2', 'idle1']);
+  assert.deepEqual(runs.map(r => r.n), A.IDLE_HOLDS);
+  fighter.standFrames = 90; assert.equal(A.sample(fighter, state, { poses: loop }).pose, 'idle', 'The loop returns to the neutral drawing');
+  fighter.standFrames = 0; assert.equal(A.sample(fighter, state, { poses: loop }).pose, 'idle', 'Returning to neutral restarts from the neutral drawing');
+});
+
+test('guard reactions, landings and the jump apex use their motion cels when present', () => {
+  const { state, fighter } = scene(), motion = { guardhit: {}, land: {}, settle: {}, apex: {} };
+  fighter.stun = 8; fighter.pose = 'block';
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'guardhit'); assert.equal(A.sample(fighter, state).pose, 'block');
+  fighter.stun = 0; fighter.pose = 'idle'; fighter.landFrames = 5;
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'land'); fighter.landFrames = 2;
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'settle'); assert.equal(A.sample(fighter, state).pose, 'stance2');
+  fighter.landFrames = 0; fighter.y = 120; fighter.vy = 1;
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'apex'); assert.equal(A.sample(fighter, state).pose, 'entrance');
 });
 
 test('crouching and airborne attacks use their corresponding generated pose sets', () => {
@@ -22,10 +67,15 @@ test('crouching and airborne attacks use their corresponding generated pose sets
   assert.equal(A.sample(fighter, state).pose, 'powerup');
 });
 
-test('walking has intermediate stance frames and landing has a brief anchored compression', () => {
+test('walking is a 24-frame stride with passing steps and landing has a brief anchored compression', () => {
   const { state, fighter } = scene(); fighter.vx = 3.5;
-  const poses = [0, 6, 12, 18].map(frame => { state.motionFrame = frame; return A.sample(fighter, state).pose; });
-  assert.deepEqual(poses, ['walk', 'stance2', 'walk2', 'stance2']);
+  const poses = [0, 9, 12, 21].map(frame => { state.motionFrame = frame; return A.sample(fighter, state).pose; });
+  assert.deepEqual(poses, ['walk', 'walk', 'walk2', 'walk2'], 'Without passing-step cels each stride simply holds; no standing guard is cut in');
+  const steps = { stepin: {}, stepout: {} };
+  assert.deepEqual([0, 9, 12, 21].map(frame => { state.motionFrame = frame; return A.sample(fighter, state, { poses: steps }).pose; }), ['walk', 'stepin', 'walk2', 'stepout']);
+  fighter.vx = -3.5;
+  assert.deepEqual([0, 9, 12, 21].map(frame => { state.motionFrame = frame; return A.sample(fighter, state, { poses: steps }).pose; }), ['stepout', 'walk2', 'stepin', 'walk'], 'Retreating runs the stride in reverse');
+  fighter.vx = 3.5;
   fighter.landFrames = 6; const landing = A.sample(fighter, state);
   assert.equal(landing.pose, 'crouch'); assert.ok(landing.sy < 1 && landing.sx > 1); assert.equal(landing.dy, 0);
 });
@@ -106,7 +156,7 @@ test('optional arcade poses replace in-betweens only when the fighter has them',
   const { state, fighter } = scene();
   const all = Object.fromEntries(['walk3', 'walk4', 'run', 'run2', 'punchwind', 'jumpfall', 'crouchblock', 'dizzy', 'roll', 'super'].map(p => [p, {}]));
   fighter.vx = 3.5;
-  const walk = [0, 6, 12, 18].map(frame => { state.motionFrame = frame; return A.sample(fighter, state, { poses: all }).pose; });
+  const walk = [0, 9, 12, 21].map(frame => { state.motionFrame = frame; return A.sample(fighter, state, { poses: all }).pose; });
   assert.deepEqual(walk, ['walk', 'walk3', 'walk2', 'walk4']);
   fighter.vx = 0; fighter.move = 'punch'; fighter.moveFrame = 1;
   assert.equal(A.sample(fighter, state, { poses: all }).pose, 'punchwind');
