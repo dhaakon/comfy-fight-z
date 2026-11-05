@@ -63,8 +63,11 @@ function validateCast(config) {
     if (f.introVoice !== undefined && !INTRO_VOICES.includes(f.introVoice)) fail(`${f.id}: introVoice must be one of ${INTRO_VOICES.join(', ')}`);
     if (f.winQuote !== undefined && !text(f.winQuote, 4, 160)) fail(`${f.id}: winQuote must be 4-160 characters`);
     if (f.ending !== undefined && !text(f.ending, 40, 1200)) fail(`${f.id}: ending must be 40-1200 characters`);
-    if (/\b(real|actual)\s+(person|politician|senator|governor)\b/i.test(f.description)) fail(`${f.id}: fighters are invented; do not describe real people`);
+    // Satire casts (publicFigures) caricature real public figures from text; every other cast stays invented.
+    if (!config.publicFigures && /\b(real|actual)\s+(person|politician|senator|governor)\b|caricature of/i.test(f.description)) fail(`${f.id}: fighters are invented; do not describe real people (set "publicFigures": true only for a satire cast)`);
+    if (config.publicFigures && !text(f.fullName, 4, 60)) fail(`${f.id}: a satire cast names the public figure in fullName`);
   }
+  if (config.publicFigures && !text(config.about, 120, 3000)) fail('a satire cast documents its subjects and sources in "about"');
 }
 
 function buildCast(config, bundleRoot, { seed = 42, media = true, audio = true, label = 'cast run' } = {}) {

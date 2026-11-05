@@ -30,6 +30,8 @@ Copy `comfyui/casts/blue-wave-2026.json` and edit it. A cast file is `"castSchem
 
 Rules the validator enforces: every reference is invented from text (no `sourceInput`/`sourceImage`), ids are unique, the sheet layout equals `comfyui/config/game.json`, and descriptions never describe real people. Keep the fiction rule yourself as well: no real person, candidate, venue, brand or franchise, and no green garments (chroma key).
 
+Satire casts are the one exception: `"publicFigures": true` plus a `fullName` per fighter and an `about` paragraph naming the subjects and sources (`comfyui/casts/midterm-2026.json`). Such a cast caricatures public figures from a short written description (age range, hair, glasses, build, attire) in the game's anime style; it never loads a photograph or recording, voices stay the stock synthetic ones, and taglines, quotes and endings stick to public record or obvious arcade jokes — nothing defamatory. The image model may still draw a generic person from the description; the names and the matchups carry the satire.
+
 ## 2. Prepare (free)
 
 ```

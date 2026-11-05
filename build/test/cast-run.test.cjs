@@ -76,3 +76,17 @@ test('prepare writes the workflow, API prompt, plan and merged cast into a fresh
   assert.throws(() => prepare({ cast: CAST, out: 'output/exports/nope' }), /output\/test-runs/);
   assert.throws(() => prepare({ out: 'output/test-runs/none' }), /--cast/);
 });
+
+test('a satire cast caricatures named public figures from text only and prices the same run', () => {
+  const cast = loadCast('comfyui/casts/midterm-2026.json');
+  assert.equal(cast.publicFigures, true); assert.equal(cast.subtitle, 'Midterm Mayhem 2026');
+  assert.deepEqual(cast.fighters.map(f => [f.id, f.party]), [['talarico', 'D'], ['paxton', 'R'], ['elsayed', 'D'], ['rogers', 'R'], ['hamilton', 'D'], ['marshall', 'R']]);
+  assert.ok(cast.fighters.every(f => f.fullName && f.race && !f.sourceImage && !f.sourceInput && f.description.includes('caricature')));
+  assert.match(cast.about, /no photographs, voices or other media of the real people/);
+  const { plan } = buildCast(cast, root);
+  assert.equal(plan.total.estimatedUSD, 15.610392); assert.equal(plan.images.paidImages, 81);
+  const plain = JSON.parse(JSON.stringify(cast)); delete plain.publicFigures;
+  assert.throws(() => validateCast(plain), /fighters are invented/);
+  const anonymous = JSON.parse(JSON.stringify(cast)); delete anonymous.fighters[0].fullName;
+  assert.throws(() => validateCast(anonymous), /fullName/);
+});

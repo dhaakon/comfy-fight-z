@@ -1,0 +1,167 @@
+{
+  "castSchema": "comfy-fighter-cast/v1",
+  "extends": "comfyui/config/factory.json",
+  "id": "midterm-2026",
+  "title": "Comfy Fighter Z",
+  "subtitle": "Midterm Mayhem 2026",
+  "publicFigures": true,
+  "about": "Political satire: the three headline Senate upsets of November 3, 2026 as arcade matchups. Texas: James Talarico (D) defeated Ken Paxton (R) 53.9 to 44.2, the first Democratic Senate win in Texas since 1988. Michigan: Abdul El-Sayed (D) defeated Mike Rogers (R) about 52 to 46, the first Muslim elected to the Senate. Kansas: Adam Hamilton (D) defeated Senator Roger Marshall (R) 51 to 46, the first Democratic senator from Kansas since 1932. The fighters are cartoon caricatures of these public figures drawn from short text descriptions in the game's anime style; no photographs, voices or other media of the real people are used, the voices are stock synthetic arcade voices, and every line is either public election record or obvious arcade banter.",
+  "assetRoot": "output/assets/generated/midterm-2026",
+  "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are affectionate political-cartoon caricatures of adult public figures, drawn only from the written description (age, hair, build, attire); no photograph is used and exaggeration stays good-natured. Preserve the supplied character design across all derived images. Use clear distinct silhouettes, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols, party logos, real flags, seals or lettering. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+  "uiStyle": "Original 1990s shonen battle-anime arcade interface illustration for a satirical election-night tournament: a rolling blue wave motif with red and blue confetti, bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and white highlights. Strong negative space for readable game controls. No real faces, real buildings, recognizable real venues, party logos, real flags, seals, brand marks or copied franchise imagery.",
+  "stageStyle": "Original hand-painted 1990s anime environment background for a satirical election-night tournament. Wide side-on eye-level view, rich cel-shaded materials and dramatic atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, real flags, seals, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+  "fighters": [
+    {
+      "id": "talarico",
+      "name": "Talarico",
+      "fullName": "James Talarico",
+      "party": "D",
+      "state": "Texas",
+      "race": "U.S. Senate, Texas: defeated Ken Paxton 53.9 to 44.2",
+      "color": "#2f6fe0",
+      "enabled": true,
+      "description": "A good-natured anime caricature of a tall, lanky Texas senator-elect in his mid thirties, a former middle-school teacher: long limbs, an open friendly face, short dark-brown hair neatly parted and swept to one side, clean-shaven, bright attentive eyes. Wears a crisp white dress shirt with the sleeves rolled to the elbows, a loosened navy-blue tie, a plain brown leather belt, charcoal slacks and brown leather western boots. No hat, badge, lapel pin, glasses, props, lettering or loose accessories. His upright, relaxed boxing guard and easy grin give him a tall earnest silhouette.",
+      "specialMove": {
+        "name": "Pop Quiz",
+        "description": "Talarico snaps one hand forward toward the right like a teacher pointing at the board, releasing a compact spinning disc of blue-and-white chalk-dust energy. Keep the disc close to his hand so the game can launch a separate projectile; preserve the entire body and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Thirty-Eight Years",
+        "description": "Talarico raises both arms and a towering blue wave crashes across the screen from behind him. In sprite art show the raised arms with the wave compact around his hands."
+      },
+      "introTagline": "First Democratic senator from Texas since 1988.",
+      "introVoice": "Adam (male, american)",
+      "style": "balanced",
+      "winQuote": "Class dismissed.",
+      "ending": "Arcade ending: the senator-elect spends the prize on a statewide teacher appreciation barbecue and personally grades the brisket. Every county gets a gold star, and the losers get a makeup exam."
+    },
+    {
+      "id": "paxton",
+      "name": "Paxton",
+      "fullName": "Ken Paxton",
+      "party": "R",
+      "state": "Texas",
+      "race": "U.S. Senate, Texas: lost to James Talarico, conceded at 10:20 p.m.",
+      "color": "#d8402f",
+      "enabled": true,
+      "description": "A good-natured anime caricature of a Texas attorney general in his early sixties: medium height, solid build, a broad square face, short neatly combed silver-gray hair, dark eyebrows, a confident set jaw. Wears a navy-blue two-piece suit over a white dress shirt with a bright red tie, a plain brown leather belt and polished brown western boots. No hat, glasses, lapel pin, badge, props, lettering or loose accessories. His planted wide stance with fists raised high gives him a stocky determined silhouette.",
+      "specialMove": {
+        "name": "Objection",
+        "description": "Paxton thrusts one open palm forward toward the right as if halting traffic, releasing a compact red-and-white burst of energy shaped like a ring. Keep the ring close to his palm so the game can launch a separate projectile; preserve the entire body and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Recount",
+        "description": "Paxton stomps and a flurry of red energy sheets whirls around him before launching forward. In sprite art show the stomp with the sheets compact around his fists."
+      },
+      "introTagline": "Conceded at twenty past ten. Wants a rematch.",
+      "introVoice": "Brian (male, american)",
+      "style": "trickster",
+      "winQuote": "Texas stays red tonight.",
+      "ending": "Arcade ending: the challenger hangs the prize belt in a very large office, orders a recount of the belt, and the belt wins again."
+    },
+    {
+      "id": "elsayed",
+      "name": "El-Sayed",
+      "fullName": "Abdul El-Sayed",
+      "party": "D",
+      "state": "Michigan",
+      "race": "U.S. Senate, Michigan: defeated Mike Rogers about 52 to 46",
+      "color": "#2b8fd9",
+      "enabled": true,
+      "description": "A good-natured anime caricature of a Michigan senator-elect in his early forties, a physician and former college athlete: tall athletic build with broad shoulders, light-brown skin, short black hair, a short neatly trimmed black beard, warm expressive eyes. Wears a navy-blue blazer over a white dress shirt with no tie, slim charcoal trousers and clean white athletic sneakers. No hat, glasses, stethoscope, lapel pin, props, lettering or loose accessories. His light bouncing stance with fists high gives him a quick athletic silhouette.",
+      "specialMove": {
+        "name": "Great Lakes Crescent",
+        "description": "El-Sayed pivots and sweeps one open hand forward toward the right, releasing a compact crescent of blue-and-white lake water energy. Keep the crescent close to his hand so the game can launch a separate projectile; preserve the entire body and both shoes inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Second Opinion",
+        "description": "El-Sayed dashes through three afterimages and finishes with a rising elbow wrapped in blue water spray. In sprite art show the rising elbow with the spray compact around his arm."
+      },
+      "introTagline": "Doctor's orders. Michigan's first Muslim senator.",
+      "introVoice": "River (neutral, american)",
+      "style": "speed",
+      "winQuote": "Take two and call me in the morning.",
+      "ending": "Arcade ending: the senator-elect converts the prize into free lakeside clinics and a very competitive Capitol lacrosse league. Attendance is mandatory for the losers."
+    },
+    {
+      "id": "rogers",
+      "name": "Rogers",
+      "fullName": "Mike Rogers",
+      "party": "R",
+      "state": "Michigan",
+      "race": "U.S. Senate, Michigan: lost to Abdul El-Sayed",
+      "color": "#c8362b",
+      "enabled": true,
+      "description": "A good-natured anime caricature of a Michigan Senate candidate in his early sixties, a former congressman and former FBI agent: medium-tall sturdy build, a square jaw, short neatly cut gray hair, clean-shaven, steady narrowed eyes. Wears a dark charcoal suit over a white dress shirt with a red tie, a black leather belt and black dress shoes. No hat, glasses, badge, earpiece, props, lettering or loose accessories. His square-shouldered, forward-leaning stance with open grabbing hands gives him a solid investigator silhouette.",
+      "specialMove": {
+        "name": "Case Closed",
+        "description": "Rogers slams one open palm downward and forward toward the right, releasing a compact red shockwave that skims along the ground. Keep the wave close to his hand so the game can launch a separate projectile; preserve the entire body and both shoes inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Full Investigation",
+        "description": "Rogers lifts an unseen opponent overhead and slams down with a burst of red energy rings. In sprite art show the overhead lift with the rings compact at his feet."
+      },
+      "introTagline": "Two Senate runs, two losses. Still files the report.",
+      "introVoice": "Daniel (male, british)",
+      "style": "grappler",
+      "winQuote": "Case closed.",
+      "ending": "Arcade ending: the challenger files a thorough report on the tournament, staples the prize check to page one, and finally takes a vacation."
+    },
+    {
+      "id": "hamilton",
+      "name": "Hamilton",
+      "fullName": "Adam Hamilton",
+      "party": "D",
+      "state": "Kansas",
+      "race": "U.S. Senate, Kansas: defeated Senator Roger Marshall 51 to 46",
+      "color": "#3b63d6",
+      "enabled": true,
+      "description": "A good-natured anime caricature of a Kansas senator-elect in his early sixties, a Methodist megachurch pastor: medium height, trim build, a kind long face, short neatly combed gray hair, thin-rimmed rectangular glasses, a calm warm smile. Wears a navy-blue quarter-zip pullover over a pale blue collared shirt, khaki trousers, a brown leather belt and brown leather boots. No hat, clerical collar, lapel pin, props, lettering or loose accessories. His upright patient stance with one palm raised forward gives him a steady, open silhouette.",
+      "specialMove": {
+        "name": "Prairie Light",
+        "description": "Hamilton extends one open palm forward toward the right and releases a tight horizontal lance of warm gold-and-white light with a soft blue halo. Keep the lance short and close to his palm so the game can launch a separate projectile; preserve the entire body and both boots inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Ninety-Four Years",
+        "description": "Hamilton raises both arms and a rotating beam of gold light sweeps across the screen. In sprite art show the raised-arm pose with the light compact around his hands."
+      },
+      "introTagline": "First Democratic senator from Kansas since 1932.",
+      "introVoice": "River (neutral, american)",
+      "style": "zoner",
+      "winQuote": "Go in peace. You still lost.",
+      "ending": "Arcade ending: the senator-elect turns the prize into a potluck that stretches across every county line in Kansas. There is enough casserole for the losers too."
+    },
+    {
+      "id": "marshall",
+      "name": "Marshall",
+      "fullName": "Roger Marshall",
+      "party": "R",
+      "state": "Kansas",
+      "race": "U.S. Senate, Kansas: incumbent, lost to Adam Hamilton",
+      "color": "#c23b2e",
+      "enabled": true,
+      "description": "A good-natured anime caricature of a Kansas senator in his mid sixties, a physician: medium height, stocky build, a round friendly face, short gray hair receding at the temples, rimless glasses, a ready grin. Wears a navy-blue suit over a white dress shirt with a red tie, a black leather belt and black dress shoes. No hat, white coat, stethoscope, lapel pin, props, lettering or loose accessories. His planted wide stance with heavy raised fists gives him a sturdy powerhouse silhouette.",
+      "specialMove": {
+        "name": "Rural Route Rush",
+        "description": "Marshall rears back and hammers one fist forward toward the right, releasing a compact crackling burst of red-and-white energy with flecks of golden wheat. Keep the burst close to his fist so the game can launch a separate projectile; preserve the entire body and both shoes inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Incumbent Advantage",
+        "description": "Marshall charges forward through a cloud of red dust and delivers an earth-splitting double-fist slam. In sprite art show the slam with the dust compact around his fists."
+      },
+      "introTagline": "Ninety-four years of tradition, gone in one night.",
+      "introVoice": "Charlie (male, australian)",
+      "style": "power",
+      "winQuote": "The heartland holds.",
+      "ending": "Arcade ending: the incumbent keeps the prize belt in the clinic waiting room, where it gets a full physical every Tuesday."
+    }
+  ],
+  "stages": [
+    {
+      "id": "statehouse",
+      "name": "Statehouse Steps",
+      "enabled": true,
+      "description": "A wholly fictional state capitol plaza on election night right after a rainstorm. A broad wet gray granite plaza forms an empty level fighting plane; behind it rise wide pale marble steps, a colonnade and a modest copper dome of an invented statehouse, lit warm gold against a deep blue sky with the last orange band of sunset. Plain blue-and-white bunting hangs between lamp posts, red and blue confetti lies on the far steps, a row of bare trees lines the far edge and distant city lights glitter beyond. The building is an invented landmark, unrelated to any actual capitol, venue or photograph. No people, flags with real emblems, seals, statues, signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines."
+    }
+  ]
+}
