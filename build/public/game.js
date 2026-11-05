@@ -16,7 +16,8 @@
   let openingActive = false, openingStarted = false, network = null;
   let networkRole = null, networkSide = null, networkMatchId = null;
   const fighterRenderer = window.FighterAnim?.createRenderer();
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // Motion is never reduced: the videos, auras and entrances are the product. (System preference ignored on purpose.)
+  const reducedMotion = { matches: false };
   const fallbackTaglines = {
     griddle: 'The grill is hot. Your winning streak is toast.', rivet: 'I fix everything. Your stance is next.', tempo: 'Keep up with the beat, or take a seat.',
     nimbus: 'I raised a garden. I can handle a little thunder.', switchback: 'School run complete. Express knockout incoming.', brick: 'I built this block. Now hold your ground.'
@@ -46,7 +47,7 @@
   window.FighterDebug = Object.freeze({
     ...debugHooks,
     snapshot: () => state ? JSON.parse(JSON.stringify(state)) : null,
-    renderer: () => arena.kind, pixel: (x, y) => arena.pixel(x, y), rendererStats: () => arena.stats(),
+    renderer: () => arena.kind, pixel: (x, y) => arena.pixel(x, y), rendererStats: () => arena.stats(), reducedMotion: () => reducedMotion.matches,
     presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', titleMedia: $('title-screen').classList.contains('title-video-ready') ? 'video' : 'image', introSlot: introScene ? 0 : null, introMedia: introMedia(), introHalves: introScene?.halves.map(half => half.media) || null, controls: 'arrows-asdf', mode, overlay: overlay?.type || null, arcade: arcade ? { index: arcade.index, ladder: arcade.ladder.map(i => manifest.fighters[i].id), score: arcade.score, continues: arcade.continues } : null, gamepads: gamepads().length, humanPlayers: network?.active && !state?.cpu || mode === 'versus' && state && !state.cpu ? 2 : 1, stageId: manifest.stages[stageIndex]?.id, network: network?.active ? { role: networkRole, side: networkSide, matchId: networkMatchId, phase: network.room.phase, connected: network.client.ready, paused: !!network.room.paused } : null })
   });
   const controls = [
