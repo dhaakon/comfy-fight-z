@@ -142,11 +142,20 @@
     ctx.font = '800 9px Segoe UI, Arial'; ctx.textAlign = 'right'; ctx.fillStyle = '#d9cfb8'; ctx.fillText('ESC: OPTIONS · R: RESET', 952, 486);
     ctx.restore();
   }
+  // The engine's collision rectangles in world space: the body (blue, none while knocked down), the extended limb of a
+  // strike (teal), both pale while no hit can land (invulnerable, knocked out or at the juggle limit), the strike itself
+  // (red; a throw's range to the opponent's centre is dashed) and every projectile's box, over the painted extents of
+  // the current cel.
   function hitboxes() {
     if (!(debugBoxes || (mode === 'training' && training.boxes)) || !state) return;
+    const rect = (box, stroke, fill, dash) => {
+      if (!box) return;
+      const [x, y, w, h] = box, top = E.GROUND - y - h;
+      ctx.setLineDash(dash || []); ctx.fillStyle = fill; ctx.fillRect(x, top, w, h); ctx.strokeStyle = stroke; ctx.strokeRect(x, top, w, h); ctx.setLineDash([]);
+    };
     ctx.save(); ctx.lineWidth = 2;
     state.fighters.forEach((f, slot) => {
-      const { hurt, hit } = E.boxes(f), ground = E.GROUND - f.y;
+      const { hurt, hit, limb, hittable = !f.invulnerable } = E.boxes(f), ground = E.GROUND - f.y, move = f.move && E.moveData(f);
       // Anchor, facing arrow and the painted extents of the current cel (yellow) against the boxes.
       const poses = fighterData(slot).poses || {}, meta = poses[f.pose] || poses.idle, scale = poses.idle?.bh ? E.SPRITE_HEIGHT / poses.idle.bh : 0;
       if (meta && scale) {
@@ -156,10 +165,11 @@
       ctx.fillStyle = '#f4d692'; ctx.beginPath(); ctx.arc(f.x, ground, 4, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.moveTo(f.x + f.facing * 10, ground - 214); ctx.lineTo(f.x + f.facing * 34, ground - 206); ctx.lineTo(f.x + f.facing * 10, ground - 198); ctx.closePath(); ctx.fill();
       ctx.font = 'bold 11px Consolas, monospace'; ctx.textAlign = 'center'; ctx.fillText(`${f.pose}${f.move ? '/' + f.move : ''} ${f.facing > 0 ? '→' : '←'}`, f.x, ground - 222);
-      ctx.strokeStyle = f.invulnerable ? '#f5ead2' : '#5f9fd9'; ctx.fillStyle = '#5f9fd922';
-      ctx.fillRect(hurt[0], E.GROUND - hurt[1] - hurt[3], hurt[2], hurt[3]); ctx.strokeRect(hurt[0], E.GROUND - hurt[1] - hurt[3], hurt[2], hurt[3]);
-      if (hit) { ctx.strokeStyle = '#e0544a'; ctx.fillStyle = '#e0544a33'; ctx.fillRect(hit[0], E.GROUND - hit[1] - hit[3], hit[2], hit[3]); ctx.strokeRect(hit[0], E.GROUND - hit[1] - hit[3], hit[2], hit[3]); }
+      rect(hurt, hittable ? '#5f9fd9' : '#f5ead2', '#5f9fd922');
+      rect(limb, hittable ? '#82d6c5' : '#f5ead2', '#82d6c522');
+      rect(hit, '#e0544a', '#e0544a33', move && !move.band ? [6, 4] : null);
     });
+    if (E.projectileBox) for (const p of state.projectiles) rect(E.projectileBox(p), '#e0544a', '#e0544a33');
     ctx.restore();
   }
   // Presentation-only camera: follows the fighters' midpoint across the wider

@@ -23,11 +23,14 @@ const chains = [['5A', '5S', '5D', '5F'], ['5A', '5S', '5D', '236A'], ['5A', '5A
 const pacing = M.healthPacing(E), neutral = M.neutralMeter(E);
 const throwRow = M.measureMove(E, { input: '6D', block: false }), superRow = M.measureMove(E, { input: 'F+D', block: false });
 const cpu = seeds.map(seed => M.cpuVsCpu(E, { seed, level, seconds: 60 }));
-const shape = M.hitShape(E, { moves: ['5A', '2S'], heights: [0, 60, 89, 95] });
+const shape = M.hitShape(E, { moves: ['5A', '2S', '2D'], heights: [0, 37, 39, 60, 89, 95, 135, 175] });
 const crouching = ['5A', '5S', '6S', '5D', '2S'].map(move => [move, M.hitAt(E, { move, crouch: true })]);
 const antiAir = ['5A', '5D', 'j.A'].map(move => [move, M.hitAt(E, { move, height: 60, detail: true })]);
+// Air kick against a standing opponent from two heights, and shots against a croucher and jumpers 300 units away.
+const airKick = [150, 240].map(height => [height, M.hitAt(E, { move: 'j.S', attackerHeight: height })]);
+const shots = [['crouching', { crouch: true }], ['feet at 124', { height: 124 }], ['feet at 126', { height: 126 }]].map(([label, c]) => [label, M.hitAt(E, { move: '5F', distance: 300, ...c })]);
 
-if (args.includes('--json')) console.log(JSON.stringify({ maxLife: LIFE, bodyHeight: BODY, normals, jumps: jump, launcher: { jump: launch, superjump: superLaunch }, chains, pacing, neutral, cpu, shape, crouching: Object.fromEntries(crouching), antiAir: Object.fromEntries(antiAir), reference: !!D }, null, 2));
+if (args.includes('--json')) console.log(JSON.stringify({ maxLife: LIFE, bodyHeight: BODY, normals, jumps: jump, launcher: { jump: launch, superjump: superLaunch }, chains, pacing, neutral, cpu, shape, crouching: Object.fromEntries(crouching), antiAir: Object.fromEntries(antiAir), airKick: Object.fromEntries(airKick), shots: Object.fromEntries(shots), reference: !!D }, null, 2));
 else printReport();
 
 function printReport() {
@@ -107,8 +110,12 @@ function printReport() {
   console.log(`\n== vertical hit shape (contact against an opponent held in the air, and against a crouching one)`);
   console.log(`standing jab hits an opponent held at height ${shape.heights.join('/')}: ${shape.heights.map(h => row('5A').heights[h]).join('/')}`);
   console.log(`sweep hits an opponent held at height ${shape.heights.join('/')}: ${shape.heights.map(h => row('2S').heights[h]).join('/')}`);
+  console.log(`launcher hits an opponent held at height ${shape.heights.join('/')}: ${shape.heights.map(h => row('2D').heights[h]).join('/')}`);
   console.log(`against a crouching opponent: ${crouching.map(([move, hit]) => `${move} ${hit ? 'hits' : 'whiffs'}`).join(', ')}`);
   console.log(`against an opponent held 60 up (air reset or knockdown): ${antiAir.map(([move, r]) => `${move} ${!r.hit ? 'whiffs' : r.knockdown ? 'knocks down' : 'resets'}`).join(', ')}`);
+  console.log(`air kick against a standing opponent from height ${airKick.map(([height, hit]) => `${height}: ${hit ? 'hits' : 'whiffs'}`).join(', ')}`);
+  console.log(`F shot from 300 against an opponent ${shots.map(([label, hit]) => `${label}: ${hit ? 'hits' : 'passes'}`).join(', ')}`);
+  if (E.boxes && E.projectileBox) console.log('OURS: rectangle hit and hurt boxes (stand 74x225, crouch 80x140, jump 70x170, air hit 110x130 from 20 up, limbs through recovery; shots 50x40, beam 70x60)');
   if (D) console.log('DFZ: rectangle hit and hurt boxes per move and state (stand 92x285, crouch 100x190, airhit 140x170); the sweep box is 44 tall at the floor, LP spans 167-223');
   if (!D) console.log('\n(dad-fighter-z engine not found; set DFZ_REPO to compare)');
 }

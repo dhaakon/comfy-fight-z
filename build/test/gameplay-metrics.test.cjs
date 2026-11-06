@@ -449,14 +449,16 @@ const freshOf = (s, type, attacker) => s.effects.filter(e => e.life === e.maxLif
 
 test('phase 1: a defender holding back blocks every delayed second strike, and links count from the stun-end frame', () => {
   // The first strike is blocked; the second is pressed once, 1-24 frames later. The defender holds back (down-back
-  // against the sweep) the whole time, so nothing may hit, including on the frame its blockstun runs out.
+  // against the sweep) throughout, so nothing may hit, including on the frame its blockstun runs out. A roundhouse passes
+  // over a crouching guard (phase 2), so against 6S > 2S the defender guards standing until it has blocked the roundhouse.
   const hold = input => M.parseInput(input).digits[0] <= 3 ? { down: true } : {};
   const holes = [];
   for (const first of ['5A', '2A', '5S', '6S', '5D', '2D', '2S']) for (const second of ['5A', '5S', '5D', '6S', '2A', '2S', '2D', 'S+D', '5F']) for (let delay = 1; delay <= 24; delay++) {
-    const s = M.arena(E), low = first === '2S' || second === '2S', guard = M.dirInput(low ? 1 : 4, -1);
+    const s = M.arena(E), low = first === '2S' || second === '2S';
     let queue = M.inputFrames(first), blocked = 0;
     for (let t = 0; t < 120; t++) {
       if (t === delay) queue = M.inputFrames(second);
+      const guard = M.dirInput(low && (first !== '6S' || blocked > 0) ? 1 : 4, -1);
       E.tick(s, [queue.length ? queue.shift() : hold(t < delay ? first : second), guard]);
       blocked += freshOf(s, 'block', 0).length;
       if (freshOf(s, 'hit', 0).length) { holes.push(`${first} > ${second} at +${delay}`); break; }
@@ -596,4 +598,351 @@ test('phase 1: art-measured reaches only lengthen a move, so the chain targets h
     assert.equal(M.chain(E, ['5A', '5A', '5A'], options).combo, 3, `${fighter.id} jab, jab, jab`);
     assert.equal(M.chain(E, ['5A', '5S', '5D'], { ...options, block: true }).blocks, 3, `${fighter.id} blocked chain`);
   }
+});
+
+// ---------------------------------------------------------------- phase 2: hit and hurt boxes
+// The targets of gameplay-audit.md phase 2. Boxes are [x, y-above-ground, width, height], as E.boxes returns them.
+const PHASE2_BANDS = {
+  punch: [110, 175], kick: [60, 140], heavy: [120, 195], roundhouse: [150, 215], 'crouch.punch': [55, 110], 'crouch.kick': [0, 38],
+  'crouch.heavy': [90, 250], blowback: [90, 190], gcBlowback: [90, 190], rush: [50, 190], armorRush: [50, 190], rekka: [50, 190],
+  rising: [60, 260], 'air.punch': [60, 150], 'air.kick': [0, 100], 'air.heavy': [20, 130]
+};
+const sameBox = (box, expected) => Array.isArray(box) && box.length === 4 && box.every((value, i) => Math.abs(value - expected[i]) < 1e-9);
+
+test('phase 2: every strike carries its height band, and only throws and command grabs reach without one', () => {
+  for (const [key, band] of Object.entries(PHASE2_BANDS)) {
+    const [variant, move] = key.includes('.') ? key.split('.') : [null, key];
+    assert.deepEqual((variant ? E.VARIANTS[variant][move] : E.MOVES[move]).band, band, key);
+  }
+  for (const [name, move] of Object.entries(E.MOVES)) if (move.reach) assert.equal(!!move.band, !(name === 'throw' || move.grab), `${name} band`);
+  for (const [variant, moves] of Object.entries(E.VARIANTS)) for (const [name, move] of Object.entries(moves)) assert.ok(move.band, `${variant} ${name} band`);
+});
+
+test('phase 2: hurtboxes follow the posture, and a strike box runs from 20 units in front of the centre to the reach less 37', () => {
+  // Standing 74 x 225 and crouching 80 x 140, centred on the fighter.
+  const s = M.arena(E), [a] = s.fighters;
+  assert.deepEqual(E.boxes(a), { hurt: [a.x - 37, 0, 74, 225], hit: null, limb: null, hittable: true });
+  E.tick(s, [{ down: true }, {}]); assert.deepEqual(E.boxes(a).hurt, [a.x - 40, 0, 80, 140], 'crouching');
+  // A crouching attack keeps the crouch box when down is let go; a standing one keeps the standing box when down is held.
+  const low = M.arena(E, { distance: 600 }), [c] = low.fighters;
+  E.tick(low, [{ down: true, punch: true }, {}]); E.tick(low, [{}, {}]);
+  assert.deepEqual([c.move, c.moveVariant, E.boxes(c).hurt], ['punch', 'crouch', [c.x - 40, 0, 80, 140]], 'in a crouching attack');
+  const high = M.arena(E, { distance: 600 }), [h] = high.fighters;
+  E.tick(high, [{ heavy: true }, {}]); E.tick(high, [{ down: true }, {}]);
+  assert.deepEqual([h.move, h.crouching, E.boxes(h).hurt], ['heavy', true, [h.x - 37, 0, 74, 225]], 'in a standing attack');
+  // Crouch-blocking keeps the crouch box through the blockstun.
+  const guard = M.arena(E), g = guard.fighters[1];
+  for (let t = 0; t < 8; t++) E.tick(guard, [t ? {} : { down: true, punch: true }, M.dirInput(1, -1)]);
+  assert.ok(g.blockStun && g.stun > 0, 'The crouching jab is blocked low'); assert.deepEqual(E.boxes(g).hurt, [g.x - 40, 0, 80, 140], 'crouch-blocking');
+  // Jumping 70 x 170 from the feet.
+  const jump = M.arena(E, { distance: 600 }), [j] = jump.fighters;
+  for (let t = 0; t < 10; t++) E.tick(jump, [{ jump: true }, {}]);
+  assert.ok(j.y > 0); assert.deepEqual(E.boxes(j).hurt, [j.x - 35, j.y, 70, 170], 'jumping');
+  // Launched: 110 x 130 from 20 above the feet; lying down after the knockdown there is no hurtbox at all.
+  const launch = M.arena(E), v = launch.fighters[1];
+  for (let t = 0; t < 12; t++) E.tick(launch, [t ? {} : { down: true, heavy: true }, {}]);
+  assert.ok(v.launched && v.y > 0); assert.deepEqual(E.boxes(v).hurt, [v.x - 55, v.y + 20, 110, 130], 'launched');
+  for (let t = 0; t < 120 && v.y > 0; t++) E.tick(launch, [{}, {}]);
+  assert.ok(v.launched && v.y === 0 && v.stun > 0, 'The victim lies down'); assert.equal(E.boxes(v).hurt, null, 'knocked down');
+  // Jabs 600 apart, facing each other: the strike box covers 20 to reach - 37 units in front at 110-175 during the active
+  // frames, and the limb, its inner 60 %, stays out from the first active frame until the move ends.
+  const jab = E.MOVES.punch, far = jab.reach - 37, both = M.arena(E, { distance: 600 }), [p, q] = both.fighters, seen = [];
+  for (let t = 0; t < 16; t++) { E.tick(both, [t ? {} : { punch: true }, t ? {} : { punch: true }]); seen.push({ frame: p.moveFrame, move: p.move, own: E.boxes(p), mirror: E.boxes(q) }); }
+  for (const { frame, move, own, mirror } of seen) {
+    const active = !!move && frame >= jab.startup && frame < jab.startup + jab.active, out = !!move && frame >= jab.startup, w = far - 20;
+    assert.ok(active ? sameBox(own.hit, [p.x + 20, 110, w, 65]) : own.hit === null, `jab frame ${frame}: strike box ${own.hit}`);
+    assert.ok(out ? sameBox(own.limb, [p.x + 20, 110, w * .6, 65]) : own.limb === null, `jab frame ${frame}: limb ${own.limb}`);
+    assert.ok(active ? sameBox(mirror.hit, [q.x - far, 110, w, 65]) : mirror.hit === null, `mirrored jab frame ${frame}: strike box ${mirror.hit}`);
+    assert.ok(out ? sameBox(mirror.limb, [q.x - 20 - w * .6, 110, w * .6, 65]) : mirror.limb === null, `mirrored jab frame ${frame}: limb ${mirror.limb}`);
+  }
+  assert.ok(seen.some(e => e.move === null), 'The jab ends inside the window');
+  // Painted art lengthens the box with the reach; a throw shows its range to the opponent's centre.
+  const art = M.arena(E, { distance: 600, reaches: [{ punch: 140 }] }), [r] = art.fighters;
+  for (let t = 0; t < jab.startup; t++) E.tick(art, [t ? {} : { punch: true }, {}]);
+  assert.ok(sameBox(E.boxes(r).hit, [r.x + 20, 110, E.reachOf(r, jab) - 57, 65]), `art reach ${E.boxes(r).hit}`);
+  const toss = M.arena(E, { distance: 70 }), [t0] = toss.fighters;
+  for (let t = 0; t < E.MOVES.throw.startup; t++) E.tick(toss, [t ? {} : { right: true, heavy: true }, {}]);
+  assert.deepEqual([t0.move, E.boxes(t0).hit, E.boxes(t0).limb], ['throw', [t0.x, 100, E.MOVES.throw.reach, 70], null]);
+});
+
+test('phase 2: the roundhouse whiffs over a crouching opponent and hits a standing one, and a jab still hits a croucher', () => {
+  assert.equal(M.hitAt(E, { move: '6S', crouch: true }), false, 'The roundhouse passes over a croucher');
+  assert.equal(M.hitAt(E, { move: '6S' }), true, 'and hits a standing opponent');
+  assert.equal(M.hitAt(E, { move: '5A', crouch: true }), true, 'A jab still hits a croucher');
+  for (const move of ['5S', '5D', '2A', '2S', '2D', 'S+D']) assert.equal(M.hitAt(E, { move, crouch: true }), true, `${move} hits a croucher`);
+});
+
+test('phase 2: a jump clears a sweep once its feet are above 38, and a launcher hits a jumper whose feet are at 135', () => {
+  for (const height of [10, 30, 37.9]) assert.equal(M.hitAt(E, { move: '2S', height }), true, `The sweep hits feet at ${height}`);
+  for (const height of [38.1, 45, 60, 89]) assert.equal(M.hitAt(E, { move: '2S', height }), false, `Feet at ${height} clear the sweep`);
+  assert.equal(M.hitAt(E, { move: '2D', height: 135 }), true, 'The launcher hits a jumper whose feet are at 135');
+});
+
+test('phase 2: an air kick hits a standing opponent from height 150 but not from 240', () => {
+  assert.equal(M.hitAt(E, { move: 'j.S', attackerHeight: 150 }), true, 'from 150');
+  assert.equal(M.hitAt(E, { move: 'j.S', attackerHeight: 240 }), false, 'from 240');
+});
+
+test("phase 2: a heavy punch that cannot reach the body hits a whiffed roundhouse's extended leg during its recovery", () => {
+  // Slot 1 presses toward + S 170 units away (its step forward leaves 165) and whiffs; slot 0 presses D 12 frames later.
+  const round = E.MOVES.roundhouse, heavy = E.MOVES.heavy, s = M.arena(E, { distance: 170 }), [a, d] = s.fighters;
+  let contact = null;
+  for (let t = 0; t < 60 && !contact; t++) {
+    const before = { move: d.move, moveFrame: d.moveFrame, gap: d.x - a.x };
+    E.tick(s, [t === 12 ? { heavy: true } : {}, t === 0 ? { left: true, kick: true } : {}]);
+    const hits = freshOf(s, 'hit');
+    if (hits.length) contact = { ...before, attackers: hits.map(e => e.attacker) };
+  }
+  assert.ok(contact, 'The heavy punch connects');
+  assert.deepEqual(contact.attackers, [0], 'Only the heavy punch hits: the roundhouse whiffed');
+  const frame = contact.moveFrame + 1;
+  assert.ok(contact.move === 'roundhouse' && frame >= round.startup + round.active && frame < round.startup + round.active + round.recovery, `It lands on the roundhouse's recovery frame ${frame}`);
+  assert.ok(contact.gap >= E.reachOf(a, heavy), `The body is ${contact.gap} away, beyond the heavy punch's reach`);
+  assert.equal(M.hitAt(E, { move: '5D', distance: 165 }), false, 'The same heavy punch whiffs an idle opponent there');
+  assert.equal(d.hp, E.MAX_HP - heavy.damage, 'A full-damage hit on the leg, not a counter hit');
+  // Two roundhouses out of reach of each other's bodies trade leg to leg on the same frame.
+  const trade = M.arena(E, { distance: 170 }), [p, q] = trade.fighters;
+  let both = [], gap = null;
+  for (let t = 0; t < 40 && !both.length; t++) {
+    gap = q.x - p.x;
+    E.tick(trade, [t ? {} : { right: true, kick: true }, t ? {} : { left: true, kick: true }]);
+    both = freshOf(trade, 'hit').map(e => e.attacker).sort();
+  }
+  assert.deepEqual(both, [0, 1], 'Both roundhouses connect on the same frame'); assert.ok(gap > round.reach, `${gap} apart`);
+  assert.deepEqual([p.hp, q.hp], [E.MAX_HP - round.damage, E.MAX_HP - round.damage]);
+});
+
+test('phase 2: projectiles hit crouchers and pass under a jumper whose feet are above 125', () => {
+  for (const move of ['5F', '236A']) {
+    assert.equal(M.hitAt(E, { move, crouch: true }), true, `${move} hits a croucher at point blank`);
+    assert.equal(M.hitAt(E, { move, crouch: true, distance: 300 }), true, `${move} hits a croucher from 300`);
+    assert.equal(M.hitAt(E, { move, height: 124, distance: 300 }), true, `${move} hits a jumper whose feet are at 124`);
+    assert.equal(M.hitAt(E, { move, height: 126, distance: 300 }), false, `${move} passes under a jumper whose feet are at 126`);
+  }
+  // Projectiles are 50 x 40 boxes centred on their position and the super beam 70 x 60, so the beam passes under feet above 135.
+  assert.deepEqual(E.projectileBox({ x: 300, y: 105 }), [275, 85, 50, 40]); assert.deepEqual(E.projectileBox({ x: 300, y: 105, super: true }), [265, 75, 70, 60]);
+  assert.equal(M.hitAt(E, { move: 'F+D', height: 134, distance: 300, window: 120 }), true, 'The beam hits a jumper whose feet are at 134');
+  assert.equal(M.hitAt(E, { move: 'F+D', height: 136, distance: 300, window: 120 }), false, 'and passes under one at 136');
+});
+
+test("phase 2: a strike box only hits a target whose centre is in front of the attacker's", () => {
+  // A launcher's first active frame against a jumper held 150 up, 10 units in front of or behind the attacker: the
+  // boxes overlap either way, but a target that has crossed behind the attacker is not hit by its forward strike.
+  const launches = offset => {
+    const s = M.arena(E), [a, d] = s.fighters, launcher = E.VARIANTS.crouch.heavy;
+    Object.assign(a, { move: 'heavy', moveVariant: 'crouch', moveFrame: launcher.startup - 1 });
+    Object.assign(d, { x: a.x + offset, y: 150, vy: 0 });
+    E.tick(s, [{ down: true }, {}]);
+    return freshOf(s, 'hit', 0).length > 0;
+  };
+  assert.equal(launches(10), true, 'In front'); assert.equal(launches(-10), false, 'Behind');
+});
+
+test('phase 2: hitstun keeps the posture the hit found, while blockstun follows the stick', () => {
+  // A defender that ducks (or crouch-guards) once it is hit cannot crouch out of a chain into the roundhouse...
+  for (const afterHit of [2, 1]) for (const steps of [['5A', '6S'], ['5A', '5S', '6S'], ['5A', '6S', '236A'], ['5A', '5A', '5A', '5S', '6S', '214A']]) {
+    const run = M.chain(E, steps, { afterHit });
+    assert.equal(run.allHit && run.comboIntact, true, `${steps.join(' > ')}, ${afterHit} held after the first hit: ${run.steps.map(step => step.result).join(', ')}`);
+  }
+  // ...and one hit crouching does not stand into it by letting go of down: the roundhouse still passes over.
+  for (const steps of [['5A', '6S'], ['5A', '5S', '6S']]) {
+    const run = M.chain(E, steps, { crouch: true, afterHit: 5 });
+    assert.deepEqual(run.steps.map(step => step.result), [...steps.slice(1).map(() => 'hit'), 'whiff'], `${steps.join(' > ')} against a crouch-hit defender that lets go`);
+  }
+  // Frame by frame: slot 1 holds `before` until slot 0's jab hits it, then `after`. Through its hitstun, the frame the
+  // stun runs out included (it cannot act yet), it keeps the posture of the hit; on its first free frame it takes the new one.
+  const reel = (before, after) => {
+    const s = M.arena(E), d = s.fighters[1], frames = [];
+    let hit = false;
+    for (let t = 0; t < 60; t++) {
+      const free = hit && M.canAct(E, s, 1, [{}, after]), motion = s.motionFrame;
+      E.tick(s, [t ? {} : { punch: true }, hit ? after : before]);
+      if (hit && s.motionFrame > motion) frames.push({ free, height: E.boxes(d).hurt[3] });
+      if (freshOf(s, 'hit', 0).length) hit = true;
+    }
+    const firstFree = frames.findIndex(frame => frame.free);
+    return { reeling: [...new Set(frames.slice(0, firstFree).map(frame => frame.height))], free: frames[firstFree]?.height, frames: firstFree };
+  };
+  const ducked = reel({}, { down: true }), stood = reel({ down: true }, {});
+  assert.ok(ducked.frames >= E.MOVES.punch.hitStun, `${ducked.frames} reeling frames`);
+  assert.deepEqual([ducked.reeling, ducked.free], [[225], 140], 'Hit standing, then holding down: standing until free');
+  assert.deepEqual([stood.reeling, stood.free], [[140], 225], 'Hit crouching, then letting go: crouching until free');
+  // Blockstun follows the stick, so a guard can switch height: a jab blocked crouching, then back alone and down-back
+  // again on alternate frames of the blockstun.
+  const guard = M.arena(E), g = guard.fighters[1], heights = [];
+  let blocked = false;
+  for (let t = 0; t < 30 && heights.length < 4; t++) {
+    const motion = guard.motionFrame, stand = heights.length % 2 === 0;
+    E.tick(guard, [t ? {} : { punch: true }, M.dirInput(blocked && stand ? 4 : 1, -1)]);
+    if (blocked && guard.motionFrame > motion && g.blockStun && g.stun > 0) heights.push([stand ? 'stand' : 'crouch', E.boxes(g).hurt[3]]);
+    if (freshOf(guard, 'block', 0).length) blocked = true;
+  }
+  assert.deepEqual(heights, [['stand', 225], ['crouch', 140], ['stand', 225], ['crouch', 140]]);
+});
+
+test('phase 2: dizzy, jump-squat and backstep frames stand with down held, down ends a run, and a landing crouches after touchdown', () => {
+  const STAND = 225, CROUCH = 140, height = f => E.boxes(f).hurt[3];
+  // A dizzy defender holding down keeps the standing box, so a point-blank roundhouse hits it.
+  const dizzy = M.arena(E), dz = dizzy.fighters[1];
+  Object.assign(dz, { dizzy: 60, pose: 'dizzy' });
+  let hit = false;
+  for (let t = 0; t < 30 && !hit; t++) {
+    E.tick(dizzy, [t ? {} : { right: true, kick: true }, { down: true }]);
+    hit = freshOf(dizzy, 'hit', 0).length > 0;
+    if (!hit) assert.deepEqual([dz.dizzy > 0, dz.crouching, height(dz)], [true, true, STAND], `dizzy frame ${t}`);
+  }
+  assert.equal(hit, true, 'The roundhouse hits the dizzy defender holding down');
+  // Up, then down held through the jump squat: the squat stands, and the jump still leaves the ground.
+  const squat = M.arena(E, { distance: 600 }), sq = squat.fighters[0], squatting = [];
+  E.tick(squat, [{ jump: true }, {}]);
+  for (let t = 0; t < 10 && sq.y === 0; t++) { E.tick(squat, [{ down: true }, {}]); if (sq.jumpSquat > 0) squatting.push([sq.crouching, height(sq)]); }
+  assert.ok(squatting.length >= 2 && squatting.every(([crouching, h]) => crouching && h === STAND), `jump squat ${JSON.stringify(squatting)}`);
+  assert.ok(sq.y > 0, 'The jump leaves the ground');
+  // A backstep (back, back) with down held stands until it ends; then the held down crouches.
+  const back = M.arena(E, { distance: 600 }), bs = back.fighters[0], stepping = [];
+  for (const input of [{ left: true }, {}, { left: true }]) E.tick(back, [input, {}]);
+  assert.ok(bs.dash > 0, 'The backstep starts');
+  for (let t = 0; t < 20 && bs.dash > 0; t++) { E.tick(back, [{ down: true }, {}]); if (bs.dash > 0) stepping.push([bs.crouching, height(bs)]); }
+  assert.ok(stepping.length > 5 && stepping.every(([crouching, h]) => crouching && h === STAND), `backstep ${JSON.stringify(stepping)}`);
+  E.tick(back, [{ down: true }, {}]); assert.equal(height(bs), CROUCH, 'Down held after the backstep crouches');
+  // Down ends a run on the frame it is pressed, in a crouch; a fighter still running keeps the standing box.
+  const run = M.arena(E, { distance: 600 }), rn = run.fighters[0];
+  for (const input of [{ right: true }, {}, { right: true }, { right: true }, { right: true }]) E.tick(run, [input, {}]);
+  assert.equal(rn.running, true, 'The run starts');
+  assert.equal(height({ ...rn, crouching: true }), STAND, 'A running fighter stands');
+  E.tick(run, [{ right: true, down: true }, {}]);
+  assert.deepEqual([rn.running, height(rn)], [false, CROUCH], 'Down ends the run in a crouch');
+  // Landing with down held: only the touchdown frame stands (the crouch was read in the air); from the next frame
+  // the fighter crouches, as its crouch pose does.
+  const land = M.arena(E, { distance: 600 }), ln = land.fighters[0], landing = [];
+  for (let t = 0; t < 90 && landing.length < 3; t++) {
+    const airborne = ln.y > 0;
+    E.tick(land, [t < 6 ? { jump: true } : { down: true }, {}]);
+    if ((airborne && ln.y === 0) || landing.length) landing.push([ln.landFrames, height(ln)]);
+  }
+  assert.deepEqual(landing.map(([, h]) => h), [STAND, CROUCH, CROUCH], `landing ${JSON.stringify(landing)}`);
+  assert.ok(landing.every(([frames]) => frames > 0), 'all inside the landing frames');
+});
+
+test('phase 2: a projectile hits an extended limb, and a rising strike keeps its limb until it lands', () => {
+  // Slot 1 stands at 600 facing left in its heavy punch's recovery, its arm out toward slot 0. A shot flying right at
+  // the arm's height stops one unit short of the body after this frame's move: only the arm is in reach, and it connects.
+  const s = M.arena(E, { x: 300, distance: 300 }), [a, d] = s.fighters, heavy = E.MOVES.heavy, speed = 8;
+  Object.assign(d, { move: 'heavy', moveVariant: 'standing', moveFrame: heavy.startup + heavy.active + 2 });
+  const { hurt, limb } = E.boxes(d);
+  assert.ok(limb && limb[0] < hurt[0] - 1, 'The arm reaches past the body');
+  const x = hurt[0] - 1 - E.projectileBox({ x: 0, y: 0 })[2] / 2 - speed, y = (heavy.band[0] + heavy.band[1]) / 2;
+  s.projectiles.push({ owner: 0, x, y, from: a.x, facing: 1, damage: 17, life: 30, hits: 1, cooldown: 0, speed });
+  E.tick(s, [{}, {}]);
+  assert.equal(freshOf(s, 'hit', 0).length, 1, 'The shot hits the arm'); assert.equal(d.hp, E.MAX_HP - 17);
+  // The rising strike's limb stays out on its airborne frames past startup + active + recovery, until it lands.
+  const rise = M.arena(E, { distance: 400 }), r = rise.fighters[0], rising = E.MOVES.rising, total = rising.startup + rising.active + rising.recovery;
+  const queue = M.inputFrames('623A');
+  let late = 0;
+  for (let t = 0; t < 80; t++) {
+    E.tick(rise, [queue.length ? queue.shift() : {}, {}]);
+    if (r.move === 'rising' && r.y > 0 && r.moveFrame >= total) { late++; assert.ok(E.boxes(r).limb, `limb on airborne frame ${r.moveFrame}`); }
+  }
+  assert.ok(late > 0, 'The rising strike is still airborne past its frames'); assert.equal(r.move, null, 'and ends once it lands');
+});
+
+test('phase 2: neither a command grab nor a throw catches a victim lying down after a knockdown', () => {
+  // A sweep knocks slot 1 down. While it lies on the floor (no body box), slot 0 is put on the last startup frame of
+  // a command grab or a throw 70 units from it. The same grab and throw catch a victim standing there.
+  const grabs = (move, downed) => {
+    const s = M.arena(E, { styles: ['grappler'] }), [a, d] = s.fighters, queue = M.inputFrames('2S');
+    if (downed) {
+      for (let t = 0; t < 150 && !(d.launched && d.y === 0 && d.stun > 2); t++) E.tick(s, [queue.length ? queue.shift() : {}, {}]);
+      assert.equal(E.boxes(d).hurt, null, 'The victim lies down');
+    }
+    Object.assign(a, { move, moveVariant: 'standing', moveFrame: E.MOVES[move].startup - 1, hitDone: false, connected: false, x: d.x - 70, facing: 1 });
+    const hp = d.hp; E.tick(s, [{}, {}]);
+    return d.hp < hp;
+  };
+  for (const move of ['commandGrab', 'throw']) {
+    assert.equal(grabs(move, true), false, `A ${move} whiffs on a downed victim`);
+    assert.equal(grabs(move, false), true, `A ${move} catches a standing victim`);
+  }
+});
+
+test('phase 2: same-frame shots that clash cancel for both slots, so neither hits from 80 to 130 units', () => {
+  for (const styles of [[], ['zoner', 'power'], ['power', 'zoner']]) for (let distance = 80; distance <= 130; distance += 10) {
+    const s = M.arena(E, { distance, styles }), hits = [];
+    for (let t = 0; t < 40; t++) { E.tick(s, [t ? {} : { special: true }, t ? {} : { special: true }]); hits.push(...freshOf(s, 'hit').map(e => e.attacker)); }
+    assert.deepEqual([hits, s.fighters.map(f => f.hp), s.projectiles.length], [[], [E.MAX_HP, E.MAX_HP], 0], `${styles.join(' v ') || 'balanced'} at ${distance}`);
+  }
+});
+
+test('phase 2: projectiles clash when their boxes touch, and a super beam plows through a shot', () => {
+  // Two shots between fighters 800 apart, staged one frame before they would meet; returns the owners of the survivors.
+  const clash = (p, q) => {
+    const s = M.arena(E, { x: 100, distance: 800 }), shot = { damage: 50, life: 60, hits: 1, cooldown: 0, speed: 8 };
+    s.projectiles.push({ ...shot, owner: 0, facing: 1, ...p }, { ...shot, owner: 1, facing: -1, ...q });
+    E.tick(s, [{}, {}]);
+    return s.projectiles.map(survivor => survivor.owner);
+  };
+  assert.deepEqual(clash({ x: 500, y: 105 }, { x: 561, y: 105 }), [], 'Boxes overlapping 45 units apart clash');
+  assert.deepEqual(clash({ x: 500, y: 105 }, { x: 520, y: 155 }), [0, 1], 'A shot 50 above the other passes over it');
+  assert.deepEqual(clash({ x: 500, y: 105, super: true, hits: 6, speed: 11 }, { x: 540, y: 105 }), [0], 'The beam survives the clash');
+});
+
+test('phase 2: a trade resolves both strikes as they stood on the contact frame, whichever slot each attacker is in', () => {
+  // Two speed-style fighters 200 apart enter 214 + A on the same frames: their rhythm-rush hits trade, and each victim
+  // takes the stun of the frames the other's rush had left.
+  const s = M.arena(E, { distance: 200, styles: ['speed', 'speed'] }), [p, q] = s.fighters, left = M.inputFrames('214A', 1), right = M.inputFrames('214A', -1);
+  let traded = null;
+  for (let t = 0; t < 30 && !traded; t++) {
+    E.tick(s, [left[t] || {}, right[t] || {}]);
+    const hits = freshOf(s, 'hit');
+    if (hits.length) traded = { attackers: hits.map(e => e.attacker).sort(), stun: [p.stun, q.stun], hp: [p.hp, q.hp] };
+  }
+  assert.deepEqual(traded?.attackers, [0, 1], 'Both rushes connect on the same frame');
+  assert.equal(traded.stun[0], traded.stun[1], `stun ${traded.stun}`); assert.equal(traded.hp[0], traded.hp[1]);
+  // A third rhythm-rush press trading with a jab still lands its finisher (70 and a knockdown), from either slot.
+  const finisher = rekkaSlot => {
+    const t = M.arena(E, { styles: ['speed', 'speed'] }), R = t.fighters[rekkaSlot], J = t.fighters[1 - rekkaSlot];
+    Object.assign(R, { x: 400, facing: 1, move: 'rekka', moveVariant: 'standing', moveFrame: E.MOVES.rekka.startup - 1, rekka: 3 });
+    Object.assign(J, { x: 490, facing: -1, move: 'punch', moveVariant: 'standing', moveFrame: E.MOVES.punch.startup - 1 });
+    E.tick(t, [{}, {}]);
+    return { jabber: J.hp, knockedDown: J.launched, rusher: R.hp };
+  };
+  const first = finisher(0);
+  assert.deepEqual(finisher(1), first, 'The same trade from either slot');
+  assert.equal(first.jabber, E.MAX_HP - Math.round(E.MOVES.rekka.finish * E.STYLES.speed.damage * E.STYLES.speed.defense), 'The finisher damage');
+  assert.deepEqual([first.knockedDown, first.rusher < E.MAX_HP], [true, true], 'knocks down, and the jab hits the rusher');
+});
+
+test('phase 2: a projectile never hits a target behind the point it was fired from', () => {
+  // The boss's double ball on its last startup frame, facing away from an opponent standing 64 units behind it: the
+  // second ball starts behind the boss and its box overlaps that opponent, but only targets in front can be hit.
+  const s = M.arena(E, { styles: ['boss', 'balanced'] }), [boss, other] = s.fighters;
+  Object.assign(boss, { x: 600, facing: 1, move: 'doubleball', moveVariant: 'standing', moveFrame: E.MOVES.doubleball.startup - 1 });
+  Object.assign(other, { x: 536, facing: 1 });
+  let hit = false;
+  for (let t = 0; t < 12; t++) {
+    E.tick(s, [{}, {}]);
+    hit ||= freshOf(s, 'hit', 0).length > 0;
+    if (t === 0) { const body = E.boxes(other).hurt; assert.ok(s.projectiles.some(p => E.projectileBox(p)[0] < body[0] + body[2]), 'The second ball overlaps the opponent'); }
+  }
+  assert.deepEqual([hit, other.hp], [false, E.MAX_HP]);
+  // The same double ball still hits an opponent in front at point blank, twice.
+  const front = M.arena(E, { styles: ['boss', 'balanced'] }), [shooter] = front.fighters;
+  Object.assign(shooter, { move: 'doubleball', moveVariant: 'standing', moveFrame: E.MOVES.doubleball.startup - 1 });
+  let hits = 0;
+  for (let t = 0; t < 40; t++) { E.tick(front, [{}, {}]); hits += freshOf(front, 'hit', 0).length; }
+  assert.equal(hits, 2, 'Both balls hit an opponent in front');
+});
+
+test('phase 2: E.boxes says whether a hit can land, so the overlay pales an invulnerable limb and a body at the juggle limit', () => {
+  const s = M.arena(E, { distance: 400 }), [a, d] = s.fighters, queue = M.inputFrames('623A'), invulnerable = [];
+  assert.equal(E.boxes(a).hittable, true);
+  for (let t = 0; t < 20; t++) {
+    E.tick(s, [queue.length ? queue.shift() : {}, {}]);
+    const box = E.boxes(a);
+    if (a.move === 'rising' && box.limb && a.invulnerable) invulnerable.push(box.hittable);
+  }
+  assert.ok(invulnerable.length > 0 && invulnerable.every(h => h === false), `The rising strike's invulnerable limb cannot be hit: ${invulnerable}`);
+  Object.assign(d, { launched: true, y: 100, vy: 0, stun: 20, juggle: 99 });
+  assert.equal(E.boxes(d).hittable, false, 'A launched body at the juggle limit cannot be hit');
+  d.juggle = 0; assert.equal(E.boxes(d).hittable, true, 'and one below it can');
 });

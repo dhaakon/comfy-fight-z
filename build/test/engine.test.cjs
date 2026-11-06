@@ -247,8 +247,9 @@ test('jab, light kick and heavy punch leave the attacker plus on hit, and the ro
   assert.equal(advantage(ready(), { right: true, kick: true }), 0, 'The roundhouse (toward + S) is even on hit');
 });
 
-// Slot 0 presses `button` at `distance`; slot 1 holds back to block it, then enters `reply` (one input per frame)
-// so that its last frame lands on slot 1's first free frame. Slot 0 guards once it can act. True if the reply hits.
+// Slot 0 presses `button` (a button name or an input) at `distance`; slot 1 holds back to block it, then enters `reply`
+// (one input per frame) so that its last frame lands on slot 1's first free frame. Slot 0 guards once it can act.
+// True if the reply hits.
 function punishes(button, distance, reply) {
   const play = end => {
     const s = ready(), [a, d] = s.fighters; d.x = a.x + distance;
@@ -256,7 +257,7 @@ function punishes(button, distance, reply) {
     for (let t = 0; t < 120; t++) {
       if (blocked && free === null) { const copy = JSON.parse(JSON.stringify(s)); E.tick(copy, [{}, { taunt: true }]); if (copy.fighters[1].move === 'taunt') free = t; }
       const k = end === null ? -1 : t - (end - reply.length + 1);
-      E.tick(s, [t === 0 ? { [button]: true } : a.move ? {} : { left: true }, k >= 0 && k < reply.length ? reply[k] : blocked ? {} : { right: true }]);
+      E.tick(s, [t === 0 ? typeof button === 'string' ? { [button]: true } : button : a.move ? {} : { left: true }, k >= 0 && k < reply.length ? reply[k] : blocked ? {} : { right: true }]);
       if (s.effects.some(e => e.life === e.maxLife && e.type === 'block' && e.attacker === 0)) blocked = true;
       if (s.effects.some(e => e.life === e.maxLife && e.type === 'hit' && e.attacker === 1)) hit = true;
     }
@@ -265,16 +266,32 @@ function punishes(button, distance, reply) {
   return play(play(null).free).hit;
 }
 
-test('a blocked heavy punch is -4, but its block slide leaves only a rising strike to punish it, and only up close', () => {
+test('a blocked heavy punch is -4, but its block slide leaves only a rising strike to punish it, up close or by the arm', () => {
   // On frames a -4 heavy is jab-punishable, and a blocked jab is safe.
   assert.ok(advantage(ready(), 'heavy', { right: true }) <= -E.MOVES.punch.startup);
   assert.ok(advantage(ready(), 'punch', { right: true }) >= 0);
-  // The 1.15x block slide carries the defender out of the jab's reach, so only the three-frame rising strike,
-  // buffered in blockstun, punishes a blocked heavy, and only from close range.
-  const jab = [{ punch: true }], rising = [{ left: true }, { down: true }, { down: true, left: true, heavy: true }];
+  // The 1.15x block slide carries the defender out of reach of the attacker's body, and the jab's first active frame
+  // is the heavy's last frame, when its arm is back in. Only the three-frame rising strike, buffered in blockstun,
+  // punishes a blocked heavy: up close it reaches the body, and out to about 104 units it catches the extended arm
+  // on the heavy's last recovery frame.
+  const jab = [{ punch: true }], kick = [{ kick: true }], rising = [{ left: true }, { down: true }, { down: true, left: true, heavy: true }];
   assert.equal(punishes('heavy', 64, jab), false, 'A jab whiffs after a blocked heavy at point blank');
+  for (const distance of [80, 100]) for (const [name, reply] of [['jab', jab], ['light kick', kick]]) assert.equal(punishes('heavy', distance, reply), false, `A ${name} whiffs after a blocked heavy at ${distance}`);
   assert.equal(punishes('heavy', 64, rising), true, 'A rising strike punishes a blocked heavy up close');
-  assert.equal(punishes('heavy', 80, rising), false, 'but not from 80 units');
+  assert.equal(punishes('heavy', 100, rising), true, 'and from 100 units, where only the extended arm is in reach');
+  assert.equal(punishes('heavy', 110, rising), false, 'but not from 110 units');
+});
+
+test('a blocked roundhouse is punished by its extended leg from further out than by its body', () => {
+  // The leg stays out through the roundhouse's 18 recovery frames, 150-215 above the floor: the jab and the rising
+  // strike reach it from about 92 and 106 units, while the light kick strikes below it (60-140) and reaches only the body.
+  const roundhouse = { right: true, kick: true }, jab = [{ punch: true }], kick = [{ kick: true }], rising = [{ left: true }, { down: true }, { down: true, left: true, heavy: true }];
+  assert.equal(punishes(roundhouse, 90, jab), true, 'A jab catches the leg at 90 units');
+  assert.equal(punishes(roundhouse, 100, jab), false, 'but not at 100');
+  assert.equal(punishes(roundhouse, 70, kick), true, 'A light kick punishes the body at 70 units');
+  assert.equal(punishes(roundhouse, 80, kick), false, 'but not at 80');
+  assert.equal(punishes(roundhouse, 106, rising), true, 'A rising strike catches the leg at 106 units');
+  assert.equal(punishes(roundhouse, 110, rising), false, 'but not at 110');
 });
 
 test('hitting a cornered defender pushes the attacker away instead', () => {
@@ -489,7 +506,7 @@ test('CPU levels stay deterministic and two CPUs finish a demo match', () => {
 test('move lists describe each style for menus', () => {
   const list = E.moveList({ style: 'grappler', specialMove: { name: 'Sizzle Burst' }, superMove: { name: 'Five-Alarm Cookout' } });
   assert.equal(list[0].name, 'Sizzle Burst'); assert.match(list[2].name, /grab/i); assert.equal(list[3].name, 'Five-Alarm Cookout');
-  assert.deepEqual(Object.keys(E.boxes(ready().fighters[0])), ['hurt', 'hit']);
+  assert.deepEqual(Object.keys(E.boxes(ready().fighters[0])), ['hurt', 'hit', 'limb', 'hittable']);
 });
 
 test('move lists name the directional normals', () => {

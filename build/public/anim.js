@@ -66,7 +66,8 @@
       result.dy = has('roll') ? 0 : -40;
     } else if (f.stun > 0) {
       result.phase = f.pose === 'block' ? 'guard' : 'hit';
-      const reaction = f.crouching ? pick('hitlow', 'hit') : f.heavyHit ? pick('hitheavy', 'hit') : 'hit';
+      // A hit reaction keeps the posture the hit found (the engine's hitCrouch); a guard follows the stick.
+      const reaction = f.hitCrouch ? pick('hitlow', 'hit') : f.heavyHit ? pick('hitheavy', 'hit') : 'hit';
       const guarding = f.crouching ? pick('crouchblock', 'crouch') : pick('guardhit', 'block');
       result.pose = f.launched ? f.y > 0 ? 'tumble' : f.stun > 5 ? 'down' : 'getup' : f.pose === 'block' ? guarding : f.stun <= 3 ? pick('settle', 'stance2') : reaction;
       // Impact: a sharp shove and squash on the first frames of the reaction.

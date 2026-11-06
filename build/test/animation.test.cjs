@@ -138,6 +138,25 @@ test('backwards movement displays a guard when the fighter is actually blocking'
   assert.equal(A.sample(fighter, state).phase, 'walk');
 });
 
+test('a hit reaction keeps the posture the hit found, while a guard follows the stick', () => {
+  const poses = { hitlow: {}, crouchblock: {}, guardhit: {} };
+  // Slot 0 jabs from 80 units; slot 1 holds `before` until the jab connects, then `after`. The cels slot 1 shows in its stun.
+  const reaction = (before, after) => {
+    const state = E.create(['a', 'b'], { cpu: false }), d = state.fighters[1], cels = [];
+    state.phase = 'fight'; state.fighters[0].x = 400; d.x = 480;
+    let touched = false;
+    for (let t = 0; t < 30; t++) {
+      E.tick(state, [t ? {} : { punch: true }, touched ? after : before]);
+      if (state.effects.some(e => e.life === e.maxLife && (e.type === 'hit' || e.type === 'block'))) touched = true;
+      if (touched && d.stun > 3) cels.push(A.sample(d, state, { poses }).pose);
+    }
+    return [...new Set(cels)];
+  };
+  assert.deepEqual(reaction({}, { down: true }), ['hit'], 'Hit standing, then holding down: the standing reaction throughout');
+  assert.deepEqual(reaction({ down: true }, {}), ['hitlow'], 'Hit crouching, then letting go: the crouching reaction throughout');
+  assert.deepEqual(reaction({ right: true, down: true }, { right: true }), ['crouchblock', 'guardhit'], 'A crouching guard stands up with the stick');
+});
+
 test('stationary pose changes draw one clear cel, while a moving strike may leave a subtle trail', () => {
   const { state, fighter } = scene(), renderer = A.createRenderer();
   const canvas = createCanvas(300, 180), ctx = canvas.getContext('2d'), sprite = createCanvas(30, 60);

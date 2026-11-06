@@ -450,15 +450,17 @@ function landingLag(E, attackDelay) {
 // Presses a cancel sequence such as ['5A', '5S', '5D', '236A'] at point blank. Each step is pressed on the frame
 // after the previous step made contact (timing 'cancel'), as soon as the attacker can act ('link'), or a number of
 // frames after the contact; a step may be { input, timing }. Options: block, crouch (the defender's posture),
-// style, defenderStyle, boss, stocks, distance, reaches (per slot, as for arena).
+// afterHit (a numpad digit the defender holds from the frame after it is first hit, such as 2 to duck or 1 to
+// crouch-guard in hitstun, or 5 to let go of a crouch), style, defenderStyle, boss, stocks, distance, reaches (per
+// slot, as for arena).
 function chain(E, steps, options = {}) {
-  const { block = false, crouch = false, distance = POINT_BLANK, style, defenderStyle, boss = false, stocks = E.STOCK_MAX || 3, timing = 'cancel', stepTimeout = 120, reaches = [] } = options;
+  const { block = false, crouch = false, afterHit = null, distance = POINT_BLANK, style, defenderStyle, boss = false, stocks = E.STOCK_MAX || 3, timing = 'cancel', stepTimeout = 120, reaches = [] } = options;
   const plan = steps.map(step => step && typeof step === 'object' && !Array.isArray(step.digits) ? { input: parseInput(step.input), timing: step.timing ?? timing } : { input: parseInput(step), timing });
   const s = arena(E, { distance, styles: [style, defenderStyle], boss: [boss, false], stocks: [stocks, 0], reaches });
   const hp0 = s.fighters[1].hp;
   const results = plan.map(p => ({ input: p.input.text, move: null, variant: null, result: 'not started', startFrame: null, contactFrame: null, hits: 0, blocks: 0, damagePoints: 0 }));
   let current = -1, queue = [], hold = { digit: 5, buttons: [] }, issuedAt = null, lastContact = null, combo = 0, hits = 0, blocks = 0, idle = 0;
-  const defender = facing => block ? dirInput(crouch ? 1 : 4, facing) : crouch ? { down: true } : {};
+  const defender = facing => hits && afterHit !== null ? dirInput(afterHit, facing) : block ? dirInput(crouch ? 1 : 4, facing) : crouch ? { down: true } : {};
   for (let tick = 0; tick < 1200; tick++) {
     const [a, d] = s.fighters, dIn = defender(d.facing);
     if (!queue.length && current + 1 < plan.length) {

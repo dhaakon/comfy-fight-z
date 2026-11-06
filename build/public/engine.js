@@ -50,6 +50,17 @@
   const MOTION_REST = 4, MOTION_PRESS = 6;
   // Base damage from which a strike hits heavy: longer hitstop, heavy sparks and the heavy reaction cel.
   const HEAVY_DAMAGE = 60;
+  // Collision rectangles are [x, y, width, height]: x the left edge, y the bottom edge above the ground.
+  // Hurtboxes, width x height from the feet and centred on the fighter: standing; crouching (crouching, crouch-blocking
+  // or in a crouching attack); jumping; launched or in air hitstun, which starts AIR_HIT_LIFT above the feet. A
+  // fighter lying down after a knockdown has none.
+  const HURT = Object.freeze({ stand: [74, 225], crouch: [80, 140], air: [70, 170], airHit: [110, 130] }), AIR_HIT_LIFT = 20;
+  // A strike's hitbox spans its height band above the attacker's feet and runs forward from HIT_START in front of the
+  // attacker's centre to its reach less half a standing body, so the contact range against a standing opponent is the
+  // move's reach. Through the strike's active and recovery frames its limb can be hit: the inner LIMB share of the box.
+  const HIT_START = 20, HALF_BODY = HURT.stand[0] / 2, LIMB = .6;
+  // Projectile boxes are centred on the projectile. Throws keep the centre-distance rule; GRAB_BAND only draws them.
+  const SHOT_BOX = Object.freeze([50, 40]), BEAM_BOX = Object.freeze([70, 60]), GRAB_BAND = Object.freeze([100, 170]);
   const DEFAULTS = Object.freeze({ roundsToWin: 2, roundTime: 99, cpuLevel: 4, training: false, trainingMeter: 'infinite' });
   // Fighting styles change speed, damage and the 214 special. Every style keeps
   // the shared 236 projectile and 623 rising strike so the controls stay learnable.
@@ -70,15 +81,17 @@
   // slide only on block. rank: connected moves chain up-rank inside the cancel window; noCancel moves never
   // cancel and cancelRank is the lowest rank a move may cancel into.
   // height: low must be crouch-blocked, high (jump-ins) must be blocked standing.
+  // band: a strike's hitbox height above the attacker's feet, [low, high]; reach sets how far forward it runs. Every
+  // strike has one; throws and command grabs reach the opponent's centre instead.
   // chip: share of damage a blocked special still deals; normals never chip.
   const MOVES = {
     // A jab, S light kick, D heavy punch, toward + S roundhouse (standing only).
-    punch: { startup: 4, active: 3, recovery: 7, reach: 100, damage: 32, pose: 'punch', hitStun: 14, blockStun: 11, slide: 18, rank: 0 },
-    kick: { startup: 5, active: 3, recovery: 9, reach: 118, damage: 36, pose: 'lkick', hitStun: 15, blockStun: 12, slide: 22, rank: 1 },
-    heavy: { startup: 8, active: 4, recovery: 15, reach: 138, damage: 70, pose: 'hpunch', hitStun: 21, blockStun: 15, slide: 36, rank: 2 },
-    roundhouse: { startup: 10, active: 4, recovery: 18, reach: 150, damage: 82, pose: 'kick', hitStun: 22, blockStun: 16, slide: 46, rank: 2 },
+    punch: { startup: 4, active: 3, recovery: 7, reach: 100, band: [110, 175], damage: 32, pose: 'punch', hitStun: 14, blockStun: 11, slide: 18, rank: 0 },
+    kick: { startup: 5, active: 3, recovery: 9, reach: 118, band: [60, 140], damage: 36, pose: 'lkick', hitStun: 15, blockStun: 12, slide: 22, rank: 1 },
+    heavy: { startup: 8, active: 4, recovery: 15, reach: 138, band: [120, 195], damage: 70, pose: 'hpunch', hitStun: 21, blockStun: 15, slide: 36, rank: 2 },
+    roundhouse: { startup: 10, active: 4, recovery: 18, reach: 150, band: [150, 215], damage: 82, pose: 'kick', hitStun: 22, blockStun: 16, slide: 46, rank: 2 },
     // S + D: blowback (KOF C + D). Knocks down on hit and never cancels; guard cancels can use it.
-    blowback: { startup: 13, active: 4, recovery: 22, reach: 132, damage: 90, pose: 'blowback', knockdown: true, blockStun: 22, slide: 44, rank: 2, noCancel: true },
+    blowback: { startup: 13, active: 4, recovery: 22, reach: 132, band: [90, 190], damage: 90, pose: 'blowback', knockdown: true, blockStun: 22, slide: 44, rank: 2, noCancel: true },
     // F is the accessible special button: free, lighter than the motion version, one shot on screen.
     special: { startup: 12, active: 1, recovery: 22, reach: 0, damage: 60, pose: 'special', rank: 3, chip: .25, projectile: { speed: 8, life: 150 } },
     // Motion specials (keypad notation relative to facing): 236, 623 and 214.
@@ -86,11 +99,11 @@
     fastball: { startup: 10, active: 1, recovery: 19, reach: 0, damage: 50, pose: 'special', rank: 3, chip: .25, projectile: { speed: 12, life: 46 } },
     doubleball: { startup: 14, active: 1, recovery: 24, reach: 0, damage: 50, pose: 'special', rank: 3, chip: .25, projectile: { speed: 7.5, life: 150, count: 2, gap: 70 } },
     skyshot: { startup: 12, active: 1, recovery: 22, reach: 0, damage: 60, pose: 'special', rank: 3, chip: .25, projectile: { speed: 6.5, life: 80, rise: 3.8 } },
-    rising: { startup: 3, active: 10, recovery: 22, reach: 112, damage: 100, pose: 'launcher', launch: 9, invulnerable: 8, onBlock: -16, slide: 14, rank: 3, chip: .25, air: true },
-    rush: { startup: 7, active: 14, recovery: 16, reach: 104, damage: 95, pose: 'dash', speed: 10, knockdown: true, onBlock: -6, slide: 30, rank: 3, chip: .25 },
-    armorRush: { startup: 12, active: 14, recovery: 18, reach: 106, damage: 120, pose: 'dash', speed: 9, knockdown: true, armor: 1, onBlock: -7, slide: 34, rank: 3, chip: .25 },
+    rising: { startup: 3, active: 10, recovery: 22, reach: 112, band: [60, 260], damage: 100, pose: 'launcher', launch: 9, invulnerable: 8, onBlock: -16, slide: 14, rank: 3, chip: .25, air: true },
+    rush: { startup: 7, active: 14, recovery: 16, reach: 104, band: [50, 190], damage: 95, pose: 'dash', speed: 10, knockdown: true, onBlock: -6, slide: 30, rank: 3, chip: .25 },
+    armorRush: { startup: 12, active: 14, recovery: 18, reach: 106, band: [50, 190], damage: 120, pose: 'dash', speed: 9, knockdown: true, armor: 1, onBlock: -7, slide: 34, rank: 3, chip: .25 },
     // Up to three presses; the third (finish damage) knocks down.
-    rekka: { startup: 6, active: 6, recovery: 15, reach: 104, damage: 45, finish: 70, pose: 'kick', speed: 6, chain: 3, onHit: 2, onBlock: -4, slide: 20, rank: 3, chip: .25 },
+    rekka: { startup: 6, active: 6, recovery: 15, reach: 104, band: [50, 190], damage: 45, finish: 70, pose: 'kick', speed: 6, chain: 3, onHit: 2, onBlock: -4, slide: 20, rank: 3, chip: .25 },
     commandGrab: { startup: 6, active: 2, recovery: 30, reach: 112, damage: 160, pose: 'throw', unblockable: true, grab: true, knockdown: true, rank: 3 },
     teleport: { startup: 14, active: 1, recovery: 12, reach: 0, damage: 0, pose: 'dash', invulnerable: 16, teleport: true, rank: 3 },
     // Damage per hit of the beam, one hit every BEAM_GAP frames; the last hit knocks down out of juggle reach.
@@ -99,20 +112,20 @@
     // Evasion and guard cancels (one stock each) escape pressure in KOF fashion.
     roll: { startup: 1, active: 0, recovery: 22, reach: 0, damage: 0, pose: 'roll', invulnerable: 14, speed: 6.5, rank: -1 },
     gcRoll: { startup: 1, active: 0, recovery: 20, reach: 0, damage: 0, pose: 'roll', invulnerable: 16, speed: 6.5, stocks: 1, rank: -1 },
-    gcBlowback: { startup: 6, active: 4, recovery: 22, reach: 128, damage: 60, pose: 'blowback', knockdown: true, invulnerable: 10, stocks: 1, onBlock: -2, slide: 48, rank: -1 },
+    gcBlowback: { startup: 6, active: 4, recovery: 22, reach: 128, band: [90, 190], damage: 60, pose: 'blowback', knockdown: true, invulnerable: 10, stocks: 1, onBlock: -2, slide: 48, rank: -1 },
     taunt: { startup: 48, active: 0, recovery: 0, reach: 0, damage: 0, pose: 'taunt', rank: -1 }
   };
   const VARIANTS = {
     crouch: {
-      punch: { startup: 4, active: 3, recovery: 8, reach: 94, damage: 28, pose: 'cjab', hitStun: 14, blockStun: 12, slide: 16, rank: 0 },
-      kick: { startup: 9, active: 4, recovery: 20, reach: 150, damage: 68, pose: 'sweep', height: 'low', knockdown: true, blockStun: 14, slide: 22, rank: 2, noCancel: true },
+      punch: { startup: 4, active: 3, recovery: 8, reach: 94, band: [55, 110], damage: 28, pose: 'cjab', hitStun: 14, blockStun: 12, slide: 16, rank: 0 },
+      kick: { startup: 9, active: 4, recovery: 20, reach: 150, band: [0, 38], damage: 68, pose: 'sweep', height: 'low', knockdown: true, blockStun: 14, slide: 22, rank: 2, noCancel: true },
       // The launcher cancels only into specials and supers.
-      heavy: { startup: 7, active: 5, recovery: 23, reach: 118, damage: 60, pose: 'launcher', launch: 10, blockStun: 16, slide: 20, rank: 2, cancelRank: 3 }
+      heavy: { startup: 7, active: 5, recovery: 23, reach: 118, band: [90, 250], damage: 60, pose: 'launcher', launch: 10, blockStun: 16, slide: 20, rank: 2, cancelRank: 3 }
     },
     air: {
-      punch: { startup: 5, active: 8, recovery: 5, reach: 102, damage: 30, pose: 'airpunch', height: 'high', hitStun: 16, blockStun: 12, slide: 10, rank: 0 },
-      kick: { startup: 6, active: 8, recovery: 6, reach: 136, damage: 36, pose: 'airkick', height: 'high', hitStun: 17, blockStun: 13, slide: 12, rank: 1 },
-      heavy: { startup: 7, active: 6, recovery: 7, reach: 124, damage: 66, pose: 'airpunch', height: 'high', hitStun: 19, blockStun: 14, slide: 16, rank: 2 }
+      punch: { startup: 5, active: 8, recovery: 5, reach: 102, band: [60, 150], damage: 30, pose: 'airpunch', height: 'high', hitStun: 16, blockStun: 12, slide: 10, rank: 0 },
+      kick: { startup: 6, active: 8, recovery: 6, reach: 136, band: [0, 100], damage: 36, pose: 'airkick', height: 'high', hitStun: 17, blockStun: 13, slide: 12, rank: 1 },
+      heavy: { startup: 7, active: 6, recovery: 7, reach: 124, band: [20, 130], damage: 66, pose: 'airpunch', height: 'high', hitStun: 19, blockStun: 14, slide: 16, rank: 2 }
     }
   };
   const PROJECTILE = { hitStun: 18, blockStun: 14, chip: .25 };
@@ -136,7 +149,7 @@
       x: WIDTH / 2 + (slot ? 190 : -190), y: 0, vy: 0, vx: 0, facing: slot ? -1 : 1,
       hp: MAX_HP, energy: 0, stocks: 0, wins: 0, pose: 'idle', move: null, moveFrame: 0,
       moveVariant: 'standing', landFrames: 0, launched: false, hitAge: 99, airVX: 0,
-      hitDone: false, connected: false, stun: 0, blockStun: false, stunAtStart: 0, blockStunAtStart: false, guard: false, crouching: false, lastInput: {},
+      hitDone: false, connected: false, stun: 0, blockStun: false, stunAtStart: 0, blockStunAtStart: false, guard: false, crouching: false, hitCrouch: false, lastInput: {},
       dash: 0, dashDir: 0, invulnerable: 0, juggle: 0, combo: 0, comboDamage: 0, counter: false,
       running: false, skid: 0, jumpSquat: 0, hop: false, armor: 0, rekka: 0, dizzy: 0, dizzyMeter: 0,
       quickRise: false, hardKnockdown: false, neutralFrames: 0, standFrames: 0,
@@ -183,6 +196,48 @@
   const meter = f => f.energy + f.stocks * BAR;
   function down(f) { return f.launched && f.y === 0 && f.stun > 0; }
   function hittable(target) { return target.hp > 0 && !target.invulnerable && !down(target) && !(target.launched && target.y > 0 && target.juggle >= JUGGLE_LIMIT); }
+  const overlaps = (a, b) => !!a && !!b && a[0] < b[0] + b[2] && b[0] < a[0] + a[2] && a[1] < b[1] + b[3] && b[1] < a[1] + a[3];
+  // A grounded fighter reeling from a hit: in hitstun, or on the frame its hitstun runs out (it cannot act until the
+  // next one), as the combo rule counts it. Knocked-down and dizzy fighters are not reeling.
+  const reeling = f => !f.launched && !f.dizzy && (f.stun > 0 && !f.blockStun || f.stunAtStart > 0 && !f.blockStunAtStart);
+  // The posture the body box follows. A move keeps its own variant, and a reeling fighter keeps the posture the hit
+  // found it in (hitCrouch), as in Capcom games: holding down in hitstun does not duck the rest of a combo, nor does
+  // letting go stand into it. Otherwise it is the crouch the player holds, crouching or crouch-blocking; blockstun
+  // follows the stick, so a guard can still switch height.
+  function crouched(f) {
+    if (f.y > 0) return false;
+    if (f.move) return f.moveVariant === 'crouch';
+    if (reeling(f)) return !!f.hitCrouch;
+    return !!f.crouching && !f.dizzy && !f.dash && !f.running && !f.jumpSquat;
+  }
+  // The body box for the fighter's state; null while it lies down after a knockdown.
+  function hurtbox(f) {
+    if (down(f)) return null;
+    if (f.launched || (f.y > 0 && f.stun > 0 && !f.blockStun)) { const [w, h] = HURT.airHit; return [f.x - w / 2, f.y + AIR_HIT_LIFT, w, h]; }
+    const [w, h] = f.y > 0 ? HURT.air : crouched(f) ? HURT.crouch : HURT.stand;
+    return [f.x - w / 2, f.y, w, h];
+  }
+  function strikeBox(f, move) {
+    const far = Math.max(HIT_START + 1, reachOf(f, move) - HALF_BODY), [low, high] = move.band;
+    return [f.facing === 1 ? f.x + HIT_START : f.x - far, f.y + low, far - HIT_START, high - low];
+  }
+  // The attacker's extended limb: the inner share of its strike box, nearest the body.
+  function limbBox(f, move) {
+    const [x, y, w, h] = strikeBox(f, move), limb = w * LIMB;
+    return [f.facing === 1 ? x : x + w - limb, y, limb, h];
+  }
+  // A strike's limb stays out from its first active frame until the move ends (a rising strike's lasts until it lands).
+  function limbOf(f) { const move = f.move && moveData(f); return move?.band && f.moveFrame >= move.startup ? limbBox(f, move) : null; }
+  function projectileBox(p) { const [w, h] = p.super ? BEAM_BOX : SHOT_BOX; return [p.x - w / 2, p.y - h / 2, w, h]; }
+  // Where a strike or projectile box touches a fighter: the centre of its overlap with the body, else with the limb.
+  function contactPoint(box, f) {
+    for (const hurt of [hurtbox(f), limbOf(f)]) if (overlaps(box, hurt)) {
+      const left = Math.max(box[0], hurt[0]), right = Math.min(box[0] + box[2], hurt[0] + hurt[2]);
+      const bottom = Math.max(box[1], hurt[1]), top = Math.min(box[1] + box[3], hurt[1] + hurt[3]);
+      return { x: (left + right) / 2, y: (bottom + top) / 2 };
+    }
+    return null;
+  }
   function knockDown(target, move, wasAirborne) {
     target.vy = move.launch || (wasAirborne ? Math.max(target.vy, 6) : 5);
     target.y = Math.max(1, target.y); target.stun = Math.max(target.stun, 30); target.launched = true; target.pose = 'tumble';
@@ -191,8 +246,11 @@
     if (move.endsCombo) target.juggle = JUGGLE_LIMIT;
     else if (wasAirborne) target.juggle++;
   }
-  function dealHit(state, target, source, damage, impactX, direction = source.facing, move = {}) {
+  // impactX / impactY: where the boxes touch (impactY above the ground); the effects are drawn there.
+  function dealHit(state, target, source, damage, impactX, direction = source.facing, move = {}, impactY = target.y + 110) {
     if (!hittable(target)) return false;
+    // The posture the hit finds the target in (read before the hit clears its move); its hitstun keeps it.
+    const crouchedAtHit = crouched(target);
     // A defender facing away from an incoming cross-up cannot block it by
     // holding back relative to an opponent now on the other side.
     const heightOk = move.height === 'low' ? target.crouching : move.height === 'high' ? !target.crouching : true;
@@ -203,7 +261,7 @@
     // One-hit armor absorbs a strike during an armored special (never a throw).
     if (!blocked && target.armor > 0 && !move.unblockable) {
       target.armor--; target.hp = Math.max(0, target.hp - Math.max(1, Math.round(damage * .5)));
-      state.hitstop = Math.max(state.hitstop, 6); emit(state, 'armor', impactX, GROUND - target.y - 110, direction, 16);
+      state.hitstop = Math.max(state.hitstop, 6); emit(state, 'armor', impactX, GROUND - impactY, direction, 16);
       return true;
     }
     const counter = !blocked && !move.unblockable && !!target.move && target.moveFrame < (moveData(target)?.startup ?? 0);
@@ -217,7 +275,8 @@
     // Normals, air normals and projectiles use fixed stun; grounded specials set it from the attacker's
     // remaining frames plus their declared advantage.
     const fixed = blocked ? move.blockStun : move.hitStun, advantage = blocked ? move.onBlock : move.onHit;
-    const remaining = source.move && move.startup ? move.startup + move.active + move.recovery - source.moveFrame : 0;
+    // A strike carries the frames its attacker had left before contacts resolved (in a trade the first hit clears them).
+    const remaining = move.remaining ?? (source.move && move.startup ? move.startup + move.active + move.recovery - source.moveFrame : 0);
     target.stun = fixed ?? (advantage !== undefined && remaining ? Math.max(2, remaining + advantage) : blocked ? 8 : 17);
     if (counter) target.stun += 4;
     const wasAirborne = target.y > 0;
@@ -226,6 +285,7 @@
     target.pose = blocked ? 'block' : 'hit';
     target.move = null; target.connected = false; target.dash = 0; target.running = false; target.jumpSquat = 0; target.rekka = 0;
     if (!blocked && target.hp > 0 && (move.launch || move.knockdown || wasAirborne)) knockDown(target, move, wasAirborne);
+    target.hitCrouch = !blocked && !target.launched && crouchedAtHit;
     // Pushback slides over the following frames (a new hit replaces the slide); launched and knocked-down
     // fighters drift through the air instead. Blocked strikes slide 1.15x as far; projectiles and super hits slide
     // their own distance either way. A strike's slide that a wall stops pushes a grounded attacker back.
@@ -237,7 +297,7 @@
     else { if (!move.superHit) gainEnergy(source, dealt * METER.hit); gainEnergy(target, dealt * METER.hitTaken); }
     // Contact pauses: 5 light, 7 heavy, 9 for launches and knockdowns, 4 on a guard, with poses, camera and effects held together.
     state.hitstop = Math.max(state.hitstop, blocked ? 4 : move.launch || move.knockdown ? 9 : damage >= HEAVY_DAMAGE ? 7 : 5);
-    emit(state, blocked ? 'block' : 'hit', impactX, GROUND - target.y - 110, direction, 18, { heavy: !blocked && (damage >= HEAVY_DAMAGE || !!move.launch), damage: dealt, attacker: source.slot });
+    emit(state, blocked ? 'block' : 'hit', impactX, GROUND - impactY, direction, 18, { heavy: !blocked && (damage >= HEAVY_DAMAGE || !!move.launch), damage: dealt, attacker: source.slot });
     if (!blocked) {
       const slot = source.slot ?? state.fighters.indexOf(source);
       if (!state.firstHit) { state.firstHit = true; banner(state, slot, 'FIRST ATTACK'); }
@@ -434,15 +494,17 @@
     }
     if (action === 'gcRoll' || action === 'gcBlowback') banner(state, f.slot, 'GUARD CANCEL');
   }
+  // from: the shooter's centre when it fired. A projectile only hits a target whose centre is not behind that point, so
+  // the double ball's second ball, which starts behind its shooter, never hits an opponent standing behind it.
   function launchProjectiles(state, f, slot, move) {
     const shot = move.projectile || {};
     if (f.move === 'super') {
-      state.projectiles.push({ owner: slot, x: f.x + f.facing * 55, y: f.y + 105, facing: f.facing, damage: move.damage, life: 150, super: true,
+      state.projectiles.push({ owner: slot, x: f.x + f.facing * 55, y: f.y + 105, from: f.x, facing: f.facing, damage: move.damage, life: 150, super: true,
         hits: move.hits, cooldown: 0, speed: 11, kind: 'super', desperation: !!f.superDesperate });
       return;
     }
     for (let i = 0; i < (shot.count || 1); i++) {
-      state.projectiles.push({ owner: slot, x: f.x + f.facing * (55 - i * (shot.gap || 0)), y: f.y + 105, facing: f.facing, damage: move.damage,
+      state.projectiles.push({ owner: slot, x: f.x + f.facing * (55 - i * (shot.gap || 0)), y: f.y + 105, from: f.x, facing: f.facing, damage: move.damage,
         life: shot.life || 150, hits: 1, cooldown: 0, speed: shot.speed || 8, rise: shot.rise || 0, kind: f.move });
     }
   }
@@ -680,7 +742,14 @@
               dealHit(state, other, f, move.damage, (f.x + other.x) / 2, f.facing, move);
               f.connected = true;
             }
-          } else if (!move.teleport && move.reach) strikes.push({ source: f, target: other, move: f.move === 'rising' ? { ...move, reversal: true } : move, direction: f.facing });
+          } else if (move.band) {
+            // The strike as it stands on this frame, fixed before any contact resolves: in a trade the first hit clears the
+            // other fighter's move, rekka stage and frames, which the second hit's stun and the rekka finisher depend on.
+            const strike = { ...move, remaining: move.startup + move.active + move.recovery - f.moveFrame };
+            if (f.move === 'rising') strike.reversal = true;
+            if (f.move === 'rekka' && f.rekka === 3) Object.assign(strike, { damage: move.finish, knockdown: true });
+            strikes.push({ source: f, target: other, move: strike, direction: f.facing });
+          }
         }
         if (f.move === 'armorRush' && f.moveFrame >= move.startup + move.active) f.armor = 0;
         if (f.moveFrame >= move.startup + move.active + move.recovery && (f.move !== 'rising' || f.y === 0)) { f.move = null; f.armor = 0; f.rekka = 0; f.pose = 'idle'; }
@@ -692,31 +761,33 @@
     // other's slide earlier. A wall that stops a strike slide passes the stopped part to a grounded attacker.
     const slides = state.fighters.map(slideStep);
     slides.forEach(({ wall }, slot) => { const other = state.fighters[1 - slot]; if (wall && other.y === 0) other.x = clamp(other.x - wall, WALL, WIDTH - WALL); });
-    const contacts = strikes.filter(({ source, target, move, direction }) =>
-      hittable(target) && (target.x - source.x) * direction >= 0 && Math.abs(source.x - target.x) < reachOf(source, move) && Math.abs(source.y - target.y) < (move.air ? 140 : 90));
-    // Resolve contacts together so equal-timing attacks trade fairly on either side.
-    for (const { source, target, move, direction } of contacts) {
-      const data = source.move === 'rekka' && source.rekka === 3 ? { ...move, damage: move.finish, knockdown: true } : move;
-      dealHit(state, target, source, data.damage, (source.x + target.x) / 2, direction, data); source.hitDone = true; source.connected = true;
-    }
+    // Contact is rectangle overlap: the strike box against the target's body box or extended limb, for a target in
+    // front of the attacker. Both fighters' contacts are found before either lands, so equal-timing attacks trade.
+    const contacts = strikes.map(strike => ({ ...strike, at: hittable(strike.target) && (strike.target.x - strike.source.x) * strike.direction >= 0
+      ? contactPoint(strikeBox(strike.source, strike.move), strike.target) : null })).filter(contact => contact.at);
+    for (const { source, target, move, direction, at } of contacts) { dealHit(state, target, source, move.damage, at.x, direction, move, at.y); source.hitDone = true; source.connected = true; }
     state.fighters.forEach(f => { for (const action of Object.keys(f.buffer)) f.buffer[action] = Math.max(0, f.buffer[action] - 1); });
     const [a, b] = state.fighters;
     state.projectiles.forEach(p => {
+      // A shot a clash cancelled earlier this frame, on its rival's turn, neither moves nor hits.
+      if (p.life <= 0) return;
       p.x += p.facing * (p.speed || 8); p.y += p.rise || 0; p.life--; p.cooldown = Math.max(0, (p.cooldown || 0) - 1);
-      // Opposing projectiles cancel; a super beam plows through a fireball.
-      const rival = state.projectiles.find(q => q !== p && q.owner !== p.owner && q.life > 0 && Math.abs(q.x - p.x) < 40 && Math.abs(q.y - p.y) < 60);
+      // Opposing projectiles whose boxes touch cancel; a super beam plows through a fireball.
+      const rival = state.projectiles.find(q => q !== p && q.owner !== p.owner && q.life > 0 && overlaps(projectileBox(q), projectileBox(p)));
       if (rival && p.life > 0) {
         emit(state, 'block', (p.x + rival.x) / 2, GROUND - p.y, p.facing);
         if (!rival.super) rival.life = 0;
         if (!p.super) p.life = 0;
         if (p.life <= 0) return;
       }
-      const victim = state.fighters[1 - p.owner];
-      if (!p.cooldown && Math.abs(p.x - victim.x) < (p.super ? 60 : 40) && Math.abs(p.y - victim.y - 105) < 75 && hittable(victim)) {
+      // A projectile's box hits the victim's body or extended limb, unless the victim is behind the point it was fired from.
+      const victim = state.fighters[1 - p.owner], ahead = p.from === undefined || (victim.x - p.from) * p.facing >= 0;
+      const at = !p.cooldown && ahead && hittable(victim) ? contactPoint(projectileBox(p), victim) : null;
+      if (at) {
         // The beam's last hit knocks down out of juggle reach, so no normal or special can extend a landed super.
         const finalHit = p.super && p.hits <= 1;
-        dealHit(state, victim, state.fighters[p.owner], p.damage, p.x, p.facing, Object.assign({ slide: p.super ? SUPER_SLIDE : PROJECTILE_SLIDE, desperation: !!p.desperation, superHit: !!p.super }, PROJECTILE,
-          p.super ? { hitStun: 12, blockStun: 8 } : {}, finalHit ? { knockdown: true, endsCombo: true } : {}));
+        dealHit(state, victim, state.fighters[p.owner], p.damage, at.x, p.facing, Object.assign({ slide: p.super ? SUPER_SLIDE : PROJECTILE_SLIDE, desperation: !!p.desperation, superHit: !!p.super }, PROJECTILE,
+          p.super ? { hitStun: 12, blockStun: 8 } : {}, finalHit ? { knockdown: true, endsCombo: true } : {}), at.y);
         p.hits--; p.cooldown = BEAM_GAP;
         // A super beam carries its victim so every hit of the barrage lands.
         if (p.super) p.x = victim.x - p.facing * 20;
@@ -754,17 +825,20 @@
     if (a.hp === 0 || b.hp === 0 || (state.options.roundTime && state.time <= 0)) finishRound(state);
     return state;
   }
-  // Approximate collision boxes for the training overlay: [x, y-from-ground, width, height].
+  // The collision rectangles of a fighter, [x, y-above-ground, width, height]: hurt the body box (null while it lies
+  // down after a knockdown), hit the strike box during its active frames and limb the extended limb, out from the
+  // strike's first active frame until the move ends. A throw or command grab shows its range to the opponent's
+  // centre as hit, since throws keep the centre-distance rule. hittable says whether a hit can land on the body or
+  // limb this frame (not while invulnerable, knocked out or launched at the juggle limit).
   function boxes(f) {
-    const crouch = f.crouching || f.pose === 'crouch', hurt = [f.x - 34, f.y, 68, crouch ? 120 : 190];
-    const move = f.move && moveData(f);
+    const move = f.move && moveData(f), active = !!move && f.moveFrame >= move.startup && f.moveFrame < move.startup + move.active;
     let hit = null;
-    if (move && move.reach && f.moveFrame >= move.startup && f.moveFrame < move.startup + move.active) {
-      const low = move.height === 'low', y = f.y + (low ? 10 : move.air ? 70 : 100);
+    if (active && move.band) hit = strikeBox(f, move);
+    else if (active && move.reach && (f.move === 'throw' || move.grab)) {
       const reach = reachOf(f, move);
-      hit = [f.facing === 1 ? f.x : f.x - reach, y, reach, low ? 50 : 70];
+      hit = [f.facing === 1 ? f.x : f.x - reach, f.y + GRAB_BAND[0], reach, GRAB_BAND[1] - GRAB_BAND[0]];
     }
-    return { hurt, hit };
+    return { hurt: hurtbox(f), hit, limb: limbOf(f), hittable: hittable(f) };
   }
   // Human-readable move list for menus, built from the fighter's style.
   function moveList(fighterData = {}) {
@@ -785,5 +859,5 @@
       { name: 'Taunt', input: 'G', note: 'Drains the opponent’s power gauge' }
     ];
   }
-  return { WIDTH, SCREEN_W, GROUND, WALL, MAX_DIST, MAX_HP, BAR, STOCK_MAX, DIZZY_LIMIT, MOVES, VARIANTS, STYLES, DEFAULTS, moveData, create, tick, resetRound, comboScale, boxes, moveList, SPRITE_HEIGHT, artReaches, reachOf };
+  return { WIDTH, SCREEN_W, GROUND, WALL, MAX_DIST, MAX_HP, BAR, STOCK_MAX, DIZZY_LIMIT, MOVES, VARIANTS, STYLES, DEFAULTS, moveData, create, tick, resetRound, comboScale, boxes, projectileBox, moveList, SPRITE_HEIGHT, artReaches, reachOf };
 });
