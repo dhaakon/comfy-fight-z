@@ -13,7 +13,7 @@ cast file ──prepare──▶ run folder ──run (paid)──▶ bundle ─
 | Need | Check | Fix |
 | --- | --- | --- |
 | Node 22 and the build dependencies | `node --version`, `ls build/node_modules` | `npm ci` |
-| ComfyUI running with cloud nodes and the project node pack | `node build/tools/new-game.cjs run --run <any run> --approve-usd 0` must fail on the *estimate*, not on missing nodes | `node comfyui/tools/install-comfy-nodes.cjs --base-directory <ComfyUI base folder>` (Desktop: `%USERPROFILE%\Documents\ComfyUI`) or `--comfy-root <folder with main.py>`, then **restart ComfyUI** |
+| ComfyUI running with cloud nodes and the project node pack | `node build/tools/new-game.cjs run --run <any run> --approve-usd 0` must fail on the *estimate*, not on missing nodes | `node comfyui/tools/install-comfy-nodes.cjs --base-directory <ComfyUI base folder>` (Desktop: `%USERPROFILE%\Documents\ComfyUI`) or `--comfy-root <folder with main.py>`, then **restart ComfyUI**. An agent that cannot drive the Desktop app can run the same server headless: from the Desktop's `ComfyUI-Installs\<instance>` folder, `<base>\.venv\Scripts\python.exe -s ComfyUI/main.py --base-directory <base> --user-directory <base>\user --port 8188 --enable-cors-header "*" --input-directory <base>\input --output-directory <base>\output` (close the Desktop app first; it owns port 8188) |
 | `comfy` CLI logged in to a workspace with credit | `comfy --help`, `comfy cloud status` | `comfy cloud login`; the sequential runner submits with `--allow-spend` |
 | Chromium for the strict export | `npx playwright install chromium` or `PLAYWRIGHT_EXECUTABLE_PATH` | see `build/tools/build-bundle.cjs` |
 | Spending authorization | the person who pays has named a cap | never run step 2 without it |

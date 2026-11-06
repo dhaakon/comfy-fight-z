@@ -59,6 +59,7 @@
     const palette = slot === 1 && selected[0] === selected[1] ? 155 : 0;
     if (!fighterRenderer?.draw(ctx, f, data, art, state, { ground: E.GROUND, height: 225, reducedMotion: reducedMotion.matches, palette })) fallbackFighter(f, data);
   }
+  const PIXEL = "'Press Start 2P', Impact, sans-serif";
   function effect(name, x, y, facing = 1, opacity = 1, size = 120) {
     const meta = manifest.effects?.[name], img = art(assetSource(meta));
     if (img) { ctx.save(); ctx.globalAlpha = opacity; ctx.translate(x, y); ctx.scale(facing, 1); const ratio = size / Math.max(img.width, img.height); ctx.drawImage(img, -img.width * ratio / 2, -img.height * ratio / 2, img.width * ratio, img.height * ratio); ctx.restore(); return true; }
@@ -66,10 +67,10 @@
   }
   function hud() {
     const fighters = state?.fighters || [E.create().fighters[0], E.create().fighters[1]];
-    const flash = Math.floor(performance.now() / 160) % 2 === 0, colors = ['#c9a25e', '#7894a5'];
-    // Charcoal top band with a brass timer plate, in the restrained Neo Geo style.
+    const flash = Math.floor(performance.now() / 160) % 2 === 0, colors = ['#ffe600', '#ffe600'];
+    // Black top band, yellow life bars with a red damage trail and pixel type, mid-90s arcade style.
     ctx.save();
-    ctx.fillStyle = '#0d0f11e0'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(960, 0); ctx.lineTo(960, 80); ctx.lineTo(530, 80); ctx.lineTo(515, 96); ctx.lineTo(445, 96); ctx.lineTo(430, 80); ctx.lineTo(0, 80); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#000000e6'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(960, 0); ctx.lineTo(960, 80); ctx.lineTo(530, 80); ctx.lineTo(515, 96); ctx.lineTo(445, 96); ctx.lineTo(430, 80); ctx.lineTo(0, 80); ctx.closePath(); ctx.fill();
     fighters.forEach((f, slot) => {
       const data = fighterData(slot), width = 360, x = slot ? 530 : 70, color = colors[slot];
       const portrait = art(portraitSource(data)), px = slot ? 898 : 8;
@@ -78,42 +79,45 @@
       // Life bar drains toward the portrait; low health flashes oxblood (desperation).
       const hp = Math.max(0, f.hp) / 100, danger = f.hp > 0 && f.hp <= 25;
       ctx.save(); ctx.beginPath(); ctx.moveTo(x + 10, 30); ctx.lineTo(x + width, 30); ctx.lineTo(x + width - 10, 52); ctx.lineTo(x, 52); ctx.closePath(); ctx.clip();
-      ctx.fillStyle = '#050607'; ctx.fillRect(x, 30, width, 22); ctx.fillStyle = '#3a1513'; ctx.fillRect(x + 2, 32, width - 4, 18);
-      const fill = danger ? (flash ? '#d8584a' : '#a3483c') : color, w = (width - 4) * hp;
+      ctx.fillStyle = '#050607'; ctx.fillRect(x, 30, width, 22); ctx.fillStyle = '#2a0000'; ctx.fillRect(x + 2, 32, width - 4, 18);
+      const fill = danger ? (flash ? '#ff2a2a' : '#b01818') : color, w = (width - 4) * hp;
+      // The damage trail eases down behind the bar so a hit reads as a red chunk before it drains away.
+      const shown = view.hpShown[slot] = view.hpShown[slot] == null || view.hpShown[slot] < hp ? hp : Math.max(hp, view.hpShown[slot] - .012), tw = (width - 4) * shown;
+      ctx.fillStyle = '#d41f1f'; ctx.fillRect(slot ? x + 2 : x + 2 + (width - 4) - tw, 32, tw, 18);
       ctx.fillStyle = fill; ctx.fillRect(slot ? x + 2 : x + 2 + (width - 4) - w, 32, w, 18);
       ctx.fillStyle = '#ffffff40'; ctx.fillRect(slot ? x + 2 : x + 2 + (width - 4) - w, 32, w, 4); ctx.restore();
-      ctx.textAlign = slot ? 'right' : 'left'; ctx.font = 'italic 19px Impact'; ctx.lineWidth = 4; ctx.strokeStyle = '#0d0f11';
-      const nameX = slot ? x + width - 4 : x + 4; ctx.strokeText(data.name.toUpperCase(), nameX, 72); ctx.fillStyle = '#f5ead2'; ctx.fillText(data.name.toUpperCase(), nameX, 72);
+      ctx.textAlign = slot ? 'right' : 'left'; ctx.font = `14px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000';
+      const nameX = slot ? x + width - 4 : x + 4; ctx.strokeText(data.name.toUpperCase(), nameX, 72); ctx.fillStyle = '#fff'; ctx.fillText(data.name.toUpperCase(), nameX, 72);
       // Round wins as brass victory marks beside the timer.
       const target = state?.options?.roundsToWin ?? 2;
       for (let i = 0; i < target; i++) {
         const mx = slot ? 540 + i * 16 : 420 - i * 16;
-        ctx.fillStyle = f.wins > i ? '#f4d692' : '#2a2f33'; ctx.beginPath(); ctx.moveTo(mx, 59); ctx.lineTo(mx + 6, 65); ctx.lineTo(mx, 71); ctx.lineTo(mx - 6, 65); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = f.wins > i ? '#ff2a2a' : '#2a2f33'; ctx.beginPath(); ctx.moveTo(mx, 59); ctx.lineTo(mx + 6, 65); ctx.lineTo(mx, 71); ctx.lineTo(mx - 6, 65); ctx.closePath(); ctx.fill();
       }
       // Power gauge: one bar fills into up to three stocks (MAX).
       const gx = slot ? 640 : 70, gw = 250, gy = 512, stocks = f.stocks ?? 0, bar = Math.min(1, (f.energy ?? 0) / (E.BAR || 100));
       ctx.fillStyle = '#0d0f11d9'; ctx.fillRect(gx - 4, gy - 16, gw + 74, 30);
       ctx.fillStyle = '#1b2024'; ctx.fillRect(gx, gy, gw, 9);
       const full = stocks >= (E.STOCK_MAX || 3);
-      ctx.fillStyle = full ? (flash ? '#f4d692' : '#c9a25e') : '#5f7f99'; ctx.fillRect(slot ? gx + gw * (1 - bar) : gx, gy, gw * (full ? 1 : bar), 9);
-      ctx.fillStyle = '#d9cfb8'; ctx.font = '800 9px Segoe UI, Arial'; ctx.textAlign = slot ? 'right' : 'left'; ctx.fillText('POWER', slot ? gx + gw : gx, gy - 4);
-      ctx.textAlign = 'center'; ctx.font = 'italic 22px Impact'; ctx.lineWidth = 4; ctx.strokeStyle = '#0d0f11';
+      ctx.fillStyle = full ? (flash ? '#ffe600' : '#ff9a00') : '#2f6bff'; ctx.fillRect(slot ? gx + gw * (1 - bar) : gx, gy, gw * (full ? 1 : bar), 9);
+      ctx.fillStyle = '#fff'; ctx.font = `7px ${PIXEL}`; ctx.textAlign = slot ? 'right' : 'left'; ctx.fillText('POWER', slot ? gx + gw : gx, gy - 4);
+      ctx.textAlign = 'center'; ctx.font = `14px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000';
       const label = full ? 'MAX' : String(stocks), lx = slot ? gx - 30 + 0 : gx + gw + 32;
-      ctx.strokeText(label, slot ? gx - 22 : lx, gy + 10); ctx.fillStyle = full ? '#f4d692' : stocks ? '#f5ead2' : '#5a6268'; ctx.fillText(label, slot ? gx - 22 : lx, gy + 10);
+      ctx.strokeText(label, slot ? gx - 22 : lx, gy + 10); ctx.fillStyle = full ? (flash ? '#ffe600' : '#fff') : stocks ? '#fff' : '#555'; ctx.fillText(label, slot ? gx - 22 : lx, gy + 10);
     });
     // Timer plate; training and endless rounds show infinity.
-    ctx.fillStyle = '#15191c'; ctx.fillRect(452, 14, 56, 58); ctx.strokeStyle = '#c9a25e'; ctx.lineWidth = 2; ctx.strokeRect(452, 14, 56, 58);
+    ctx.fillStyle = '#000'; ctx.fillRect(448, 12, 64, 60); ctx.strokeStyle = '#ffe600'; ctx.lineWidth = 3; ctx.strokeRect(448, 12, 64, 60);
     const endless = mode === 'training' || state?.options?.roundTime === 0;
     const seconds = Math.ceil((state?.time ?? 5940) / 60), time = endless ? '∞' : String(seconds).padStart(2, '0');
-    ctx.textAlign = 'center'; ctx.font = 'italic 40px Impact'; ctx.lineWidth = 4; ctx.strokeStyle = '#0d0f11'; ctx.strokeText(time, 480, 58);
-    ctx.fillStyle = !endless && seconds <= 10 && state?.phase === 'fight' && flash ? '#d8584a' : '#f4d692'; ctx.fillText(time, 480, 58);
-    ctx.font = '800 8px Segoe UI, Arial'; ctx.fillStyle = '#d9cfb8'; ctx.fillText(mode === 'training' ? 'TRAINING' : 'ROUND ' + (state?.round || 1), 480, 90);
+    ctx.textAlign = 'center'; ctx.font = `${endless ? 36 : 28}px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000'; ctx.strokeText(time, 480, 56);
+    ctx.fillStyle = !endless && seconds <= 10 && state?.phase === 'fight' && flash ? '#ff2a2a' : '#ffe600'; ctx.fillText(time, 480, 56);
+    ctx.font = `7px ${PIXEL}`; ctx.fillStyle = '#fff'; ctx.fillText(mode === 'training' ? 'TRAINING' : 'ROUND ' + (state?.round || 1), 480, 90);
     // Arcade score line.
     if (arcade && mode === 'arcade') {
       const best = bestScore;
-      ctx.font = 'italic 14px Impact'; ctx.lineWidth = 3;
-      ctx.textAlign = 'right'; ctx.strokeText('1P ' + String(arcade.score).padStart(8, '0'), 420, 20); ctx.fillStyle = '#f5ead2'; ctx.fillText('1P ' + String(arcade.score).padStart(8, '0'), 420, 20);
-      ctx.textAlign = 'left'; ctx.strokeText('HI ' + String(Math.max(best, arcade.score)).padStart(8, '0'), 540, 20); ctx.fillStyle = '#f4d692'; ctx.fillText('HI ' + String(Math.max(best, arcade.score)).padStart(8, '0'), 540, 20);
+      ctx.font = `9px ${PIXEL}`; ctx.lineWidth = 3; ctx.strokeStyle = '#000';
+      ctx.textAlign = 'right'; ctx.strokeText('1UP ' + String(arcade.score).padStart(8, '0'), 420, 20); ctx.fillStyle = '#fff'; ctx.fillText('1UP ' + String(arcade.score).padStart(8, '0'), 420, 20);
+      ctx.textAlign = 'left'; ctx.strokeText('HI-SCORE ' + String(Math.max(best, arcade.score)).padStart(8, '0'), 540, 20); ctx.fillStyle = '#ff2a2a'; ctx.fillText('HI-SCORE ' + String(Math.max(best, arcade.score)).padStart(8, '0'), 540, 20);
     }
     if (mode === 'training' && state) trainingHud();
     ctx.restore();
@@ -159,8 +163,8 @@
   // Presentation-only camera: follows the fighters' midpoint across the wider
   // stage, pushes in when they are close and lifts for airborne exchanges.
   const FLOOR = E.GROUND, PARALLAX = .5;
-  const view = { x: (E.WIDTH - 960) / 2, zoom: 1, lift: 0, shake: 0, particles: [], combos: [null, null], seen: new WeakSet() };
-  function resetView() { Object.assign(view, { x: (E.WIDTH - 960) / 2, zoom: 1, lift: 0, shake: 0, particles: [], combos: [null, null], seen: new WeakSet() }); }
+  const view = { x: (E.WIDTH - 960) / 2, zoom: 1, lift: 0, shake: 0, particles: [], combos: [null, null], seen: new WeakSet(), hpShown: [null, null], clock: { text: '', frames: 0 } };
+  function resetView() { Object.assign(view, { x: (E.WIDTH - 960) / 2, zoom: 1, lift: 0, shake: 0, particles: [], combos: [null, null], seen: new WeakSet(), hpShown: [null, null], clock: { text: '', frames: 0 } }); }
   function updateCamera(fighters, snap) {
     const [a, b] = fighters, distance = Math.abs(a.x - b.x), mid = (a.x + b.x) / 2;
     // MvC-style framing: fighters fill over half the frame when close (zoom 1.42, about 59% of the height)
@@ -206,8 +210,14 @@
     ctx.globalAlpha = 1;
   }
   function screenText(text, x, y, size, fill, align = 'center', alpha = 1) {
-    ctx.save(); ctx.globalAlpha = alpha; ctx.textAlign = align; ctx.font = `italic ${size}px Impact`; ctx.lineWidth = Math.max(3, size / 9); ctx.strokeStyle = '#111416';
+    ctx.save(); ctx.globalAlpha = alpha; ctx.textAlign = align; ctx.font = `${Math.round(size * .8)}px ${PIXEL}`; ctx.lineWidth = Math.max(3, size / 8); ctx.strokeStyle = '#000';
     ctx.strokeText(text, x, y); ctx.fillStyle = fill; ctx.fillText(text, x, y); ctx.restore();
+  }
+  // Arcade callout: the text slams in from a larger scale (pop 1 → 0) and can carry a second colour outline.
+  function slam(text, x, y, size, fill, pop, alpha = 1, edge = null) {
+    ctx.save(); ctx.translate(x, y); const k = 1 + pop * 2.2; ctx.scale(k, k);
+    if (edge) { ctx.globalAlpha = alpha; ctx.textAlign = 'center'; ctx.font = `${Math.round(size * .8)}px ${PIXEL}`; ctx.lineWidth = Math.max(6, size / 4); ctx.strokeStyle = edge; ctx.strokeText(text, 0, 0); }
+    screenText(text, 0, 0, size, fill, 'center', alpha); ctx.restore();
   }
   function overlays() {
     // Combo counters sit on the attacker's side and linger after the combo ends.
@@ -215,14 +225,15 @@
       const attacker = 1 - slot, live = defender.combo >= 2 && (defender.stun > 0 && !defender.blockStun || defender.launched);
       if (live) view.combos[attacker] = { hits: defender.combo, damage: defender.comboDamage, life: 70 };
       const c = view.combos[attacker]; if (!c || --c.life <= 0) return;
-      const x = attacker ? 930 : 30, align = attacker ? 'right' : 'left', alpha = Math.min(1, c.life / 15), color = attacker ? '#9ab7c8' : '#e2c27a';
+      const x = attacker ? 930 : 30, align = attacker ? 'right' : 'left', alpha = Math.min(1, c.life / 15), color = attacker ? '#3df2ff' : '#ffe600';
       screenText(c.hits + ' HITS', x, 150, 40, color, align, alpha);
       screenText(c.damage + '% DAMAGE', x, 172, 15, '#ece8dc', align, alpha);
     });
     for (const e of state.effects) {
       if (e.type === 'banner') {
-        const t = e.maxLife - e.life, slide = Math.min(1, t / 8), x = e.slot ? 930 + (1 - slide) * 200 : 30 - (1 - slide) * 200;
-        screenText(e.text, x, 122, 28, e.slot ? '#9ab7c8' : '#e2c27a', e.slot ? 'right' : 'left', Math.min(1, e.life / 12));
+        const t = e.maxLife - e.life, slide = Math.min(1, t / 8), x = e.slot ? 930 + (1 - slide) * 200 : 30 - (1 - slide) * 200, pop = Math.max(0, 1 - t / 5);
+        ctx.save(); ctx.translate(x, 122); ctx.scale(1 + pop * 1.2, 1 + pop * 1.2);
+        screenText(e.text, 0, 0, 24, e.slot ? '#3df2ff' : '#ffe600', e.slot ? 'right' : 'left', Math.min(1, e.life / 12)); ctx.restore();
       }
       if (e.type === 'super') {
         // Full-screen cut-in while the engine holds the cinematic freeze.
@@ -232,7 +243,7 @@
         ctx.globalAlpha = Math.min(1, e.life / 6);
         ctx.fillStyle = '#7a1f1c'; ctx.fillRect(bandX, 150, 960, 170); ctx.fillStyle = '#c4a25e'; ctx.fillRect(bandX, 146, 960, 4); ctx.fillRect(bandX, 320, 960, 4);
         if (img) { ctx.save(); ctx.beginPath(); ctx.rect(bandX, 150, 960, 170); ctx.clip(); cover(img, bandX + (e.slot ? 380 : 0), 150, 580, 170); ctx.restore(); }
-        screenText(((data.superMove?.name || (data.specialMove?.name ? data.specialMove.name + ' MAX' : 'SUPER FINISH')) + (e.desperation ? ' · MAX' : '')).toUpperCase(), bandX + (e.slot ? 40 : 920), 300, 34, '#f0d187', e.slot ? 'left' : 'right');
+        screenText(((data.superMove?.name || (data.specialMove?.name ? data.specialMove.name + ' MAX' : 'SUPER FINISH')) + (e.desperation ? ' · MAX' : '')).toUpperCase(), bandX + (e.slot ? 40 : 920), 300, 22, '#ffe600', e.slot ? 'left' : 'right');
         ctx.restore();
       }
     }
@@ -296,23 +307,25 @@
         const img = art(assetSource(fighterData(cutin.slot).cutin));
         if (img) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#101b20cc'; ctx.fillRect(0, 125, 960, 110); cover(img, cutin.slot ? 480 : 0, 125, 480, 110); ctx.restore(); }
         const special = fighterData(cutin.slot).specialMove?.name;
-        if (special) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#151719eb'; ctx.fillRect(0, 220, 960, 42); ctx.textAlign = 'center'; ctx.font = 'italic 30px Impact'; ctx.fillStyle = cutin.slot ? '#7894a5' : '#c4a25e'; ctx.fillText(special.toUpperCase() + '!', 480, 250); ctx.restore(); }
+        if (special) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#151719eb'; ctx.fillRect(0, 220, 960, 42); ctx.textAlign = 'center'; ctx.font = `18px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000'; ctx.strokeText(special.toUpperCase() + '!', 480, 250); ctx.fillStyle = cutin.slot ? '#3df2ff' : '#ffe600'; ctx.fillText(special.toUpperCase() + '!', 480, 250); ctx.restore(); }
       }
       overlays();
     }
     hud();
     if (!state && ui('logo')) { const img = ui('logo'); ctx.drawImage(img, 380, 92, 200, Math.min(95, 200 * img.height / img.width)); }
-    // Round calls: ROUND / FINAL ROUND, READY?, GO!, then the K.O., TIME OVER or PERFECT result.
-    const headline = !state ? '' : state.phase === 'intro' ? (state.phaseFrames > 40 ? state.message : 'READY?') : state.phase === 'fight' && goFrames > 0 ? 'GO!' : state.phase === 'roundover' ? state.message : '';
+    // Round calls slammed in arcade style: ROUND n / FINAL ROUND, FIGHT!, then K.O., DOUBLE K.O., TIME OVER, PERFECT or DRAW GAME.
+    const headline = !state ? '' : state.phase === 'intro' ? (state.phaseFrames > 30 ? state.message : '') : state.phase === 'fight' && goFrames > 0 ? 'FIGHT!' : state.phase === 'roundover' ? state.message : '';
+    if (view.clock.text !== headline) { view.clock.text = headline; view.clock.frames = 0; } else view.clock.frames++;
     if (headline && mode !== 'training') {
-      const pop = state.phase === 'fight' ? 1 + goFrames / 120 : 1;
-      ctx.save(); ctx.translate(480, 255); ctx.scale(pop, pop);
-      ctx.textAlign = 'center'; ctx.font = `italic ${headline.length > 8 ? 70 : 88}px Impact`; ctx.lineWidth = 8; ctx.strokeStyle = '#0d0f11'; ctx.strokeText(headline, 0, 0);
-      ctx.fillStyle = headline === 'K.O.' || headline === 'DOUBLE K.O.' ? '#d8584a' : '#f4d692'; ctx.fillText(headline, 0, 0); ctx.restore();
+      const k = view.clock.frames, pop = Math.max(0, 1 - k / 6), hot = headline === 'FIGHT!' || headline.includes('K.O.');
+      // A white flash on the frames the FIGHT! and K.O. calls land.
+      if ((hot || headline === 'PERFECT') && k < 3) { ctx.fillStyle = `rgba(255,255,255,${(3 - k) / 3 * .8})`; ctx.fillRect(0, 0, 960, 540); }
+      const size = headline === 'K.O.' ? 110 : headline.length > 8 ? 40 : 64;
+      slam(headline, 480, 262, size, hot ? '#ff2a2a' : '#ffe600', pop, 1, hot ? '#ffe600' : '#ff2a2a');
       if (state.phase === 'roundover' && state.phaseFrames < 110 && state.winner !== null && state.winner !== undefined) {
-        ctx.textAlign = 'center'; ctx.font = 'italic 18px Impact'; ctx.lineWidth = 4; ctx.strokeStyle = '#0d0f11';
+        ctx.textAlign = 'center'; ctx.font = `10px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000';
         const sub = fighterData(state.winner).name.toUpperCase() + ' TAKES THE ROUND';
-        ctx.strokeText(sub, 480, 292); ctx.fillStyle = '#f5ead2'; ctx.fillText(sub, 480, 292);
+        ctx.strokeText(sub, 480, 302); ctx.fillStyle = '#fff'; ctx.fillText(sub, 480, 302);
       }
     }
   }

@@ -6,7 +6,7 @@ const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'end
 const STYLES = new Set(['balanced', 'power', 'speed', 'zoner', 'grappler', 'trickster', 'boss']);
 // A complete arcade cast (seven fighters, three arenas, PNG/WAV sources) exports at roughly 550 MB.
 const MAX_BYTES = 1024 * 1024 * 1024;
-const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'render/arena.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'style.css', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
+const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'render/arena.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'fonts/PressStart2P-Regular.ttf', 'fonts/OFL-PressStart2P.txt', 'style.css', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
 const ARCADE_ART = ['arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp', 'arcade/title-logo.webp'];
 const REQUIRED_POSES = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win', 'stance2', 'crouch', 'sweep', 'launcher', 'jump', 'airkick', 'hpunch', 'dash', 'tumble', 'walk2', 'lkick', 'cjab', 'airpunch', 'throw', 'taunt', 'getup', 'powerup', 'entrance'];
 const encoder = new TextEncoder();
@@ -424,6 +424,8 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
     onProgress({ done, total, message: `Packaging ${file}` });
     const response = await fetch(new URL(`../${file}`, import.meta.url));
     if (!response.ok) throw new Error(`Game template unavailable: ${file} (${response.status}). Run the builder through its local server.`);
+    // Binary template files (the arcade typeface) are copied byte for byte; text would re-encode them.
+    if (/\.(ttf|otf|woff2?)$/i.test(file)) { output.set(file, new Blob([await response.arrayBuffer()], { type: file.endsWith('.ttf') ? 'font/ttf' : 'application/octet-stream' })); done++; continue; }
     let content = await response.text();
     // A runtime template may link back to the builder; exported games must not.
     if (file === 'index.html') content = content.replace(/<a\b[^>]*href=["'][^"']*builder[^"']*["'][^>]*>[\s\S]*?<\/a>/gi, '');

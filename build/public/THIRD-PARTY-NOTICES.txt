@@ -2,6 +2,9 @@ Third-party packages bundled in start-server.cjs.
 Comfy Fighter Z itself is licensed under the accompanying MIT LICENSE.
 
 
+The arcade typeface fonts/PressStart2P-Regular.ttf is "Press Start 2P" by Cody "CodeMan38" Boisclair, licensed under the SIL Open Font License 1.1 (fonts/OFL-PressStart2P.txt).
+
+
 ========================================================================
 dijkstrajs 1.0.3 (MIT)
 

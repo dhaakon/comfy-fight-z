@@ -142,6 +142,7 @@ function unzipStored(bytes, destination) {
     const exported = path.join(temp, 'exported'); fs.mkdirSync(exported);
     const packageFiles = unzipStored(fs.readFileSync(zipPath), exported);
     assert.deepEqual(packageFiles.get('LICENSE'), fs.readFileSync(path.join(root, 'LICENSE')), 'Preserve the complete MIT notice in the game ZIP');
+    assert.deepEqual(packageFiles.get('fonts/PressStart2P-Regular.ttf'), fs.readFileSync(path.join(root, 'build/public/fonts/PressStart2P-Regular.ttf')), 'Copy the arcade typeface byte for byte');
     assert.equal(JSON.parse(packageFiles.get('package.json')).license, 'MIT');
     const runtime = JSON.parse(packageFiles.get('assets/manifest.json'));
     assert.equal(runtime.title, 'Custom Backyard Championship');

@@ -559,3 +559,113 @@ body.cfz-frame .settings-dialog, body.cfz-frame .network-dialog { background-ima
 .game-copy small { font-size:9px; font-weight:800; letter-spacing:1px; color:var(--muted); }
 .games-hint { position:absolute; bottom:18px; left:0; right:0; margin:0; text-align:center; font-size:8px; font-weight:800; letter-spacing:2px; color:#8c7ca8; }
 @media (max-width:720px) { .games-grid { top:120px; left:12px; right:12px; bottom:44px; gap:10px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); } .game-card { min-height:150px; } .game-art { min-height:80px; } .games-screen .selection-title { top:55px; padding:6px 12px; } }
+/* ===== Mid-90s arcade skin: pixel type, attract-mode title, flashing cursors, slam callouts, scanlines ===== */
+@font-face{font-family:'Press Start 2P';src:url('fonts/PressStart2P-Regular.ttf') format('truetype');font-display:swap}
+:root{--pixel:'Press Start 2P','Courier New',monospace;--arc-yellow:#ffe600;--arc-red:#ff2a2a;--arc-blue:#2f6bff;--arc-cyan:#3df2ff}
+@keyframes arc-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes arc-cursor{0%,49%{color:var(--arc-yellow)}50%,100%{color:#fff}}
+@keyframes arc-rays{to{transform:rotate(360deg)}}
+@keyframes arc-logo-slam{0%{opacity:0;transform:scale(3.2);filter:brightness(4) blur(6px)}60%{opacity:1;transform:scale(.92);filter:brightness(1.6) blur(0)}80%{transform:scale(1.06)}100%{transform:scale(1);filter:brightness(1)}}
+@keyframes arc-logo-bob{to{transform:translateY(-6px)}}
+@keyframes arc-logo-glow{0%{filter:drop-shadow(5px 7px 0 #000) drop-shadow(0 0 18px #ffe60088)}50%{filter:drop-shadow(5px 7px 0 #000) drop-shadow(0 0 26px #ff2a2aaa)}100%{filter:drop-shadow(5px 7px 0 #000) drop-shadow(0 0 18px #3df2ff88)}}
+@keyframes arc-flash{from{opacity:1}to{opacity:0}}
+@keyframes arc-wipe{from{transform:translateX(-130%) skewX(-18deg)}to{transform:translateX(130%) skewX(-18deg)}}
+@keyframes arc-cursor-border{0%,49%{border-color:var(--arc-yellow);box-shadow:inset 0 0 0 3px var(--arc-yellow)}50%,100%{border-color:#fff;box-shadow:inset 0 0 0 3px #fff}}
+@keyframes arc-cursor-border2{0%,49%{border-color:var(--arc-cyan);box-shadow:inset 0 0 0 3px var(--arc-cyan)}50%,100%{border-color:#fff;box-shadow:inset 0 0 0 3px #fff}}
+@keyframes arc-hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes arc-marquee{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+.crt-overlay{position:absolute;inset:0;z-index:60;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 2px,#00000030 2px 3px),radial-gradient(ellipse at center,#0000 58%,#00000070 100%)}
+body:has(.canvas-wrap.filter-scanlines) .crt-overlay,body:has(.canvas-wrap.filter-crt) .crt-overlay{display:none}
+.screen-fx{position:absolute;inset:0;z-index:61;pointer-events:none;opacity:0;background:#fff;overflow:hidden}
+.screen-fx.flash{animation:arc-flash .22s steps(4) both}
+.screen-fx.wipe{background:none;opacity:1}
+.screen-fx.wipe::before{content:'';position:absolute;inset:-10% -30%;background:linear-gradient(90deg,#0000 0,var(--arc-red) 20%,var(--arc-yellow) 50%,var(--arc-red) 80%,#0000 100%);animation:arc-wipe .38s cubic-bezier(.6,0,.4,1) both}
+/* title: attract mode */
+.title-screen{background:#000}
+.title-backdrop{opacity:.92;filter:saturate(1.3) contrast(1.12)}
+.title-screen:after{background:linear-gradient(#000a 0,#0000 22%,#0000 60%,#000f 100%)}
+.title-speed-lines{inset:-60%;background:repeating-conic-gradient(from 0deg at 50% 42%,#0000 0 5deg,#ffe60030 5deg 6.5deg,#0000 6.5deg 11deg,#ff2a2a26 11deg 12deg);animation:arc-rays 14s linear infinite;mix-blend-mode:screen}
+.title-fighters img{animation:arc-hop 1.1s steps(2) infinite;animation-delay:calc(var(--fighter-index) * -.18s)}
+.arcade-scoreline{position:absolute;top:10px;left:0;right:0;z-index:3;display:flex;justify-content:center;gap:34px;font-family:var(--pixel);font-size:clamp(8px,1vw,12px);color:#fff;text-shadow:3px 3px 0 #000;pointer-events:none}
+.arcade-scoreline .hi{color:var(--arc-red)}
+.arcade-scoreline .num{color:var(--arc-yellow)}
+.arcade-logo:not([hidden]){animation:arc-logo-slam .55s cubic-bezier(.2,1.2,.4,1) both,arc-logo-bob 1.8s ease-in-out .6s infinite alternate,arc-logo-glow 2.4s linear .6s infinite alternate;filter:drop-shadow(5px 7px 0 #000) drop-shadow(0 0 22px #ffe60066)}
+.title-copy h1{font-family:var(--pixel);font-size:clamp(30px,5.2vw,76px);letter-spacing:0;line-height:1.1;color:var(--arc-yellow);text-shadow:4px 4px 0 var(--arc-red),8px 8px 0 #000;transform:none;animation:arc-logo-slam .55s cubic-bezier(.2,1.2,.4,1) both}
+.title-copy h1 em{font-size:1em;color:#fff;text-shadow:4px 4px 0 var(--arc-red),8px 8px 0 #000}
+.saga-subtitle{font-family:var(--pixel);font-size:clamp(8px,1.1vw,14px);letter-spacing:0;color:var(--arc-cyan);text-shadow:3px 3px 0 #000}
+#title-load-status{font-family:var(--pixel);font-size:clamp(11px,1.6vw,20px);letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 #000;animation:arc-blink 1s steps(1) infinite;margin:10px 0 12px}
+.title-copy .title-start,.title-copy .text-button{display:block;width:min(360px,80vw);margin:0 auto;padding:6px 0 6px 36px;background:none;border:0;box-shadow:none;animation:none;text-align:left;position:relative;pointer-events:auto;font-family:var(--pixel);font-style:normal;font-weight:400;font-size:clamp(10px,1.25vw,15px);letter-spacing:0;color:#fff;text-shadow:3px 3px 0 #000;min-width:0;transform:none;filter:none;line-height:1.2}
+.title-copy .title-start span{display:none}
+.title-copy .title-start:disabled,.title-copy .text-button:disabled{opacity:.45;cursor:wait}
+.title-modes,.title-network-modes{display:flex;flex-direction:column;align-items:center;gap:0;margin:0}
+.title-copy button:hover,.title-copy button:focus{outline:none;animation:arc-cursor .5s steps(1) infinite;filter:none;transform:none}
+.title-copy button:hover::before,.title-copy button:focus::before{content:'\25B6';position:absolute;left:8px;color:var(--arc-yellow);animation:arc-blink .4s steps(1) infinite}
+.title-bottom{font-family:var(--pixel);font-size:clamp(6px,.8vw,9px);letter-spacing:0;background:#000;border-top:4px solid var(--arc-red);color:var(--arc-yellow);padding:12px 24px}
+.title-bottom a{color:#fff;text-decoration:none}
+.title-hiscore{display:none!important}
+.opening-replay{font-family:var(--pixel)}
+/* select and game select */
+.selection-title{background:var(--arc-red);color:var(--arc-yellow);border-bottom:4px solid #000;clip-path:polygon(0 0,100% 0,98.5% 100%,0 100%)}
+.selection-title h2{font-family:var(--pixel);font-style:normal;font-size:clamp(13px,2vw,24px);letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 #000;margin:0}
+.selection-title p{font-family:var(--pixel);font-size:clamp(6px,.75vw,8px);letter-spacing:0;color:#fff}
+.selection-title b{color:#fff}
+.selection-home{font-family:var(--pixel);font-size:8px;letter-spacing:0;color:#fff;text-shadow:2px 2px 0 #000}
+.select-heading h1,#game-title{font-family:var(--pixel);font-size:clamp(13px,2vw,26px);letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 var(--arc-red),5px 5px 0 #000;transform:none}
+#game-title em{color:#fff;font-size:1em}
+.fighter-tile{border:3px solid #000;clip-path:none;box-shadow:inset 0 0 0 2px #222;transition:none}
+.fighter-tile:hover{transform:none;border-color:#fff}
+.fighter-tile.picked-one{animation:arc-cursor-border .5s steps(1) infinite}
+.fighter-tile.picked-two{animation:arc-cursor-border2 .5s steps(1) infinite}
+.fighter-tile img{filter:saturate(1.1)}
+.fighter-tile .tile-name{font-family:var(--pixel);font-style:normal;font-size:clamp(7px,.85vw,11px);letter-spacing:0;color:#fff;text-shadow:2px 2px 0 #000}
+.fighter-tile .tile-number{font-family:var(--pixel);font-size:34px}
+.fighter-card{border:3px solid #000;box-shadow:inset 0 0 0 2px #333}
+.fighter-card h3{font-family:var(--pixel);font-style:normal;font-size:clamp(12px,1.5vw,22px);letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 var(--arc-red),5px 5px 0 #000}
+.fighter-nameplate .mini-tag{font-family:var(--pixel);font-size:7px;letter-spacing:0;background:var(--arc-red);color:#fff;border:2px solid #000}
+.player-switch button{font-family:var(--pixel);font-style:normal;font-size:12px;border:3px solid #000;background:#111;color:#999}
+.player-switch button.active,.player-switch button[data-pick-slot="1"].active{color:var(--arc-yellow);border-color:var(--arc-yellow);background:#000;animation:arc-cursor .5s steps(1) infinite}
+.player-switch .versus{font-family:var(--pixel);color:var(--arc-red);text-shadow:2px 2px 0 #000}
+.pick-hint,.selection-art-status,.device-status{font-family:var(--pixel);font-size:7px;letter-spacing:0;color:#fff;text-shadow:2px 2px 0 #000}
+.battle-ready{background:#000c;border:3px solid #000;border-left:6px solid var(--arc-red)}
+.battle-ready .eyebrow{font-family:var(--pixel);font-size:7px;letter-spacing:0;color:var(--arc-cyan)}
+#stage-name,#stage-cycle-name{font-family:var(--pixel);font-style:normal;font-size:clamp(9px,1vw,12px);letter-spacing:0;color:#fff;text-shadow:2px 2px 0 #000}
+#stage-art-status{font-family:var(--pixel);font-size:6px}
+.stage-cycle button{font-family:var(--pixel);color:var(--arc-yellow);background:#000;border:2px solid #fff}
+#start-button{font-family:var(--pixel);font-style:normal;font-size:clamp(10px,1.3vw,16px);letter-spacing:0;background:var(--arc-red);color:var(--arc-yellow);border:4px solid #000;box-shadow:5px 5px 0 #000;animation:arc-cursor .5s steps(1) infinite;text-shadow:2px 2px 0 #000;min-width:0;padding:12px 18px}
+#start-button span{display:none}
+#start-button:hover{filter:none;transform:none;background:#ff4a4a}
+.games-grid .game-copy strong{font-family:var(--pixel);font-size:clamp(10px,1.2vw,14px);letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 #000}
+.games-grid .game-copy span,.games-grid .game-copy small,.games-hint{font-family:var(--pixel);font-size:7px;letter-spacing:0}
+.game-card{border:3px solid #000}
+.game-card.current,.game-card:hover,.game-card:focus-visible{animation:arc-cursor-border .5s steps(1) infinite}
+/* fight and result overlays */
+.fight-heading .eyebrow,.text-button{font-family:var(--pixel);letter-spacing:0}
+.versus-overlay{background:linear-gradient(115deg,#ff2a2aee 0 47%,#000 47% 53%,#2f6bffee 53%)}
+.versus-overlay span{font-family:var(--pixel);font-size:8px;letter-spacing:0}
+.versus-overlay strong{font-family:var(--pixel);font-style:normal;font-size:clamp(14px,2.4vw,34px);letter-spacing:0;color:#fff;text-shadow:3px 3px 0 #000}
+.versus-overlay>b{font-family:var(--pixel);font-style:normal;font-size:clamp(30px,5vw,64px);color:var(--arc-yellow);text-shadow:4px 4px 0 #000}
+.vs-screen strong,.vs-screen h2,.vs-side strong{font-family:var(--pixel);font-style:normal;letter-spacing:0;color:#fff;text-shadow:3px 3px 0 #000}
+.vs-mark{font-family:var(--pixel);font-style:normal;color:var(--arc-yellow);text-shadow:4px 4px 0 var(--arc-red),8px 8px 0 #000}
+.vs-round,#vs-stage,.vs-side span,.vs-side em{font-family:var(--pixel);font-size:clamp(7px,.9vw,10px);letter-spacing:0}
+.win-screen h2,.continue-screen strong,.gameover-screen h2,.ending-screen h2,.name-entry strong,.movelist-overlay h2,.pause-overlay h2,.training-panel h3{font-family:var(--pixel);font-style:normal;letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 var(--arc-red),5px 5px 0 #000}
+.win-screen h2,.ending-screen h2{font-size:clamp(16px,2.4vw,30px)}
+.gameover-screen h2{font-size:clamp(20px,3vw,40px);animation:arc-blink 1s steps(1) infinite}
+.continue-screen strong{font-size:clamp(40px,7vw,96px);color:var(--arc-red);text-shadow:4px 4px 0 var(--arc-yellow),8px 8px 0 #000}
+.continue-screen .eyebrow,.win-screen .eyebrow,.ending-screen .eyebrow,.name-entry .eyebrow,.name-entry p,.continue-hint,.pause-overlay .eyebrow,.win-tally,#gameover-score,#win-quote{font-family:var(--pixel);font-size:clamp(7px,.8vw,9px);letter-spacing:0;line-height:1.7}
+.win-screen .primary,.continue-screen .primary,.pause-overlay .primary,.match-overlay .primary,.movelist-overlay .primary,.ending-skip,#continue-no,.pause-overlay .text-button,.match-overlay .text-button{font-family:var(--pixel);font-style:normal;font-size:clamp(9px,1.1vw,12px);letter-spacing:0;background:var(--arc-red);color:var(--arc-yellow);border:3px solid #000;box-shadow:4px 4px 0 #000;text-shadow:2px 2px 0 #000;min-width:0;padding:10px 16px}
+.win-screen .primary span,.continue-screen .primary span{display:none}
+.settings-dialog h2,.network-dialog h2,.settings-dialog h3{font-family:var(--pixel);font-style:normal;font-size:12px;letter-spacing:0;color:var(--arc-yellow);text-shadow:2px 2px 0 #000}
+#title-load-status{order:1}.title-copy .title-start{order:2}.title-modes{order:3}.title-network-modes{order:4}.opening-replay{order:5}
+.fighter-intro .intro-text h2{font-family:var(--pixel);font-style:normal;letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 var(--arc-red),5px 5px 0 #000;font-size:clamp(14px,2.2vw,30px);line-height:1.2}
+.fighter-intro .intro-number{font-family:var(--pixel);font-style:normal}
+.fighter-intro .intro-special,.fighter-intro .intro-text p,.fighter-intro .eyebrow,.fighter-intro blockquote,.intro-bottom button,.intro-bottom span{font-family:var(--pixel);font-style:normal;letter-spacing:0;font-size:clamp(7px,.9vw,10px);line-height:1.7}
+.title-copy .primary.title-start,.title-copy .title-modes .text-button,.title-copy .title-network-modes .text-button{display:block;width:min(360px,80vw);margin:0 auto;padding:6px 0 6px 36px;background:none;border:0;box-shadow:none;animation:none;clip-path:none;isolation:auto;text-align:left;font-family:var(--pixel);font-style:normal;font-weight:400;font-size:clamp(10px,1.25vw,15px);line-height:1.2;letter-spacing:0;color:#fff;text-shadow:3px 3px 0 #000;min-width:0;transform:none;filter:none;position:relative}
+.title-copy .primary.title-start:before,.title-copy .primary.title-start:after,.title-copy .text-button:before,.title-copy .text-button:after{content:none}
+.title-copy .primary.title-start:hover::before,.title-copy .primary.title-start:focus::before,.title-copy .text-button:hover::before,.title-copy .text-button:focus::before{content:'\25B6';position:absolute;left:8px;top:6px;color:var(--arc-yellow);animation:arc-blink .4s steps(1) infinite}
+.title-copy .primary.title-start:hover,.title-copy .primary.title-start:focus,.title-copy .title-modes .text-button:hover,.title-copy .title-network-modes .text-button:hover,.title-copy .title-modes .text-button:focus-visible,.title-copy .title-network-modes .text-button:focus-visible{background:none;color:#fff;animation:arc-cursor .5s steps(1) infinite;filter:none;transform:none}
+.title-copy .primary.title-start:disabled{opacity:.45;background:none}
+.cfz-ensemble .title-start{margin:0 auto}
+.arcade-credit{position:absolute;left:24px;bottom:16px;z-index:3;font-family:var(--pixel);font-size:clamp(8px,1vw,12px);color:var(--arc-yellow);text-shadow:3px 3px 0 #000;pointer-events:none}
+.title-copy .title-hint,#title-load-status{display:block;font-family:var(--pixel);font-size:clamp(11px,1.6vw,20px);font-weight:400;letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 #000;animation:arc-blink 1s steps(1) infinite;margin:10px 0 12px;max-width:90vw}
+.fighter-tile .tile-name{font-size:clamp(6px,.7vw,9px);left:4px;right:4px;bottom:9px;white-space:nowrap;overflow:hidden;text-align:center}
+.fighter-tile .tile-number{font-size:28px}

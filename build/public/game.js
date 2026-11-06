@@ -76,6 +76,9 @@
   const profiles = () => Object.fromEntries(manifest.fighters.map(f => [f.id, { style: f.style, boss: f.boss === true, reaches: E.artReaches(f.poses) }]));
   const audioId = (...ids) => ids.find(id => id && manifest.audio?.[id]);
   function setScene(scene) {
+    // Arcade transition: a white flash between menus, a red-and-yellow wipe into the fight.
+    const fx = document.getElementById('screen-fx'), previous = document.body.dataset.scene;
+    if (fx && previous && previous !== scene && scene !== 'opening' && scene !== 'lab') { fx.classList.remove('flash', 'wipe'); void fx.offsetWidth; fx.classList.add(scene === 'fight' ? 'wipe' : 'flash'); }
     document.body.dataset.scene = scene;
     document.querySelectorAll('.card-motion').forEach(clip => { if (scene === 'selection') clip.play().catch(() => {}); else clip.pause(); });
   }
@@ -267,6 +270,7 @@
   function refreshHiScore() {
     const best = storage.get(SCORES_KEY, [])[0];
     $('title-hiscore').hidden = !best; if (best) $('title-hiscore').textContent = `HI-SCORE ${String(best.score).padStart(8, '0')} · ${best.name}`;
+    const hi = document.getElementById('title-hi'); if (hi) hi.textContent = String(best?.score || 0).padStart(8, '0');
   }
   // Attract mode: after a quiet minute on the title, two CPUs play a short demo round.
   function startDemo() {
@@ -1063,9 +1067,11 @@
     // The included cast uses one composed illustration, rather than layered portraits.
     $('title-fighters').replaceChildren();
     refreshCards(); renderGallery(); setMusic('menu_music');
-    $('title-start').disabled = false; $('title-versus').disabled = false; $('title-training').disabled = false; refreshHiScore(); $('title-load-status').textContent = manifest.generationPending ? 'FICTIONAL ART AWAITING GENERATION · PLAY THE PROTOTYPE' : 'PRESS ENTER OR TAP TO START';
+    $('title-start').disabled = false; $('title-versus').disabled = false; $('title-training').disabled = false; refreshHiScore(); $('title-load-status').textContent = manifest.generationPending ? 'FICTIONAL ART AWAITING GENERATION · PLAY THE PROTOTYPE' : 'PRESS START';
     $('opening-replay').hidden = !assetSource(manifest.openingVideo);
     loadGames();
+    // The arcade pixel font also draws the HUD and callouts on the canvas.
+    document.fonts?.load?.("16px 'Press Start 2P'").catch(() => {});
     $('opening-skip').addEventListener('click', finishOpening); $('opening-continue').addEventListener('click', finishOpening);
     $('opening-play').addEventListener('click', () => playOpening(true)); $('opening-replay').addEventListener('click', () => playOpening(audioEnabled));
     $('opening-video').addEventListener('ended', finishOpening); $('opening-video').addEventListener('error', finishOpening);

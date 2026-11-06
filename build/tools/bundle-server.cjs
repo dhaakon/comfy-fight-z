@@ -17,7 +17,8 @@ async function bundleServer() {
       directory = path.dirname(directory);
     }
   }
-  const notices = ['Third-party packages bundled in start-server.cjs.\nComfy Fighter Z itself is licensed under the accompanying MIT LICENSE.\n'];
+  const notices = ['Third-party packages bundled in start-server.cjs.\nComfy Fighter Z itself is licensed under the accompanying MIT LICENSE.\n',
+    '\nThe arcade typeface fonts/PressStart2P-Regular.ttf is "Press Start 2P" by Cody "CodeMan38" Boisclair, licensed under the SIL Open Font License 1.1 (fonts/OFL-PressStart2P.txt).\n'];
   for (const directory of [...packages].sort()) {
     const pkg = JSON.parse(fs.readFileSync(path.join(directory, 'package.json'), 'utf8'));
     const licenses = fs.readdirSync(directory).filter(name => /^(?:licen[sc]e|copying)(?:\..*)?$/i.test(name));
