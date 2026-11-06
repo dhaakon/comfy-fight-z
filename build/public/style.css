@@ -669,3 +669,4 @@ body:has(.canvas-wrap.filter-scanlines) .crt-overlay,body:has(.canvas-wrap.filte
 .title-copy .title-hint,#title-load-status{display:block;font-family:var(--pixel);font-size:clamp(11px,1.6vw,20px);font-weight:400;letter-spacing:0;color:var(--arc-yellow);text-shadow:3px 3px 0 #000;animation:arc-blink 1s steps(1) infinite;margin:10px 0 12px;max-width:90vw}
 .fighter-tile .tile-name{font-size:clamp(6px,.7vw,9px);left:4px;right:4px;bottom:9px;white-space:nowrap;overflow:hidden;text-align:center}
 .fighter-tile .tile-number{font-size:28px}
+#fighter-grid .fighter-tile .tile-name{font-size:clamp(6px,calc(84cqw / var(--name-chars,8)),11px);left:4px;right:4px;text-align:center;overflow:hidden}
