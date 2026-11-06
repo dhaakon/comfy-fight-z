@@ -90,67 +90,85 @@ Keep our engine and evolve it; do not port DFZ's engine wholesale. DFZ is a 3v3 
 
 ## Plan
 
-Each phase is one agent-sized change with its own tests. The probe script becomes the acceptance tool in phase 0, and every later phase states the numbers it must produce. Constraints throughout: no `Math.random` in the simulation, the server runs the same engine (re-run `npm run bundle:server`), keep the pose names, keep `engine.js` and `anim.js` renderer-agnostic, keep the browser suites green, and re-export both installed games at the end.
+Each phase is one agent-sized change with its own tests. The probe script becomes the acceptance tool in phase 0, and every later phase states the numbers it must produce. Constraints throughout: no `Math.random` in the simulation, the server runs the same engine, keep the pose names, keep `engine.js` and `anim.js` renderer-agnostic, keep the browser suites green, and re-export both installed games at the end.
 
 ### Phase 0: metrics harness (half a day)
 
-- Turn `build/tools/gameplay-probe.cjs` into `build/test/gameplay-metrics.test.cjs` as assertions with the target numbers from the phases below, plus a `node build/tools/gameplay-metrics.cjs` report that prints the comparison table (ours, DFZ when the repo is present, targets).
-- Add a frame-data dump (`node build/tools/frame-data.cjs`) that prints every move's startup/active/recovery/hitstun/blockstun/advantage from the engine, so changes are reviewed as a table, not by play.
-- Acceptance: the report runs in CI without the DFZ repo.
+- `build/tools/lib/gameplay-metrics.cjs` holds the probes as functions (frame data measured by simulation, slides, jumps, chains, launcher follow-up, hit shape, CPU-versus-CPU behaviour). `build/tools/gameplay-probe.cjs` prints the report (and the dad-fighter-z comparison when that repo is present); `build/test/gameplay-metrics.test.cjs` asserts the targets, phase by phase.
+- `node build/tools/frame-data.cjs [--markdown]` prints every normal, system move and special: startup, active, recovery, hitstun, blockstun, measured advantage on hit and on block, damage and meter gain, so changes are reviewed as a table.
+- Acceptance: both tools and the test run without the dad-fighter-z repo.
 
-### Phase 1: frame data, stun tables and the light kick (one day)
+### Phase 1: frame data, pushback slides, damage, meter and input (one day)
 
-- Adopt fixed per-move `hitStun` / `blockStun` (stop deriving them from remaining frames). Baseline table from the Neo Geo port, which already encodes the user's own game: jab 4/3/7 (hs 14, bs 10); light kick 5/3/9 (14/11, `lkick` cel); heavy punch 8/4/15 (19/14, `hpunch`); roundhouse 10/4/18 (21/16, `kick` cel, toward+S); crouch jab 4/3/8 (13/10); sweep 9/4/20 (24/15, low, knockdown); launcher 7/7/23 (launch); air punch 5/8/5, air kick 5/9/6 (high), air heavy 7/7/7; blowback 14/4/26 (knockdown). Specials keep their shapes; the F special drops to 12 f startup.
-- Button map stays A/S/D/F: A jab, S light kick, D heavy punch, toward+S roundhouse, down+button for the crouch set, air set in the air. Command list and move list update.
-- Rapid-fire lights: A → A and S → S chain once on hit or block; chains otherwise stay up-rank; cancel window stays 9 f.
-- Damage on a 1000-point life bar (HUD divides by ten): jab 32, light kick 36, heavy 70, roundhouse 82, crouch jab 28, sweep 68, launcher 60, air 30/34/60, blowback 104, throw 120, projectile 70, rising 100, rush 95, super 9 × 36. Scaling stays `0.82^(hits−2)` with the floor at 0.15 (0.30 for supers).
-- Meter: no passive gain; strikes give the attacker 12 % of damage dealt and the defender 8 % (DFZ ratios), whiffed specials 10 points, blocks half. Stocks still carry between rounds.
-- Input precedence: the earliest buffered press starts; presses within two frames resolve to the stronger button; chords require both presses within two frames and neither older than that.
-- Tests: frame-data dump matches the table; a blocked jab is +1, a blocked heavy −4; jab → jab chains once; four-hit chain lands 20–25 %; 30 ± 3 jabs kill; meter stays at zero through 60 s of neutral.
+Normals (frames at 60 fps). Advantage is measured when the first active frame connects, so it equals stun − active − recovery. Slide is the total distance the defender travels.
+
+| Input | Move | Startup / active / recovery | Hitstun / blockstun | On hit / block | Damage | Reach | Slide on hit | Chain rank | Cel |
+|---|---|---|---|---|---|---|---|---|---|
+| A | jab | 4 / 3 / 7 | 14 / 11 | +4 / +1 | 32 | 100 | 18 | 0 | `punch` |
+| S | light kick | 5 / 3 / 9 | 15 / 12 | +3 / 0 | 36 | 118 | 22 | 1 | `lkick` |
+| D | heavy punch | 8 / 4 / 15 | 21 / 15 | +2 / −4 | 70 | 138 | 36 | 2 | `hpunch` |
+| → + S | roundhouse | 10 / 4 / 18 | 22 / 16 | 0 / −6 | 82 | 150 | 46 | 2 | `kick` |
+| ↓ + A | crouching jab | 4 / 3 / 8 | 14 / 12 | +3 / +1 | 28 | 94 | 16 | 0 | `cjab` |
+| ↓ + S | sweep (low) | 9 / 4 / 20 | knockdown / 14 | KD / −10 | 68 | 150 | — | 2, never cancels | `sweep` |
+| ↓ + D | launcher | 7 / 5 / 23 | launch / 16 | launch / −12 | 60 | 118 | — | 2 | `launcher` |
+| air A | air jab (high) | 5 / 8 / 5 | 16 / 12 | — | 30 | 102 | 10 | 0 | `airpunch` |
+| air S | air kick (high) | 6 / 8 / 6 | 17 / 13 | — | 36 | 136 | 12 | 1 | `airkick` |
+| air D | air heavy (high) | 7 / 6 / 7 | 19 / 14 | — | 66 | 124 | 16 | 2 | `airpunch` |
+| S + D | blowback | 13 / 4 / 22 | knockdown / 22 | KD / −4 | 90 | 132 | — | 2, never cancels | `blowback` |
+
+- Normals use these fixed stun values; specials keep their frame shapes and their onHit/onBlock-derived stun. Special damage on the new scale: F projectile 60 (startup 16 → 12), fireball 70, fastball 50, double ball 2 × 50, sky shot 60, rising strike 100, rush 95, armored rush 120, rekka 45 / 45 / 70, command grab 160, guard-cancel blowback 60, throw 120, super 6 × 50 (the boss adds two hits). Moves without a listed slide use their old `push` value as the slide distance; projectiles slide 20, super hits 6.
+- Life is 1000 points (`E.MAX_HP`). The HUD, desperation (≤ 250), PERFECT, the arcade time-and-life bonus (scaled so scores stay comparable) and training refills follow it.
+- Damage scaling: the first three hits of a combo deal full damage, then ×0.82 for every further hit, floor 0.15 (0.30 for super hits). Counter hits stay ×1.25 damage and +4 stun.
+- Dizzy: damage taken adds 1 : 1 to the dizzy meter, which dizzies at 420 and drains 2.5 per neutral frame.
+- Pushback slides: a hit or block gives the defender a velocity that decays ×0.82 per simulated frame (initial speed = slide × 0.18); blocked strikes slide 1.15× as far; a new hit replaces the slide; slides stop during hitstop with everything else; a defender held by a wall passes the blocked part of each frame's slide to a grounded attacker.
+- Chains on hit or block inside the 9-frame window: up-rank as now, plus rapid-fire between rank-0 normals (jab, crouching jab) up to twice in a row. Sweep and blowback never cancel. The launcher cancels only into specials, supers and (phase 4) the super jump.
+- Meter: no passive gain. On hit the attacker gains 25 % and the defender 20 % of the damage dealt; on block 8 % and 5 % of the move's damage; starting a special gives 4. Stocks still carry between rounds; the taunt still drains 15.
+- Input precedence: among buffered attack presses the earliest wins, unless a stronger button was pressed within two frames of it (then the strongest of those). Chords (A + S, S + D, F + D) are unchanged.
+- Tests: the frame-data dump matches the table; measured advantages match it exactly; at point blank jab → jab → light kick → heavy punch → fireball all connect; jab → light kick → heavy punch → fireball deals 18–25 % of a life bar; 31–33 jabs kill; meter stays 0 through 60 s of neutral; a jab hit slides the defender 15–21 units, spread over more than five frames.
 
 ### Phase 2: hit and hurt boxes (one day)
 
-- Hurtboxes per state, scaled to the 225-unit body: stand 74 × 225, crouch 80 × 150, air 90 × 170, air-hit 110 × 135, knocked down 120 × 60 (unhittable except by moves flagged `otg`, none yet).
-- Hitboxes per move from pose metadata: horizontal extent from `artReaches` (keep the 80–125 % clamp around the table reach), vertical band by move class (jab and heavy punch 55–85 % of body height, kicks 35–75 %, sweep 0–20 %, launcher 40–110 %, air moves 20–70 % relative to the attacker's feet). Boxes live in the engine, the training overlay draws the real ones.
-- Contact is rectangle overlap resolved for both fighters in the same frame (keep the trade behaviour). Projectiles get a 40 × 40 box.
-- Tests: a standing jab whiffs against a crouching opponent at the jab's maximum reach; a jump clears a sweep from 25 % of a body up; a launcher hits a jumper at 60 % up; the air kick cannot hit a standing opponent before the kicker descends below 70 %.
+- Hurtboxes (width × height above the feet, centred on the fighter): standing 74 × 225; crouching, crouch-blocking or in a crouching attack 80 × 140; jumping 70 × 170; in air hitstun or launched 110 × 130 starting 20 above the feet; knocked down: unhittable, as now. During a strike's active and recovery frames the attacker also has a limb hurtbox over the inner 60 % of its hitbox, at the hitbox's height.
+- Hitboxes run forward from 20 units in front of the attacker's centre to `reachOf(f, move) − 37`, so standing contact range equals the table reach. Height bands above the attacker's feet: jab 110–175, light kick 60–140, heavy punch 120–195, roundhouse 150–215, crouching jab 55–110, sweep 0–38, launcher 90–250, blowback and guard-cancel blowback 90–190, rush / armored rush / rekka 50–190, rising strike 60–260, air jab 60–150, air kick 0–100, air heavy 20–130. Projectiles are 50 × 40 boxes centred on their position (super beam 70 × 60). Throws keep the centre-distance rule.
+- Contact is rectangle overlap, resolved for both fighters in the same frame so trades stay. `E.boxes(f)` returns the real rectangles and the training overlay draws them.
+- Tests: the roundhouse whiffs over a crouching opponent and hits a standing one; a jab still hits a croucher; a jump clears a sweep once the feet are above 38; a launcher hits a jumper whose feet are at 135; an air kick hits a standing opponent from height 150 but not from 240; a heavy punch that cannot reach the body hits a whiffed roundhouse's extended leg during its recovery; projectiles hit crouchers and pass under a jumper whose feet are above 125.
 
 ### Phase 3: committed jumps and the air game (half a day)
 
-- Horizontal jump velocity is set once at takeoff (hold toward or back during the 4 f squat); no steering in the air. Keep 40 f airtime and the hop; add a super jump (down then up within 10 f, or any launcher cancel): vy 17 for 52 f and a 100 % body apex, which fits the camera's 1.95-body headroom.
-- Air hits that are not launches or knockdowns put the defender in air hitstun (`hs` from the table, cel `hit`), after which they tech with 6 f invulnerability (DFZ `airtech`); only launches, sweeps, blowbacks, air heavies on an airborne target and knockdown specials tumble.
-- Landing recovery: 4 f when landing from an attack or air hitstun, 0 f from an empty jump.
-- Tests: the probe reports "committed arc"; an air jab on an airborne opponent resets instead of knocking down; air heavy on an airborne opponent knocks down.
+- Horizontal jump speed is fixed at takeoff from the direction held on the last squat frame; there is no steering in the air. Jump and hop heights and durations stay (about 40 and 31 frames).
+- Super jump: a down direction (1, 2 or 3) within the 10 frames before up, or the phase 4 launcher cancel. Vertical speed 16.5 (about 51 frames, apex about 93 % of a body), horizontal speed 1.15× a normal jump; the camera's lift keeps it on screen.
+- Airborne targets that are not launched: jab, light kick, crouching jab, air jab and air kick put them in air hitstun (the move's hitstun, cel `hit`), after which they air-tech (6 frames invulnerable, no more attacks that jump) and land normally. Heavy punch, roundhouse, air heavy, launcher, blowback, projectiles, knockdown specials and supers knock an airborne target down.
+- Landing lag: 3 frames with no action and no guard after a jump that attacked or was hit; none after an empty jump.
+- Tests: the probe reports a committed arc; super jump apex and airtime in range; air jab against a jumper resets them to a standing landing, air heavy knocks down; a standing jab anti-air resets, a heavy punch anti-air knocks down; landing lag is 3 after an attacking jump and 0 after an empty one.
 
 ### Phase 4: launcher combos and juggles (one and a half days)
 
-- On hit, the launcher cancels into a super jump toward the victim inside the 9 f window (`vx = clamp((target.x − x) / 22, −7, 7)`, vy 17). Launch float: victim vy 15, 90 f of helpless air time, drifting away 1.2/frame.
-- Air chain A → S → D up-rank once per jump; each juggle hit floats the victim less (`vy = max(vy × 0.3, 8 − juggle × 1.1)`) and stuns less (`hs = max(8, 14 − juggle × 2)`); air D on a juggled victim knocks down. `JUGGLE_LIMIT` becomes hitstun deterioration rather than a hard count.
-- Ground bounce for the heavy blowback into a wall (one per combo) is optional; leave for later.
-- Special and super cancels keep their current rules; rising becomes a juggle starter (launch 9) that air normals can follow after a run.
-- CPU and training dummy expose `launched` and `juggle` in `FighterDebug.snapshot()` for tests.
-- Tests: launcher → super jump → air A, S, D lands a 5-hit combo for 28–34 %; the same string with a second launcher attempt fails (scaling and float decay); the combo counter ends when the victim techs.
+- On a launcher hit, holding or pressing up inside the cancel window super-jumps immediately (no squat) toward the victim: vertical 16.5, horizontal `clamp((victim.x − x) / 22, −7, 7)`.
+- Launch: the victim leaves at vertical speed 14 under 0.9× gravity (about 48 frames, apex about 75 % of a body), drifts away 1 unit per frame and stays helpless until landing.
+- Air chain: air A → S → D up-rank, each at most once per jump, on hit or block inside the cancel window.
+- Juggle decay: every air hit on a launched victim re-pops them less (vertical speed = max(current × 0.3, 5.5 − 0.8 × juggle count)); air D spikes them down (vertical −7); `JUGGLE_LIMIT` (4) stays as the hard cap and downed victims stay unhittable.
+- Special and super cancels keep their rules. The rising strike keeps its launch.
+- Tests: crouching jab → launcher → super jump → air A → air S → air D is a 5-hit combo for 17–24 % of a life bar; without the super-jump input no follow-up connects; a second launcher after the landing whiffs on the downed victim; the combo counter ends when the victim lands.
 
 ### Phase 5: a CPU that confirms, punishes and blocks (one and a half days)
 
-Replace the random plan table with a small deterministic behaviour set, all seeded by `random(state)`:
+Replace the random plan table with deterministic behaviours driven by `random(state)`; CPU memory stays JSON-serialisable and resets each round.
 
-- **Threat response.** Read the incoming move's height and block correctly (crouch for lows, stand for jump-ins); reaction delay 2–12 f by level; guard cancel at level ≥ 6 with a stock.
-- **Confirm scripts.** Steps fire when the previous move `connected` (DFZ pattern): jab → light kick → heavy → special; crouch jab → sweep; launcher → super jump → air chain at level ≥ 5; end with a super when a stock is held and the victim is in hitstun.
-- **Whiff punish.** When the opponent is in recovery inside reach, start the fastest normal that reaches, level-scaled probability.
-- **Anti-air.** Rising strike or launcher when the opponent is descending within range, probability by level.
-- **Pressure and mix-ups.** At close range alternate throw, low, overhead-ish jump-in and a frame trap; back off after a blocked heavy.
-- **Spacing.** Walk to a style-specific preferred distance; zoners keep range and shoot, grapplers walk in, tricksters teleport behind.
-- **Budgets.** Specials at most 8 per minute, supers only to punish or finish; taunt only above 30 % life lead.
-- Acceptance (`gameplay-metrics`): at level 4 over 60 s, longest combo ≥ 5, blocks ≥ 40 % of blockable strikes thrown inside reach, at least one whiff punish and one anti-air per minute, specials ≤ 8; at level 1 the block rate drops below 15 % and combos stop at 2; levels stay deterministic across seeds and the demo match still finishes.
+- **Reaction.** The CPU sees an opponent's move only after `max(2, 14 − 1.5 × level)` frames (boss +2 levels as now).
+- **Defence.** Block by the move's height (crouch for lows, stand for jump-ins and air moves) with chance 0.08 + 0.09 × level per threat; guard-cancel at level ≥ 6 with a stock; escape throws with a level-scaled chance.
+- **Hit-confirm scripts.** Each step fires when the previous move connected on hit: jab → light kick → heavy punch → style special; crouching jab → crouching jab → sweep; at level ≥ 5 crouching jab → launcher → super jump → air A → S → D; finish with a super when a stock is held. On block stop after two hits, or at level ≥ 6 go for a tick throw or a safe projectile.
+- **Whiff punish.** An opponent recovering from a move that did not connect, inside reach, draws the fastest normal that reaches (level-scaled chance), then a confirm.
+- **Anti-air.** An opponent jumping in (not launched) within 190 horizontally draws the rising strike (level ≥ 3) or a heavy punch / launcher.
+- **Spacing.** Preferred distance by style: zoner 360, trickster 240, balanced 180, power 160, speed 140, grappler 110, boss 170; dash in at level ≥ 4.
+- **Pressure.** Close up: jab strings, throws, sweeps and frame traps; jump-ins from mid range.
+- **Budgets.** At most 8 specials a minute; supers only to punish, to finish or in desperation; taunt only with a 30 % life lead at range.
+- Acceptance over three seeds of 60 s CPU versus CPU: level 4 has a longest combo ≥ 4 in every seed and ≥ 5 in one, blocks 40–80 % of strikes that reach it, at least one whiff punish and one anti-air per CPU across the seeds, and ≤ 8 specials per CPU per minute; level 1 blocks < 15 % and never combos past 2; level 8 beats level 1 in at least 4 of 5 seeded matches; determinism holds and the demo match finishes.
 
-### Phase 6: the feel layer (one day, renderer only)
+### Phase 6: the feel layer (one day)
 
-- Defender hit shake during hitstop (±2 px alternating, Canvas and Pixi), brightness flash already present on Pixi, add on Canvas.
-- Sparks by strength: light (small burst), medium, heavy (bladed starburst, 16 f) and block (flat ring); slide dust under a pushed defender; wall thud when a slide ends at a wall.
-- Counter hit: freeze +2 f, inverted flash, the existing banner; super jump trail; KO slow-motion for 20 f.
-- One-button special by direction: neutral projectile, down rising, toward rush/style move, back the 214 special; the move list and intro cards say so.
-- No engine changes beyond emitting `counter`, `slide` and `wall` effects.
+- Engine: a `counter` effect and +2 frames of hitstop on counter hits; a `wall` effect when a slide stops at a wall; a `superjump` effect; after a K.O. freeze the next 36 ticks run the simulation at half speed (deterministic, so the server agrees).
+- Renderers (Canvas and Pixi): the defender shakes ±2 px during hitstop on the hit frame; Canvas gets the hit flash Pixi already has; spark tiers by damage (light < 45, medium < 75, heavy, plus a block ring); slide dust under a sliding fighter; a wall thud (shake and dust); a negative flash on counter hits; an afterimage trail on super jumps.
+- One-button special by direction: F (neutral or back) fires the F projectile, ↓ + F the rising strike, → + F the style's 214 special, F in the air the projectile, F + D the super. The move list, command list and controls panel say so.
 
 ### Phase 7: art for the main cast (paid, needs approval)
 
@@ -159,7 +177,7 @@ Replace the random plan table with a small deterministic behaviour set, all seed
 
 ### Order, dependencies and verification
 
-0 → 1 → 2 → 3 → 4 → 5 → 6; phase 7 at any time after approval. Phases 1–4 touch `engine.js`, `anim.js` (pose timing for the new normals), `game.js` (HUD scale, move list, debug hooks), the engine tests and the runbook; phase 5 touches only `cpuInput`; phase 6 only the renderers. After each phase: `npm test`, the browser suites, `npm run bundle:server`, then re-export both installed games and capture the ROUND / FIGHT! / K.O. strips with `output/diagnostics/arcade-skin/shots.cjs` and the pose timelines with `output/diagnostics/sprite-study/capture-seq.cjs` for a human look. Commit per phase on `pixi-port`.
+0 → 1 → 2 → 3 → 4 → 5 → 6, on the `gameplay` branch; phase 7 at any time after approval. Phases 1–4 touch `engine.js`, `anim.js` (cel sequences for the new normals and air states), `game.js` (HUD scale, move list, debug hooks, controls), the engine and animation tests; phase 5 touches `cpuInput`; phase 6 the renderers plus the effects the engine emits. The multiplayer server loads each game's `engine.js` at runtime, so only a change to `build/server/server.cjs` needs `npm run bundle:server`. After each phase: `npm test`, the seven browser suites (smoke, arcade, game select, multiplayer, intro video, title video, builder), the probe and the frame-data table. At the end re-export both installed games and capture the ROUND / FIGHT! / K.O. strips with `output/diagnostics/arcade-skin/shots.cjs` and pose timelines with `output/diagnostics/sprite-study/capture-seq.cjs` for a human look. Commit per phase.
 
 ### Expected result
 
