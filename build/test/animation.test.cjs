@@ -26,6 +26,11 @@ test('heavy strikes load, whip for one frame, hold contact, recoil and settle wh
   assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kickwhip');
   fighter.moveFrame = E.MOVES.kick.startup + E.MOVES.kick.active + 4;
   assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kickrecoil');
+  // Specials keep their own startup cels: a rush still runs in on the dash drawing and whips with the kick cel.
+  fighter.move = 'rush'; fighter.moveFrame = 5; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'dash');
+  fighter.moveFrame = E.MOVES.rush.startup - 1; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kickwhip');
+  // Casts without the per-move wind-ups use the generic load for the three normals.
+  fighter.move = 'punch'; fighter.moveFrame = 2; assert.equal(A.sample(fighter, state, { poses: { load: {} } }).pose, 'load');
   // Without the motion cels a heavy keeps its contact drawing through the recoil window, then settles on the stance.
   fighter.move = 'heavy'; fighter.moveFrame = startup + active + 6;
   assert.equal(A.sample(fighter, state).pose, 'hpunch'); fighter.moveFrame = startup + active + recovery - 1;

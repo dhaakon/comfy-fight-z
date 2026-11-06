@@ -19,8 +19,9 @@
   const WINDUPS = { punch: 'punchwind', kick: 'kickwind', heavy: 'heavywind', blowback: 'heavywind', gcBlowback: 'heavywind' };
   // Optional motion sheets (sheetF/sheetG): a one-frame whip before heavy contact and a follow-through after it.
   const HEAVY = new Set(['kick', 'heavy', 'blowback', 'gcBlowback', 'rush', 'armorRush']);
-  const WHIPS = { kick: 'kickwhip', heavy: 'punchwhip', blowback: 'kickwhip', gcBlowback: 'kickwhip', rush: 'punchwhip', armorRush: 'punchwhip' };
-  const RECOILS = { kick: 'kickrecoil', rekka: 'kickrecoil', blowback: 'kickrecoil', gcBlowback: 'kickrecoil' };
+  const WHIPS = { kick: 'kickwhip', heavy: 'punchwhip', blowback: 'kickwhip', gcBlowback: 'kickwhip', rush: 'kickwhip', armorRush: 'punchwhip' };
+  const RECOILS = { kick: 'kickrecoil', rekka: 'kickrecoil', rush: 'kickrecoil', blowback: 'kickrecoil', gcBlowback: 'kickrecoil' };
+  const NORMALS = new Set(['punch', 'kick', 'heavy']);
   const SHOTS = new Set(['special', 'fireball', 'fastball', 'doubleball', 'skyshot', 'super']);
   // The neutral loop: six breathing drawings played out and back with eased holds (90 frames), as in the arcade reference.
   const IDLE_CYCLE = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], IDLE_HOLDS = [15, 9, 6, 6, 9, 15, 9, 6, 6, 9];
@@ -93,7 +94,8 @@
       else if (t < move.startup) {
         // The load holds through startup. Heavy strikes draw one whip on the last startup frame so the extension has contrast.
         const whip = standing && HEAVY.has(f.move) && t === move.startup - 1 && has(WHIPS[f.move]);
-        const load = standing && has('load') && !windup ? 'load' : null;
+        // The generic load serves the three normals when a cast has no per-move wind-ups; specials keep their own startup cels.
+        const load = standing && NORMALS.has(f.move) && has('load') && !(windup && has(windup)) ? 'load' : null;
         result.pose = whip ? WHIPS[f.move] : load || (t < move.startup * .4 ? sequence[0] : sequence[1]);
       } else {
         // Contact persists into recovery, then a recoil (heavy) and a settle; lights go straight from contact to the settle.
