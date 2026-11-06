@@ -311,9 +311,9 @@ Left idle on the title screen, the game plays a CPU-versus-CPU attract demo. The
 
 ### Fighting system
 
-Arenas are wider than one screen. The camera follows both fighters, pushes in when they are close and lifts for jumps, and a screen lock keeps both on camera. Every grounded hit leaves the attacker ahead, while blocked heavies can be punished.
+Arenas are wider than one screen. The camera follows both fighters, pushes in when they are close and lifts for jumps, and a screen lock keeps both on camera. Hits and blocks push the defender back in a slide. Jabs, light kicks and heavy punches leave the attacker ahead on hit. Blocked sweeps and launchers can be punished. A blocked heavy punch or roundhouse slides the defender out of a jab's reach, so only close range punishes it: a rising strike, or a light kick after a roundhouse.
 
-The **power gauge** under each fighter fills over time and from landing, blocking and taking hits, and stores up to three stocks. A super costs one stock. Below a quarter of their health, a fighter's super deals extra damage. Each fighter has a **fighting style**: grappler, balanced, speed, zoner, trickster, power or boss. The style sets walk speed, jump height, damage, defense and the second special move. Pause → **COMMAND LIST** shows each fighter's moves.
+The **power gauge** under each fighter fills only from fighting (landing, blocking and taking hits, and starting specials), and stores up to three stocks. A super costs one stock. Below a quarter of their health, a fighter's super deals extra damage. Each fighter has a **fighting style**: grappler, balanced, speed, zoner, trickster, power or boss. The style sets walk speed, jump height, damage, defense and the second special move. Pause → **COMMAND LIST** shows each fighter's moves.
 
 | Input | Move |
 | --- | --- |
@@ -321,6 +321,7 @@ The **power gauge** under each fighter fills over time and from landing, blockin
 | Tap ↑ / hold ↑ | Short hop / full jump |
 | Tap forward twice / back twice | Run / backstep |
 | Forward or back + D, close | Throw; press D as you are thrown to escape |
+| → + S / ↓ + S / ↓ + D | Roundhouse kick / sweep (a low knockdown) / launcher |
 | ↓↘→ + A, S or D (or **F**) | Projectile, one on screen at a time; F is a one-button version |
 | →↓↘ + A, S or D | Rising strike, invulnerable on startup |
 | ↓↙← + A, S or D | Style move: charging rush, armored charge, rhythm rush, anti-air shot, command grab or teleport |
@@ -329,7 +330,7 @@ The **power gauge** under each fighter fills over time and from landing, blockin
 | **S + D** | Blowback knockdown; while blocking, a guard-cancel strike for one stock |
 | **G** | Taunt; drains the opponent's power gauge |
 
-Normals chain upward on hit (A → S → D → special or super). Combo damage scales after the second hit, juggles are limited, and only specials chip. Knocked-down fighters cannot be hit until they stand. Pressing an attack as you land performs a quick rise, except after a hard knockdown. Heavy damage in a short time leaves a fighter dizzy; mash buttons and directions to recover sooner. Counter hits, first attacks and reversals show banners.
+Normals chain upward on hit or block (A → S → D → special or super), and jabs (A, ↓ + A) chain into each other twice. Sweeps and blowbacks never cancel; the launcher cancels only into specials and supers. Combo damage scales after the third hit, juggles are limited, and only specials chip. Knocked-down fighters cannot be hit until they stand. Pressing an attack as you land performs a quick rise, except after a hard knockdown. Heavy damage in a short time leaves a fighter dizzy; mash buttons and directions to recover sooner. Counter hits, first attacks and reversals show banners.
 
 ![Fighter selection in the included example](comfyui/docs/images/11-example-select.png)
 

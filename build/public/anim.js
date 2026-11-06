@@ -7,8 +7,9 @@
   // Pose choreography follows the arcade reference: a held load, a one-frame whip on heavy strikes,
   // a contact cel that persists into recovery, a recoil, then a settle back to guard. A strike never
   // returns to its wind-up drawing. Transforms stay visual: hitboxes never move.
+  // The light kick loads lightly and snaps out on the lkick cel; the roundhouse chambers on lkick and extends on kick.
   const SEQUENCES = {
-    standing: { punch: ['stance2', 'block', 'punch'], kick: ['stance2', 'lkick', 'kick'], heavy: ['block', 'punch', 'hpunch'],
+    standing: { punch: ['stance2', 'block', 'punch'], kick: ['stance2', 'stance2', 'lkick'], roundhouse: ['stance2', 'lkick', 'kick'], heavy: ['block', 'punch', 'hpunch'],
       rising: ['crouch', 'getup', 'launcher'], rush: ['stance2', 'dash', 'kick'], armorRush: ['stance2', 'dash', 'hpunch'], rekka: ['stance2', 'lkick', 'kick'],
       throw: ['stance2', 'throw', 'throw'], commandGrab: ['stance2', 'throw', 'throw'], blowback: ['block', 'hpunch', 'hpunch'], gcBlowback: ['block', 'hpunch', 'hpunch'] },
     // Low and aerial attacks keep their posture through the whole move; an upright cel in the middle reads as a flash.
@@ -16,12 +17,14 @@
     air: { punch: ['jump', 'jump', 'airpunch'], kick: ['jump', 'lkick', 'airkick'], heavy: ['jump', 'airpunch', 'airpunch'] }
   };
   // Optional sheetD/sheetE poses replace these frames when a fighter has them.
-  const WINDUPS = { punch: 'punchwind', kick: 'kickwind', heavy: 'heavywind', blowback: 'heavywind', gcBlowback: 'heavywind' };
+  // The light kick has no wind-up cel of its own: it loads on the generic load (or the stance) like a light.
+  const WINDUPS = { punch: 'punchwind', roundhouse: 'kickwind', heavy: 'heavywind', blowback: 'heavywind', gcBlowback: 'heavywind' };
   // Optional motion sheets (sheetF/sheetG): a one-frame whip before heavy contact and a follow-through after it.
-  const HEAVY = new Set(['kick', 'heavy', 'blowback', 'gcBlowback', 'rush', 'armorRush']);
-  const WHIPS = { kick: 'kickwhip', heavy: 'punchwhip', blowback: 'kickwhip', gcBlowback: 'kickwhip', rush: 'kickwhip', armorRush: 'punchwhip' };
-  const RECOILS = { kick: 'kickrecoil', rekka: 'kickrecoil', rush: 'kickrecoil', blowback: 'kickrecoil', gcBlowback: 'kickrecoil' };
-  const NORMALS = new Set(['punch', 'kick', 'heavy']);
+  const HEAVY = new Set(['roundhouse', 'heavy', 'blowback', 'gcBlowback', 'rush', 'armorRush']);
+  const WHIPS = { roundhouse: 'kickwhip', heavy: 'punchwhip', blowback: 'kickwhip', gcBlowback: 'kickwhip', rush: 'kickwhip', armorRush: 'punchwhip' };
+  const RECOILS = { roundhouse: 'kickrecoil', rekka: 'kickrecoil', rush: 'kickrecoil', blowback: 'kickrecoil', gcBlowback: 'kickrecoil' };
+  // Button normals that take the generic load when a cast has no per-move wind-ups.
+  const NORMALS = new Set(['punch', 'kick', 'heavy', 'roundhouse']);
   const SHOTS = new Set(['special', 'fireball', 'fastball', 'doubleball', 'skyshot', 'super']);
   // The neutral loop: six breathing drawings played out and back with eased holds (90 frames), as in the arcade reference.
   const IDLE_CYCLE = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1], IDLE_HOLDS = [15, 9, 6, 6, 9, 15, 9, 6, 6, 9];
@@ -94,7 +97,7 @@
       else if (t < move.startup) {
         // The load holds through startup. Heavy strikes draw one whip on the last startup frame so the extension has contrast.
         const whip = standing && HEAVY.has(f.move) && t === move.startup - 1 && has(WHIPS[f.move]);
-        // The generic load serves the three normals when a cast has no per-move wind-ups; specials keep their own startup cels.
+        // The generic load serves the standing normals that have no per-move wind-up drawn; specials keep their own startup cels.
         const load = standing && NORMALS.has(f.move) && has('load') && !(windup && has(windup)) ? 'load' : null;
         result.pose = whip ? WHIPS[f.move] : load || (t < move.startup * .4 ? sequence[0] : sequence[1]);
       } else {
@@ -104,7 +107,7 @@
         else if (HEAVY.has(f.move) && recovery < .5) result.pose = recoil || sequence[2];
         else result.pose = standing ? settle : recovery < .8 ? sequence[1] : sequence[0];
       }
-      const strength = ['heavy', 'rising', 'rush', 'armorRush', 'blowback', 'gcBlowback'].includes(f.move) ? 1.35 : SHOTS.has(f.move) ? .7 : 1;
+      const strength = ['heavy', 'roundhouse', 'rising', 'rush', 'armorRush', 'blowback', 'gcBlowback'].includes(f.move) ? 1.35 : SHOTS.has(f.move) ? .7 : 1;
       if (result.phase === 'anticipation') {
         // A fast coil in the first frames, held until release. Pose art already
         // contains its own wind-up and reach, so the body stays near the collision position.
@@ -116,7 +119,7 @@
         const drive = result.phase === 'contact' ? 1 : Math.pow(1 - recovery, 3);
         result.dx = 3 * strength * drive; result.sx = 1 + (.03 + .07 * pop) * drive; result.sy = 1 - (.02 + .05 * pop) * drive; result.rotation = .012 * strength * drive;
       }
-      result.trail = (['heavy', 'special', 'super', 'rising', 'rush', 'armorRush', 'rekka', 'blowback'].includes(f.move) || f.moveVariant === 'air') && (result.phase === 'contact' || result.phase === 'recovery' && recovery < .2);
+      result.trail = (['heavy', 'roundhouse', 'special', 'super', 'rising', 'rush', 'armorRush', 'rekka', 'blowback'].includes(f.move) || f.moveVariant === 'air') && (result.phase === 'contact' || result.phase === 'recovery' && recovery < .2);
     } else if (f.dash > 0) {
       // Backsteps hop backward on their own cel, or the jump cel without one.
       result.phase = 'dash'; result.pose = pick('backstep', 'jump'); result.trail = true;

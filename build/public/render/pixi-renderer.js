@@ -161,7 +161,8 @@ void main() {
       const crouch = ['crouch', 'sweep', 'cjab'].includes(f.pose), down = f.pose === 'down', stride = walking ? Math.sin((state?.frame || 0) / 5) * 18 : 0;
       g.clear(); g.position.set(f.x, E.GROUND - f.y); g.scale.set(f.facing, crouch ? .72 : 1); g.rotation = down ? -Math.PI / 2 : 0; g.pivot.set(down ? -10 : 0, down ? 15 : 0);
       g.moveTo(-15, -80).lineTo(-26 + stride, -16).moveTo(15, -80).lineTo(27 - stride, -16).stroke({ width: 24, color: 0x1d292d, cap: 'round' });
-      g.moveTo(-15, -81).lineTo(-24 + stride, -38).moveTo(15, -81).lineTo(f.pose === 'kick' ? 100 : 25 - stride, f.pose === 'kick' ? -95 : -38).stroke({ width: 25, color, cap: 'round' });
+      const kicking = f.pose === 'kick' || f.pose === 'lkick';
+      g.moveTo(-15, -81).lineTo(-24 + stride, -38).moveTo(15, -81).lineTo(kicking ? 100 : 25 - stride, kicking ? (f.pose === 'kick' ? -95 : -60) : -38).stroke({ width: 25, color, cap: 'round' });
       g.poly([-33, -152, 32, -152, 25, -80, -25, -80]).fill(color);
       g.circle(0, -174, 24).fill(0xe8c8a2);
       g.rect(-23, -193, 45, 13).fill(0x26373a); g.rect(16, -182, 15, 5).fill(0x26373a);

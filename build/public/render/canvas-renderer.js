@@ -5,6 +5,8 @@
   function createCanvasRenderer({ canvas, engine: E, deps }) {
     const ctx = canvas.getContext('2d');
     const { art, assetSource, ui, fighterData, portraitSource } = deps;
+    // Life points per fighter (engines before the 1000-point scale used 100).
+    const LIFE = E.MAX_HP || 100;
     const reducedMotion = { matches: false };
     let state = null, manifest = null, stageIndex = 0, selected = [0, 1], mode = 'arcade', arcade = null, training = {}, cutin = null, goFrames = 0, fighterRenderer = null, bestScore = 0, debugBoxes = false;
   function cover(image, x, y, w, h) {
@@ -35,7 +37,7 @@
     ctx.fillStyle = '#263c3c'; ctx.fillRect(99, 177, 7, 241); ctx.fillRect(865, 180, 7, 240);
   }
   function fallbackFighter(f, data) {
-    const color = data.color || '#f49653', walking = f.pose === 'walk' || f.pose === 'walk2';
+    const color = data.color || '#f49653', walking = f.pose === 'walk' || f.pose === 'walk2', kicking = f.pose === 'kick' || f.pose === 'lkick';
     const crouch = ['crouch', 'sweep', 'cjab'].includes(f.pose), down = f.pose === 'down';
     ctx.save(); ctx.translate(f.x, E.GROUND - f.y); ctx.scale(f.facing, 1);
     if (down) { ctx.translate(10, -15); ctx.rotate(-Math.PI / 2); }
@@ -43,7 +45,7 @@
     const stride = walking ? Math.sin((state?.frame || 0) / 5) * 18 : 0;
     ctx.strokeStyle = '#1d292d'; ctx.lineWidth = 24; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(-15, -80); ctx.lineTo(-26 + stride, -16); ctx.moveTo(15, -80); ctx.lineTo(27 - stride, -16); ctx.stroke();
-    ctx.strokeStyle = color; ctx.lineWidth = 25; ctx.beginPath(); ctx.moveTo(-15, -81); ctx.lineTo(-24 + stride, -38); ctx.moveTo(15, -81); ctx.lineTo(f.pose === 'kick' ? 100 : 25 - stride, f.pose === 'kick' ? -95 : -38); ctx.stroke();
+    ctx.strokeStyle = color; ctx.lineWidth = 25; ctx.beginPath(); ctx.moveTo(-15, -81); ctx.lineTo(-24 + stride, -38); ctx.moveTo(15, -81); ctx.lineTo(kicking ? 100 : 25 - stride, kicking ? (f.pose === 'kick' ? -95 : -60) : -38); ctx.stroke();
     ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(-33, -152); ctx.lineTo(32, -152); ctx.lineTo(25, -80); ctx.lineTo(-25, -80); ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#e8c8a2'; ctx.beginPath(); ctx.arc(0, -174, 24, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#26373a'; ctx.fillRect(-23, -193, 45, 13); ctx.fillRect(16, -182, 15, 5);
@@ -76,8 +78,8 @@
       const portrait = art(portraitSource(data)), px = slot ? 898 : 8;
       ctx.fillStyle = '#15191c'; ctx.fillRect(px, 10, 54, 54); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.strokeRect(px, 10, 54, 54);
       if (portrait) { ctx.save(); ctx.beginPath(); ctx.rect(px + 2, 12, 50, 50); ctx.clip(); if (slot) { ctx.translate(px * 2 + 54, 0); ctx.scale(-1, 1); } cover(portrait, px + 2, 12, 50, 50); ctx.restore(); }
-      // Life bar drains toward the portrait; low health flashes oxblood (desperation).
-      const hp = Math.max(0, f.hp) / 100, danger = f.hp > 0 && f.hp <= 25;
+      // Life bar drains toward the portrait; low health flashes oxblood (desperation, a quarter of the bar).
+      const hp = Math.max(0, f.hp) / LIFE, danger = f.hp > 0 && f.hp <= LIFE / 4;
       ctx.save(); ctx.beginPath(); ctx.moveTo(x + 10, 30); ctx.lineTo(x + width, 30); ctx.lineTo(x + width - 10, 52); ctx.lineTo(x, 52); ctx.closePath(); ctx.clip();
       ctx.fillStyle = '#050607'; ctx.fillRect(x, 30, width, 22); ctx.fillStyle = '#2a0000'; ctx.fillRect(x + 2, 32, width - 4, 18);
       const fill = danger ? (flash ? '#ff2a2a' : '#b01818') : color, w = (width - 4) * hp;
@@ -227,7 +229,7 @@
       const c = view.combos[attacker]; if (!c || --c.life <= 0) return;
       const x = attacker ? 930 : 30, align = attacker ? 'right' : 'left', alpha = Math.min(1, c.life / 15), color = attacker ? '#3df2ff' : '#ffe600';
       screenText(c.hits + ' HITS', x, 150, 40, color, align, alpha);
-      screenText(c.damage + '% DAMAGE', x, 172, 15, '#ece8dc', align, alpha);
+      screenText(Math.round(c.damage * 100 / LIFE) + '% DAMAGE', x, 172, 15, '#ece8dc', align, alpha);
     });
     for (const e of state.effects) {
       if (e.type === 'banner') {

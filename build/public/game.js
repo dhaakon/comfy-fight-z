@@ -1,6 +1,8 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id), E = window.FighterEngine;
+  // Life points per fighter: scores and sounds scale with it (older engines used 100).
+  const LIFE = E.MAX_HP || 100;
   // The arena canvas belongs to the renderer (WebGL when Pixi initializes); the HUD canvas on top is 2D.
   const canvas = $('arena'), images = new Map();
   const fallback = {
@@ -910,8 +912,8 @@
       if (kind !== 'time') cue('sfx_ko', .8, 0);
       state.fighters.forEach((f, slot) => { if (f.hp === 0) cue(fighterLine(slot, 'ko'), .9, 0); });
       if (arcade && mode === 'arcade' && state.result.winner === 0) {
-        // KOF-style round bonuses: time, remaining life and perfect.
-        const bonus = state.result.time * 100 + state.result.hp[0] * 200 + (state.result.perfect ? 20000 : 0);
+        // KOF-style round bonuses: time, remaining life (up to 20000 for a full bar) and perfect.
+        const bonus = state.result.time * 100 + Math.round(state.result.hp[0] / LIFE * 20000) + (state.result.perfect ? 20000 : 0);
         arcade.score += bonus; if (state.result.perfect) arcade.perfects++;
       }
     }
@@ -924,7 +926,7 @@
       if (f.move && f.move !== previousMoves[slot]) {
         const move = f.move;
         if (['punch', 'kick', 'rekka'].includes(move)) cue(['sfx_whiff'], .35, 60);
-        else if (['heavy', 'blowback', 'gcBlowback', 'rush', 'armorRush', 'rising'].includes(move)) { cue(['sfx_whiff_heavy', 'sfx_whiff'], .45, 60); if (Math.random() < .35) cue(fighterLine(slot, 'attack'), .75, 600); }
+        else if (['heavy', 'roundhouse', 'blowback', 'gcBlowback', 'rush', 'armorRush', 'rising'].includes(move)) { cue(['sfx_whiff_heavy', 'sfx_whiff'], .45, 60); if (Math.random() < .35) cue(fighterLine(slot, 'attack'), .75, 600); }
         else if (['roll', 'gcRoll', 'teleport'].includes(move)) cue(['sfx_dash'], .45);
         else if (move === 'super') { cue(['sfx_super', 'sfx_special'], .8, 0); cue([...fighterLine(slot, 'super'), ...fighterLine(slot, 'special')], .95, 0); }
         else if (['special', 'fireball', 'fastball', 'doubleball', 'skyshot'].includes(move)) {
@@ -939,11 +941,12 @@
     presentState.previousY = state.fighters.map(f => f.y); presentState.running = state.fighters.map(f => f.running);
     for (const effect of state.effects) if (effect.life === effect.maxLife) {
       if (effect.type === 'hit') {
-        // Impacts sound on contact, scaled by damage.
-        cue(effect.damage >= 13 ? ['sfx_heavy', 'sfx_kick'] : effect.damage >= 9 ? ['sfx_kick', 'sfx_punch'] : ['sfx_punch'], .55, 40);
+        // Impacts sound on contact, scaled by damage (6% and 3.4% of a life bar: heavies and kicks).
+        cue(effect.damage >= LIFE * .06 ? ['sfx_heavy', 'sfx_kick'] : effect.damage >= LIFE * .034 ? ['sfx_kick', 'sfx_punch'] : ['sfx_punch'], .55, 40);
         const victim = effect.attacker === 0 ? 1 : 0;
         if (effect.heavy && Math.random() < .3 && state.fighters[victim].hp > 0) cue(fighterLine(victim, 'hurt'), .7, 700);
-        if (effect.attacker === 0 && arcade && mode === 'arcade') arcade.score += (effect.damage || 0) * 100;
+        // 10000 points per life bar of damage, whatever the life scale.
+        if (effect.attacker === 0 && arcade && mode === 'arcade') arcade.score += Math.round((effect.damage || 0) * 10000 / LIFE);
         if (effect.attacker === 0 && mode === 'training') training.lastHit = state.frame;
         if (effect.attacker === 1 && mode === 'training') training.lastHit = state.frame;
       }

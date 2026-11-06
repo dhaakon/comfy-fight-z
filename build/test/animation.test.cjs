@@ -7,7 +7,9 @@ function scene() { const state = E.create(['a', 'b'], { cpu: false }); state.pha
 
 test('jab choreography anticipates, contacts, holds briefly and settles without revisiting the wind-up', () => {
   const { state, fighter } = scene(); fighter.move = 'punch';
-  const samples = [1, 3, 5, 10, 11, 17, 20].map(frame => { fighter.moveFrame = frame; return A.sample(fighter, state); });
+  // Early and late startup, the first active frame, the two-frame hold past the active frames, then the settle.
+  const { startup, active, recovery } = E.MOVES.punch, end = startup + active;
+  const samples = [1, startup - 1, startup, end + 1, end + 2, end + recovery - 1, end + recovery].map(frame => { fighter.moveFrame = frame; return A.sample(fighter, state); });
   assert.deepEqual(samples.map(s => s.pose), ['stance2', 'block', 'punch', 'punch', 'stance2', 'stance2', 'stance2']);
   assert.deepEqual(samples.map(s => s.phase), ['anticipation', 'anticipation', 'contact', 'recovery', 'recovery', 'recovery', 'recovery']);
   assert.ok(samples[1].dx < 0 && samples[2].dx > 0 && samples[6].dx < samples[2].dx);
@@ -22,10 +24,26 @@ test('heavy strikes load, whip for one frame, hold contact, recoil and settle wh
   assert.deepEqual(runs.map(r => r.pose), ['heavywind', 'punchwhip', 'hpunch', 'recoil', 'settle'], 'wind-up (sheetE) → whip → contact → recoil → settle');
   assert.equal(runs[1].n, 1, 'The whip is a single frame'); assert.equal(runs[2].n, active + 3, 'Contact persists into recovery');
   assert.ok(!timeline.slice(startup).includes('heavywind'), 'The wind-up never returns after contact');
-  fighter.move = 'kick'; fighter.moveFrame = E.MOVES.kick.startup - 1;
+  // The roundhouse (toward + S) takes the heavy kick treatment: kick wind-up, kick whip, kick contact, kick recoil.
+  const roundhouse = E.MOVES.roundhouse;
+  fighter.move = 'roundhouse'; fighter.moveFrame = 2;
+  assert.equal(A.sample(fighter, state, { poses: { ...motion, kickwind: {} } }).pose, 'kickwind', 'The kick wind-up (sheetE) loads the roundhouse');
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'load', 'Without it the generic load stands in');
+  assert.equal(A.sample(fighter, state).pose, 'stance2');
+  fighter.moveFrame = roundhouse.startup - 1;
   assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kickwhip');
-  fighter.moveFrame = E.MOVES.kick.startup + E.MOVES.kick.active + 4;
+  fighter.moveFrame = roundhouse.startup; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kick');
+  fighter.moveFrame = roundhouse.startup + roundhouse.active + 4;
   assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kickrecoil');
+  // The light kick (S) is a light: a light load, the lkick contact and a settle, with no whip, kick wind-up or recoil.
+  const light = E.MOVES.kick, lightTimeline = [];
+  fighter.move = 'kick';
+  for (let frame = 1; frame <= light.startup + light.active + light.recovery; frame++) { fighter.moveFrame = frame; lightTimeline.push(A.sample(fighter, state, { poses: motion }).pose); }
+  const lightRuns = lightTimeline.reduce((list, pose) => { if (list.at(-1)?.pose === pose) list.at(-1).n++; else list.push({ pose, n: 1 }); return list; }, []);
+  assert.deepEqual(lightRuns.map(r => r.pose), ['load', 'lkick', 'settle'], 'light load → lkick contact → settle');
+  assert.equal(lightRuns[1].n, light.active + 2, 'A light holds contact two frames past its active frames');
+  fighter.moveFrame = 2; assert.equal(A.sample(fighter, state).pose, 'stance2', 'Without the motion cels the light kick loads on the stance');
+  fighter.moveFrame = light.startup; assert.equal(A.sample(fighter, state).pose, 'lkick');
   // Specials keep their own startup cels: a rush still runs in on the dash drawing and whips with the kick cel.
   fighter.move = 'rush'; fighter.moveFrame = 5; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'dash');
   fighter.moveFrame = E.MOVES.rush.startup - 1; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'kickwhip');
@@ -83,6 +101,21 @@ test('walking is a 24-frame stride with passing steps and landing has a brief an
   fighter.vx = 3.5;
   fighter.landFrames = 6; const landing = A.sample(fighter, state);
   assert.equal(landing.pose, 'crouch'); assert.ok(landing.sy < 1 && landing.sx > 1); assert.equal(landing.dy, 0);
+});
+
+test('a pushback slide never shows the walk cycle: the defender goes from its reaction straight to idle', () => {
+  for (const [press, guard] of [[{ punch: true }, {}], [{ heavy: true }, {}], [{ right: true, kick: true }, {}], [{ punch: true }, { right: true }], [{ heavy: true }, { right: true }]]) {
+    const state = E.create(['a', 'b'], { cpu: false }); state.phase = 'fight';
+    const [attacker, defender] = state.fighters; attacker.x = 400; defender.x = 480;
+    const phases = [];
+    for (let t = 0; t < 70; t++) {
+      E.tick(state, [t ? {} : press, defender.stun > 0 || t < 3 ? guard : {}]);
+      if (defender.hitAge < 60) phases.push(A.sample(defender, state).phase);
+      assert.equal(defender.vx, 0, 'Sliding is not walking');
+    }
+    assert.ok(phases.includes('hit') || phases.includes('guard'), 'The defender reacts');
+    assert.ok(!phases.includes('walk'), `${JSON.stringify(press)} ${guard.right ? 'blocked' : 'hit'}: ${[...new Set(phases)].join(' > ')}`);
+  }
 });
 
 test('grounded walking keeps feet on their anchor and attacks stay aligned with simulation', () => {

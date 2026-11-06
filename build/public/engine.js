@@ -16,18 +16,40 @@
     for (const [name, meta] of Object.entries(poses)) if (meta && meta.w > 0 && meta.ax >= 0) out[name] = Math.round((meta.w - meta.ax) * scale);
     return out;
   }
-  // A move's hit reach: the cel's painted reach less a fist's width, kept within 80-125% of the move's base reach.
+  // A move's hit reach: the cel's painted reach less a fist's width, kept within 100-125% of the move's base reach.
+  // Art can lengthen a move but never shorten it, so the frame data and chains of the move tables hold for every cast.
   function reachOf(f, move) {
     const painted = f.reaches?.[move.pose];
     if (!move.reach || !painted) return move.reach;
-    return Math.round(Math.max(move.reach * .8, Math.min(move.reach * 1.25, painted - 10)));
+    return Math.round(Math.max(move.reach, Math.min(move.reach * 1.25, painted - 10)));
   }
   const MAX_DIST = SCREEN_W - 2 * WALL - 40;
   const WALK_FORWARD = 4.6, WALK_BACK = 3.8, RUN_SPEED = 8.2, AIR_SPEED = 4.2, CANCEL_WINDOW = 9;
   const MOTION_WINDOW = 16, DASH_TAP = 12, JUGGLE_LIMIT = 4, JUMP_SQUAT = 4;
-  // KOF-style power gauge: each full bar becomes a stock, up to three.
+  // Life points on the Capcom scale, so damage and combo scaling stay fine-grained. Desperation below a quarter.
+  const MAX_HP = 1000, DESPERATION_HP = MAX_HP / 4;
+  // KOF-style power gauge: each full bar becomes a stock, up to three. Meter only comes from fighting:
+  // a landed hit gives the attacker 25% and the defender 20% of the damage dealt, a block 8% and 5% of the
+  // move's damage, and starting a special gives 4. Nothing fills it passively.
   const BAR = 100, STOCK_MAX = 3, SUPER_STOCKS = 1;
-  const DIZZY_LIMIT = 100, DIZZY_FRAMES = 150;
+  const METER = { hit: .25, hitTaken: .2, block: .08, blockTaken: .05, special: 4 };
+  // Damage taken fills the dizzy meter 1:1; it dizzies at 420 and drains 2.5 per neutral frame.
+  const DIZZY_LIMIT = 420, DIZZY_DRAIN = 2.5, DIZZY_FRAMES = 150;
+  // Pushback is a slide: a hit or block gives the defender a velocity that decays x0.82 per simulated frame and
+  // starts at 0.18 x the slide distance, so the whole slide covers that distance; blocked strikes slide 1.15x as far.
+  const SLIDE_DECAY = .82, SLIDE_START = .18, BLOCK_SLIDE = 1.15, SLIDE_STOP = .05, DEFAULT_SLIDE = 24, PROJECTILE_SLIDE = 20, SUPER_SLIDE = 6;
+  // Rank-0 normals (jab, crouching jab) may cancel into each other this many times in a row.
+  const RAPID_FIRE = 2;
+  // Presses are timed on state.frame, which also runs during hitstop. Among buffered presses the earliest wins,
+  // unless a stronger button followed within PRESS_WINDOW frames; two buttons pressed within CHORD_WINDOW frames
+  // of each other are a chord (A + S, S + D, F + D).
+  const PRESS_WINDOW = 2, CHORD_WINDOW = 2;
+  // A motion may rest in neutral for at most MOTION_REST frames between two of its directions (a keyboard roll
+  // such as 2,5,6), and its button must follow its last direction within MOTION_PRESS frames, so an old crouch or
+  // a walk forward does not turn toward + S into 236 + S.
+  const MOTION_REST = 4, MOTION_PRESS = 6;
+  // Base damage from which a strike hits heavy: longer hitstop, heavy sparks and the heavy reaction cel.
+  const HEAVY_DAMAGE = 60;
   const DEFAULTS = Object.freeze({ roundsToWin: 2, roundTime: 99, cpuLevel: 4, training: false, trainingMeter: 'infinite' });
   // Fighting styles change speed, damage and the 214 special. Every style keeps
   // the shared 236 projectile and 623 rising strike so the controls stay learnable.
@@ -40,67 +62,86 @@
     trickster: { walk: 1.08, damage: .95, defense: 1, jump: 1.04, qcf: 'fireball', qcb: 'teleport', names: { dp: 'Rising Spiral', qcb: 'Shortcut (teleport)' } },
     boss: { walk: 1, damage: 1.15, defense: .85, jump: 1, qcf: 'doubleball', qcb: 'commandGrab', names: { dp: 'Sovereign Rise', qcb: 'Eviction Notice (grab)' } }
   };
-  // onHit/onBlock are frame advantage once the attacker recovers: plus means
-  // the attacker acts first. Ground stun is derived from them so a landed
-  // strike is never punishable, while blocked heavies stay risky.
+  // Normals set fixed stun: hitStun / blockStun are the frames after contact before the defender can act, so
+  // with contact on the first active frame the advantage is stun - active - recovery. Specials keep onHit /
+  // onBlock, the frame advantage once the attacker recovers (plus means the attacker acts first), and derive
+  // ground stun from it so a landed special is never punishable while blocked ones stay risky.
+  // slide: the distance a hit pushes the defender (blocks slide 1.15x as far); moves that launch or knock down
+  // slide only on block. rank: connected moves chain up-rank inside the cancel window; noCancel moves never
+  // cancel and cancelRank is the lowest rank a move may cancel into.
   // height: low must be crouch-blocked, high (jump-ins) must be blocked standing.
   // chip: share of damage a blocked special still deals; normals never chip.
   const MOVES = {
-    punch: { startup: 5, active: 4, recovery: 12, reach: 100, damage: 7, pose: 'punch', onHit: 4, onBlock: 0, push: 18, rank: 0 },
-    kick: { startup: 10, active: 5, recovery: 18, reach: 142, damage: 12, pose: 'kick', onHit: 2, onBlock: -3, push: 26, rank: 1 },
-    heavy: { startup: 9, active: 5, recovery: 20, reach: 126, damage: 15, pose: 'hpunch', onHit: 3, onBlock: -6, push: 32, rank: 2 },
-    // S + D: blowback (KOF C + D). Knocks down on hit; guard cancels can use it.
-    blowback: { startup: 13, active: 4, recovery: 20, reach: 132, damage: 13, pose: 'blowback', knockdown: true, onBlock: -4, push: 44, rank: 2 },
-    // F is the accessible special button: free, slower than the motion version, one shot on screen.
-    special: { startup: 16, active: 1, recovery: 22, reach: 0, damage: 17, pose: 'special', rank: 3, chip: .25, projectile: { speed: 8, life: 150 } },
+    // A jab, S light kick, D heavy punch, toward + S roundhouse (standing only).
+    punch: { startup: 4, active: 3, recovery: 7, reach: 100, damage: 32, pose: 'punch', hitStun: 14, blockStun: 11, slide: 18, rank: 0 },
+    kick: { startup: 5, active: 3, recovery: 9, reach: 118, damage: 36, pose: 'lkick', hitStun: 15, blockStun: 12, slide: 22, rank: 1 },
+    heavy: { startup: 8, active: 4, recovery: 15, reach: 138, damage: 70, pose: 'hpunch', hitStun: 21, blockStun: 15, slide: 36, rank: 2 },
+    roundhouse: { startup: 10, active: 4, recovery: 18, reach: 150, damage: 82, pose: 'kick', hitStun: 22, blockStun: 16, slide: 46, rank: 2 },
+    // S + D: blowback (KOF C + D). Knocks down on hit and never cancels; guard cancels can use it.
+    blowback: { startup: 13, active: 4, recovery: 22, reach: 132, damage: 90, pose: 'blowback', knockdown: true, blockStun: 22, slide: 44, rank: 2, noCancel: true },
+    // F is the accessible special button: free, lighter than the motion version, one shot on screen.
+    special: { startup: 12, active: 1, recovery: 22, reach: 0, damage: 60, pose: 'special', rank: 3, chip: .25, projectile: { speed: 8, life: 150 } },
     // Motion specials (keypad notation relative to facing): 236, 623 and 214.
-    fireball: { startup: 13, active: 1, recovery: 22, reach: 0, damage: 14, pose: 'special', rank: 3, chip: .25, projectile: { speed: 8, life: 150 } },
-    fastball: { startup: 10, active: 1, recovery: 19, reach: 0, damage: 10, pose: 'special', rank: 3, chip: .25, projectile: { speed: 12, life: 46 } },
-    doubleball: { startup: 14, active: 1, recovery: 24, reach: 0, damage: 11, pose: 'special', rank: 3, chip: .25, projectile: { speed: 7.5, life: 150, count: 2, gap: 70 } },
-    skyshot: { startup: 12, active: 1, recovery: 22, reach: 0, damage: 12, pose: 'special', rank: 3, chip: .25, projectile: { speed: 6.5, life: 80, rise: 3.8 } },
-    rising: { startup: 3, active: 10, recovery: 22, reach: 112, damage: 12, pose: 'launcher', launch: 9, invulnerable: 8, onBlock: -16, push: 14, rank: 3, chip: .25, air: true },
-    rush: { startup: 7, active: 14, recovery: 16, reach: 104, damage: 11, pose: 'dash', speed: 10, knockdown: true, onBlock: -6, push: 30, rank: 3, chip: .25 },
-    armorRush: { startup: 12, active: 14, recovery: 18, reach: 106, damage: 15, pose: 'dash', speed: 9, knockdown: true, armor: 1, onBlock: -7, push: 34, rank: 3, chip: .25 },
-    rekka: { startup: 6, active: 6, recovery: 15, reach: 104, damage: 7, pose: 'kick', speed: 6, chain: 3, onHit: 2, onBlock: -4, push: 20, rank: 3, chip: .25 },
-    commandGrab: { startup: 6, active: 2, recovery: 30, reach: 112, damage: 20, pose: 'throw', unblockable: true, grab: true, knockdown: true, rank: 3 },
+    fireball: { startup: 13, active: 1, recovery: 22, reach: 0, damage: 70, pose: 'special', rank: 3, chip: .25, projectile: { speed: 8, life: 150 } },
+    fastball: { startup: 10, active: 1, recovery: 19, reach: 0, damage: 50, pose: 'special', rank: 3, chip: .25, projectile: { speed: 12, life: 46 } },
+    doubleball: { startup: 14, active: 1, recovery: 24, reach: 0, damage: 50, pose: 'special', rank: 3, chip: .25, projectile: { speed: 7.5, life: 150, count: 2, gap: 70 } },
+    skyshot: { startup: 12, active: 1, recovery: 22, reach: 0, damage: 60, pose: 'special', rank: 3, chip: .25, projectile: { speed: 6.5, life: 80, rise: 3.8 } },
+    rising: { startup: 3, active: 10, recovery: 22, reach: 112, damage: 100, pose: 'launcher', launch: 9, invulnerable: 8, onBlock: -16, slide: 14, rank: 3, chip: .25, air: true },
+    rush: { startup: 7, active: 14, recovery: 16, reach: 104, damage: 95, pose: 'dash', speed: 10, knockdown: true, onBlock: -6, slide: 30, rank: 3, chip: .25 },
+    armorRush: { startup: 12, active: 14, recovery: 18, reach: 106, damage: 120, pose: 'dash', speed: 9, knockdown: true, armor: 1, onBlock: -7, slide: 34, rank: 3, chip: .25 },
+    // Up to three presses; the third (finish damage) knocks down.
+    rekka: { startup: 6, active: 6, recovery: 15, reach: 104, damage: 45, finish: 70, pose: 'kick', speed: 6, chain: 3, onHit: 2, onBlock: -4, slide: 20, rank: 3, chip: .25 },
+    commandGrab: { startup: 6, active: 2, recovery: 30, reach: 112, damage: 160, pose: 'throw', unblockable: true, grab: true, knockdown: true, rank: 3 },
     teleport: { startup: 14, active: 1, recovery: 12, reach: 0, damage: 0, pose: 'dash', invulnerable: 16, teleport: true, rank: 3 },
-    super: { startup: 12, active: 1, recovery: 26, reach: 0, damage: 7, hits: 6, pose: 'super', stocks: SUPER_STOCKS, rank: 4, chip: .25 },
-    throw: { startup: 2, active: 1, recovery: 24, reach: 96, damage: 12, pose: 'throw', unblockable: true, knockdown: true, rank: -1 },
+    // Damage per hit of the beam, one hit every BEAM_GAP frames; the last hit knocks down out of juggle reach.
+    super: { startup: 12, active: 1, recovery: 26, reach: 0, damage: 50, hits: 6, pose: 'super', stocks: SUPER_STOCKS, rank: 4, chip: .25 },
+    throw: { startup: 2, active: 1, recovery: 24, reach: 96, damage: 120, pose: 'throw', unblockable: true, knockdown: true, rank: -1 },
     // Evasion and guard cancels (one stock each) escape pressure in KOF fashion.
     roll: { startup: 1, active: 0, recovery: 22, reach: 0, damage: 0, pose: 'roll', invulnerable: 14, speed: 6.5, rank: -1 },
     gcRoll: { startup: 1, active: 0, recovery: 20, reach: 0, damage: 0, pose: 'roll', invulnerable: 16, speed: 6.5, stocks: 1, rank: -1 },
-    gcBlowback: { startup: 6, active: 4, recovery: 22, reach: 128, damage: 6, pose: 'blowback', knockdown: true, invulnerable: 10, stocks: 1, onBlock: -2, push: 48, rank: -1 },
+    gcBlowback: { startup: 6, active: 4, recovery: 22, reach: 128, damage: 60, pose: 'blowback', knockdown: true, invulnerable: 10, stocks: 1, onBlock: -2, slide: 48, rank: -1 },
     taunt: { startup: 48, active: 0, recovery: 0, reach: 0, damage: 0, pose: 'taunt', rank: -1 }
   };
   const VARIANTS = {
     crouch: {
-      punch: { startup: 4, active: 4, recovery: 10, reach: 94, damage: 6, pose: 'cjab', onHit: 4, onBlock: 1, push: 16, rank: 0 },
-      kick: { startup: 10, active: 5, recovery: 22, reach: 148, damage: 10, pose: 'sweep', height: 'low', knockdown: true, onBlock: -7, push: 22, rank: 1 },
-      heavy: { startup: 12, active: 5, recovery: 24, reach: 114, damage: 13, pose: 'launcher', launch: 10, onBlock: -8, push: 20, rank: 2 }
+      punch: { startup: 4, active: 3, recovery: 8, reach: 94, damage: 28, pose: 'cjab', hitStun: 14, blockStun: 12, slide: 16, rank: 0 },
+      kick: { startup: 9, active: 4, recovery: 20, reach: 150, damage: 68, pose: 'sweep', height: 'low', knockdown: true, blockStun: 14, slide: 22, rank: 2, noCancel: true },
+      // The launcher cancels only into specials and supers.
+      heavy: { startup: 7, active: 5, recovery: 23, reach: 118, damage: 60, pose: 'launcher', launch: 10, blockStun: 16, slide: 20, rank: 2, cancelRank: 3 }
     },
     air: {
-      punch: { startup: 5, active: 6, recovery: 10, reach: 102, damage: 7, pose: 'airpunch', height: 'high', hitStun: 18, blockStun: 12, rank: 0 },
-      kick: { startup: 8, active: 6, recovery: 16, reach: 136, damage: 11, pose: 'airkick', height: 'high', hitStun: 20, blockStun: 13, rank: 1 },
-      heavy: { startup: 10, active: 5, recovery: 20, reach: 124, damage: 14, pose: 'airpunch', height: 'high', hitStun: 22, blockStun: 14, rank: 2 }
+      punch: { startup: 5, active: 8, recovery: 5, reach: 102, damage: 30, pose: 'airpunch', height: 'high', hitStun: 16, blockStun: 12, slide: 10, rank: 0 },
+      kick: { startup: 6, active: 8, recovery: 6, reach: 136, damage: 36, pose: 'airkick', height: 'high', hitStun: 17, blockStun: 13, slide: 12, rank: 1 },
+      heavy: { startup: 7, active: 6, recovery: 7, reach: 124, damage: 66, pose: 'airpunch', height: 'high', hitStun: 19, blockStun: 14, slide: 16, rank: 2 }
     }
   };
   const PROJECTILE = { hitStun: 18, blockStun: 14, chip: .25 };
+  // The super beam hits every BEAM_GAP frames. The boss's beam adds two hits, and the boss's super recovers that
+  // much later too, so no fighter can act before its own beam has landed its last hit.
+  const BEAM_GAP = 5, BOSS_SUPER = Object.freeze({ ...MOVES.super, hits: MOVES.super.hits + 2, recovery: MOVES.super.recovery + 2 * BEAM_GAP });
   const ATTACKS = ['punch', 'kick', 'heavy', 'special'];
   const NORMALS = ['punch', 'kick', 'heavy'];
+  // Button strength, weakest first: simultaneous presses resolve to the strongest.
+  const STRENGTH = ['punch', 'kick', 'heavy', 'special'];
+  // The button behind each action a single press starts (the roundhouse is S held toward, the throw D held sideways).
+  const PRESS_OF = { punch: 'punch', kick: 'kick', roundhouse: 'kick', heavy: 'heavy', throw: 'heavy', special: 'special' };
   const PROJECTILE_MOVES = new Set(['special', 'fireball', 'fastball', 'doubleball', 'skyshot', 'super']);
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const styleOf = f => STYLES[f.style] || STYLES.balanced;
-  function moveData(f) { return VARIANTS[f.moveVariant]?.[f.move] || MOVES[f.move]; }
+  function moveData(f) { return f.move === 'super' && f.boss ? BOSS_SUPER : VARIANTS[f.moveVariant]?.[f.move] || MOVES[f.move]; }
+  // The three attack buttons take an air or crouching variant; every other action stands.
+  function variantOf(f, action, input) { return NORMALS.includes(action) ? f.y > 0 ? 'air' : input.down ? 'crouch' : 'standing' : 'standing'; }
   function fighter(id, slot, profile = {}) {
     return { id, slot, style: STYLES[profile.style] ? profile.style : 'balanced', boss: !!profile.boss, reaches: profile.reaches || null,
       x: WIDTH / 2 + (slot ? 190 : -190), y: 0, vy: 0, vx: 0, facing: slot ? -1 : 1,
-      hp: 100, energy: 0, stocks: 0, wins: 0, pose: 'idle', move: null, moveFrame: 0,
+      hp: MAX_HP, energy: 0, stocks: 0, wins: 0, pose: 'idle', move: null, moveFrame: 0,
       moveVariant: 'standing', landFrames: 0, launched: false, hitAge: 99, airVX: 0,
-      hitDone: false, connected: false, stun: 0, blockStun: false, guard: false, crouching: false, lastInput: {},
+      hitDone: false, connected: false, stun: 0, blockStun: false, stunAtStart: 0, blockStunAtStart: false, guard: false, crouching: false, lastInput: {},
       dash: 0, dashDir: 0, invulnerable: 0, juggle: 0, combo: 0, comboDamage: 0, counter: false,
       running: false, skid: 0, jumpSquat: 0, hop: false, armor: 0, rekka: 0, dizzy: 0, dizzyMeter: 0,
       quickRise: false, hardKnockdown: false, neutralFrames: 0, standFrames: 0,
-      motions: [], taps: { left: -99, right: -99 }, pressAt: { heavy: -99 },
+      slide: 0, slideWall: false, rapid: 0, kickDir: 5,
+      motions: [], taps: { left: -99, right: -99 }, pressAt: { punch: -99, kick: -99, heavy: -99, special: -99, jump: -99, taunt: -99 },
       buffer: { punch: 0, kick: 0, heavy: 0, special: 0, jump: 0, taunt: 0 } };
   }
   function create(ids = ['grillmaster', 'weekendwarrior'], options = {}) {
@@ -125,8 +166,8 @@
     state.effects.push(Object.assign({ type, x, y, facing, life, maxLife: life }, extra));
   }
   function banner(state, slot, text) { emit(state, 'banner', slot ? WIDTH : 0, 0, slot ? -1 : 1, 70, { text, slot }); }
-  // Hits beyond the second in a combo lose damage so long juggles stay fair.
-  function comboScale(hits) { return hits < 3 ? 1 : Math.max(.3, Math.pow(.82, hits - 2)); }
+  // The first three hits of a combo deal full damage, then each further hit x0.82, down to 15% (30% for super hits).
+  function comboScale(hits, superHit = false) { return hits <= 3 ? 1 : Math.max(superHit ? .3 : .15, Math.pow(.82, hits - 3)); }
   function gainEnergy(f, amount) {
     f.energy += amount;
     while (f.energy >= BAR && f.stocks < STOCK_MAX) { f.energy -= BAR; f.stocks++; f.stockFlash = 30; }
@@ -138,7 +179,7 @@
     while (f.energy < 0 && f.stocks > 0) { f.stocks--; f.energy += BAR; }
     f.energy = Math.max(0, f.energy);
   }
-  const desperate = f => f.hp > 0 && f.hp <= 25;
+  const desperate = f => f.hp > 0 && f.hp <= DESPERATION_HP;
   const meter = f => f.energy + f.stocks * BAR;
   function down(f) { return f.launched && f.y === 0 && f.stun > 0; }
   function hittable(target) { return target.hp > 0 && !target.invulnerable && !down(target) && !(target.launched && target.y > 0 && target.juggle >= JUGGLE_LIMIT); }
@@ -146,14 +187,19 @@
     target.vy = move.launch || (wasAirborne ? Math.max(target.vy, 6) : 5);
     target.y = Math.max(1, target.y); target.stun = Math.max(target.stun, 30); target.launched = true; target.pose = 'tumble';
     target.hardKnockdown = !!move.hardKnockdown; target.quickRise = false;
-    if (wasAirborne) target.juggle++;
+    // A combo ender (the super beam's last hit) knocks down out of juggle reach: nothing follows it.
+    if (move.endsCombo) target.juggle = JUGGLE_LIMIT;
+    else if (wasAirborne) target.juggle++;
   }
   function dealHit(state, target, source, damage, impactX, direction = source.facing, move = {}) {
     if (!hittable(target)) return false;
     // A defender facing away from an incoming cross-up cannot block it by
     // holding back relative to an opponent now on the other side.
     const heightOk = move.height === 'low' ? target.crouching : move.height === 'high' ? !target.crouching : true;
-    const blocked = !move.unblockable && target.y === 0 && !target.dizzy && (target.guard && target.facing === -direction && heightOk || target.blockStun && target.stun > 0);
+    // Block and combo are judged from the stun the target started the frame with: on the frame its stun runs out
+    // it cannot act yet, so a blocking target still blocks and a hit target is still in the combo.
+    const guarding = target.blockStun && target.stun > 0 || target.blockStunAtStart && !target.move;
+    const blocked = !move.unblockable && target.y === 0 && !target.dizzy && (target.guard && target.facing === -direction && heightOk || guarding);
     // One-hit armor absorbs a strike during an armored special (never a throw).
     if (!blocked && target.armor > 0 && !move.unblockable) {
       target.armor--; target.hp = Math.max(0, target.hp - Math.max(1, Math.round(damage * .5)));
@@ -161,35 +207,37 @@
       return true;
     }
     const counter = !blocked && !move.unblockable && !!target.move && target.moveFrame < (moveData(target)?.startup ?? 0);
-    const inCombo = !blocked && (target.stun > 0 && !target.blockStun || target.launched);
+    const inCombo = !blocked && (target.stun > 0 && !target.blockStun || target.launched || target.stunAtStart > 0 && !target.blockStunAtStart && !target.dizzy);
     if (!blocked) { target.combo = inCombo ? target.combo + 1 : 1; if (!inCombo) target.comboDamage = 0; }
     const styleScale = styleOf(source).damage * styleOf(target).defense * (move.desperation ? 1.3 : 1);
-    const dealt = blocked ? Math.floor(damage * (move.chip || 0)) : Math.max(1, Math.round(damage * styleScale * comboScale(target.combo) * (counter ? 1.25 : 1)));
+    const dealt = blocked ? Math.floor(damage * (move.chip || 0)) : Math.max(1, Math.round(damage * styleScale * comboScale(target.combo, move.superHit) * (counter ? 1.25 : 1)));
     target.hp = Math.max(0, target.hp - dealt);
-    if (!blocked) { target.comboDamage += dealt; target.dizzyMeter = target.dizzy ? 0 : target.dizzyMeter + dealt * 1.4; }
+    if (!blocked) { target.comboDamage += dealt; target.dizzyMeter = target.dizzy ? 0 : target.dizzyMeter + dealt; }
     if (target.dizzy && !blocked) target.dizzy = 0;
+    // Normals, air normals and projectiles use fixed stun; grounded specials set it from the attacker's
+    // remaining frames plus their declared advantage.
     const fixed = blocked ? move.blockStun : move.hitStun, advantage = blocked ? move.onBlock : move.onHit;
-    // Strikes from a grounded attacker set stun from the attacker's remaining
-    // frames; projectiles and jump-ins use fixed stun.
     const remaining = source.move && move.startup ? move.startup + move.active + move.recovery - source.moveFrame : 0;
     target.stun = fixed ?? (advantage !== undefined && remaining ? Math.max(2, remaining + advantage) : blocked ? 8 : 17);
     if (counter) target.stun += 4;
     const wasAirborne = target.y > 0;
     target.blockStun = blocked;
-    target.hitAge = 0; target.counter = counter; target.heavyHit = !blocked && (damage >= 13 || counter);
+    target.hitAge = 0; target.counter = counter; target.heavyHit = !blocked && (damage >= HEAVY_DAMAGE || counter);
     target.pose = blocked ? 'block' : 'hit';
     target.move = null; target.connected = false; target.dash = 0; target.running = false; target.jumpSquat = 0; target.rekka = 0;
     if (!blocked && target.hp > 0 && (move.launch || move.knockdown || wasAirborne)) knockDown(target, move, wasAirborne);
-    const push = (move.push || 24) * (blocked ? .6 : 1), pushedX = target.x + direction * push;
-    target.x = clamp(pushedX, WALL, WIDTH - WALL);
-    // A defender pinned to a wall passes the remaining push to a grounded
-    // attacker so corner pressure has to re-close the distance.
-    if (move.startup && source.y === 0) source.x = clamp(source.x - direction * Math.abs(pushedX - target.x), WALL, WIDTH - WALL);
-    gainEnergy(target, blocked ? 4 : 7);
-    gainEnergy(source, blocked ? 3 : 5);
+    // Pushback slides over the following frames (a new hit replaces the slide); launched and knocked-down
+    // fighters drift through the air instead. Blocked strikes slide 1.15x as far; projectiles and super hits slide
+    // their own distance either way. A strike's slide that a wall stops pushes a grounded attacker back.
+    const sliding = blocked || !target.launched, strike = !!move.startup;
+    target.slide = sliding ? direction * (move.slide ?? DEFAULT_SLIDE) * (blocked && strike ? BLOCK_SLIDE : 1) * SLIDE_START : 0;
+    target.slideWall = sliding && strike;
+    // A super's own hits build no meter for its owner (as in Capcom games), so a landed super never pays for itself.
+    if (blocked) { if (!move.superHit) gainEnergy(source, damage * METER.block); gainEnergy(target, damage * METER.blockTaken); }
+    else { if (!move.superHit) gainEnergy(source, dealt * METER.hit); gainEnergy(target, dealt * METER.hitTaken); }
     // Contact pauses: 5 light, 7 heavy, 9 for launches and knockdowns, 4 on a guard, with poses, camera and effects held together.
-    state.hitstop = Math.max(state.hitstop, blocked ? 4 : move.launch || move.knockdown ? 9 : damage >= 13 ? 7 : 5);
-    emit(state, blocked ? 'block' : 'hit', impactX, GROUND - target.y - 110, direction, 18, { heavy: !blocked && (damage >= 12 || !!move.launch), damage: dealt, attacker: source.slot });
+    state.hitstop = Math.max(state.hitstop, blocked ? 4 : move.launch || move.knockdown ? 9 : damage >= HEAVY_DAMAGE ? 7 : 5);
+    emit(state, blocked ? 'block' : 'hit', impactX, GROUND - target.y - 110, direction, 18, { heavy: !blocked && (damage >= HEAVY_DAMAGE || !!move.launch), damage: dealt, attacker: source.slot });
     if (!blocked) {
       const slot = source.slot ?? state.fighters.indexOf(source);
       if (!state.firstHit) { state.firstHit = true; banner(state, slot, 'FIRST ATTACK'); }
@@ -198,41 +246,92 @@
     }
     return true;
   }
+  // One frame of a pushback slide: grounded fighters move, then the velocity decays (also while airborne). Returns
+  // how far the fighter moved and the part of a strike slide a wall stopped, which the caller passes to the
+  // attacker. The slide stays out of vx, which is the fighter's own walking movement.
+  function slideStep(f) {
+    const out = { moved: 0, wall: 0 };
+    if (!f.slide) return out;
+    if (f.y === 0) {
+      const want = f.x + f.slide, x = clamp(want, WALL, WIDTH - WALL);
+      out.moved = x - f.x; f.x = x;
+      if (f.slideWall) out.wall = want - x;
+    }
+    f.slide *= SLIDE_DECAY;
+    if (Math.abs(f.slide) < SLIDE_STOP) { f.slide = 0; f.slideWall = false; }
+    return out;
+  }
   // Keypad direction relative to facing: 1 2 3 bottom row, 4 5 6, 7 8 9.
   function direction(input, facing) {
     const forward = facing === 1 ? input.right : input.left, back = facing === 1 ? input.left : input.right;
     const h = forward && !back ? 1 : back && !forward ? -1 : 0, v = input.down ? -1 : input.jump ? 1 : 0;
     return 5 + h + v * 3;
   }
-  function performed(f, sequence, frame, window = MOTION_WINDOW) {
-    // Lenient subsequence match so keyboard rolls (2,5,6) still count as 236.
-    let index = sequence.length - 1;
+  // Whether a motion was entered: every direction inside `window` frames, at most MOTION_REST frames of neutral
+  // between two of them and the button (pressed on frame `pressFrame`) at most MOTION_PRESS frames after the last.
+  function performed(f, sequence, frame, window = MOTION_WINDOW, pressFrame = frame) {
+    // Lenient subsequence match so keyboard rolls (2,5,6) still count as 236, newest direction first.
+    let index = sequence.length - 1, last = null, rest = 0;
     for (let i = f.motions.length - 1; i >= 0 && index >= 0; i--) {
       const [digit, at] = f.motions[i];
       if (frame - at > window) break;
-      if (digit === sequence[index]) index--;
+      if (digit === sequence[index]) { if (last === null) last = at; index--; rest = 0; }
+      else if (digit === 5 && last !== null) {
+        // Neutral inside the motion is a short release in a keyboard roll; a longer one is a fighter standing up.
+        rest += (i + 1 < f.motions.length ? f.motions[i + 1][1] : frame + 1) - at;
+        if (rest > MOTION_REST) return false;
+      }
     }
-    return index < 0;
+    return index < 0 && pressFrame - last <= MOTION_PRESS;
   }
-  const pressedTogether = (f, a, b) => f.buffer[a] > 0 && f.buffer[b] > 0 && Math.abs(f.buffer[a] - f.buffer[b]) <= 2;
-  // Decide which action a buffered press starts, honoring motions, throws, supers and system moves.
-  function command(state, f, other, input) {
+  const pressedTogether = (f, a, b) => f.buffer[a] > 0 && f.buffer[b] > 0 && Math.abs(f.pressAt[a] - f.pressAt[b]) <= CHORD_WINDOW;
+  // The button a buffered press starts: the earliest press wins, unless a stronger button was pressed within
+  // PRESS_WINDOW frames of it (then the strongest of those). Presses are ordered by the frame they were made on.
+  function firstPress(f, ownShot) {
+    const pressed = STRENGTH.filter(a => f.buffer[a] > 0 && (a !== 'special' || !ownShot));
+    if (!pressed.length) return null;
+    const earliest = Math.min(...pressed.map(a => f.pressAt[a]));
+    return pressed.filter(a => f.pressAt[a] - earliest <= PRESS_WINDOW).pop();
+  }
+  // Decide which action a buffered press starts, honoring motions, throws, supers and system moves. In a cancel
+  // (cancel = true) rolls, throws and the taunt are not candidates, so their buttons count as ordinary presses.
+  function command(state, f, other, input, cancel = false) {
     if (input.command && MOVES[input.command]) return input.command;
     const style = styleOf(f);
     const pressed = ATTACKS.filter(a => f.buffer[a] > 0);
-    if (f.buffer.taunt > 0 && !pressed.length && f.y === 0) return 'taunt';
+    if (f.buffer.taunt > 0 && !pressed.length && f.y === 0) return cancel ? null : 'taunt';
     if (!pressed.length) return null;
-    const grounded = f.y === 0, frame = state.frame, attack = pressed.some(a => a !== 'special');
-    if (f.stocks >= SUPER_STOCKS && (performed(f, [2, 6, 2, 6], frame, 28) && attack || pressedTogether(f, 'special', 'heavy'))) return 'super';
-    if (grounded && pressedTogether(f, 'punch', 'kick')) return 'roll';
+    const grounded = f.y === 0, frame = state.frame, attacks = pressed.filter(a => a !== 'special');
+    // A motion counts with the latest attack press (F alone stays the F shot).
+    const pressFrame = attacks.length ? Math.max(...attacks.map(a => f.pressAt[a])) : frame;
+    const motion = (sequence, window) => attacks.length > 0 && performed(f, sequence, frame, window, pressFrame);
+    if (f.stocks >= SUPER_STOCKS && (motion([2, 6, 2, 6], 28) || pressedTogether(f, 'special', 'heavy'))) return 'super';
+    if (grounded && !cancel && pressedTogether(f, 'punch', 'kick')) return 'roll';
     if (grounded && pressedTogether(f, 'kick', 'heavy')) return 'blowback';
-    if (grounded && performed(f, [6, 2, 3], frame) && attack) return 'rising';
+    if (grounded && motion([6, 2, 3])) return 'rising';
     const ownShot = state.projectiles.some(p => p.owner === f.slot && !p.super);
-    if (grounded && performed(f, [2, 6], frame) && attack && !ownShot) return style.qcf;
-    if (grounded && performed(f, [2, 4], frame) && attack && !(style.qcb === 'skyshot' && ownShot)) return style.qcb;
-    const toward = (other.x >= f.x ? input.right : input.left) || (other.x >= f.x ? input.left : input.right);
-    if (f.buffer.heavy > 0 && grounded && toward && !input.down && other.y === 0 && !other.stun && !other.invulnerable && !other.launched && Math.abs(other.x - f.x) < MOVES.throw.reach) return 'throw';
-    return ['special', 'heavy', 'kick', 'punch'].find(a => f.buffer[a] > 0 && (a !== 'special' || !ownShot)) || null;
+    if (grounded && motion([2, 6]) && !ownShot) return style.qcf;
+    if (grounded && motion([2, 4]) && !(style.qcb === 'skyshot' && ownShot)) return style.qcb;
+    const button = firstPress(f, ownShot);
+    if (!button) return null;
+    // Forward or back + D up close throws (a back throw swaps sides). The opponent must have been out of stun since
+    // the frame began, whichever slot each fighter is in.
+    const sideways = (other.x >= f.x ? input.right : input.left) || (other.x >= f.x ? input.left : input.right);
+    if (button === 'heavy' && !cancel && grounded && sideways && !input.down && other.y === 0 && !other.stun && !other.stunAtStart && !other.invulnerable && !other.launched && Math.abs(other.x - f.x) < MOVES.throw.reach) return 'throw';
+    // S pressed while holding toward is the standing roundhouse, even when it comes out of the buffer after the
+    // direction was let go; holding down still makes the sweep.
+    if (button === 'kick' && grounded && !input.down && f.kickDir === 6) return 'roundhouse';
+    return button;
+  }
+  // How a connected move may cancel into the next action: 'chain' (up-rank, at least the move's cancelRank),
+  // 'rapid' (a grounded rank-0 normal into another, at most RAPID_FIRE times in a row) or null.
+  function cancelKind(f, move, next, input) {
+    if (['throw', 'roll', 'taunt'].includes(next)) return null;
+    if (!(f.y === 0 || ATTACKS.includes(next)) || meter(f) < (MOVES[next].cost || 0) || f.stocks < (MOVES[next].stocks || 0)) return null;
+    const variant = variantOf(f, next, input), data = VARIANTS[variant]?.[next] || MOVES[next];
+    if (data.rank > move.rank && data.rank >= (move.cancelRank || 0)) return 'chain';
+    if (move.rank === 0 && data.rank === 0 && f.moveVariant !== 'air' && variant !== 'air' && (f.rapid || 0) < RAPID_FIRE) return 'rapid';
+    return null;
   }
   // Level-based CPU: deterministic, reacts after a delay and picks plans from its style.
   function cpuInput(state, slot) {
@@ -262,7 +361,8 @@
     if (memory.wait > 0) { memory.wait--; if (distance > 150) input[toward] = true; return input; }
     memory.wait = Math.max(2, 20 - level * 2 + Math.floor(random(state) * 8));
     const style = styleOf(self), r = random(state);
-    if (self.stocks >= SUPER_STOCKS && distance < 380 && (enemy.stun > 0 || r < .04 + level * .01)) { input.command = 'super'; return input; }
+    // Super an opponent caught in stun, not one lying down after a knockdown (it cannot be hit there).
+    if (self.stocks >= SUPER_STOCKS && distance < 380 && (enemy.stun > 0 && !enemy.launched || r < .04 + level * .01)) { input.command = 'super'; return input; }
     if (distance < 95) {
       if (r < .25) input.command = style.qcb === 'commandGrab' ? 'commandGrab' : 'throw';
       else if (r < .55) memory.plan = [{ punch: true }, {}, {}, {}, {}, { kick: true }, {}, {}, {}, {}, {}, {}, { heavy: true }];
@@ -272,7 +372,10 @@
       return input;
     }
     if (distance < 170) {
-      if (r < .35) memory.plan = [{ kick: true }, {}, {}, {}, {}, {}, {}, {}, {}, {}, { command: style.qcf }];
+      // A roundhouse poke; the buffered F press cancels it into the projectile when it connects. Inside the light
+      // kick's reach the CPU may poke with it instead and cancel into its 236 special.
+      if (r < .2 || (r < .35 && distance >= reachOf(self, MOVES.kick))) memory.plan = [{ [toward]: true, kick: true }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { special: true }];
+      else if (r < .35) memory.plan = [{ kick: true }, {}, {}, {}, {}, {}, {}, {}, {}, {}, { command: style.qcf }];
       else if (r < .55) { input.down = true; input.kick = true; }
       else if (r < .7) input.command = style.qcb === 'teleport' || style.qcb === 'skyshot' ? 'rising' : style.qcb;
       else input[toward] = true;
@@ -293,21 +396,31 @@
   }
   function resetRound(state) {
     // Wins, power stocks and the partial bar carry into the next round, as in KOF.
-    state.fighters = state.fighters.map((old, slot) => Object.assign(fighter(old.id, slot, { style: old.style, boss: old.boss }), { wins: old.wins, energy: old.energy, stocks: old.stocks }));
+    state.fighters = state.fighters.map((old, slot) => Object.assign(fighter(old.id, slot, { style: old.style, boss: old.boss, reaches: old.reaches }), { wins: old.wins, energy: old.energy, stocks: old.stocks }));
     state.projectiles = []; state.effects = []; state.time = state.options.roundTime * 60; state.round++;
     state.winner = null; state.hitstop = 0; state.firstHit = false; state.result = null;
     state.cpuMemory = [{ wait: 0, plan: [] }, { wait: 0, plan: [] }];
     intro(state);
   }
-  function startMove(state, f, action, input) {
-    const variant = NORMALS.includes(action) ? f.y > 0 ? 'air' : input.down ? 'crouch' : 'standing' : 'standing';
+  function startMove(state, f, action, input, { rapid = false, chained = false } = {}) {
+    const variant = variantOf(f, action, input);
     const data = MOVES[action];
     f.move = action; f.moveFrame = 0; f.hitDone = false; f.connected = false; f.guard = false; f.dash = 0; f.running = false; f.skid = 0;
     f.moveVariant = variant;
-    for (const key of [...ATTACKS, 'taunt']) f.buffer[key] = 0;
+    // Rapid-fire chains count consecutive rank-0 cancels; any other start resets the count.
+    f.rapid = rapid ? (f.rapid || 0) + 1 : 0;
+    // A move uses up the presses it came from. A plain button (and the roundhouse or throw it makes) uses its own
+    // press and those made up to PRESS_WINDOW frames after it, so a later press stays buffered for the next step of
+    // a chain; chords, motions and system moves use every buffered press.
+    const button = PRESS_OF[action], until = button && f.buffer[button] > 0 ? f.pressAt[button] + PRESS_WINDOW : Infinity;
+    for (const key of [...ATTACKS, 'taunt']) if (f.pressAt[key] <= until) f.buffer[key] = 0;
     f.motions = [];
+    // A move's own movement replaces a pushback slide still running (a guard cancel out of blockstun, say).
+    f.slide = 0; f.slideWall = false;
     spendEnergy(f, data.cost || 0);
     if (data.stocks) { f.stocks = Math.max(0, f.stocks - data.stocks); f.stockFlash = 0; }
+    // Starting a special builds a little meter (a rekka follow-up continues the same special).
+    if (data.rank === 3 && !chained) gainEnergy(f, METER.special);
     f.invulnerable = Math.max(f.invulnerable, data.invulnerable || 0);
     f.armor = data.armor || 0;
     if (action === 'rekka') f.rekka = 1;
@@ -325,7 +438,7 @@
     const shot = move.projectile || {};
     if (f.move === 'super') {
       state.projectiles.push({ owner: slot, x: f.x + f.facing * 55, y: f.y + 105, facing: f.facing, damage: move.damage, life: 150, super: true,
-        hits: move.hits + (f.boss ? 2 : 0), cooldown: 0, speed: 11, kind: 'super', desperation: !!f.superDesperate });
+        hits: move.hits, cooldown: 0, speed: 11, kind: 'super', desperation: !!f.superDesperate });
       return;
     }
     for (let i = 0; i < (shot.count || 1); i++) {
@@ -333,19 +446,21 @@
         life: shot.life || 150, hits: 1, cooldown: 0, speed: shot.speed || 8, rise: shot.rise || 0, kind: f.move });
     }
   }
-  // Rounds continue to settle bodies after a KO so nobody freezes mid-air.
+  // Rounds continue to settle bodies after a KO so nobody freezes mid-air or mid-slide.
   function settle(f) {
+    f.vx = 0;
     if (f.y > 0 || f.vy > 0) {
       f.y += f.vy; f.vy -= .65;
       if (f.y <= 0) { f.y = 0; f.vy = 0; f.airVX = 0; f.landFrames = 6; }
     }
+    slideStep(f);
   }
   function finishRound(state) {
     const [a, b] = state.fighters;
     const kind = a.hp === 0 && b.hp === 0 ? 'doubleko' : a.hp === 0 || b.hp === 0 ? 'ko' : 'time';
     state.winner = a.hp === b.hp ? null : a.hp > b.hp ? 0 : 1;
     if (state.winner !== null) state.fighters[state.winner].wins++; else state.draws++;
-    const perfect = state.winner !== null && state.fighters[state.winner].hp === 100;
+    const perfect = state.winner !== null && state.fighters[state.winner].hp === MAX_HP;
     state.result = { winner: state.winner, kind, perfect, time: Math.ceil(state.time / 60), hp: state.fighters.map(f => f.hp) };
     state.phase = 'roundover'; state.phaseFrames = 170;
     state.message = kind === 'doubleko' ? 'DOUBLE K.O.' : kind === 'ko' ? 'K.O.' : 'TIME OVER';
@@ -365,7 +480,7 @@
     if (state.phase === 'roundover') {
       if (state.hitstop > 0) { state.hitstop--; return state; }
       state.motionFrame++;
-      state.fighters.forEach(settle);
+      state.fighters.forEach(f => settle(f));
       // Poses resolve after bodies land: winner celebrates, a time-over loser kneels.
       if (state.phaseFrames === 110) {
         if (state.result?.perfect) state.message = 'PERFECT';
@@ -387,10 +502,13 @@
     // Slot 1 follows state.cpu (set by servers and menus); slot 0 is CPU only in demo play.
     const controls = [0, 1].map(slot => (slot ? state.cpu : state.cpuSlots?.[0]) ? cpuInput(state, slot) : { ...(inputs[slot] || {}), command: undefined });
     state.fighters.forEach((f, slot) => {
-      const input = controls[slot];
+      const input = controls[slot], digit = direction(input, f.facing);
       f.slot = slot;
-      for (const action of Object.keys(f.buffer)) if (input[action] && !f.lastInput[action]) f.buffer[action] = INPUT_BUFFER;
-      if (input.heavy && !f.lastInput.heavy) f.pressAt.heavy = state.frame;
+      // A press stays buffered for INPUT_BUFFER simulated frames; its press frame (state.frame, which also runs during
+      // hitstop) orders it against other presses and times chords and the throw escape.
+      for (const action of Object.keys(f.buffer)) if (input[action] && !f.lastInput[action]) { f.buffer[action] = INPUT_BUFFER; f.pressAt[action] = state.frame; }
+      // The direction held as S is pressed picks the light kick or the roundhouse (keypad digit, 6 = toward).
+      if (input.kick && !f.lastInput.kick) f.kickDir = digit;
       // Two taps of the same direction within a short window run or backstep.
       for (const side of ['left', 'right']) if (input[side] && !f.lastInput[side]) {
         if (state.frame - f.taps[side] <= DASH_TAP && f.y === 0 && !input.down) f.dashRequest = side;
@@ -398,7 +516,7 @@
       }
       // Mashing shakes off dizziness.
       if (f.dizzy > 0) for (const key of ['left', 'right', 'punch', 'kick', 'heavy', 'special']) if (input[key] && !f.lastInput[key]) f.dizzy = Math.max(1, f.dizzy - 4);
-      const digit = direction(input, f.facing), lastDigit = f.motions[f.motions.length - 1];
+      const lastDigit = f.motions[f.motions.length - 1];
       if (!lastDigit || lastDigit[0] !== digit) { f.motions.push([digit, state.frame]); if (f.motions.length > 10) f.motions.shift(); }
       f.lastInput = { ...input, command: undefined };
     });
@@ -409,6 +527,9 @@
     // Read both guards before either fighter can connect a hit.
     state.fighters.forEach((f, slot) => {
       const other = state.fighters[1 - slot], input = controls[slot];
+      // The stun each fighter starts the frame with. Its stun runs out during its own update, but it cannot act
+      // until the next frame, so hits, blocks and throws on this frame are judged from this value for both slots.
+      f.stunAtStart = f.stun; f.blockStunAtStart = f.blockStun && f.stun > 0;
       if (!f.move && !f.stun && !f.dash && !f.dizzy) f.facing = other.x >= f.x ? 1 : -1;
       f.crouching = !!input.down && f.y === 0;
       const upcomingStrike = ATTACKS.some(key => other.buffer[key] > 0 && meter(other) >= (MOVES[key].cost || 0));
@@ -463,19 +584,20 @@
         }
         if (!f.move) { f.dashRequest = null; if (f.dash > 0 && f.y === 0) { const previousX = f.x; f.x = clamp(f.x + f.dashDir * 8, WALL, WIDTH - WALL); f.vx = f.x - previousX; f.dash--; f.pose = 'roll'; } return; }
       }
-      if (!f.stun && !f.launched) { f.neutralFrames++; f.dizzyMeter = Math.max(0, f.dizzyMeter - .25); } else f.neutralFrames = 0;
-      // Connected normals can chain into a stronger normal, special or super,
-      // as in arcade fighters. Whiffs and repeated buttons cannot cancel.
-      if (f.move && f.connected && moveData(f).rank < 3 && moveData(f).rank >= 0) {
+      if (!f.stun && !f.launched) { f.neutralFrames++; f.dizzyMeter = Math.max(0, f.dizzyMeter - DIZZY_DRAIN); } else f.neutralFrames = 0;
+      // Connected normals cancel inside the window, as in arcade fighters: up-rank into a stronger normal,
+      // special or super, and rank-0 normals into each other up to twice in a row. Whiffs never cancel, nor do
+      // sweeps and blowbacks; the launcher cancels only into specials and supers.
+      if (f.move && f.connected) {
         const move = moveData(f);
-        if (f.moveFrame < move.startup + move.active + CANCEL_WINDOW) {
-          const next = command(state, f, other, input), nextData = next && (VARIANTS[f.moveVariant]?.[next] || MOVES[next]);
-          if (next && !['throw', 'roll', 'taunt'].includes(next) && nextData.rank > move.rank && meter(f) >= (MOVES[next].cost || 0) && f.stocks >= (MOVES[next].stocks || 0)) { f.move = null; f.connected = false; }
+        if (move.rank >= 0 && move.rank < 3 && !move.noCancel && f.moveFrame < move.startup + move.active + CANCEL_WINDOW) {
+          const next = command(state, f, other, input, true), kind = next && cancelKind(f, move, next, input);
+          if (kind) { f.move = null; f.connected = false; startMove(state, f, next, input, { rapid: kind === 'rapid' }); }
         }
       }
       // Rhythm rush chains: another attack press during recovery continues the rekka.
       if (f.move === 'rekka' && f.rekka < MOVES.rekka.chain && f.moveFrame >= MOVES.rekka.startup + MOVES.rekka.active - 1 && NORMALS.some(a => f.buffer[a] > 0)) {
-        const stage = f.rekka + 1; f.move = null; startMove(state, f, 'rekka', input); f.rekka = stage;
+        const stage = f.rekka + 1; f.move = null; startMove(state, f, 'rekka', input, { chained: true }); f.rekka = stage;
       }
       if (f.dashRequest && !f.move && f.y === 0 && !f.jumpSquat) {
         const forward = (f.dashRequest === 'right') === (f.facing === 1);
@@ -494,7 +616,7 @@
         const t = 12 - f.dash, previousX = f.x;
         f.x = clamp(f.x + f.dashDir * 10 * (1 - t / 12), WALL, WIDTH - WALL);
         f.vx = f.x - previousX; f.dash--; f.pose = 'backstep';
-        if (t < 6 || !ATTACKS.some(a => f.buffer[a] > 0)) return void gainEnergy(f, .035);
+        if (t < 6 || !ATTACKS.some(a => f.buffer[a] > 0)) return;
         f.dash = 0;
       }
       if (f.jumpSquat > 0 && !f.move) {
@@ -505,7 +627,7 @@
           const movement = (input.right ? 1 : 0) - (input.left ? 1 : 0), run = f.running ? 1.45 : 1;
           f.vy = (f.hop ? 9.6 : 13) * style.jump; f.y = 1; f.airVX = movement * AIR_SPEED * run * (f.hop ? 1.12 : 1); f.landFrames = 0; f.running = false;
         }
-        return void gainEnergy(f, .035);
+        return;
       }
       if (!f.move) {
         const movement = (input.right ? 1 : 0) - (input.left ? 1 : 0);
@@ -544,7 +666,7 @@
           if (PROJECTILE_MOVES.has(f.move)) { launchProjectiles(state, f, slot, move); f.hitDone = true; }
           else if (f.move === 'throw' || move.grab) {
             f.hitDone = true;
-            const reachable = hittable(other) && other.y === 0 && Math.abs(other.x - f.x) < reachOf(f, move) && (move.grab || !other.stun);
+            const reachable = hittable(other) && other.y === 0 && Math.abs(other.x - f.x) < reachOf(f, move) && (move.grab || !other.stun && !other.stunAtStart);
             // Pressing heavy within seven frames of the throw escapes it, even if that press started an attack.
             if (reachable && f.move === 'throw' && (state.frame - other.pressAt.heavy <= 7 || pressedTogether(other, 'punch', 'kick'))) {
               // Pressing heavy as the throw lands escapes it.
@@ -553,8 +675,8 @@
               other.buffer.heavy = 0; other.move = null; banner(state, 1 - slot, 'THROW ESCAPE');
               emit(state, 'block', (f.x + other.x) / 2, GROUND - 130, f.facing);
             } else if (reachable) {
-              // Backward throws swap sides before the toss.
-              if (f.move === 'throw' && input[f.facing === 1 ? 'left' : 'right']) { const x = f.x; f.x = other.x; other.x = x; f.facing *= -1; }
+              // Backward throws swap sides before the toss; the victim turns to face the thrower, so it drifts away.
+              if (f.move === 'throw' && input[f.facing === 1 ? 'left' : 'right']) { const x = f.x; f.x = other.x; other.x = x; f.facing *= -1; other.facing = -f.facing; }
               dealHit(state, other, f, move.damage, (f.x + other.x) / 2, f.facing, move);
               f.connected = true;
             }
@@ -565,13 +687,16 @@
       }
       // Consecutive frames standing in neutral; the animation layer restarts the breathing loop from it. Visual only.
       f.standFrames = !f.move && f.y === 0 && !f.stun && !f.dash && !f.running && !f.jumpSquat && !f.crouching && !f.dizzy && f.landFrames === 0 && Math.abs(f.vx) < .1 ? f.standFrames + 1 : 0;
-      gainEnergy(f, .035);
     });
+    // Pushback slides move both fighters in one pass after their own updates, so neither slot's decisions see the
+    // other's slide earlier. A wall that stops a strike slide passes the stopped part to a grounded attacker.
+    const slides = state.fighters.map(slideStep);
+    slides.forEach(({ wall }, slot) => { const other = state.fighters[1 - slot]; if (wall && other.y === 0) other.x = clamp(other.x - wall, WALL, WIDTH - WALL); });
     const contacts = strikes.filter(({ source, target, move, direction }) =>
       hittable(target) && (target.x - source.x) * direction >= 0 && Math.abs(source.x - target.x) < reachOf(source, move) && Math.abs(source.y - target.y) < (move.air ? 140 : 90));
     // Resolve contacts together so equal-timing attacks trade fairly on either side.
     for (const { source, target, move, direction } of contacts) {
-      const data = source.move === 'rekka' && source.rekka === 3 ? { ...move, damage: 11, knockdown: true } : move;
+      const data = source.move === 'rekka' && source.rekka === 3 ? { ...move, damage: move.finish, knockdown: true } : move;
       dealHit(state, target, source, data.damage, (source.x + target.x) / 2, direction, data); source.hitDone = true; source.connected = true;
     }
     state.fighters.forEach(f => { for (const action of Object.keys(f.buffer)) f.buffer[action] = Math.max(0, f.buffer[action] - 1); });
@@ -588,8 +713,11 @@
       }
       const victim = state.fighters[1 - p.owner];
       if (!p.cooldown && Math.abs(p.x - victim.x) < (p.super ? 60 : 40) && Math.abs(p.y - victim.y - 105) < 75 && hittable(victim)) {
-        dealHit(state, victim, state.fighters[p.owner], p.damage, p.x, p.facing, Object.assign({ push: p.super ? 8 : 24, desperation: !!p.desperation }, PROJECTILE, p.super ? { hitStun: 12, blockStun: 8 } : {}));
-        p.hits--; p.cooldown = 5;
+        // The beam's last hit knocks down out of juggle reach, so no normal or special can extend a landed super.
+        const finalHit = p.super && p.hits <= 1;
+        dealHit(state, victim, state.fighters[p.owner], p.damage, p.x, p.facing, Object.assign({ slide: p.super ? SUPER_SLIDE : PROJECTILE_SLIDE, desperation: !!p.desperation, superHit: !!p.super }, PROJECTILE,
+          p.super ? { hitStun: 12, blockStun: 8 } : {}, finalHit ? { knockdown: true, endsCombo: true } : {}));
+        p.hits--; p.cooldown = BEAM_GAP;
         // A super beam carries its victim so every hit of the barrage lands.
         if (p.super) p.x = victim.x - p.facing * 20;
         if (p.hits <= 0) p.life = 0;
@@ -606,11 +734,11 @@
       if (right.x > WIDTH - WALL) { left.x -= right.x - (WIDTH - WALL); right.x = WIDTH - WALL; }
     }
     // Screen lock: neither fighter can walk the other off camera. The fighter
-    // moving away is held; if both are, they share the correction.
+    // moving away (walking or sliding) is held; if both are, they share the correction.
     const gap = Math.abs(a.x - b.x) - MAX_DIST;
     if (gap > 0) {
-      const left = a.x <= b.x ? a : b, right = left === a ? b : a;
-      const leftAway = Math.max(0, -left.vx), rightAway = Math.max(0, right.vx), total = leftAway + rightAway;
+      const left = a.x <= b.x ? a : b, right = left === a ? b : a, moved = f => f.vx + slides[state.fighters.indexOf(f)].moved;
+      const leftAway = Math.max(0, -moved(left)), rightAway = Math.max(0, moved(right)), total = leftAway + rightAway;
       const leftShare = total ? leftAway / total : .5;
       left.x += gap * leftShare; right.x -= gap * (1 - leftShare);
     }
@@ -618,7 +746,7 @@
       // Training restores health after each exchange and can keep meter full.
       state.fighters.forEach(f => {
         if (f.hp === 0) f.hp = 1;
-        if (f.neutralFrames > 40 && f.hp < 100) { f.hp = 100; f.combo = 0; }
+        if (f.neutralFrames > 40 && f.hp < MAX_HP) { f.hp = MAX_HP; f.combo = 0; }
         if (state.options.trainingMeter === 'infinite') { f.stocks = STOCK_MAX; f.energy = BAR; }
       });
       return state;
@@ -642,10 +770,14 @@
   function moveList(fighterData = {}) {
     const style = STYLES[fighterData.style] || STYLES.balanced, special = fighterData.specialMove?.name || 'Energy Shot';
     return [
-      { name: special, input: '↓↘→ + attack (or F)', note: style.qcf === 'fastball' ? 'Fast short-range shot; F fires a slower standard shot' : style.qcf === 'doubleball' ? 'Twin projectile; F fires a single shot' : 'Projectile; F is a slower one-button version' },
+      { name: special, input: '↓↘→ + attack (or F)', note: style.qcf === 'fastball' ? 'Fast short-range shot; F fires a slower standard shot' : style.qcf === 'doubleball' ? 'Twin projectile; F fires a single shot' : 'Projectile; F fires a lighter one-button version' },
       { name: style.names.dp, input: '→↓↘ + attack', note: 'Invulnerable rising strike' },
       { name: style.names.qcb, input: '↓↙← + attack', note: '' },
       { name: fighterData.superMove?.name || 'Super Art', input: '↓↘→↓↘→ + attack or F + D', note: 'Costs one power stock; stronger at low health' },
+      { name: 'Roundhouse', input: '→ + S', note: 'Long-reach heavy kick; standing only' },
+      { name: 'Sweep (low)', input: '↓ + S', note: 'Knockdown; block it crouching' },
+      { name: 'Launcher', input: '↓ + D', note: 'Launches; cancels only into specials and supers' },
+      { name: 'Chain combo', input: 'A > S > D > special', note: 'A connected normal cancels into a stronger one; A and ↓ + A repeat twice' },
       { name: 'Blowback', input: 'S + D', note: 'Knockdown strike; guard cancel with a stock while blocking' },
       { name: 'Evasive roll', input: 'A + S', note: 'Invulnerable roll; guard cancel with a stock while blocking' },
       { name: 'Throw', input: '→ or ← + D up close', note: 'Press D as you are thrown to escape' },
@@ -653,5 +785,5 @@
       { name: 'Taunt', input: 'G', note: 'Drains the opponent’s power gauge' }
     ];
   }
-  return { WIDTH, SCREEN_W, GROUND, WALL, MAX_DIST, BAR, STOCK_MAX, MOVES, VARIANTS, STYLES, DEFAULTS, moveData, create, tick, resetRound, comboScale, boxes, moveList , SPRITE_HEIGHT, artReaches, reachOf };
+  return { WIDTH, SCREEN_W, GROUND, WALL, MAX_DIST, MAX_HP, BAR, STOCK_MAX, DIZZY_LIMIT, MOVES, VARIANTS, STYLES, DEFAULTS, moveData, create, tick, resetRound, comboScale, boxes, moveList, SPRITE_HEIGHT, artReaches, reachOf };
 });

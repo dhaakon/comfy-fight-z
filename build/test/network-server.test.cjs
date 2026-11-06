@@ -201,7 +201,9 @@ test('match completion requires fresh readiness for rematches and preserves one 
   assert.equal(room.state.phase, 'matchover'); assert.equal(room.state.winner, 0); assert.ok(room.players.every(p => !p.ready));
   a.clear(); b.clear(); a.send({ type: 'ready', ready: true }); await delay(80); assert.equal(room.phase, 'finished');
   b.send({ type: 'ready', ready: true }); const next = await a.wait('match');
-  assert.notEqual(next.matchId, initial.matchId); assert.equal(next.state.fighters.length, 2); assert.ok(next.state.fighters.every(f => f.hp === 100 && f.wins === 0));
+  // The rematch starts both fighters on a full life bar of the mounted game's engine.
+  const fullLife = require(path.join(sourceRoot, 'engine.js')).MAX_HP;
+  assert.notEqual(next.matchId, initial.matchId); assert.equal(next.state.fighters.length, 2); assert.ok(next.state.fighters.every(f => f.hp === fullLife && f.wins === 0));
 });
 
 test('expired controller seats receive fresh codes and disconnected projections end their rooms', async t => {
