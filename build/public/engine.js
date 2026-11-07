@@ -513,17 +513,19 @@
     if (prior && prior[0] === id) return prior[1];
     const result = random(c.state) < p; c.memory.rolls[key] = [id, result]; return result;
   }
-  // Where a fighter is t simulated frames from now if nothing acts on it: airborne it follows its committed arc, on the
-  // ground it finishes its pushback slide.
+  // Where a fighter is t simulated frames from now if nothing acts on it: airborne it follows its committed arc (a
+  // launcher's floating victim under its lighter gravity and slower drift), on the ground it finishes its pushback slide.
   function cpuPredict(f, t) {
     let x = f.x, y = f.y, vy = f.vy;
     if (y <= 0 && vy <= 0) return { x: clamp(x + (f.slide || 0) * (1 - Math.pow(SLIDE_DECAY, t)) / (1 - SLIDE_DECAY), WALL, WIDTH - WALL), y: 0 };
-    for (let i = 0; i < t && (y > 0 || vy > 0); i++) { y += vy; vy -= .65; x += f.launched ? -f.facing * 2.2 : f.airVX || 0; }
+    const fall = gravity(f), drift = f.launched ? -f.facing * (f.floating ? LAUNCH_DRIFT : KNOCKDOWN_DRIFT) : f.airVX || 0;
+    for (let i = 0; i < t && (y > 0 || vy > 0); i++) { y += vy; vy -= fall; x += drift; }
     return { x: clamp(x, WALL, WIDTH - WALL), y: Math.max(0, y) };
   }
   // The body box a fighter will have at a predicted position, t frames from now (null when no hit can land there).
+  // A launcher's floating victim that nothing has juggled leaves juggle reach at its apex (vy <= 0).
   function cpuBody(f, at, t) {
-    if (down(f) || f.hp <= 0 || f.invulnerable > t || f.launched && (at.y <= 0 || f.juggle >= JUGGLE_LIMIT)) return null;
+    if (down(f) || f.hp <= 0 || f.invulnerable > t || f.launched && (at.y <= 0 || f.juggle >= JUGGLE_LIMIT || f.floating && !f.juggled && f.vy - t * gravity(f) <= 0)) return null;
     if (at.y > 0) { const hit = f.launched || f.stun > 0 && !f.blockStun, [w, h] = hit ? HURT.airHit : HURT.air; return [at.x - w / 2, at.y + (hit ? AIR_HIT_LIFT : AIR_LIFT), w, h]; }
     const [w, h] = crouched(f) ? HURT.crouch : HURT.stand;
     return [at.x - w / 2, 0, w, h];
@@ -578,13 +580,16 @@
   // stock back unless the gauge is full, the super would finish the round or it is desperate.
   const cpuSupers = c => c.self.stocks >= SUPER_STOCKS && (c.level >= 6 || c.self.stocks >= STOCK_MAX || c.enemy.hp <= 200 || desperate(c.self));
   // The combo ender: the super when a stock is held (see cpuSupers), else the style's special (one that reaches from a chain).
+  // A launcher's floating victim rises over shots and the super's beam, so after a launch only a rush, the rekka or the
+  // rising strike ends the combo.
   function cpuEnder(c) {
-    const { self, memory, level } = c, style = styleOf(self);
+    const { self, enemy, memory, level } = c, style = styleOf(self), floating = enemy.launched && enemy.floating;
     if (level < 3) return null;
-    if (cpuSupers(c)) return ['super'];
+    if (!floating && cpuSupers(c)) return ['super'];
     if (memory.tokens < 1) return null;
     if (style.qcb === 'rekka') return ['rekka', 'rk', 'rk'];
     if (style.qcb === 'rush' || style.qcb === 'armorRush') return [style.qcb];
+    if (floating) return ['rising'];
     return cpuOwnShot(c) ? null : [style.qcf];
   }
   // Hit-confirm routes from an opener; low levels cut them short (level 1 never chains past two hits).
@@ -670,7 +675,13 @@
   // The input that presses a script step this frame ({} while it waits for its moment).
   function cpuIssue(c, script, step, name) {
     const { self, enemy, now } = c;
-    if (step.superJump) return { jump: true, [c.toward]: true };
+    // The launcher's super jump only when an air jab from it can still meet the floating victim (an anti-air launch from
+    // high up floats out of reach), judged once.
+    if (step.superJump) {
+      script.reach ??= cpuSuperJumpReaches(c);
+      if (!script.reach) { cpuEnd(c); return {}; }
+      return { jump: true, [c.toward]: true };
+    }
     if (step.rekka) return self.lastInput.punch || !self.connected ? {} : { punch: true };
     if (step.tick) {
       if (self.move || enemy.stun > 0 || enemy.y > 0) return {};
@@ -698,6 +709,15 @@
       }
     }
     return { command: step.command, down: !!step.crouch };
+  }
+  // Whether the launcher's super-jump cancel, taken on the first free frame, lets an air jab meet the floating victim
+  // before it leaves juggle reach: the jump as superJumpCancel aims it, against the victim's float (see cpuBody).
+  function cpuSuperJumpReaches(c) {
+    const { self, enemy } = c, data = cpuData('j.A');
+    const jumper = { ...self, y: 1, vy: JUMPS.super.vy * styleOf(self).jump, launched: false, floating: false,
+      airVX: clamp((enemy.x - self.x) / SUPER_JUMP_AIM, -SUPER_JUMP_MAX, SUPER_JUMP_MAX) };
+    for (let delay = 0; delay < 30; delay++) if (cpuConnects(jumper, enemy, data, self.facing, false, delay)) return true;
+    return false;
   }
   // The punish for an opponent recovering from a move: the super when its beam lands in time, else the fastest normal
   // that reaches the body or the extended limb before the move ends, then its confirm route.
@@ -1014,12 +1034,14 @@
   }
   // The launcher's super-jump cancel: it leaves the ground at once (no squat) at a super jump's vertical speed, aimed at
   // the victim where it stood when the frame began (victimX), so either slot aims the same way. The air normals that
-  // follow use their ranks for this jump.
-  function superJumpCancel(f, victimX, style) {
+  // follow use their ranks for this jump. Like a super jump's takeoff it emits 'superjump' (the dust ring; the animation
+  // layer trails the jump while superJump is set).
+  function superJumpCancel(state, f, victimX, style) {
     f.move = null; f.moveFrame = 0; f.connected = false; f.hitConfirmed = false; f.armor = 0;
     f.buffer.jump = 0; f.jumpSquat = 0; f.hop = false; f.running = false; f.dash = 0; f.superJump = true; f.airRanks = [];
     f.vy = JUMPS.super.vy * style.jump; f.y = 1; f.airVX = clamp((victimX - f.x) / SUPER_JUMP_AIM, -SUPER_JUMP_MAX, SUPER_JUMP_MAX); f.landFrames = 0;
     f.pose = 'jump';
+    emit(state, 'superjump', f.x, GROUND, f.facing, 20, { slot: f.slot });
   }
   // Gravity this frame: a floating launch victim falls at LAUNCH_GRAVITY of it.
   const gravity = f => GRAVITY * (f.floating ? LAUNCH_GRAVITY : 1);
@@ -1198,7 +1220,7 @@
       if (f.move && f.connected) {
         const move = moveData(f);
         if (move.rank >= 0 && move.rank < 3 && !move.noCancel && f.moveFrame < move.startup + move.active + CANCEL_WINDOW) {
-          if (move.superJumpCancel && f.hitConfirmed && f.y === 0 && (input.jump || f.buffer.jump > 0)) { superJumpCancel(f, startX[1 - slot], style); return; }
+          if (move.superJumpCancel && f.hitConfirmed && f.y === 0 && (input.jump || f.buffer.jump > 0)) { superJumpCancel(state, f, startX[1 - slot], style); return; }
           const next = command(state, f, other, input, true), kind = next && cancelKind(f, move, next, input);
           if (kind) { f.move = null; f.connected = false; startMove(state, f, next, input, { rapid: kind === 'rapid' }); }
         }

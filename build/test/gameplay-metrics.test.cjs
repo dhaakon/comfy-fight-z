@@ -1597,3 +1597,162 @@ test('phase 5: the CPU answers safe pressure and opens a player who only blocks;
   const c = s.fighters[1];
   assert.ok(c.y > 0 && !c.hop && c.airVX < 0, `A full jump toward the left (y ${c.y}, hop ${c.hop}, airVX ${c.airVX})`);
 });
+
+// ---------------------------------------------------------------- integration of phases 4, 5 and 6
+// Phase 4 (the launcher's super-jump cancel, the float and the air chain), phase 5 (the CPU) and phase 6 (the feel
+// effects and the one-button F by direction) were built in parallel; these tests hold them together.
+const A = require('../public/anim.js');
+const CPU_LAUNCH_STYLES = Object.keys(E.STYLES).filter(style => style !== 'boss');
+// Every CPU launcher hit in CPU versus CPU, levels 5-8 with the styles in rotation (seed i + 1 for the i-th pairing):
+// where the victim stood, whether the super jump came (and its 'superjump' effect), and how many air hits followed.
+const cpuLaunches = () => {
+  const launches = [];
+  for (const level of [5, 6, 7, 8]) CPU_LAUNCH_STYLES.forEach((style, i) => {
+    const styles = [style, CPU_LAUNCH_STYLES[(i + 1) % CPU_LAUNCH_STYLES.length]];
+    let watch = null;
+    M.cpuVsCpu(E, { level, seed: i + 1, seconds: 60, styles, inputs: s => {
+      if (s.phase !== 'fight') { if (watch) launches.push({ ...watch, ko: true }); watch = null; return [{}, {}]; }
+      for (let slot = 0; slot < 2 && !watch; slot++) {
+        const f = s.fighters[slot], v = s.fighters[1 - slot];
+        if (f.move === 'heavy' && f.moveVariant === 'crouch' && f.hitConfirmed && v.launched && v.floating) watch = { level, style: styles[slot], slot, at: s.frame, from: v.y, hp: v.hp, superJump: false, effect: false, airHits: 0 };
+      }
+      if (watch) {
+        const f = s.fighters[watch.slot], v = s.fighters[1 - watch.slot];
+        if (f.superJump && f.y > 0) watch.superJump = true;
+        if (s.effects.some(e => e.type === 'superjump' && e.slot === watch.slot)) watch.effect = true;
+        if (v.hp < watch.hp) { if (f.y > 0 && f.moveVariant === 'air') watch.airHits++; watch.hp = v.hp; }
+        if (v.y === 0 && s.frame - watch.at > 5) { launches.push(watch); watch = null; }
+      }
+      return [{}, {}];
+    } });
+  });
+  return launches;
+};
+// The frame after a CPU's launcher hit, staged for `style` in `slot` at point blank (midscreen, or with the victim in the
+// corner), the victim floating up from `from`, the CPU on the 'sj' step of its level 5+ route. Returns whether it
+// super-jumped and how many air hits it landed.
+const stagedLaunch = (style, slot, { from = 1, corner = false } = {}) => {
+  const s = E.create(['p1', 'p2'], { cpuSlots: [slot === 0, slot === 1], seed: 7, cpuLevel: 6, profiles: { p1: { style }, p2: { style } } });
+  s.phase = 'fight'; s.message = '';
+  const c = s.fighters[slot], v = s.fighters[1 - slot], data = E.VARIANTS.crouch.heavy, dir = slot ? -1 : 1;
+  const edge = dir > 0 ? E.WIDTH - E.WALL : E.WALL;
+  v.x = corner ? edge : E.WIDTH / 2 + dir * M.POINT_BLANK / 2; c.x = v.x - dir * M.POINT_BLANK; c.facing = dir; v.facing = -dir;
+  Object.assign(c, { move: 'heavy', moveVariant: 'crouch', moveFrame: data.startup, connected: true, hitConfirmed: true, hitDone: true, crouching: true, pose: 'launcher' });
+  Object.assign(v, { y: from, vy: data.launch, launched: true, floating: true, juggled: false, juggle: from > 1 ? 1 : 0, stun: 30, pose: 'tumble' });
+  s.hitstop = 9;
+  Object.assign(s.cpuMemory[slot], { started: true, next: 1e9, tokens: 3, script: { steps: ['2D', 'sj', 'j.A', 'j.S', 'j.D'], at: 1, started: false, since: s.motionFrame,
+    prev: ['heavy', data.startup], frame: data.startup, stage: 0, blocked: 0, flew: false, trap: false, gap: 0, wait: false } });
+  let superJump = false, airHits = 0, hp = v.hp;
+  for (let t = 0; t < 120; t++) {
+    E.tick(s, [{}, {}]);
+    if (c.superJump && c.y > 0) superJump = true;
+    if (v.hp < hp) { if (c.moveVariant === 'air') airHits++; hp = v.hp; }
+  }
+  return { superJump, airHits };
+};
+
+test('integration: from level 5 the CPU follows a launcher hit with the super jump and lands air A > S > D', () => {
+  const launches = cpuLaunches(), ground = launches.filter(l => l.from <= 1);
+  assert.ok(launches.length >= 10 && ground.length >= 8, `${launches.length} launches, ${ground.length} from the ground`);
+  // Every launch from the ground super-jumps (with its takeoff effect) into the full air chain, unless a hit K.O.s.
+  const missed = ground.filter(l => !l.superJump || !l.effect || l.airHits < 3 && !l.ko);
+  assert.deepEqual(missed, [], 'Every ground launch is followed by the super jump and three air hits');
+  // A super jump is only taken when it reaches: none of them comes down empty.
+  assert.deepEqual(launches.filter(l => l.superJump && l.airHits === 0 && !l.ko), [], 'No super jump whiffs');
+  // Staged for every style from either slot: a ground launch, midscreen or into the corner, gets the super jump and the
+  // air chain; a launch from high up (an anti-air) floats out of the jump's reach, so the CPU stays on the ground.
+  for (const style of CPU_LAUNCH_STYLES) for (const slot of [0, 1]) {
+    for (const corner of [false, true]) assert.deepEqual(stagedLaunch(style, slot, { corner }), { superJump: true, airHits: 3 }, `${style}, slot ${slot}${corner ? ', corner' : ''}`);
+    assert.deepEqual(stagedLaunch(style, slot, { from: 215 }), { superJump: false, airHits: 0 }, `${style}, slot ${slot}: a launch from 215 up`);
+  }
+});
+
+test('integration: after a launch the CPU ends a combo with a rush, the rekka or the rising strike, never a shot or the super', () => {
+  // Level 6 holding a stock (it would spend it on a super ender) and a full special budget, the 2D > ender route staged
+  // at point blank against an idle opponent: the launcher's float lifts the victim over shots and the beam.
+  for (const style of CPU_LAUNCH_STYLES) {
+    const s = E.create(['p1', 'p2'], { cpuSlots: [true, false], seed: 7, cpuLevel: 6, profiles: { p1: { style }, p2: { style } } });
+    s.phase = 'fight'; s.message = '';
+    const [c, v] = s.fighters; c.x = E.WIDTH / 2 - M.POINT_BLANK / 2; v.x = c.x + M.POINT_BLANK; c.stocks = 1;
+    Object.assign(s.cpuMemory[0], { started: true, next: 1e9, tokens: 3, script: { steps: ['2D', 'ender'], at: 0, started: false, since: 0, prev: [null, 0], frame: 0, stage: 0, blocked: 0, flew: false, trap: false, gap: 0, wait: false } });
+    const moves = [];
+    let combo = 0;
+    for (let t = 0; t < 90; t++) { E.tick(s, [{}, {}]); if (c.move && !moves.includes(c.move)) moves.push(c.move); combo = Math.max(combo, v.combo); }
+    // The ender, then (once the victim is down) the CPU's own wake-up pressure, never a shot or the super.
+    assert.equal(moves[0], 'heavy', `${style}: ${moves}`);
+    assert.ok(['rush', 'armorRush', 'rekka', 'rising'].includes(moves[1]), `${style}: ${moves}`);
+    assert.ok(!moves.some(move => ['super', 'special', 'fireball', 'fastball', 'doubleball', 'skyshot'].includes(move)), `${style}: ${moves}`);
+    assert.ok(combo >= 2, `${style}: the ${moves[1]} connects (combo ${combo})`);
+    assert.equal(c.stocks, 1, `${style}: the stock is kept`);
+  }
+});
+
+test('integration: the launcher super jump emits its effect and trails; counters, F by direction and a K.O. work with it', () => {
+  // The super-jump cancel has no squat, so it emits 'superjump' itself: once, on the takeoff tick, at the attacker's feet.
+  // The afterimage trail runs from takeoff to landing, the air chain included.
+  const s = M.arena(E), [a, d] = s.fighters, takeoffs = [], rows = [];
+  for (let t = 0; t < 140; t++) {
+    const x = a.x;
+    E.tick(s, [COMBO[t] || {}, {}]);
+    for (const e of s.effects) if (e.type === 'superjump' && e.life === e.maxLife) takeoffs.push([t, e.x === x, e.y, e.slot]);
+    rows.push({ t, y: a.y, superJump: a.superJump, trail: !!A.sample(a, s).trail });
+  }
+  assert.deepEqual(takeoffs, [[25, true, E.GROUND, 0]]);
+  const airborne = rows.filter(row => row.y > 0);
+  assert.equal(airborne[0].t, 25);
+  assert.ok(airborne.length > 40 && airborne.every(row => row.superJump && row.trail), 'Every airborne tick of the super jump trails');
+  assert.equal(rows.at(-1).superJump, false);
+  assert.ok(d.hp < E.MAX_HP);
+  // A counter-hit launcher (the victim is in its heavy punch's startup) emits 'counter' and holds 9 + 2 frames; the
+  // super jump still leaves on the first frame after the hitstop, and the air jab lands.
+  const counter = play((st, t) => {
+    if (t === 0) Object.assign(st.fighters[1], { move: 'heavy', moveVariant: 'standing', moveFrame: 0 });
+    if (t < 7) return { down: true, heavy: t === 0 };
+    return st.fighters[0].y === 0 ? { jump: true } : st.fighters[0].y > 0 && !st.fighters[0].move ? { punch: true } : {};
+  }, { ticks: 60 });
+  const launch = counter.log.findIndex(row => row.hits.length);
+  assert.equal(counter.log[launch].variant, 'crouch');
+  assert.equal(counter.log.findIndex(row => row.ay > 0), launch + 9 + 2 + 1, 'Takeoff on the first frame after the counter hitstop');
+  assert.ok(counter.log.some(row => row.variant === 'air' && row.hits.length), 'The air jab lands after the counter launch');
+  const countered = M.arena(E);
+  for (let t = 0; t < 12; t++) {
+    if (t === 0) Object.assign(countered.fighters[1], { move: 'heavy', moveVariant: 'standing', moveFrame: 0 });
+    E.tick(countered, [t < 7 ? { down: true, heavy: t === 0 } : {}, {}]);
+    if (freshOf(countered, 'counter').length) { assert.equal(countered.hitstop, 9 + 2); break; }
+    assert.ok(t < 11, 'The launcher counter-hits');
+  }
+  // F by direction from the launcher on hit: down + F cancels into the rising strike (every style) and toward + F into
+  // the style's 214 rush (rush, armored rush, rhythm rush), each juggling the floating victim for a second hit.
+  const cancel = (style, dir) => {
+    const st = M.arena(E, { styles: [style] }), [f, v] = st.fighters, moves = [];
+    let combo = 0;
+    for (let t = 0; t < 60; t++) {
+      E.tick(st, [t === 0 ? { down: true, heavy: true } : t < 12 ? { down: true } : t === 12 ? { ...dir, special: true } : t < 20 ? dir : {}, {}]);
+      if (f.move && !moves.includes(f.move)) moves.push(f.move);
+      combo = Math.max(combo, v.combo);
+    }
+    return [moves, combo];
+  };
+  for (const style of CPU_LAUNCH_STYLES) assert.deepEqual(cancel(style, { down: true }), [['heavy', 'rising'], 2], `${style}: 2D > 2F`);
+  for (const [style, move] of [['balanced', 'rush'], ['power', 'armorRush'], ['speed', 'rekka']]) assert.deepEqual(cancel(style, { right: true }), [['heavy', move], 2], `${style}: 2D > 6F`);
+  // F in the air: pressed in the air heavy's hitstop at the end of the air chain it cancels into the shot, in the air.
+  const shot = play({ ...COMBO, 54: { special: true } }, { ticks: 80 });
+  const fired = shot.log.find(row => row.move === 'special');
+  assert.ok(fired && fired.ay > 0, 'j.D > F starts the shot in the air');
+  // A K.O. by the air jab: the 24-frame freeze, then 36 ticks of slow motion while the floating victim falls under its
+  // lighter gravity; it lands with the float cleared, and the round ends 24 + 170 ticks after the K.O., as without it.
+  const k = M.arena(E), [, kv] = k.fighters; kv.hp = 100;
+  let ko = -1, slow = 0, landed = -1, next = -1;
+  for (let t = 0; t < 320 && next < 0; t++) {
+    const before = k.slowMotion;
+    E.tick(k, [COMBO[t] || {}, {}]);
+    if (ko < 0 && k.phase === 'roundover') { ko = t; assert.ok(kv.floating && kv.y > 0, 'K.O. mid float'); }
+    if (k.slowMotion < before) slow++;
+    if (ko >= 0 && landed < 0 && kv.y === 0) landed = t;
+    if (ko >= 0 && k.phase !== 'roundover') next = t;
+  }
+  assert.ok(ko > 0 && landed > ko, `K.O. on ${ko}, landed on ${landed}`);
+  assert.equal(slow, 36, 'Thirty-six ticks of slow motion');
+  assert.equal(kv.floating, false);
+  assert.equal(next - ko, 24 + 170);
+});
