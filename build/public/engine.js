@@ -196,13 +196,15 @@
     settings.roundsToWin = clamp(Math.round(settings.roundsToWin) || 2, 1, 3);
     settings.roundTime = settings.roundTime === 0 ? 0 : clamp(Math.round(settings.roundTime) || 99, 15, 99);
     settings.cpuLevel = clamp(Math.round(settings.cpuLevel) || 4, 1, 8);
+    // Per-slot CPU levels (cpuLevels: [slot 0, slot 1]); cpuLevel alone sets both.
+    settings.cpuLevels = [0, 1].map(slot => clamp(Math.round(Array.isArray(options.cpuLevels) ? options.cpuLevels[slot] : settings.cpuLevel) || settings.cpuLevel, 1, 8));
     const profiles = options.profiles || {};
     const cpu = options.cpu !== false;
     const cpuSlots = Array.isArray(options.cpuSlots) ? options.cpuSlots.slice(0, 2).map(Boolean) : [false, cpu];
     return { frame: 0, motionFrame: 0, fighters: ids.slice(0, 2).map((id, slot) => fighter(id, slot, profiles[id])), projectiles: [], effects: [],
       time: settings.roundTime * 60, round: 1, phase: 'intro', phaseFrames: 90, winner: null, firstHit: false,
       message: 'ROUND 1', cpu: cpuSlots[1], cpuSlots, options: settings, result: null, draws: 0,
-      rng: (Number(options.seed) >>> 0) || 0x2f6b9d3, cpuMemory: [{ wait: 0, plan: [] }, { wait: 0, plan: [] }], hitstop: 0 };
+      rng: (Number(options.seed) >>> 0) || 0x2f6b9d3, cpuMemory: [cpuMemory(), cpuMemory()], hitstop: 0 };
   }
   function random(state) {
     // xorshift32 keeps CPU decisions deterministic for replays and the server.
@@ -444,62 +446,484 @@
     if (move.rank === 0 && data.rank === 0 && f.moveVariant !== 'air' && variant !== 'air' && (f.rapid || 0) < RAPID_FIRE) return 'rapid';
     return null;
   }
-  // Level-based CPU: deterministic, reacts after a delay and picks plans from its style.
+  // ---------------------------------------------------------------- the CPU
+  // A level-scaled opponent (levels 1-8; the boss plays two levels higher). It sees an opponent's move, or the squat of
+  // a jump, only max(2, 14 - 1.5 x level) simulated frames after it starts, and acts only through inputs a player could
+  // make (input.command names a move, which only the engine's own CPU may do). Every choice draws on random(state), so a
+  // seed replays exactly, and its memory (state.cpuMemory[slot]) is plain JSON that starts afresh every round.
+  // In priority order it mashes out of dizzy, quick-rises, escapes throws, guards and guard-cancels, runs hit-confirm
+  // scripts, jumps shots, anti-airs, punishes, blocks by the attack's height and otherwise plays neutral around its
+  // style's preferred distance: pressure up close, pokes, jump-ins and dashes from further out, shots from range.
+  // Specials are budgeted (CPU_SPECIALS a minute, from none at the start of a match) and supers are kept for punishes,
+  // combo finishes and desperation.
+  const CPU_SPACING = Object.freeze({ zoner: 360, trickster: 240, balanced: 180, power: 160, speed: 140, grappler: 110, boss: 170 });
+  const CPU_SPECIALS = 8, CPU_TOKEN_CAP = 3;
+  // A stand-off is broken at CPU_APPROACH (inside poke range); an opponent that has not attacked, jumped or come
+  // forward for CPU_QUIET frames is no threat to guard against.
+  const CPU_APPROACH = 100, CPU_QUIET = 180;
+  // Script steps in numpad notation: the move requested by name, with down held for the crouching variants. sj holds up
+  // and toward (the launcher's super-jump cancel), rk presses a rhythm-rush follow-up and tick throws once the opponent's
+  // blockstun ends. Any other step names a move (a special or the super).
+  const CPU_STEPS = Object.freeze({
+    '5A': { command: 'punch' }, '5S': { command: 'kick' }, '5D': { command: 'heavy' }, '6S': { command: 'roundhouse' },
+    '2A': { command: 'punch', crouch: true }, '2S': { command: 'kick', crouch: true }, '2D': { command: 'heavy', crouch: true },
+    'j.A': { command: 'punch', air: true }, 'j.S': { command: 'kick', air: true }, 'j.D': { command: 'heavy', air: true },
+    sj: { superJump: true }, rk: { rekka: true }, tick: { command: 'throw', tick: true }
+  });
+  // Punish openers, fastest first.
+  const CPU_OPENERS = ['5A', '2A', '5S', '2D', '5D', '2S', '6S'];
+  const cpuStep = name => CPU_STEPS[name] || { command: name };
+  const cpuData = name => { const step = cpuStep(name); return step.command && (VARIANTS[step.crouch ? 'crouch' : step.air ? 'air' : 'none']?.[step.command] || MOVES[step.command]); };
+  const groundNormal = name => !!CPU_STEPS[name]?.command && !CPU_STEPS[name].air && !CPU_STEPS[name].tick;
+  function cpuMemory() {
+    return { started: false, tokens: 0, next: 0, act: null, guardUntil: -1, plan: [], script: null, rolls: {}, foe: { move: null, frame: 0, id: 0 }, own: null,
+      jump: { id: 0, at: -99, on: false }, hurt: 0, hurtOn: false, guarded: 0, guardOn: false, shot: null, air: 0, airOn: false, wake: false, contact: 0,
+      foeActive: -999, pressure: 0, blockEnd: -99, answer: -1, walled: 0, foeBlockOn: false };
+  }
+  function cpuLevelOf(state, slot) {
+    const levels = state.options.cpuLevels, base = Array.isArray(levels) && Number.isFinite(levels[slot]) ? levels[slot] : state.options.cpuLevel;
+    return clamp(Math.round(base) + (state.fighters[slot].boss ? 2 : 0), 1, 10);
+  }
+  // A coin drawn once for (key, id) and then remembered, so each threat, opening or jump is judged once.
+  function cpuRoll(c, key, id, p) {
+    const prior = c.memory.rolls[key];
+    if (prior && prior[0] === id) return prior[1];
+    const result = random(c.state) < p; c.memory.rolls[key] = [id, result]; return result;
+  }
+  // Where a fighter is t simulated frames from now if nothing acts on it: airborne it follows its committed arc, on the
+  // ground it finishes its pushback slide.
+  function cpuPredict(f, t) {
+    let x = f.x, y = f.y, vy = f.vy;
+    if (y <= 0 && vy <= 0) return { x: clamp(x + (f.slide || 0) * (1 - Math.pow(SLIDE_DECAY, t)) / (1 - SLIDE_DECAY), WALL, WIDTH - WALL), y: 0 };
+    for (let i = 0; i < t && (y > 0 || vy > 0); i++) { y += vy; vy -= .65; x += f.launched ? -f.facing * 2.2 : f.airVX || 0; }
+    return { x: clamp(x, WALL, WIDTH - WALL), y: Math.max(0, y) };
+  }
+  // The body box a fighter will have at a predicted position, t frames from now (null when no hit can land there).
+  function cpuBody(f, at, t) {
+    if (down(f) || f.hp <= 0 || f.invulnerable > t || f.launched && (at.y <= 0 || f.juggle >= JUGGLE_LIMIT)) return null;
+    if (at.y > 0) { const hit = f.launched || f.stun > 0 && !f.blockStun, [w, h] = hit ? HURT.airHit : HURT.air; return [at.x - w / 2, at.y + (hit ? AIR_HIT_LIFT : AIR_LIFT), w, h]; }
+    const [w, h] = crouched(f) ? HURT.crouch : HURT.stand;
+    return [at.x - w / 2, 0, w, h];
+  }
+  // Whether a strike started `delay` frames from now by f, facing `facing`, meets the target's body (or its extended
+  // limb, with limb) on one of its active frames. Both fighters follow their arcs; rushes travel and a rising strike rises.
+  function cpuConnects(f, target, data, facing, limb = false, delay = 0) {
+    if (!data?.band) return false;
+    const airborne = f.y > 0 || f.vy > 0;
+    for (let t = delay + data.startup; t < delay + data.startup + data.active; t++) {
+      const me = airborne ? cpuPredict(f, t) : { x: f.x, y: 0 }, them = cpuPredict(target, t);
+      if (airborne && me.y <= 0) break;
+      let { x, y } = me;
+      if (data === MOVES.rising) { const k = t - delay - data.startup; y = 1 + 11 * k - .325 * k * (k - 1); x += facing * 1.5 * k; }
+      else if (data.speed) x += facing * data.speed * (t - delay);
+      if ((them.x - x) * facing < 0) continue;
+      const box = strikeBox({ x, y, facing, reaches: f.reaches }, data);
+      if (overlaps(box, cpuBody(target, them, t)) || limb && overlaps(box, limbOf(target))) return true;
+    }
+    return false;
+  }
+  // Whether a full jump toward world direction dir, pressed after `delay` frames standing still, clears shot p: the shot
+  // never meets the body, and it has passed or died by the landing. The press frame walks, then the squat and the arc.
+  function cpuClears(f, p, dir, delay) {
+    const style = styleOf(f), [w, h] = p.super ? BEAM_BOX : SHOT_BOX;
+    let x = f.x, y = 0, vy = 0, px = p.x, py = p.y, life = p.life, flying = false;
+    for (let t = 0; t < delay + 80; t++) {
+      const k = t - delay;
+      if (k === 0) x += dir * WALK_FORWARD * style.walk;
+      else if (k === JUMP_SQUAT) { y = 1; vy = JUMPS.full.vy * style.jump; flying = true; }
+      else if (k > JUMP_SQUAT) { y = Math.max(0, y + vy); vy -= .65; x += dir * AIR_SPEED * JUMPS.full.vx; }
+      x = clamp(x, WALL, WIDTH - WALL);
+      if (life <= 0) return true;
+      px += p.facing * (p.speed || 8); py += p.rise || 0; life--;
+      const [bw, bh] = y > 0 ? HURT.air : HURT.stand;
+      if (overlaps([px - w / 2, py - h / 2, w, h], [x - bw / 2, y > 0 ? y + AIR_LIFT : 0, bw, bh])) return false;
+      if (flying && y === 0) return (x - px) * p.facing < 0 || life <= 0;
+    }
+    return false;
+  }
+  const cpuOwnShot = c => c.state.projectiles.some(p => p.owner === c.slot && !p.super);
+  const cpuCanGuard = f => !f.move && !f.dash && !f.dizzy && !f.jumpSquat && !f.landLag && f.y === 0;
+  // Guard by the attack's height: crouch for lows and against a grounded opponent (a crouch guard blocks every ground
+  // strike; the roundhouse passes over it), stand for jump-ins and air moves once they are seen.
+  function cpuGuard(c) {
+    const { enemy, memory } = c, data = enemy.move && moveData(enemy), seen = data && enemy.moveFrame >= c.reaction;
+    const airborne = memory.jump.on && c.now - memory.jump.at >= c.reaction || enemy.y > 0 && enemy.moveFrame >= c.reaction;
+    const low = seen && data.height ? data.height === 'low' : !airborne;
+    return { [c.away]: true, down: low };
+  }
+  // Whether the CPU spends a stock on a super now: from level 6 whenever it holds one; below that it keeps a single
+  // stock back unless the gauge is full, the super would finish the round or it is desperate.
+  const cpuSupers = c => c.self.stocks >= SUPER_STOCKS && (c.level >= 6 || c.self.stocks >= STOCK_MAX || c.enemy.hp <= 200 || desperate(c.self));
+  // The combo ender: the super when a stock is held (see cpuSupers), else the style's special (one that reaches from a chain).
+  function cpuEnder(c) {
+    const { self, memory, level } = c, style = styleOf(self);
+    if (level < 3) return null;
+    if (cpuSupers(c)) return ['super'];
+    if (memory.tokens < 1) return null;
+    if (style.qcb === 'rekka') return ['rekka', 'rk', 'rk'];
+    if (style.qcb === 'rush' || style.qcb === 'armorRush') return [style.qcb];
+    return cpuOwnShot(c) ? null : [style.qcf];
+  }
+  // Hit-confirm routes from an opener; low levels cut them short (level 1 never chains past two hits).
+  function cpuRoute(c, opener) {
+    const { level } = c, coin = () => random(c.state);
+    const routes = {
+      '5A': level >= 4 && c.distance < 90 ? ['5A', '5A', '5S', '5D', 'ender'] : ['5A', '5S', '5D', 'ender'],
+      '2A': level >= 5 && coin() < .35 ? ['2A', '2D', 'sj', 'j.A', 'j.S', 'j.D'] : ['2A', '2A', '2S'],
+      '5S': ['5S', '5D', 'ender'], '5D': ['5D', 'ender'], '6S': ['6S', 'ender'],
+      '2D': level >= 5 ? ['2D', 'sj', 'j.A', 'j.S', 'j.D'] : ['2D', 'ender'],
+      jump: [coin() < .6 ? 'j.D' : 'j.S', '5A'].concat(level >= 4 && coin() < .5 ? ['5A'] : [], ['5S', '5D', 'ender'])
+    };
+    const steps = routes[opener] || [opener];
+    return steps.slice(0, level <= 1 ? 2 : level <= 3 ? 3 : steps.length);
+  }
+  function cpuBegin(c, steps, options = {}) {
+    // Below level 4 the CPU never links a new string into one that has landed, so its combos stay as short as its routes.
+    if (c.level <= 3 && (c.enemy.launched || c.enemy.stun > 0 && !c.enemy.blockStun)) return {};
+    c.memory.script = { steps, at: 0, started: false, since: c.now, prev: [c.self.move, c.self.moveFrame], frame: 0, stage: 0, blocked: 0, flew: false,
+      trap: !!options.trap, gap: options.gap || 0, wait: false };
+    return cpuScript(c) || {};
+  }
+  function cpuEnd(c) { c.memory.script = null; c.memory.next = Math.max(c.memory.next, c.now + 2); return null; }
+  function cpuNext(c) {
+    const script = c.memory.script;
+    script.at++; script.started = false; script.since = c.now; script.prev = [c.self.move, c.self.moveFrame]; script.stage = c.self.rekka || 0;
+    return script.at < script.steps.length;
+  }
+  // Runs the current script one frame: a step is pressed until its move starts, then watched until it connects. On a
+  // hit the next step fires; on block the string goes on to a second blocked hit at most and stops (from level 6 it ends
+  // in a tick throw or, from range, a safe shot); a whiff ends it. Returns the frame's input, or null once it has ended.
+  function cpuScript(c) {
+    const { self, enemy, memory, level, now } = c, script = memory.script;
+    if (self.y > 0) script.flew = true;
+    for (let pass = 0; pass < 6; pass++) {
+      if (script.steps[script.at] === 'ender') {
+        // The ender only cancels a move that connected on hit, so a special or super never comes out raw.
+        const combo = self.move && self.connected && (enemy.stun > 0 && !enemy.blockStun || enemy.launched);
+        const ender = combo && cpuEnder(c);
+        if (!ender) return cpuEnd(c);
+        script.steps.splice(script.at, 1, ...ender);
+      }
+      const name = script.steps[script.at], step = cpuStep(name), data = cpuData(name);
+      if (!script.started) {
+        const started = step.superJump ? self.y > 0 && self.superJump : step.rekka ? self.move === 'rekka' && self.rekka > script.stage
+          : self.move === step.command && (script.prev[0] !== self.move || self.moveFrame < script.prev[1]);
+        if (!started) {
+          // The launcher's super-jump cancel aborts once the cancel window has passed on the ground.
+          if (step.superJump && self.y === 0 && !(self.move && self.connected && self.moveFrame < moveData(self).startup + moveData(self).active + CANCEL_WINDOW)) return cpuEnd(c);
+          if (step.air && script.flew && self.y === 0 && !self.jumpSquat) return cpuEnd(c);
+          if (!step.air && !step.superJump && (self.y > 0 || self.landLag)) script.since = now;
+          if (!step.air && !step.superJump && now - script.since > (script.wait || step.tick || step.rekka ? 24 : 10)) return cpuEnd(c);
+          return cpuIssue(c, script, step, name);
+        }
+        script.started = true; script.frame = self.moveFrame;
+        if (step.superJump) { if (!cpuNext(c)) return cpuEnd(c); continue; }
+        // Shots, the super and moves that never connect end the script once they are out.
+        if (!data?.band && !step.rekka && !data?.grab && step.command !== 'throw') { cpuEnd(c); return {}; }
+      }
+      const current = step.rekka ? 'rekka' : step.command;
+      if (self.move !== current || self.moveFrame < script.frame) return cpuEnd(c);
+      script.frame = self.moveFrame;
+      if (!self.connected) return {};
+      const result = enemy.stun > 0 && enemy.blockStun ? 'block' : enemy.stun > 0 || enemy.launched || enemy.hp === 0 ? 'hit' : 'none';
+      if (result === 'hit') {
+        if (!cpuNext(c)) return cpuEnd(c);
+        // Nothing on the ground follows a knockdown.
+        if (enemy.launched && groundNormal(script.steps[script.at])) return cpuEnd(c);
+        continue;
+      }
+      if (result === 'none') return cpuEnd(c);
+      script.blocked++;
+      if (script.blocked < 2 && script.at + 1 < script.steps.length && groundNormal(script.steps[script.at + 1])) { cpuNext(c); script.wait = script.trap; continue; }
+      if (level < 6) return cpuEnd(c);
+      // From level 6 a blocked string ends in a tick throw up close, or a shot cancel when the slide leaves it safe.
+      const after = Math.abs(cpuPredict(enemy, 14).x - self.x);
+      const finish = after >= 140 && memory.tokens >= 1 && !cpuOwnShot(c) ? styleOf(self).qcf : after < 120 && ['punch', 'kick'].includes(self.move) ? 'tick' : null;
+      if (!finish) return cpuEnd(c);
+      script.steps.splice(script.at + 1, script.steps.length, finish); cpuNext(c);
+    }
+    return {};
+  }
+  // The input that presses a script step this frame ({} while it waits for its moment).
+  function cpuIssue(c, script, step, name) {
+    const { self, enemy, now } = c;
+    if (step.superJump) return { jump: true, [c.toward]: true };
+    if (step.rekka) return self.lastInput.punch || !self.connected ? {} : { punch: true };
+    if (step.tick) {
+      if (self.move || enemy.stun > 0 || enemy.y > 0) return {};
+      return c.distance > MOVES.throw.reach - 10 ? { [c.toward]: true } : { command: 'throw', [c.toward]: true };
+    }
+    if (step.air) {
+      if (self.y <= 0) return {};
+      if (self.move) return { command: step.command };
+      return cpuAirTiming(c, cpuData(name)) ? { command: step.command } : {};
+    }
+    // A special or the super after the opener only ever cancels a move that connected.
+    if (script.at > 0 && !groundNormal(name) && !step.tick && !(self.move && self.connected)) { cpuEnd(c); return {}; }
+    if (self.y > 0 || self.landLag) return {};
+    // A frame trap lets the blocked move recover and waits a beat before the next strike.
+    if (script.wait) { if (self.move) { script.since = now; return {}; } if (now - script.since < script.gap) return {}; }
+    if (groundNormal(name) && script.at > 0) {
+      const facing = self.move ? self.facing : c.side;
+      if (!cpuConnects(self, enemy, cpuData(name), facing)) {
+        // Out of reach: skip ahead to a later normal that reaches (chains only go up-rank), or to the ender.
+        let j = script.at + 1;
+        while (j < script.steps.length && groundNormal(script.steps[j]) && !cpuConnects(self, enemy, cpuData(script.steps[j]), facing)) j++;
+        if (j >= script.steps.length || cpuStep(script.steps[j]).air || script.steps[j] === 'sj') { cpuEnd(c); return {}; }
+        script.steps.splice(script.at, j - script.at);
+        return cpuScript(c) || {};
+      }
+    }
+    return { command: step.command, down: !!step.crouch };
+  }
+  // The punish for an opponent recovering from a move: the super when its beam lands in time, else the fastest normal
+  // that reaches the body or the extended limb before the move ends, then its confirm route.
+  function cpuPunish(c, left) {
+    const { self, enemy, level } = c;
+    if (level >= 3 && cpuSupers(c)) {
+      const travel = Math.max(0, Math.ceil((c.distance - 55 - BEAM_BOX[0] / 2 - HALF_BODY) / 11));
+      if (left > MOVES.super.startup + travel + 1 && (c.distance > 150 || random(c.state) < .4)) return ['super'];
+    }
+    for (const name of CPU_OPENERS) {
+      const data = cpuData(name);
+      if (left >= data.startup + 1 && cpuConnects(self, enemy, data, c.side, true)) return cpuRoute(c, name);
+    }
+    return null;
+  }
+  // Whether an air normal pressed now lands at the right moment: as soon as it connects against an airborne opponent,
+  // as late as it still connects (within two frames) against a grounded one, so the hit is deep enough to confirm.
+  function cpuAirTiming(c, data) {
+    const { self, enemy } = c;
+    if (!cpuConnects(self, enemy, data, self.facing)) return false;
+    if (enemy.y > 0) return true;
+    // Rising at a grounded opponent: wait for the way down.
+    if (self.vy > 0) return false;
+    return !cpuConnects(self, enemy, data, self.facing, false, 2);
+  }
+  // Frames until an airborne fighter lands on its arc.
+  function cpuLanding(f) { let t = 0; while (t < 90 && cpuPredict(f, t).y > 0) t++; return t; }
+  // The earliest frame from now at which a forward jump clears the shot, taken in the middle of its window (-1: none).
+  function cpuJumpTime(c, p) {
+    let first = -1, last = -1;
+    for (let k = 0; k <= 40; k++) {
+      if (cpuClears(c.self, p, -p.facing, k)) { if (first < 0) first = k; last = k; } else if (first >= 0) break;
+    }
+    return first < 0 ? -1 : c.now + Math.floor((first + last) / 2);
+  }
+  function cpuJump(c, dir) {
+    const key = dir > 0 ? 'right' : 'left';
+    c.memory.plan = Array.from({ length: JUMP_SQUAT }, () => ({ jump: true, [key]: true }));
+    return { jump: true, [key]: true };
+  }
   function cpuInput(state, slot) {
-    const self = state.fighters[slot], enemy = state.fighters[1 - slot], memory = state.cpuMemory[slot];
-    const level = clamp(state.options.cpuLevel + (self.boss ? 2 : 0), 1, 10), distance = Math.abs(enemy.x - self.x);
-    const toward = enemy.x < self.x ? 'left' : 'right', away = toward === 'left' ? 'right' : 'left';
-    const input = {}, chance = p => random(state) < p;
-    if (memory.plan.length) { Object.assign(input, memory.plan.shift()); return input; }
-    // Defend: react to attacks and projectiles after a level-scaled delay.
-    const threat = enemy.move && enemy.moveFrame >= Math.max(2, 9 - level) && distance < 190 && !['taunt', 'roll', 'gcRoll'].includes(enemy.move);
-    const shot = state.projectiles.find(p => p.owner !== slot && (self.x - p.x) * p.facing > 0 && Math.abs(self.x - p.x) < 230);
-    if (self.dizzy) { if (chance(.5)) input[chance(.5) ? 'punch' : 'kick'] = true; return input; }
-    if (threat && chance(.3 + level * .07)) {
-      input[away] = true;
-      if (enemy.moveVariant === 'crouch') input.down = true;
-      if (self.blockStun && self.stocks > 0 && level >= 6 && chance(.12)) { input.punch = true; input.kick = true; }
-      return input;
+    const self = state.fighters[slot], enemy = state.fighters[1 - slot];
+    let memory = state.cpuMemory[slot];
+    if (!memory || !memory.rolls) memory = state.cpuMemory[slot] = cpuMemory();
+    const level = cpuLevelOf(state, slot), now = state.motionFrame, side = enemy.x >= self.x ? 1 : -1;
+    const c = { state, slot, self, enemy, memory, level, now, side, distance: Math.abs(enemy.x - self.x), toward: side > 0 ? 'right' : 'left', away: side > 0 ? 'left' : 'right',
+      reaction: Math.max(2, 14 - 1.5 * level), pBlock: Math.min(.98, .08 + .09 * level) };
+    // Bookkeeping. The first decision of a round waits out the reaction time.
+    if (!memory.started) { memory.started = true; memory.next = now + c.reaction; memory.contact = now; }
+    // The last exchange (either fighter in hitstun or blockstun), so a stand-off can be broken.
+    if (self.stun > 0 || enemy.stun > 0) memory.contact = now;
+    memory.tokens = Math.min(CPU_TOKEN_CAP, memory.tokens + CPU_SPECIALS / 3600);
+    const foe = memory.foe;
+    if (enemy.move && (enemy.move !== foe.move || enemy.moveFrame < foe.frame)) foe.id++;
+    foe.move = enemy.move; foe.frame = enemy.moveFrame;
+    const jumping = !enemy.launched && !enemy.airTech && enemy.move !== 'rising' && !(enemy.stun > 0 && !enemy.blockStun) && (enemy.jumpSquat > 0 || enemy.y > 0);
+    if (jumping && !memory.jump.on) { memory.jump.id++; memory.jump.at = now; }
+    memory.jump.on = jumping;
+    // The opponent's last sign of aggression: a move (not a taunt), a jump, a run or a step forward.
+    if (enemy.move && enemy.move !== 'taunt' || jumping || enemy.running || enemy.vx * side < 0) memory.foeActive = now;
+    // Strings of the CPU's that the opponent blocked, cleared once the opponent is hit: a guard to open up.
+    const foeBlocking = enemy.stun > 0 && enemy.blockStun;
+    if (foeBlocking && !memory.foeBlockOn) memory.walled = Math.min(4, memory.walled + 1);
+    if (enemy.stun > 0 && !enemy.blockStun || enemy.launched) memory.walled = 0;
+    memory.foeBlockOn = foeBlocking;
+    // Each special started spends a token (a rhythm-rush follow-up continues the same special).
+    if (self.move && self.move !== memory.own && MOVES[self.move]?.rank === 3) memory.tokens -= 1;
+    memory.own = self.move;
+    const hurt = self.stun > 0 && !self.blockStun || self.launched, guarding = self.stun > 0 && self.blockStun;
+    if (hurt && !memory.hurtOn) { memory.hurt++; memory.pressure = 0; }
+    // Blocked spells that follow each other within a second are sustained pressure.
+    if (guarding && !memory.guardOn) { memory.guarded++; memory.pressure = now - memory.blockEnd <= 60 ? memory.pressure + 1 : 1; }
+    // As a spell of hitstun, knockdown or blockstun ends the next attack is likely: guard it with the per-threat chance.
+    if (!hurt && memory.hurtOn && cpuRoll(c, 'afterHurt', memory.hurt, c.pBlock)) memory.guardUntil = Math.max(memory.guardUntil, now + Math.min(60, 2 + 2 * level * level));
+    if (!guarding && memory.guardOn) {
+      memory.blockEnd = now;
+      // From level 3 sustained pressure is answered (judged once per spell): the next opening within 40 frames is
+      // taken instead of guarding again, so safe pressure such as mashed jabs cannot keep the CPU blocking for ever.
+      if (memory.pressure >= 2 && level >= 3 && cpuRoll(c, 'answer', memory.guarded, Math.min(.6, .06 * level))) { memory.answer = now + 40; memory.guardUntil = -1; }
+      else if (cpuRoll(c, 'afterBlock', memory.guarded, c.pBlock)) memory.guardUntil = Math.max(memory.guardUntil, now + Math.min(60, 2 + 2 * level * level));
     }
-    if (shot && self.y === 0) {
-      const r = random(state);
-      // Jumps are committed, so the CPU holds up and toward through the jump squat: a full forward jump over the shot.
-      if (r < .35 + level * .04) { Object.assign(input, { jump: true, [toward]: true }); memory.plan = Array.from({ length: JUMP_SQUAT }, () => ({ jump: true, [toward]: true })); }
-      else if (r < .55 + level * .03 && level >= 4) { input.punch = true; input.kick = true; }
-      else input[away] = true;
-      return input;
+    memory.hurtOn = hurt; memory.guardOn = guarding;
+    const chance = p => random(state) < p;
+    if (self.dizzy) { memory.script = null; memory.plan = []; const input = {}; if (chance(.5)) input[chance(.5) ? 'punch' : 'kick'] = true; return input; }
+    // Knocked down: a quick rise, judged once per knockdown.
+    if (self.launched) {
+      memory.script = null; memory.plan = [];
+      return self.y > 0 && !self.hardKnockdown && !self.lastInput.punch && cpuRoll(c, 'rise', memory.hurt, .1 * level) ? { punch: true } : {};
     }
-    if (enemy.y > 40 && enemy.vy < 0 && distance < 150 && self.y === 0 && chance(.12 + level * .07)) { input.command = 'rising'; return input; }
-    if (memory.wait > 0) { memory.wait--; if (distance > 150) input[toward] = true; return input; }
-    memory.wait = Math.max(2, 20 - level * 2 + Math.floor(random(state) * 8));
-    const style = styleOf(self), r = random(state);
-    // Super an opponent caught in stun, not one lying down after a knockdown (it cannot be hit there).
-    if (self.stocks >= SUPER_STOCKS && distance < 380 && (enemy.stun > 0 && !enemy.launched || r < .04 + level * .01)) { input.command = 'super'; return input; }
-    if (distance < 95) {
-      if (r < .25) input.command = style.qcb === 'commandGrab' ? 'commandGrab' : 'throw';
-      else if (r < .55) memory.plan = [{ punch: true }, {}, {}, {}, {}, { kick: true }, {}, {}, {}, {}, {}, {}, { heavy: true }];
-      else if (r < .7) { input.down = true; input.kick = true; }
-      else if (r < .8) { input.kick = true; input.heavy = true; }
-      else input[away] = true;
-      return input;
+    // Throws: a level-scaled chance to escape, judged once per throw (the escape press has to come before it lands).
+    if (enemy.move === 'throw' && enemy.moveFrame < MOVES.throw.startup && c.distance < MOVES.throw.reach + 12 && !self.lastInput.heavy && cpuRoll(c, 'tech', foe.id, Math.min(.9, .05 + .1 * level))) return { heavy: true };
+    // Hitstun: hold a guard for whatever follows, judged once per spell.
+    if (hurt) { memory.script = null; memory.plan = []; return cpuRoll(c, 'hurtGuard', memory.hurt, c.pBlock) ? cpuGuard(c) : {}; }
+    // Blockstun: keep guarding; from level 6 a stock buys a guard cancel, judged once per spell.
+    if (guarding) {
+      memory.script = null; memory.plan = [];
+      if (level >= 6 && self.stocks > 0 && !self.lastInput.kick && cpuRoll(c, 'gc', memory.guarded, .2 + .05 * (level - 6))) return c.distance < 125 ? { kick: true, heavy: true } : { punch: true, kick: true };
+      return cpuGuard(c);
     }
-    if (distance < 170) {
-      // A roundhouse poke; the buffered F press cancels it into the projectile when it connects. Inside the light
-      // kick's reach the CPU may poke with it instead and cancel into its 236 special.
-      if (r < .2 || (r < .35 && distance >= reachOf(self, MOVES.kick))) memory.plan = [{ [toward]: true, kick: true }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { special: true }];
-      else if (r < .35) memory.plan = [{ kick: true }, {}, {}, {}, {}, {}, {}, {}, {}, {}, { command: style.qcf }];
-      else if (r < .55) { input.down = true; input.kick = true; }
-      else if (r < .7) input.command = style.qcb === 'teleport' || style.qcb === 'skyshot' ? 'rising' : style.qcb;
-      else input[toward] = true;
-      return input;
+    // A committed sequence (a jump's squat, a dash's taps), then a script under way. A hitstop frame does not simulate,
+    // so it holds the sequence's current input without using it up.
+    if (memory.plan.length) return state.hitstop > 0 ? { ...memory.plan[0] } : memory.plan.shift();
+    if (memory.script) { const input = cpuScript(c); if (input) return input; }
+    // In the air without a script (over a shot, say): strike on the way down when it reaches, judged once per jump.
+    if (self.y > 0) {
+      if (!memory.airOn) { memory.airOn = true; memory.air++; }
+      if (!self.move && !self.airTech && !enemy.launched) {
+        const name = c.distance > 110 ? 'j.S' : 'j.D';
+        if (cpuAirTiming(c, cpuData(name)) && cpuRoll(c, 'air', memory.air, .2 + .08 * level)) return cpuBegin(c, cpuRoute(c, 'jump').map((s, i) => i ? s : name));
+      }
+      return {};
     }
-    if (distance > 380 && r < .3 + (self.style === 'zoner' ? .25 : 0)) { input.command = style.qcf; return input; }
-    if (r < .2) { memory.plan = [{ [toward]: true, jump: true }, { [toward]: true, jump: true }, { [toward]: true, jump: true }, { [toward]: true }, { [toward]: true }, { [toward]: true }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, { heavy: true }]; return input; }
-    if (r < .3 && style.qcb === 'teleport') { input.command = 'teleport'; return input; }
-    if (r < .36 && level >= 5 && distance > 300 && !enemy.move) { input.taunt = true; return input; }
-    input[toward] = true;
-    if (r > .8 && distance > 260) memory.plan = Array.from({ length: 10 }, () => ({ [toward]: true }));
-    return input;
+    memory.airOn = false;
+    const free = c.free = !self.move && !self.stun && !self.jumpSquat && !self.landLag && !self.dash;
+    // Shots: a forward jump timed to clear them (judged once per shot), else a guard.
+    const shot = state.projectiles.filter(p => p.owner !== slot && p.life > 0 && (self.x - p.x) * p.facing > 0).sort((a, b) => Math.abs(self.x - a.x) - Math.abs(self.x - b.x))[0];
+    if (shot && free) {
+      const key = Math.round((shot.from ?? 0) * 10) + ':' + (shot.life + now) + ':' + shot.kind, gap = Math.abs(self.x - shot.x);
+      if (gap < 560 && level >= 2 && cpuRoll(c, 'shotJump', key, .25 + .08 * level)) {
+        if (memory.shot?.key !== key) memory.shot = { key, at: cpuJumpTime(c, shot) };
+        if (memory.shot.at >= 0 && now >= memory.shot.at && cpuClears(self, shot, -shot.facing, 0)) return cpuJump(c, -shot.facing);
+        if (memory.shot.at >= 0 && now < memory.shot.at) return {};
+      }
+      if (gap < 200 && cpuRoll(c, 'shotGuard', key, c.pBlock)) return { [c.away]: true };
+    }
+    // Anti-air: an opponent jumping in (seen) within 190 draws the rising strike (from level 3), a heavy punch or a launcher.
+    const jump = memory.jump;
+    if (jump.on && enemy.y > 0 && now - jump.at >= c.reaction && c.distance < 190 && (enemy.airVX * side < 0 || c.distance < 110)) {
+      if (free && cpuRoll(c, 'antiAir', jump.id, Math.min(.95, .1 + .1 * level))) {
+        // The rising strike leaves a token for a confirm's ender.
+        const options = (level >= 3 && memory.tokens >= 1.6 ? ['rising'] : []).concat(['5D', '2D']);
+        for (const name of options) if (cpuConnects(self, enemy, cpuData(name), side)) return cpuBegin(c, name === '2D' ? cpuRoute(c, '2D').filter(s => s !== 'ender') : [name]);
+        return cpuRoll(c, 'airGuard', jump.id, c.pBlock) ? { [c.away]: true } : {};
+      }
+      if (cpuCanGuard(self) && cpuRoll(c, 'airGuard', jump.id, c.pBlock)) return { [c.away]: true };
+    }
+    // Punish: an opponent recovering from a move (seen), whiffed or blocked, judged once per move.
+    const foeData = enemy.move && moveData(enemy);
+    if (foeData && free && (enemy.y === 0 || enemy.move === 'rising') && enemy.moveVariant !== 'air' && enemy.moveFrame >= c.reaction && enemy.moveFrame >= foeData.startup + foeData.active && !enemy.invulnerable) {
+      const end = foeData.startup + foeData.active + foeData.recovery, left = Math.max(end - enemy.moveFrame, enemy.y > 0 ? cpuLanding(enemy) : 0);
+      if (left > 1 && cpuRoll(c, 'punish', foe.id, Math.min(.95, .15 + .12 * level))) { const route = cpuPunish(c, left); if (route) return cpuBegin(c, route); }
+    }
+    // An answer to sustained pressure takes the next opening (see cpuAnswer).
+    if (now < memory.answer && free && enemy.y === 0) { const answer = cpuAnswer(c); if (answer) { memory.answer = -1; return answer; } }
+    // A strike seen coming is blocked at its height with the per-threat chance.
+    if (foeData?.band && enemy.moveFrame >= c.reaction && enemy.moveFrame < foeData.startup + foeData.active && cpuCanGuard(self)
+      && c.distance < reachOf(enemy, foeData) + 60 + (foeData.speed || 0) * (foeData.startup + foeData.active - enemy.moveFrame) && cpuRoll(c, 'block', foe.id, c.pBlock)) {
+      memory.guardUntil = Math.max(memory.guardUntil, now + foeData.startup + foeData.active - enemy.moveFrame + 2);
+    }
+    // Wake-up pressure: close in on an opponent lying down, then time a string (or a throw) to meet its first
+    // vulnerable frame as it gets up.
+    if (enemy.launched && enemy.y === 0) { memory.wake = true; memory.guardUntil = -1; }
+    else if (memory.wake && (enemy.launched || enemy.move || !enemy.invulnerable)) memory.wake = false;
+    if (memory.wake && free) {
+      if (enemy.launched) return c.distance > 92 ? { [c.toward]: true } : {};
+      if (enemy.invulnerable <= 4 && c.distance <= 96) {
+        memory.wake = false;
+        const r = random(state);
+        if (r < .25 && enemy.invulnerable <= 1 && c.distance < MOVES.throw.reach - 8) return cpuBegin(c, ['throw']);
+        return cpuBegin(c, cpuRoute(c, r < .8 ? '5A' : '2A'));
+      }
+      return {};
+    }
+    if (now < memory.guardUntil && cpuCanGuard(self)) return cpuGuard(c);
+    if (now < memory.next || !free) return cpuActivity(c);
+    return cpuDecide(c);
+  }
+  // The answer to sustained pressure: from level 5 an invulnerable rising strike through a strike seen coming; otherwise,
+  // once the opponent stands free in reach, a throw up close or a jab and its confirm (null: no opening yet).
+  function cpuAnswer(c) {
+    const { self, enemy, memory, level, distance } = c, data = enemy.move && moveData(enemy);
+    if (data?.band && enemy.moveFrame < data.startup + data.active) {
+      return level >= 5 && memory.tokens >= 1 && enemy.moveFrame >= c.reaction && cpuConnects(self, enemy, MOVES.rising, c.side) ? cpuBegin(c, ['rising']) : null;
+    }
+    if (enemy.move || enemy.stun || enemy.jumpSquat || enemy.invulnerable) return null;
+    if (distance < MOVES.throw.reach - 8) return cpuBegin(c, ['throw']);
+    return cpuConnects(self, enemy, cpuData('5A'), c.side) ? cpuBegin(c, cpuRoute(c, '5A')) : null;
+  }
+  // The neutral activity until the next decision: a walk toward a target distance, or standing still.
+  function cpuActivity(c) {
+    const act = c.memory.act;
+    if (!act || act.kind !== 'walk') return {};
+    if (act.dir > 0 ? c.distance <= act.stop : c.distance >= act.stop) { c.memory.act = null; return c.free ? cpuDecide(c) : {}; }
+    return { [act.dir > 0 ? c.toward : c.away]: true };
+  }
+  // A neutral decision, around the style's preferred distance: guard a threat with the per-threat chance; supers in
+  // desperation or to finish; a taunt with a 30 % lead at range; otherwise pressure up close (jab and crouching-jab
+  // strings, throws, sweeps, frame traps), pokes and walk-ins in poke range, jump-ins, dashes and shots from further out.
+  function cpuDecide(c) {
+    const { state, self, enemy, memory, level, distance, now } = c, style = styleOf(self), coin = () => random(state);
+    // The style's distance, or CPU_APPROACH to break a stand-off: five seconds without an exchange (two against a quiet
+    // opponent), or the last twenty seconds of a round with the CPU level or behind on life.
+    const quiet = now - memory.foeActive > CPU_QUIET;
+    const stall = now - memory.contact > (quiet ? 120 : 300) || state.options.roundTime && state.time < 1200 && self.hp <= enemy.hp;
+    const spacing = self.boss ? CPU_SPACING.boss : CPU_SPACING[self.style] || CPU_SPACING.balanced, preferred = stall ? Math.min(spacing, CPU_APPROACH) : spacing;
+    memory.next = now + Math.max(4, Math.round(24 - 2 * level + coin() * 10));
+    memory.act = null;
+    const lying = enemy.launched || down(enemy), reeling = enemy.stun > 0 && !enemy.blockStun;
+    const walk = (dir, stop) => { memory.act = { kind: 'walk', dir, stop }; return { [dir > 0 ? c.toward : c.away]: true }; };
+    // A backstep: two taps away from the opponent.
+    const backstep = () => { memory.plan = [{ [c.away]: true }, {}, { [c.away]: true }]; return {}; };
+    if (lying) return distance > 130 ? walk(1, 110) : {};
+    // A ranged style backs off toward its distance (walking back guards as well).
+    const ranged = preferred >= 240;
+    if (ranged && !reeling && distance < preferred - 60 && coin() < .6) return level >= 3 && coin() < .4 ? backstep() : walk(-1, preferred);
+    // A threat: an opponent in striking range that has been attacking or coming forward. Guard it with the per-threat
+    // chance, for longer at higher levels.
+    if (level >= 2 && !reeling && !quiet && distance < 175 && enemy.y === 0 && coin() < c.pBlock) { memory.guardUntil = memory.next = now + Math.round(Math.min(90, 3 * level * level) * (.75 + .5 * coin())); return cpuGuard(c); }
+    // Never start an attack into a strike already seen coming.
+    const foeData = enemy.move && moveData(enemy);
+    if (foeData?.band && enemy.moveFrame >= c.reaction && enemy.moveFrame < foeData.startup + foeData.active && distance < reachOf(enemy, foeData) + 40) { memory.next = now + 2; return {}; }
+    if (self.stocks >= SUPER_STOCKS && level >= 2 && distance < 380 && (desperate(self) || enemy.hp <= 90) && coin() < .1 + .03 * level) return cpuBegin(c, ['super']);
+    if (distance > 320 && self.hp - enemy.hp >= .3 * MAX_HP && level >= 2 && !enemy.move && !self.lastInput.taunt && coin() < .35) return { taunt: true };
+    const options = [], add = (weight, act) => { if (weight > 0) options.push([weight, act]); };
+    const reaches = name => cpuConnects(self, enemy, cpuData(name), c.side);
+    const tokens = memory.tokens, shotFree = !cpuOwnShot(c);
+    if (distance <= 105) {
+      if (reaches('5A')) add(ranged ? 1 : 4, () => cpuBegin(c, cpuRoute(c, '5A')));
+      if (reaches('2A')) add(ranged ? .5 : 1.5, () => cpuBegin(c, cpuRoute(c, '2A')));
+      if (level >= 3 && reaches('5A')) add(1, () => cpuBegin(c, cpuRoute(c, '5A'), { trap: true, gap: 1 + Math.floor(coin() * 3) }));
+      // Strings the opponent keeps blocking make throws (and against a standing guard the sweep) likelier.
+      if (distance < MOVES.throw.reach - 8 && enemy.y === 0 && !enemy.stun && !enemy.invulnerable) add(1 + memory.walled / 2, () => cpuBegin(c, ['throw']));
+      if (style.qcb === 'commandGrab' && tokens >= 1 && distance < MOVES.commandGrab.reach - 8) add(1.5 + memory.walled / 4, () => cpuBegin(c, ['commandGrab']));
+      if (reaches('2S')) add(.3 + (enemy.crouching ? 0 : .25 * memory.walled), () => cpuBegin(c, ['2S']));
+      if (ranged) { add(3, () => walk(-1, preferred - 40)); if (level >= 3) add(1.5, backstep); }
+    } else if (distance <= 160) {
+      if (reaches('5S')) add(1.2, () => cpuBegin(c, cpuRoute(c, '5S')));
+      if (reaches('6S')) add(1, () => cpuBegin(c, cpuRoute(c, '6S')));
+      if (reaches('2S')) add(.3, () => cpuBegin(c, ['2S']));
+      if (reaches('5D')) add(.4, () => cpuBegin(c, cpuRoute(c, '5D')));
+      // Space control: a poke just out of reach catches an opponent walking in, and gives a whiff to punish otherwise.
+      if (!reaches('5S') && distance < 170) add(2.4, () => cpuBegin(c, [coin() < .75 ? '6S' : '5S']));
+      if (['rush', 'armorRush', 'rekka'].includes(style.qcb) && tokens >= 2) add(.25, () => cpuBegin(c, style.qcb === 'rekka' ? ['rekka', 'rk', 'rk'] : [style.qcb]));
+      add(ranged ? .5 : 4, () => walk(1, 78));
+      if (ranged) { add(3, () => walk(-1, preferred - 40)); if (level >= 3) add(1, backstep); }
+    } else {
+      // Jump-ins, likelier against a crouching guard that keeps blocking.
+      if (distance >= 150 && distance <= 270) add(.15 + .06 * level + (enemy.crouching ? .2 * memory.walled : 0), () => { cpuBegin(c, cpuRoute(c, 'jump')); return cpuJump(c, c.side); });
+      if (distance > preferred + 30) add(3, () => walk(1, Math.max(preferred - 20, 90)));
+      if (level >= 4 && distance > preferred + 100) add(2, () => { memory.plan = [{ [c.toward]: true }, {}, { [c.toward]: true }]; memory.act = { kind: 'walk', dir: 1, stop: 100 }; return {}; });
+      if (tokens >= 2 && shotFree && distance > 230) add(style.qcf && self.style === 'zoner' ? 4 : 1, () => cpuBegin(c, [coin() < .5 ? 'special' : style.qcf]));
+      if (style.qcb === 'teleport' && tokens >= 2 && distance > 200) add(.5, () => cpuBegin(c, ['teleport']));
+      if (distance < preferred - 30) add(2.5, () => walk(-1, preferred));
+      add(1.5, () => distance > preferred + 30 ? walk(1, Math.max(preferred, distance - 60)) : {});
+    }
+    if (!options.length) return {};
+    let pick = coin() * options.reduce((sum, [weight]) => sum + weight, 0);
+    for (const [weight, act] of options) { pick -= weight; if (pick <= 0) return act() || {}; }
+    return options[options.length - 1][1]() || {};
   }
   function intro(state) {
     const target = state.options.roundsToWin;
@@ -511,7 +935,9 @@
     state.fighters = state.fighters.map((old, slot) => Object.assign(fighter(old.id, slot, { style: old.style, boss: old.boss, reaches: old.reaches }), { wins: old.wins, energy: old.energy, stocks: old.stocks }));
     state.projectiles = []; state.effects = []; state.time = state.options.roundTime * 60; state.round++;
     state.winner = null; state.hitstop = 0; state.firstHit = false; state.result = null;
-    state.cpuMemory = [{ wait: 0, plan: [] }, { wait: 0, plan: [] }];
+    // The CPU's memory starts afresh; only its special budget carries over, as the power gauge does, so the limit of
+    // CPU_SPECIALS a minute holds across a round change.
+    state.cpuMemory = state.cpuMemory.map(old => Object.assign(cpuMemory(), { tokens: Math.min(old?.tokens ?? 0, CPU_TOKEN_CAP) }));
     intro(state);
   }
   function startMove(state, f, action, input, { rapid = false, chained = false } = {}) {
