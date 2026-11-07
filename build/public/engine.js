@@ -35,6 +35,15 @@
   // vertical speed, so it falls under gravity, and drifts it away at AIR_RESET_DRIFT a frame. When that hitstun runs
   // out before the landing, the target air-techs: AIR_TECH invulnerable frames, then no attacks until it lands.
   const LANDING_LAG = 3, AIR_RESET_LIFT = .3, AIR_RESET_DRIFT = 1.5, AIR_TECH = 6;
+  // Launcher combos. The launcher's victim floats: it leaves at the move's launch speed under LAUNCH_GRAVITY x gravity,
+  // drifts away LAUNCH_DRIFT a frame (other knockdowns KNOCKDOWN_DRIFT) and stays helpless until it lands. Every hit on a
+  // launched victim in the air re-pops it less, at max(vy x JUGGLE_LIFT, JUGGLE_POP - JUGGLE_DECAY x juggle count), and
+  // the air heavy spikes it down at JUGGLE_SPIKE; JUGGLE_LIMIT hits in the air end the juggle, and a floating victim that
+  // passes its apex before anything juggles it falls out of juggle reach. A launcher hit cancels
+  // into a super jump with no squat, aimed at the victim: horizontal speed (victim.x - x) / SUPER_JUMP_AIM, at most
+  // SUPER_JUMP_MAX either way. In the air each normal (one per rank) can be used once per jump, fresh or chained.
+  const GRAVITY = .65, LAUNCH_GRAVITY = .9, LAUNCH_DRIFT = 1, KNOCKDOWN_DRIFT = 2.2;
+  const JUGGLE_LIFT = .3, JUGGLE_POP = 5.5, JUGGLE_DECAY = .8, JUGGLE_SPIKE = -7, SUPER_JUMP_AIM = 22, SUPER_JUMP_MAX = 7;
   // Life points on the Capcom scale, so damage and combo scaling stay fine-grained. Desperation below a quarter.
   const MAX_HP = 1000, DESPERATION_HP = MAX_HP / 4;
   // KOF-style power gauge: each full bar becomes a stock, up to three. Meter only comes from fighting:
@@ -96,6 +105,8 @@
   // chip: share of damage a blocked special still deals; normals never chip.
   // airReset: on an airborne target that is not launched the hit is an air reset (air hitstun, then an air tech and a
   // landing on its feet). Every other hit on an airborne target knocks it down.
+  // launch: the vertical speed a launch gives; float: the victim floats (the launcher), superJumpCancel: a hit cancels
+  // into a super jump; spike: on a launched victim in the air the hit spikes it down instead of re-popping it.
   const MOVES = {
     // A jab, S light kick, D heavy punch, toward + S roundhouse (standing only).
     punch: { startup: 4, active: 3, recovery: 7, reach: 100, band: [110, 175], damage: 32, pose: 'punch', hitStun: 14, blockStun: 11, slide: 18, rank: 0, airReset: true },
@@ -132,12 +143,13 @@
       punch: { startup: 4, active: 3, recovery: 8, reach: 94, band: [55, 110], damage: 28, pose: 'cjab', hitStun: 14, blockStun: 12, slide: 16, rank: 0, airReset: true },
       kick: { startup: 9, active: 4, recovery: 20, reach: 150, band: [0, 38], damage: 68, pose: 'sweep', height: 'low', knockdown: true, blockStun: 14, slide: 22, rank: 2, noCancel: true },
       // The launcher cancels only into specials and supers.
-      heavy: { startup: 7, active: 5, recovery: 23, reach: 118, band: [90, 250], damage: 60, pose: 'launcher', launch: 10, blockStun: 16, slide: 20, rank: 2, cancelRank: 3 }
+      // On hit, up held or pressed inside the cancel window super-jumps after the victim.
+      heavy: { startup: 7, active: 5, recovery: 23, reach: 118, band: [90, 250], damage: 60, pose: 'launcher', launch: 14, float: true, superJumpCancel: true, blockStun: 16, slide: 20, rank: 2, cancelRank: 3 }
     },
     air: {
       punch: { startup: 5, active: 8, recovery: 5, reach: 102, band: [60, 150], damage: 30, pose: 'airpunch', height: 'high', hitStun: 16, blockStun: 12, slide: 10, rank: 0, airReset: true },
       kick: { startup: 6, active: 8, recovery: 6, reach: 136, band: [0, 100], damage: 36, pose: 'airkick', height: 'high', hitStun: 17, blockStun: 13, slide: 12, rank: 1, airReset: true },
-      heavy: { startup: 7, active: 6, recovery: 7, reach: 124, band: [20, 130], damage: 66, pose: 'airpunch', height: 'high', hitStun: 19, blockStun: 14, slide: 16, rank: 2 }
+      heavy: { startup: 7, active: 6, recovery: 7, reach: 124, band: [20, 130], damage: 66, pose: 'airpunch', height: 'high', hitStun: 19, blockStun: 14, slide: 16, rank: 2, spike: true }
     }
   };
   const PROJECTILE = { hitStun: 18, blockStun: 14, chip: .25 };
@@ -156,6 +168,8 @@
   function moveData(f) { return f.move === 'super' && f.boss ? BOSS_SUPER : VARIANTS[f.moveVariant]?.[f.move] || MOVES[f.move]; }
   // The three attack buttons take an air or crouching variant; every other action stands.
   function variantOf(f, action, input) { return NORMALS.includes(action) ? f.y > 0 ? 'air' : input.down ? 'crouch' : 'standing' : 'standing'; }
+  // Whether an action is an air normal whose rank this jump has already used (each air normal once per jump).
+  const airRankUsed = (f, action, input) => variantOf(f, action, input) === 'air' && !!f.airRanks?.includes(VARIANTS.air[action].rank);
   function fighter(id, slot, profile = {}) {
     return { id, slot, style: STYLES[profile.style] ? profile.style : 'balanced', boss: !!profile.boss, reaches: profile.reaches || null,
       x: WIDTH / 2 + (slot ? 190 : -190), y: 0, vy: 0, vx: 0, facing: slot ? -1 : 1,
@@ -165,6 +179,10 @@
       // came within SUPER_JUMP_WINDOW frames of down (downAt, the last frame down was held). airActed: this airborne
       // stretch attacked or was hit, so it lands with landLag frames left. airTech: air-teched, no attacks until landing.
       superJump: false, superPress: false, downAt: -99, landLag: 0, airActed: false, airTech: false,
+      // airRanks: the air normal ranks used this jump. floating: launched by the launcher (lighter gravity, slower drift)
+      // until it lands; juggled: hit again in the air since that launch. hitConfirmed: the move's contact was a hit (not a
+      // block or armor), as the super-jump cancel needs.
+      airRanks: [], floating: false, juggled: false, hitConfirmed: false,
       hitDone: false, connected: false, stun: 0, blockStun: false, stunAtStart: 0, blockStunAtStart: false, guard: false, crouching: false, hitCrouch: false, lastInput: {},
       dash: 0, dashDir: 0, invulnerable: 0, juggle: 0, combo: 0, comboDamage: 0, counter: false,
       running: false, skid: 0, jumpSquat: 0, hop: false, armor: 0, rekka: 0, dizzy: 0, dizzyMeter: 0,
@@ -257,7 +275,10 @@
     return null;
   }
   function knockDown(target, move, wasAirborne) {
-    target.vy = move.launch || (wasAirborne ? Math.max(target.vy, 6) : 5);
+    // A launched victim hit in the air is juggled: each hit re-pops it less and the air heavy spikes it down. A fresh
+    // launch or knockdown sets its own speed, and only the launcher's floats.
+    if (wasAirborne && target.launched) { target.vy = move.spike ? JUGGLE_SPIKE : Math.max(target.vy * JUGGLE_LIFT, JUGGLE_POP - JUGGLE_DECAY * target.juggle); target.juggled = true; }
+    else { target.vy = move.launch || (wasAirborne ? Math.max(target.vy, 6) : 5); target.floating = !!move.float; target.juggled = false; }
     target.y = Math.max(1, target.y); target.stun = Math.max(target.stun, 30); target.launched = true; target.pose = 'tumble';
     target.hardKnockdown = !!move.hardKnockdown; target.quickRise = false;
     // A combo ender (the super beam's last hit) knocks down out of juggle reach: nothing follows it.
@@ -280,7 +301,7 @@
     if (!blocked && target.armor > 0 && !move.unblockable) {
       target.armor--; target.hp = Math.max(0, target.hp - Math.max(1, Math.round(damage * .5)));
       state.hitstop = Math.max(state.hitstop, 6); emit(state, 'armor', impactX, GROUND - impactY, direction, 16);
-      return true;
+      return 'armor';
     }
     const counter = !blocked && !move.unblockable && !!target.move && target.moveFrame < (moveData(target)?.startup ?? 0);
     const inCombo = !blocked && (target.stun > 0 && !target.blockStun || target.launched || target.stunAtStart > 0 && !target.blockStunAtStart && !target.dizzy);
@@ -301,7 +322,7 @@
     target.blockStun = blocked;
     target.hitAge = 0; target.counter = counter; target.heavyHit = !blocked && (damage >= HEAVY_DAMAGE || counter);
     target.pose = blocked ? 'block' : 'hit';
-    target.move = null; target.connected = false; target.dash = 0; target.running = false; target.jumpSquat = 0; target.rekka = 0;
+    target.move = null; target.connected = false; target.hitConfirmed = false; target.dash = 0; target.running = false; target.jumpSquat = 0; target.rekka = 0;
     // A hit ends a jump in progress (its squat included), an air tech and a landing lag.
     target.superJump = false; target.airTech = false; target.landLag = 0;
     // An airReset light on an airborne target that is not launched is an air reset: air hitstun for the move's
@@ -332,7 +353,7 @@
       else if (counter) banner(state, slot, 'COUNTER');
       else if (move.reversal && target.y > 0 && source.moveFrame <= move.startup + 1) banner(state, slot, 'REVERSAL');
     }
-    return true;
+    return blocked ? 'block' : 'hit';
   }
   // One frame of a pushback slide: grounded fighters move, then the velocity decays (also while airborne). Returns
   // how far the fighter moved and the part of a strike slide a wall stopped, which the caller passes to the
@@ -374,9 +395,10 @@
   }
   const pressedTogether = (f, a, b) => f.buffer[a] > 0 && f.buffer[b] > 0 && Math.abs(f.pressAt[a] - f.pressAt[b]) <= CHORD_WINDOW;
   // The button a buffered press starts: the earliest press wins, unless a stronger button was pressed within
-  // PRESS_WINDOW frames of it (then the strongest of those). Presses are ordered by the frame they were made on.
-  function firstPress(f, ownShot) {
-    const pressed = STRENGTH.filter(a => f.buffer[a] > 0 && (a !== 'special' || !ownShot));
+  // PRESS_WINDOW frames of it (then the strongest of those). Presses are ordered by the frame they were made on. In the
+  // air a button whose normal this jump has used is passed over (it stays buffered), so it does not hold up the next one.
+  function firstPress(f, ownShot, input) {
+    const pressed = STRENGTH.filter(a => f.buffer[a] > 0 && (a !== 'special' || !ownShot) && !airRankUsed(f, a, input));
     if (!pressed.length) return null;
     const earliest = Math.min(...pressed.map(a => f.pressAt[a]));
     return pressed.filter(a => f.pressAt[a] - earliest <= PRESS_WINDOW).pop();
@@ -400,7 +422,7 @@
     const ownShot = state.projectiles.some(p => p.owner === f.slot && !p.super);
     if (grounded && motion([2, 6]) && !ownShot) return style.qcf;
     if (grounded && motion([2, 4]) && !(style.qcb === 'skyshot' && ownShot)) return style.qcb;
-    const button = firstPress(f, ownShot);
+    const button = firstPress(f, ownShot, input);
     if (!button) return null;
     // Forward or back + D up close throws (a back throw swaps sides). The opponent must have been out of stun since
     // the frame began, whichever slot each fighter is in.
@@ -417,6 +439,7 @@
     if (['throw', 'roll', 'taunt'].includes(next)) return null;
     if (!(f.y === 0 || ATTACKS.includes(next)) || meter(f) < (MOVES[next].cost || 0) || f.stocks < (MOVES[next].stocks || 0)) return null;
     const variant = variantOf(f, next, input), data = VARIANTS[variant]?.[next] || MOVES[next];
+    if (airRankUsed(f, next, input)) return null;
     if (data.rank > move.rank && data.rank >= (move.cancelRank || 0)) return 'chain';
     if (move.rank === 0 && data.rank === 0 && f.moveVariant !== 'air' && variant !== 'air' && (f.rapid || 0) < RAPID_FIRE) return 'rapid';
     return null;
@@ -494,10 +517,11 @@
   function startMove(state, f, action, input, { rapid = false, chained = false } = {}) {
     const variant = variantOf(f, action, input);
     const data = MOVES[action];
-    f.move = action; f.moveFrame = 0; f.hitDone = false; f.connected = false; f.guard = false; f.dash = 0; f.running = false; f.skid = 0;
+    f.move = action; f.moveFrame = 0; f.hitDone = false; f.connected = false; f.hitConfirmed = false; f.guard = false; f.dash = 0; f.running = false; f.skid = 0;
     f.moveVariant = variant;
-    // An attack in the air earns the landing lag.
+    // An attack in the air earns the landing lag, and an air normal uses its rank for the rest of the jump.
     if (f.y > 0) f.airActed = true;
+    if (variant === 'air') (f.airRanks ||= []).push(VARIANTS.air[action].rank);
     // Rapid-fire chains count consecutive rank-0 cancels; any other start resets the count.
     f.rapid = rapid ? (f.rapid || 0) + 1 : 0;
     // A move uses up the presses it came from. A plain button (and the roundhouse or throw it makes) uses its own
@@ -539,12 +563,23 @@
         life: shot.life || 150, hits: 1, cooldown: 0, speed: shot.speed || 8, rise: shot.rise || 0, kind: f.move });
     }
   }
+  // The launcher's super-jump cancel: it leaves the ground at once (no squat) at a super jump's vertical speed, aimed at
+  // the victim where it stood when the frame began (victimX), so either slot aims the same way. The air normals that
+  // follow use their ranks for this jump.
+  function superJumpCancel(f, victimX, style) {
+    f.move = null; f.moveFrame = 0; f.connected = false; f.hitConfirmed = false; f.armor = 0;
+    f.buffer.jump = 0; f.jumpSquat = 0; f.hop = false; f.running = false; f.dash = 0; f.superJump = true; f.airRanks = [];
+    f.vy = JUMPS.super.vy * style.jump; f.y = 1; f.airVX = clamp((victimX - f.x) / SUPER_JUMP_AIM, -SUPER_JUMP_MAX, SUPER_JUMP_MAX); f.landFrames = 0;
+    f.pose = 'jump';
+  }
+  // Gravity this frame: a floating launch victim falls at LAUNCH_GRAVITY of it.
+  const gravity = f => GRAVITY * (f.floating ? LAUNCH_GRAVITY : 1);
   // Rounds continue to settle bodies after a KO so nobody freezes mid-air or mid-slide.
   function settle(f) {
     f.vx = 0;
     if (f.y > 0 || f.vy > 0) {
-      f.y += f.vy; f.vy -= .65;
-      if (f.y <= 0) { f.y = 0; f.vy = 0; f.airVX = 0; f.landFrames = 6; f.airActed = false; f.airTech = false; f.superJump = false; }
+      f.y += f.vy; f.vy -= gravity(f);
+      if (f.y <= 0) { f.y = 0; f.vy = 0; f.airVX = 0; f.landFrames = 6; f.airActed = false; f.airTech = false; f.superJump = false; f.floating = false; f.juggled = false; f.airRanks = []; }
     }
     slideStep(f);
   }
@@ -637,15 +672,21 @@
       // No guard in the landing lag (landLag is the lag frames still to come).
       f.guard = !f.move && !f.stun && !f.dash && !f.dizzy && !f.running && !f.jumpSquat && !f.landLag && f.y === 0 && !!(nearbyStrike || incomingShot) && !!(f.facing === 1 ? input.left : input.right);
     });
-    const strikes = [];
+    // Where each fighter stands as the frame begins, before either updates (the launcher's super jump aims at it).
+    const strikes = [], startX = state.fighters.map(f => f.x);
     state.fighters.forEach((f, slot) => {
       const other = state.fighters[1 - slot], input = controls[slot], style = styleOf(f);
       f.vx = 0; f.hitAge++; f.landFrames = Math.max(0, f.landFrames - 1);
       if (f.stockFlash > 0) f.stockFlash--;
       if (f.invulnerable > 0) f.invulnerable--;
       if (f.y > 0 || f.vy > 0) {
-        f.y += f.vy; f.vy -= .65;
-        if (f.launched && f.y > 0) f.x = clamp(f.x - f.facing * 2.2, WALL, WIDTH - WALL);
+        f.y += f.vy; f.vy -= gravity(f);
+        if (f.launched && f.y > 0) {
+          f.x = clamp(f.x - f.facing * (f.floating ? LAUNCH_DRIFT : KNOCKDOWN_DRIFT), WALL, WIDTH - WALL);
+          // A launcher's victim that reaches its apex before anything juggles it falls out of juggle reach, so only a
+          // cancel can follow a launch: the super jump, the rising strike or a rush (shots and beams pass under it).
+          if (f.floating && !f.juggled && f.vy <= 0) f.juggle = JUGGLE_LIMIT;
+        }
         // Air hitstun drifts at the speed the air reset gave (in a move or free, the code below carries airVX).
         else if (f.y > 0 && f.stun > 0 && !f.blockStun && f.airVX) { const previousX = f.x; f.x = clamp(f.x + f.airVX, WALL, WIDTH - WALL); f.vx = f.x - previousX; }
         // Any attack button during a tumble requests a quick recovery roll.
@@ -655,7 +696,7 @@
           // A jump that attacked or was hit lands with the landing lag, this frame the first of it; an empty one has none.
           if (f.airActed && !f.launched) f.landLag = LANDING_LAG;
           const teched = f.airTech;
-          f.airActed = false; f.airTech = false; f.superJump = false;
+          f.airActed = false; f.airTech = false; f.superJump = false; f.floating = false; f.juggled = false; f.airRanks = [];
           // An air tech ends its hitstun in the air, so the dizzy check that a ground recovery runs happens on landing.
           if (teched && !f.launched && f.hp > 0 && f.dizzyMeter >= DIZZY_LIMIT) { f.dizzy = DIZZY_FRAMES; f.dizzyMeter = 0; f.pose = 'dizzy'; emit(state, 'dizzy', f.x, GROUND - 220, f.facing, DIZZY_FRAMES); }
           if (f.launched) {
@@ -696,10 +737,12 @@
       if (f.landLag > 0 && !f.move) { f.dashRequest = null; f.pose = 'crouch'; return; }
       // Connected normals cancel inside the window, as in arcade fighters: up-rank into a stronger normal,
       // special or super, and rank-0 normals into each other up to twice in a row. Whiffs never cancel, nor do
-      // sweeps and blowbacks; the launcher cancels only into specials and supers.
+      // sweeps and blowbacks; the launcher cancels only into specials, supers and, on hit, a super jump (up held or
+      // pressed inside the window). In the air each normal can be used once per jump.
       if (f.move && f.connected) {
         const move = moveData(f);
         if (move.rank >= 0 && move.rank < 3 && !move.noCancel && f.moveFrame < move.startup + move.active + CANCEL_WINDOW) {
+          if (move.superJumpCancel && f.hitConfirmed && f.y === 0 && (input.jump || f.buffer.jump > 0)) { superJumpCancel(f, startX[1 - slot], style); return; }
           const next = command(state, f, other, input, true), kind = next && cancelKind(f, move, next, input);
           if (kind) { f.move = null; f.connected = false; startMove(state, f, next, input, { rapid: kind === 'rapid' }); }
         }
@@ -754,7 +797,7 @@
         f.pose = f.y > 0 ? 'jump' : f.jumpSquat ? 'crouch' : f.running ? (state.frame % 12 < 6 ? 'run' : 'run2') : input.down ? 'crouch' : f.guard ? 'block' : movement ? (state.frame % 20 < 10 ? 'walk' : 'walk2') : (state.frame % 48 < 24 ? 'idle' : 'stance2');
         // Motion specials, throws, supers and system moves need footing; F still fires in the air, but not after an air tech.
         const action = f.jumpSquat || f.airTech ? null : command(state, f, other, input);
-        if (action && (f.y === 0 || ATTACKS.includes(action)) && f.stocks >= (MOVES[action]?.stocks || 0)) startMove(state, f, action, input);
+        if (action && (f.y === 0 || ATTACKS.includes(action)) && f.stocks >= (MOVES[action]?.stocks || 0) && !airRankUsed(f, action, input)) startMove(state, f, action, input);
       }
       if (f.move) {
         const move = moveData(f); f.moveFrame++;
@@ -814,7 +857,7 @@
     // front of the attacker. Both fighters' contacts are found before either lands, so equal-timing attacks trade.
     const contacts = strikes.map(strike => ({ ...strike, at: hittable(strike.target) && (strike.target.x - strike.source.x) * strike.direction >= 0
       ? contactPoint(strikeBox(strike.source, strike.move), strike.target) : null })).filter(contact => contact.at);
-    for (const { source, target, move, direction, at } of contacts) { dealHit(state, target, source, move.damage, at.x, direction, move, at.y); source.hitDone = true; source.connected = true; }
+    for (const { source, target, move, direction, at } of contacts) { source.hitConfirmed = dealHit(state, target, source, move.damage, at.x, direction, move, at.y) === 'hit'; source.hitDone = true; source.connected = true; }
     // The landing lag counts down once contacts have resolved, so a lag frame keeps its standing box; like stun, what is
     // left is the lag still to come.
     state.fighters.forEach(f => { for (const action of Object.keys(f.buffer)) f.buffer[action] = Math.max(0, f.buffer[action] - 1); if (f.landLag > 0) f.landLag--; });
@@ -901,8 +944,8 @@
       { name: fighterData.superMove?.name || 'Super Art', input: '↓↘→↓↘→ + attack or F + D', note: 'Costs one power stock; stronger at low health' },
       { name: 'Roundhouse', input: '→ + S', note: 'Long-reach heavy kick; standing only' },
       { name: 'Sweep (low)', input: '↓ + S', note: 'Knockdown; block it crouching' },
-      { name: 'Launcher', input: '↓ + D', note: 'Launches; cancels only into specials and supers' },
-      { name: 'Chain combo', input: 'A > S > D > special', note: 'A connected normal cancels into a stronger one; A and ↓ + A repeat twice' },
+      { name: 'Launcher', input: '↓ + D', note: 'Launches; hold ↑ on hit to super-jump after the victim, then air A > S > D. Otherwise cancels only into specials and supers' },
+      { name: 'Chain combo', input: 'A > S > D > special', note: 'A connected normal cancels into a stronger one; A and ↓ + A repeat twice; in the air each button once per jump' },
       { name: 'Blowback', input: 'S + D', note: 'Knockdown strike; guard cancel with a stock while blocking' },
       { name: 'Evasive roll', input: 'A + S', note: 'Invulnerable roll; guard cancel with a stock while blocking' },
       { name: 'Throw', input: '→ or ← + D up close', note: 'Press D as you are thrown to escape' },

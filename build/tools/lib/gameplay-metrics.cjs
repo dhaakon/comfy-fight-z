@@ -494,17 +494,20 @@ function chain(E, steps, options = {}) {
   return { steps: results, hits, blocks, combo, damagePoints, damage: round(damagePoints / maxLife(E), 4),
     connected: results.every(r => r.result === 'hit' || r.result === 'block'), allHit: results.every(r => r.result === 'hit'), comboIntact: hits > 0 && combo === hits };
 }
-// The launcher's follow-up. route 'jump' jumps toward the victim as soon as the attacker can act; route
-// 'superjump' presses up inside the launcher's cancel window (it only leaves the ground if the engine lets the
-// launcher cancel into a jump). The first air step is pressed `delay` frames after takeoff and each later one on
-// the frame after the previous one connects or ends; the best delay is reported. starter: steps before the
-// launcher; relaunch: press the launcher again once both have landed.
+// The launcher's follow-up. route 'jump' jumps toward the victim as soon as the attacker can act; 'freesuper' super-
+// jumps toward it then (down, then up: a super jump with its squat); 'superjump' presses up inside the launcher's
+// cancel window (it only leaves the ground if the engine lets the launcher cancel into a jump); 'stay' stays on the
+// ground. The first air step is pressed `delay` frames after takeoff and each later one on the frame after the
+// previous one connects or ends; the best delay is reported. starter: steps before the launcher (['2A'] for the
+// phase 4 combo); relaunch: press the launcher again once both have landed (with 'stay', once the victim has).
+// superJump says whether the attacker's jump was a super jump; with route 'superjump', takeoffFrame 1 is a cancel
+// that left the ground on the first frame after the launcher's hitstop, with no squat.
 function launcherFollowUp(E, options = {}) {
   const { starter = [], launcher = '2D', route = 'jump', air = ['j.A', 'j.S', 'j.D'], relaunch = false, maxDelay = 30, style } = options;
   const body = bodyHeight(E), life = maxLife(E);
   const base = launchSnapshot(E, [...starter, launcher], style);
   const summary = { route, starter, launcher, launched: !!base, openingHits: base ? base.hits : 0, victimAirtime: null, victimApex: null, victimRecovered: null, jumped: false,
-    takeoffFrame: null, delay: null, followUpHits: 0, connects: false, firstFollowUpFrame: null, combo: base ? base.combo : 0,
+    superJump: false, takeoffFrame: null, delay: null, followUpHits: 0, connects: false, firstFollowUpFrame: null, combo: base ? base.combo : 0,
     damagePoints: base ? base.points : 0, damage: base ? round(base.points / life, 4) : 0, steps: [], relaunch: null };
   if (!base) return summary;
   let best = null;
@@ -516,7 +519,7 @@ function launcherFollowUp(E, options = {}) {
   const final = relaunch ? { ...followUp(E, base, { route, air, delay: best.delay, relaunch: true }), delay: best.delay } : best;
   const damagePoints = round(base.points + final.followUpPoints, 3);
   return Object.assign(summary, { victimAirtime: final.victimAirtime, victimApex: round(final.victimApex / body, 3), victimRecovered: final.victimRecovered,
-    jumped: final.jumped, takeoffFrame: final.takeoffFrame, delay: final.followUpHits ? final.delay : null, followUpHits: final.followUpHits, connects: final.followUpHits > 0,
+    jumped: final.jumped, superJump: final.superJump, takeoffFrame: final.takeoffFrame, delay: final.followUpHits ? final.delay : null, followUpHits: final.followUpHits, connects: final.followUpHits > 0,
     firstFollowUpFrame: final.firstFollowUpFrame, combo: Math.max(base.combo, final.combo), damagePoints, damage: round(damagePoints / life, 4), steps: final.steps, relaunch: final.relaunch });
 }
 // Plays the opening steps (each on the frame after the previous contact) and returns the state on the frame
@@ -540,17 +543,18 @@ function launchSnapshot(E, steps, style) {
 // in hitstun on the frame before) extend the combo; a jump-in that lands after the victim got up does not count.
 function followUp(E, base, { route, air, delay, relaunch }) {
   const s = JSON.parse(base.json), plan = air.map(parseInput);
-  const out = { jumped: false, takeoffFrame: null, victimAirtime: null, victimApex: 0, victimRecovered: null, followUpHits: 0, followUpPoints: 0,
+  const out = { jumped: false, superJump: false, takeoffFrame: null, victimAirtime: null, victimApex: 0, victimRecovered: null, followUpHits: 0, followUpPoints: 0,
     firstFollowUpFrame: null, combo: 0, steps: plan.map(p => ({ input: p.text, result: 'not started' })), relaunch: null };
-  let stage = route === 'superjump' ? 'jump' : 'wait', airFrames = 0, index = -1, queue = [], pressedAt = 0, landedAt = null, relaunchAt = null, freeFor = 0;
+  let stage = route === 'superjump' ? 'jump' : route === 'stay' ? 'landed' : 'wait', airFrames = 0, index = -1, queue = [], pressedAt = 0, landedAt = null, relaunchAt = null, freeFor = 0, jumpFrames = 0;
   for (let tick = 0; tick < 480; tick++) {
     const a = s.fighters[0];
     let input = {};
     if (stage === 'wait' && canAct(E, s, 0)) stage = 'jump';
     if (stage === 'jump') {
-      if (a.y > 0) { stage = 'air'; out.jumped = true; out.takeoffFrame = s.motionFrame - base.frame; }
+      if (a.y > 0) { stage = 'air'; out.jumped = true; out.superJump = !!a.superJump; out.takeoffFrame = s.motionFrame - base.frame; }
       else {
-        input = dirInput(9, a.facing);
+        // A super jump when free taps down-forward first, then holds up-forward.
+        input = dirInput(route === 'freesuper' && jumpFrames++ === 0 ? 3 : 9, a.facing);
         // Without a launcher cancel the held press never becomes a jump: stop once the attacker has stood free a while.
         if (route === 'superjump' && canAct(E, s, 0) && ++freeFor > 8) { stage = 'landed'; input = {}; }
       }

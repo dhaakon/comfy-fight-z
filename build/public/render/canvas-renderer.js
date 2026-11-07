@@ -235,9 +235,10 @@
     screenText(text, 0, 0, size, fill, 'center', alpha); ctx.restore();
   }
   function overlays() {
-    // Combo counters sit on the attacker's side and linger after the combo ends.
+    // Combo counters sit on the attacker's side and linger after the combo ends, which is when the defender recovers
+    // or, launched or knocked down, lands (nothing can hit it lying down).
     state.fighters.forEach((defender, slot) => {
-      const attacker = 1 - slot, live = defender.combo >= 2 && (defender.stun > 0 && !defender.blockStun || defender.launched);
+      const attacker = 1 - slot, live = defender.combo >= 2 && (defender.stun > 0 && !defender.blockStun || defender.launched) && !(defender.launched && defender.y === 0);
       if (live) view.combos[attacker] = { hits: defender.combo, damage: defender.comboDamage, life: 70 };
       const c = view.combos[attacker]; if (!c || --c.life <= 0) return;
       const x = attacker ? 930 : 30, align = attacker ? 'right' : 'left', alpha = Math.min(1, c.life / 15), color = attacker ? '#3df2ff' : '#ffe600';

@@ -18,7 +18,11 @@ const seeds = [1, 2, 3], level = 4;
 // --- measurements
 const normals = M.discover(E).filter(entry => entry.kind === 'normal' || entry.kind === 'air').map(entry => M.measureMove(E, { input: entry.input }));
 const jump = M.jumps(E);
-const launch = M.launcherFollowUp(E), superLaunch = M.launcherFollowUp(E, { route: 'superjump' });
+// Phase 4's combo, 2A > 2D > up inside the launcher's cancel window > j.A > j.S > j.D, and the same opening without that
+// input: a jump or a super jump once the launcher has recovered, or a second launcher once the victim has landed.
+const LAUNCH_STARTER = ['2A'];
+const launch = M.launcherFollowUp(E, { starter: LAUNCH_STARTER }), superLaunch = M.launcherFollowUp(E, { route: 'superjump', starter: LAUNCH_STARTER, relaunch: true });
+const freeSuper = M.launcherFollowUp(E, { route: 'freesuper', starter: LAUNCH_STARTER }), relaunch = M.launcherFollowUp(E, { route: 'stay', starter: LAUNCH_STARTER, relaunch: true });
 const chains = [['5A', '5S', '5D', '5F'], ['5A', '5S', '5D', '236A'], ['5A', '5A']].map(steps => ({ steps, run: M.chain(E, steps) }));
 const pacing = M.healthPacing(E), neutral = M.neutralMeter(E);
 const throwRow = M.measureMove(E, { input: '6D', block: false }), superRow = M.measureMove(E, { input: 'F+D', block: false });
@@ -37,7 +41,7 @@ const projectileJumps = JUMP_STYLES.flatMap(style => ['5F', '236A'].flatMap(shot
   return { style, shot, distance, jump: kind, clears, timings };
 }))));
 
-if (args.includes('--json')) console.log(JSON.stringify({ maxLife: LIFE, bodyHeight: BODY, normals, jumps: jump, launcher: { jump: launch, superjump: superLaunch }, chains, pacing, neutral, cpu, shape, crouching: Object.fromEntries(crouching), antiAir: Object.fromEntries(antiAir), airKick: Object.fromEntries(airKick), shots: Object.fromEntries(shots), projectileJumps, reference: !!D }, null, 2));
+if (args.includes('--json')) console.log(JSON.stringify({ maxLife: LIFE, bodyHeight: BODY, normals, jumps: jump, launcher: { jump: launch, superjump: superLaunch, freesuper: freeSuper, stay: relaunch }, chains, pacing, neutral, cpu, shape, crouching: Object.fromEntries(crouching), antiAir: Object.fromEntries(antiAir), airKick: Object.fromEntries(airKick), shots: Object.fromEntries(shots), projectileJumps, reference: !!D }, null, 2));
 else printReport();
 
 function printReport() {
@@ -77,9 +81,13 @@ function printReport() {
   // --- launcher follow-up: can the launcher's owner land an air hit before the victim recovers?
   const followText = run => run.connects ? `${run.followUpHits} follow-up hit(s), combo ${run.combo}, ${M.percent(run.damage)} damage (first at ${run.firstFollowUpFrame}f)`
     : run.jumped ? `no follow-up connects (takeoff at ${run.takeoffFrame}f)` : 'no follow-up connects (the attacker never leaves the ground)';
-  console.log(`\n== launcher follow-up\nOURS 2D launch: victim airborne ${launch.victimAirtime}f, apex ${M.percent(launch.victimApex)}, recovers at ${launch.victimRecovered}f after the hit`);
-  console.log(`OURS jump when free > j.A > j.S > j.D: ${followText(launch)}`);
-  console.log(`OURS up inside the cancel window > j.A > j.S > j.D: ${followText(superLaunch)}`);
+  const relaunchText = run => !run.relaunch ? 'not tried' : !run.relaunch.hit ? 'whiffs on the downed victim' : run.relaunch.victimDown ? 'hits the downed victim' : 'hits only once the victim has got up (a new combo)';
+  const opening = [...LAUNCH_STARTER, '2D'].join('>'), cancelled = superLaunch.superJump && superLaunch.takeoffFrame === 1 ? ' (super jump on the first free frame, no squat)' : '';
+  console.log(`\n== launcher follow-up\nOURS ${opening} launch: victim airborne ${launch.victimAirtime}f, apex ${M.percent(launch.victimApex)}, recovers at ${launch.victimRecovered}f after the hit`);
+  console.log(`OURS ${opening}, up inside the cancel window${cancelled} > j.A > j.S > j.D: ${followText(superLaunch)}`);
+  console.log(`OURS ${opening}, jump when free > j.A > j.S > j.D: ${followText(launch)}`);
+  console.log(`OURS ${opening}, super jump when free > j.A > j.S > j.D: ${followText(freeSuper)}`);
+  console.log(`OURS second 2D once the victim has landed: ${relaunchText(relaunch)}; once both have landed after the air combo: ${relaunchText(superLaunch)}`);
   if (D) console.log('DFZ  cHP on hit cancels into super jump inside the 9f cancel window; air chain jLP>jLK>jHP>jHK (magic series) by design');
 
   // --- chains

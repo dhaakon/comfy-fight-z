@@ -439,8 +439,11 @@ test('phase 1: sweeps and blowbacks never cancel, and the launcher cancels only 
   notCancelled(['2D', '5D'], {}, 'The launcher does not cancel into a heavy punch');
   notCancelled(['2D', '5S'], {}, 'The launcher does not cancel into a light kick');
   notCancelled(['2D', '5D'], { block: true }, 'nor into a heavy punch on block');
-  const launcher = E.VARIANTS.crouch.heavy, special = M.chain(E, ['2D', '236A']);
-  assert.equal(special.allHit, true, 'The launcher cancels into a special'); assert.ok(special.steps[1].startFrame < busyUntil(special.steps[0], launcher));
+  // Phase 4: on hit the launcher floats its victim above a shot's flight, so a cancelled fireball passes under it, while
+  // a cancelled rising strike juggles it.
+  const launcher = E.VARIANTS.crouch.heavy, special = M.chain(E, ['2D', '236A']), rising = M.chain(E, ['2D', '623A']);
+  assert.equal(special.steps[1].move, 'fireball'); assert.ok(special.steps[1].startFrame < busyUntil(special.steps[0], launcher), 'The launcher cancels into a special');
+  assert.equal(rising.allHit, true, 'A rising strike cancelled from the launcher juggles its victim'); assert.ok(rising.steps[1].startFrame < busyUntil(rising.steps[0], launcher));
   assert.equal(M.chain(E, ['2D', '236A'], { block: true }).connected, true, 'and does so on block');
   const superCancel = M.chain(E, ['2D', 'F+D'], { stocks: 1 });
   assert.equal(superCancel.steps[1].move, 'super'); assert.ok(superCancel.steps[1].startFrame < busyUntil(superCancel.steps[0], launcher), 'The launcher cancels into the super');
@@ -535,8 +538,10 @@ test('phase 1: a stale crouch does not turn toward + S or toward + D into the 23
   // 2A > 6S is a chain once the stick rests in neutral or holds toward before S.
   assert.deepEqual(run([[{ ...D[2], punch: true }, 1], [D[2], 2], [D[5], 5], [{ ...D[6], kick: true }, 1], [D[6], 40]], 70), { moves: 'punch > roundhouse', combo: 2 });
   assert.deepEqual(run([[{ ...D[2], punch: true }, 1], [D[2], 2], [D[6], 7], [{ ...D[6], kick: true }, 1], [D[6], 40]], 70), { moves: 'punch > roundhouse', combo: 2 });
-  // A crouching normal still cancels into the motion rolled from its held down (2, 3, 6).
-  assert.deepEqual(run([[{ ...D[2], heavy: true }, 1], [D[2], 6], [D[3], 1], [{ ...D[6], punch: true }, 1], [{}, 40]], 70), { moves: 'heavy > fireball', combo: 2 });
+  // A crouching normal still cancels into the motion rolled from its held down (2, 3, 6). Phase 4: the launcher's victim
+  // floats above the fireball, so only the launch hits; the crouching jab's fireball connects.
+  assert.deepEqual(run([[{ ...D[2], heavy: true }, 1], [D[2], 6], [D[3], 1], [{ ...D[6], punch: true }, 1], [{}, 40]], 70), { moves: 'heavy > fireball', combo: 1 });
+  assert.deepEqual(run([[{ ...D[2], punch: true }, 1], [D[2], 2], [D[3], 1], [{ ...D[6], punch: true }, 1], [{}, 40]], 70), { moves: 'punch > fireball', combo: 2 });
   assert.equal(M.chain(E, ['2A', '236A']).allHit, true, 'Crouching jab, then the fireball');
 });
 
@@ -1149,4 +1154,221 @@ test('phase 3: landing lag stands and cannot guard, and the CPU answers an incom
   }
   assert.ok(takeoffs.length >= 3, `The CPU jumped in ${takeoffs.length} of 12 seeds`);
   assert.ok(takeoffs.every(t => !t.hop && t.toward), `Every CPU jump over the shot is a full forward jump: ${JSON.stringify(takeoffs)}`);
+});
+
+// ---------------------------------------------------------------- phase 4: launcher combos and juggles
+// The targets of gameplay-audit.md phase 4: the launcher's super-jump cancel, its floating victim, the air chain (each
+// rank once per jump) and juggle decay. COMBO is the exact frame script of 2A > 2D > super jump > j.A > j.S > j.D at point
+// blank, slot 0's input on each tick (hitstop ticks included): 2A on tick 0; 2D on tick 8, the jab's last hitstop tick;
+// up held through the launcher's hitstop (ticks 16-25), so the cancel leaves the ground on tick 25, the first frame after
+// it; A on tick 26, the first airborne frame; S and D in the hitstops of the air jab (tick 31) and of the air kick (42).
+const COMBO = (() => {
+  const script = { 0: { down: true, punch: true }, 8: { down: true, heavy: true }, 26: { punch: true }, 31: { kick: true }, 42: { heavy: true } };
+  for (let t = 1; t < 16; t++) script[t] ||= { down: true };
+  for (let t = 16; t < 26; t++) script[t] = { jump: true };
+  return script;
+})();
+// Plays slot 0's script (tick: input, or a function of the state, the tick and the log so far) against an idle slot 1 at
+// point blank, logging every tick: slot 0's fresh hits (their damage) and both fighters' state after the tick.
+const play = (script, { ticks = 140 } = {}) => {
+  const s = M.arena(E), [a, d] = s.fighters, log = [];
+  for (let t = 0; t < ticks; t++) {
+    const input = (typeof script === 'function' ? script(s, t, log) : script[t]) || {};
+    E.tick(s, [input, {}]);
+    log.push({ t, hits: freshOf(s, 'hit', 0).map(e => e.damage), move: a.move, variant: a.moveVariant, ax: a.x, ay: a.y, avy: a.vy, superJump: a.superJump, airVX: a.airVX,
+      dx: d.x, dy: d.y, dvy: d.vy, launched: d.launched, floating: d.floating, juggle: d.juggle, combo: d.combo, hp: d.hp, stun: d.stun, hurt: E.boxes(d).hurt, hittable: E.boxes(d).hittable });
+  }
+  return { s, log, hits: log.filter(f => f.hits.length) };
+};
+
+test('phase 4: crouching jab, launcher, super jump, air A, air S and air D are a five-hit combo for 17-24 % of a life bar', () => {
+  const { log, hits } = play(COMBO);
+  assert.deepEqual(hits.map(f => [f.t, `${f.move}/${f.variant}`, f.combo]), [[3, 'punch/crouch', 1], [15, 'heavy/crouch', 2], [30, 'punch/air', 3], [41, 'kick/air', 4], [53, 'heavy/air', 5]]);
+  // 28 + 60 + 30, then x0.82 and x0.82 squared for the fourth and fifth hits: 192 points, 19.2 % of the bar.
+  assert.deepEqual(hits.map(f => f.hits[0]), [28, 60, 30, 30, 44]);
+  const damage = E.MAX_HP - log.at(-1).hp;
+  assert.ok(damage >= .17 * E.MAX_HP && damage <= .24 * E.MAX_HP, `${damage} points`);
+  // The cancel has no squat: in the launcher on tick 24 (its last hitstop tick), airborne on 25 at a super jump's 16.5,
+  // aimed at the victim at (victim.x - x) / 22 a frame.
+  const [before, takeoff] = [log[24], log[25]];
+  assert.deepEqual([before.move, before.ay], ['heavy', 0]);
+  assert.deepEqual([takeoff.move, takeoff.ay, takeoff.avy, takeoff.superJump], [null, 1, 16.5, true]);
+  assert.ok(Math.abs(takeoff.airVX - (before.dx - before.ax) / 22) < 1e-9, `airVX ${takeoff.airVX}`);
+  // The victim floats: it leaves at 14 under 0.9 x gravity and drifts away 1 unit a frame.
+  assert.deepEqual([log[15].dvy, log[15].floating, log[15].launched], [14, true, true]);
+  assert.ok(Math.abs(log[25].dvy - (14 - .65 * .9)) < 1e-9 && Math.abs(log[25].dx - log[24].dx - 1) < 1e-9, 'Floating: 0.9 x gravity and a 1-unit drift');
+  // Each air hit re-pops it less, at max(vy x 0.3, 5.5 - 0.8 x juggle count), and the air heavy spikes it down at -7.
+  assert.deepEqual(hits.slice(2).map(f => [M.round(f.dvy, 6), f.juggle]), [[5.5, 1], [4.7, 2], [-7, 3]]);
+  // Every style lands the same combo, and the probe reports it.
+  for (const style of Object.keys(E.STYLES)) {
+    const run = M.launcherFollowUp(E, { route: 'superjump', starter: ['2A'], style });
+    assert.deepEqual([run.superJump, run.takeoffFrame, run.followUpHits, run.combo], [true, 1, 3, 5], style);
+    assert.ok(run.damage >= .17 && run.damage <= .24, `${style}: ${run.damage}`);
+  }
+  const probe = tool('gameplay-probe.cjs', [], { DFZ_REPO: nowhere });
+  assert.ok(probe.stdout.includes('OURS 2A>2D, up inside the cancel window (super jump on the first free frame, no squat) > j.A > j.S > j.D: 3 follow-up hit(s), combo 5, 19.2% damage'), probe.stdout);
+});
+
+test('phase 4: the launcher combo plays the same from either slot and facing', () => {
+  // The exact script from slot 0 facing right (the reference), slot 0 facing left and slot 1 either way: the same hits on
+  // the same ticks, and on every tick the positions mirror the reference's. The super jump aims where the victim stood as
+  // the frame began, so slot 1, which updates after its victim has drifted, aims as slot 0 does (it drifted 1.6 apart).
+  const run = (slot, facing) => {
+    const s = M.arena(E), a = s.fighters[slot], d = s.fighters[1 - slot], frames = [];
+    [a.x, d.x, a.facing, d.facing] = facing === 1 ? [400, 480, 1, -1] : [480, 400, -1, 1];
+    for (let t = 0; t < 140; t++) {
+      E.tick(s, slot ? [{}, COMBO[t] || {}] : [COMBO[t] || {}, {}]);
+      frames.push({ hits: freshOf(s, 'hit', slot).map(e => e.damage), ax: facing * (a.x - 440), ay: a.y, dx: facing * (d.x - 440), dy: d.y, hp: d.hp });
+    }
+    return frames;
+  };
+  const reference = run(0, 1);
+  assert.equal(reference.filter(f => f.hits.length).length, 5);
+  for (const [slot, facing] of [[0, -1], [1, -1], [1, 1]]) run(slot, facing).forEach((f, t) => {
+    const r = reference[t];
+    assert.deepEqual([f.hits, f.hp], [r.hits, r.hp], `slot ${slot} facing ${facing}, tick ${t}`);
+    for (const key of ['ax', 'ay', 'dx', 'dy']) assert.ok(Math.abs(f[key] - r[key]) < 1e-6, `slot ${slot} facing ${facing}, tick ${t}: ${key} ${f[key]} against ${r[key]}`);
+  });
+});
+
+test('phase 4: without the super-jump input no follow-up connects', () => {
+  // The same script without up: A, S and D come in the launcher's recovery, which cancels only into specials and supers.
+  const grounded = Object.fromEntries(Object.entries(COMBO).map(([t, input]) => [t, input.jump ? { down: true } : input]));
+  const { log, hits } = play(grounded);
+  assert.equal(hits.length, 2); assert.ok(log.every(f => f.ay === 0), 'The attacker never leaves the ground');
+  // The launch alone: hittable on the way up, out of juggle reach from its apex, which nothing juggled it before.
+  const flight = log.filter(f => f.launched && f.dy > 0), apex = flight.findIndex(f => f.dvy <= 0);
+  assert.ok(apex > 10 && flight.slice(0, apex).every(f => f.hittable) && flight.slice(apex).every(f => !f.hittable && f.juggle === 4), `apex at ${apex}`);
+  // Jumping or super-jumping (with its squat) once the launcher has recovered arrives after the apex, for every style.
+  for (const style of Object.keys(E.STYLES)) for (const route of ['jump', 'freesuper']) {
+    const run = M.launcherFollowUp(E, { route, starter: ['2A'], style });
+    assert.deepEqual([run.jumped, run.superJump, run.connects], [true, route === 'freesuper', false], `${style} ${route}`);
+  }
+  // The float is 49 airborne frames with an apex of 78 % of a body.
+  const alone = M.launcherFollowUp(E, { route: 'stay' });
+  assert.deepEqual([alone.victimAirtime, alone.victimApex], [49, .78]);
+});
+
+test('phase 4: a second launcher after the landing whiffs on the downed victim', () => {
+  // 2A > 2D with no follow-up, down held; then a second 2D pressed on tick k, for every k from the attacker's first free
+  // tick until the victim can be hit again: it never connects, on the victim falling out of juggle reach or lying down.
+  const hold = t => t < 16 ? COMBO[t] || { down: true } : { down: true };
+  const dry = play((s, t) => hold(t), { ticks: 160 }).log;
+  const free = dry.findIndex((f, t) => t > 15 && !f.move) + 1, landed = dry.findIndex(f => f.launched && f.dy === 0);
+  const rehit = dry.findIndex((f, t) => t > landed && f.hittable);
+  assert.ok(free > 15 && landed > free && rehit > landed + 30, `free ${free}, landed ${landed}, hittable again ${rehit}`);
+  assert.ok(dry.slice(landed, rehit).every(f => f.hurt === null || f.stun === 0), 'Lying down it has no box');
+  let tried = 0;
+  for (let k = free; k + 12 <= rehit; k++, tried++) {
+    const { hits } = play((s, t) => t === k ? { down: true, heavy: true } : hold(t), { ticks: k + 14 });
+    assert.equal(hits.length, 2, `A second launcher pressed on tick ${k} whiffs`);
+  }
+  assert.ok(tried > 40, `${tried} timings`);
+  // The harness agrees: a second launcher once the victim has landed whiffs.
+  assert.deepEqual(M.launcherFollowUp(E, { route: 'stay', starter: ['2A'], relaunch: true }).relaunch, { attempted: true, hit: false, victimDown: null });
+});
+
+test('phase 4: the combo counter ends when the victim lands', () => {
+  // The exact combo, then 2D as soon as the attacker can act and the victim can be hit again.
+  let relaunch = null;
+  const { log, hits } = play((s, t, so) => {
+    if (t <= 42) return COMBO[t];
+    if (relaunch === null && s.fighters[0].y === 0 && so.at(-1).hittable && M.canAct(E, s, 0)) relaunch = t;
+    return relaunch === null ? {} : { down: true, heavy: t === relaunch };
+  }, { ticks: 200 });
+  const landed = log.findIndex(f => f.launched && f.dy === 0), stood = log.findIndex((f, t) => t > landed && !f.launched);
+  assert.deepEqual(log.slice(0, landed).filter(f => f.hits.length).map(f => f.combo), [1, 2, 3, 4, 5]);
+  // From the landing until it stands the victim has no box and cannot be hit, and the counter stays at five hits.
+  assert.ok(stood > landed && log.slice(landed, stood).every(f => f.hurt === null && !f.hittable && f.combo === 5), `landed ${landed}, stood ${stood}`);
+  // The next hit starts a new combo at full damage.
+  assert.ok(relaunch > stood);
+  assert.deepEqual([hits.length, hits.at(-1).combo, hits.at(-1).hits[0]], [6, 1, 60]);
+});
+
+test('phase 4: the air chain cannot repeat a rank in one jump, and chains on hit or block', () => {
+  // Slot 0 jumps (a super jump: down, then up held) 600 units from slot 1 and presses a button on given airborne frames.
+  // Returns the air moves started, as move@airborne frame, and the ranks the jump used.
+  const airPresses = (presses, superJump = true) => {
+    const s = M.arena(E, { distance: 600 }), a = s.fighters[0], started = [];
+    let air = 0;
+    for (let t = 0; t < 140; t++) {
+      if (a.y > 0) air++;
+      const input = a.y > 0 ? presses[air] ? { [presses[air]]: true } : {} : air ? {} : t === 0 && superJump ? { down: true } : { jump: true };
+      const [move, frame] = [a.move, a.moveFrame];
+      E.tick(s, [input, {}]);
+      if (a.move && (a.move !== move || a.moveFrame < frame)) started.push(`${a.move}@${air}`);
+      if (air && a.y === 0) return { started, ranks: [...a.airRanks] };
+    }
+    return null;
+  };
+  // A super jump: A (18 frames), A again once it is over, S, S again, D. A used button neither starts nor holds up the next.
+  assert.deepEqual(airPresses({ 1: 'punch', 20: 'punch', 23: 'kick', 44: 'kick', 46: 'heavy' }).started, ['punch@1', 'kick@23', 'heavy@46']);
+  assert.deepEqual(airPresses({ 1: 'kick', 22: 'punch', 41: 'kick' }).started, ['kick@1', 'punch@22'], 'Each rank once, whatever the order');
+  // A full jump fitted two jabs before; now one. The ranks reset on landing.
+  assert.deepEqual(airPresses({ 1: 'punch', 20: 'punch' }, false), { started: ['punch@1'], ranks: [] });
+  // Two jumps in a row both start their jab.
+  const s = M.arena(E, { distance: 600 }), a = s.fighters[0], jabs = [];
+  for (let jump = 0, t = 0; jump < 2 && t < 200; t++) {
+    const airborne = a.y > 0;
+    E.tick(s, [airborne ? { punch: !(t % 2) } : { jump: true }, {}]);
+    if (airborne && a.move === 'punch' && a.moveFrame === 1) jabs.push(jump);
+    if (airborne && a.y === 0) jump++;
+  }
+  assert.deepEqual(jabs, [0, 1]);
+  // On hit: once the combo's air heavy is over (tick 73), presses of A, S and D start nothing more in that jump.
+  const after = play({ ...COMBO, 76: { punch: true }, 82: { kick: true }, 88: { heavy: true } }).log;
+  const done = after.findIndex(f => f.t > 53 && f.move === null), airborneAfter = after.slice(done).filter(f => f.ay > 0);
+  assert.ok(done === 73 && airborneAfter.length > 15 && airborneAfter.every(f => f.move === null), `No air normal after j.A > j.S > j.D (over on tick ${done})`);
+  // On block: a super jump at 70 units against a standing guard chains j.A > j.S > j.D, each pressed on the frame after
+  // the previous contact and starting before the previous move has ended.
+  const g = M.arena(E, { distance: 70 }), [ga, gd] = g.fighters, blocks = [];
+  let air = 0, step = -1, contact = false;
+  for (let t = 0; t < 120; t++) {
+    if (ga.y > 0) air++;
+    let input = ga.y === 0 ? air ? {} : t === 0 ? { down: true } : { jump: true } : {};
+    if ((air === 1 && step < 0) || (contact && step < 2)) input = { [['punch', 'kick', 'heavy'][++step]]: true };
+    const previous = ga.move;
+    E.tick(g, [input, { right: true }]);
+    contact = freshOf(g, 'block', 0).length + freshOf(g, 'hit', 0).length > 0;
+    if (freshOf(g, 'block', 0).length) blocks.push(ga.move);
+    // Each step is a cancel: the next move replaces the previous one while it is still under way.
+    if (ga.move && ga.move !== previous) assert.ok(previous === null ? step === 0 : step > 0, `${ga.move} after ${previous}`);
+    if (air && ga.y === 0) break;
+  }
+  assert.deepEqual(blocks, ['punch', 'kick', 'heavy'], 'Blocked j.A > j.S > j.D');
+  assert.equal(gd.hp, E.MAX_HP);
+});
+
+test('phase 4: every air hit on a launched victim re-pops it less, the air heavy spikes it and four end the juggle', () => {
+  // A launched victim held 100 up with vertical speed vy and juggle count j, hit by a staged jab, or by an air heavy from
+  // 150 up. Returns its vertical speed after the hit (null if nothing hit).
+  const pop = (j, vy = 0, air = false) => {
+    const s = M.arena(E), [a, d] = s.fighters;
+    Object.assign(d, { launched: true, y: 100, vy, stun: 30, juggle: j, pose: 'tumble' });
+    if (air) Object.assign(a, { move: 'heavy', moveVariant: 'air', moveFrame: E.VARIANTS.air.heavy.startup - 1, y: 150, vy: 0, airRanks: [2] });
+    else Object.assign(a, { move: 'punch', moveVariant: 'standing', moveFrame: E.MOVES.punch.startup - 1 });
+    E.tick(s, [{}, {}]);
+    return freshOf(s, 'hit', 0).length ? M.round(d.vy, 6) : null;
+  };
+  // Falling (vy 0 is -0.65 by the hit): 5.5 - 0.8 x the juggle count; rising fast, 30 % of its speed (19.35 -> 5.805).
+  assert.deepEqual([0, 1, 2, 3].map(j => pop(j)), [5.5, 4.7, 3.9, 3.1]);
+  assert.equal(pop(0, 20), M.round(19.35 * .3, 6));
+  assert.equal(pop(4), null, 'After four air hits nothing more lands');
+  assert.equal(pop(1, 0, true), -7, 'The air heavy spikes it down');
+  // Only the launcher floats: the rising strike keeps its launch, 9 up under full gravity, drifting 2.2 a frame.
+  const s = M.arena(E), d = s.fighters[1], queue = M.inputFrames('623A');
+  let launch = null;
+  for (let t = 0; t < 40 && !launch; t++) { E.tick(s, [queue.shift() || {}, {}]); if (freshOf(s, 'hit', 0).length) launch = { vy: d.vy, floating: d.floating, x: d.x }; }
+  assert.deepEqual([launch.vy, launch.floating], [9, false]);
+  for (let i = s.hitstop; i >= 0; i--) E.tick(s, [{}, {}]);
+  assert.ok(Math.abs(d.vy - (9 - .65)) < 1e-9 && Math.abs(d.x - launch.x - 2.2) < 1e-9, `vy ${d.vy}, drift ${d.x - launch.x}`);
+  // A forward jumper knocked down by a heavy punch drifts away 2.2 a frame: its jump's own speed no longer carries it.
+  const k = M.arena(E), [ka, kd] = k.fighters;
+  Object.assign(kd, { y: 120, vy: 0, airVX: -4.2 });
+  Object.assign(ka, { move: 'heavy', moveVariant: 'standing', moveFrame: E.MOVES.heavy.startup - 1 });
+  E.tick(k, [{}, {}]);
+  assert.equal(kd.launched, true);
+  const x0 = kd.x;
+  for (let i = k.hitstop; i >= 0; i--) E.tick(k, [{}, {}]);
+  assert.ok(Math.abs(kd.x - x0 - 2.2) < 1e-9, `drift ${kd.x - x0}`);
 });
