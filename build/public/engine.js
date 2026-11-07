@@ -66,8 +66,12 @@
   // such as 2,5,6), and its button must follow its last direction within MOTION_PRESS frames, so an old crouch or
   // a walk forward does not turn toward + S into 236 + S.
   const MOTION_REST = 4, MOTION_PRESS = 6;
-  // Base damage from which a strike hits heavy: longer hitstop, heavy sparks and the heavy reaction cel.
+  // Base damage from which a strike hits heavy: longer hitstop and the heavy reaction cel.
   const HEAVY_DAMAGE = 60;
+  // Feel: a counter hit holds its impact COUNTER_HITSTOP frames longer. A slide that a wall stops at WALL_THUD units a
+  // frame or more thuds once (a 'wall' effect). After a K.O. freeze the next SLOW_MOTION ticks move the bodies and the
+  // animation clock on every other tick (state.slowMotion counts them down); the round-over timer keeps its pace.
+  const COUNTER_HITSTOP = 2, WALL_THUD = 1, SLOW_MOTION = 36;
   // Collision rectangles are [x, y, width, height]: x the left edge, y the bottom edge above the ground.
   // Hurtboxes, width x height centred on the fighter: standing and crouching (crouching, crouch-blocking or in a
   // crouching attack) from the feet; airborne and not hit, legs tucked, from AIR_LIFT above the feet (the jump squat
@@ -187,7 +191,9 @@
       dash: 0, dashDir: 0, invulnerable: 0, juggle: 0, combo: 0, comboDamage: 0, counter: false,
       running: false, skid: 0, jumpSquat: 0, hop: false, armor: 0, rekka: 0, dizzy: 0, dizzyMeter: 0,
       quickRise: false, hardKnockdown: false, neutralFrames: 0, standFrames: 0,
-      slide: 0, slideWall: false, rapid: 0, kickDir: 5,
+      // wallThud: the current slide has already thudded against a wall. specialDir: the keypad direction held as F was
+      // pressed, which picks the one-button special (as kickDir picks the light kick or the roundhouse).
+      slide: 0, slideWall: false, wallThud: false, rapid: 0, kickDir: 5, specialDir: 5,
       motions: [], taps: { left: -99, right: -99 }, pressAt: { punch: -99, kick: -99, heavy: -99, special: -99, jump: -99, taunt: -99 },
       buffer: { punch: 0, kick: 0, heavy: 0, special: 0, jump: 0, taunt: 0 } };
   }
@@ -201,7 +207,8 @@
     const profiles = options.profiles || {};
     const cpu = options.cpu !== false;
     const cpuSlots = Array.isArray(options.cpuSlots) ? options.cpuSlots.slice(0, 2).map(Boolean) : [false, cpu];
-    return { frame: 0, motionFrame: 0, fighters: ids.slice(0, 2).map((id, slot) => fighter(id, slot, profiles[id])), projectiles: [], effects: [],
+    // slowMotion: ticks of K.O. slow motion still to run once the K.O. freeze (hitstop) is over; 0 outside it.
+    return { frame: 0, motionFrame: 0, fighters: ids.slice(0, 2).map((id, slot) => fighter(id, slot, profiles[id])), projectiles: [], effects: [], slowMotion: 0,
       time: settings.roundTime * 60, round: 1, phase: 'intro', phaseFrames: 90, winner: null, firstHit: false,
       message: 'ROUND 1', cpu: cpuSlots[1], cpuSlots, options: settings, result: null, draws: 0,
       rng: (Number(options.seed) >>> 0) || 0x2f6b9d3, cpuMemory: [cpuMemory(), cpuMemory()], hitstop: 0 };
@@ -342,13 +349,16 @@
     // super hits slide their own distance either way. A strike's slide that a wall stops pushes a grounded attacker back.
     const sliding = blocked || !target.launched && !airReset, strike = !!move.startup;
     target.slide = sliding ? direction * (move.slide ?? DEFAULT_SLIDE) * (blocked && strike ? BLOCK_SLIDE : 1) * SLIDE_START : 0;
-    target.slideWall = sliding && strike;
+    target.slideWall = sliding && strike; target.wallThud = false;
     // A super's own hits build no meter for its owner (as in Capcom games), so a landed super never pays for itself.
     if (blocked) { if (!move.superHit) gainEnergy(source, damage * METER.block); gainEnergy(target, damage * METER.blockTaken); }
     else { if (!move.superHit) gainEnergy(source, dealt * METER.hit); gainEnergy(target, dealt * METER.hitTaken); }
-    // Contact pauses: 5 light, 7 heavy, 9 for launches and knockdowns, 4 on a guard, with poses, camera and effects held together.
-    state.hitstop = Math.max(state.hitstop, blocked ? 4 : move.launch || move.knockdown ? 9 : damage >= HEAVY_DAMAGE ? 7 : 5);
+    // Contact pauses: 5 light, 7 heavy, 9 for launches and knockdowns, 4 on a guard and COUNTER_HITSTOP more on a counter
+    // hit, with poses, camera and effects held together.
+    state.hitstop = Math.max(state.hitstop, (blocked ? 4 : move.launch || move.knockdown ? 9 : damage >= HEAVY_DAMAGE ? 7 : 5) + (counter ? COUNTER_HITSTOP : 0));
     emit(state, blocked ? 'block' : 'hit', impactX, GROUND - impactY, direction, 18, { heavy: !blocked && (damage >= HEAVY_DAMAGE || !!move.launch), damage: dealt, attacker: source.slot });
+    // Every counter hit also emits 'counter' (the renderers flash the screen negative), banner or not.
+    if (counter) emit(state, 'counter', impactX, GROUND - impactY, direction, 18, { damage: dealt, attacker: source.slot });
     if (!blocked) {
       const slot = source.slot ?? state.fighters.indexOf(source);
       if (!state.firstHit) { state.firstHit = true; banner(state, slot, 'FIRST ATTACK'); }
@@ -358,19 +368,27 @@
     return blocked ? 'block' : 'hit';
   }
   // One frame of a pushback slide: grounded fighters move, then the velocity decays (also while airborne). Returns
-  // how far the fighter moved and the part of a strike slide a wall stopped, which the caller passes to the
-  // attacker. The slide stays out of vx, which is the fighter's own walking movement.
+  // how far the fighter moved, the part a wall stopped (stopped) and the part of a strike slide a wall stopped (wall),
+  // which the caller passes to the attacker. The slide stays out of vx, which is the fighter's own walking movement.
   function slideStep(f) {
-    const out = { moved: 0, wall: 0 };
+    const out = { moved: 0, wall: 0, stopped: 0 };
     if (!f.slide) return out;
     if (f.y === 0) {
       const want = f.x + f.slide, x = clamp(want, WALL, WIDTH - WALL);
-      out.moved = x - f.x; f.x = x;
-      if (f.slideWall) out.wall = want - x;
+      out.moved = x - f.x; f.x = x; out.stopped = want - x;
+      if (f.slideWall) out.wall = out.stopped;
     }
     f.slide *= SLIDE_DECAY;
     if (Math.abs(f.slide) < SLIDE_STOP) { f.slide = 0; f.slideWall = false; }
     return out;
+  }
+  // A slide that a wall stops thuds once, at the wall behind the fighter: the renderers shake and raise dust. force is
+  // the speed the wall stopped, in units a frame.
+  function wallThud(state, f, { stopped }) {
+    if (f.wallThud || Math.abs(stopped) < WALL_THUD) return;
+    f.wallThud = true;
+    const side = Math.sign(stopped);
+    emit(state, 'wall', f.x + side * HALF_BODY, GROUND - f.y - 110, side, 20, { slot: f.slot, force: Math.abs(stopped) });
   }
   // Keypad direction relative to facing: 1 2 3 bottom row, 4 5 6, 7 8 9.
   function direction(input, facing) {
@@ -424,8 +442,13 @@
     const ownShot = state.projectiles.some(p => p.owner === f.slot && !p.super);
     if (grounded && motion([2, 6]) && !ownShot) return style.qcf;
     if (grounded && motion([2, 4]) && !(style.qcb === 'skyshot' && ownShot)) return style.qcb;
-    const button = firstPress(f, ownShot, input);
+    // One-button special: on the ground F takes the direction held as it was pressed, down (1, 2 or 3) the rising
+    // strike, toward the style's 214 special and neutral or back the F shot; in the air F is the shot. A shot (the F
+    // shot or the zoner's sky shot) waits while the fighter's own shot is on screen.
+    const dir = f.specialDir, oneButton = !grounded ? 'special' : dir <= 3 ? 'rising' : dir === 6 || dir === 9 ? style.qcb : 'special';
+    const button = firstPress(f, ownShot && PROJECTILE_MOVES.has(oneButton), input);
     if (!button) return null;
+    if (button === 'special') return oneButton;
     // Forward or back + D up close throws (a back throw swaps sides). The opponent must have been out of stun since
     // the frame began, whichever slot each fighter is in.
     const sideways = (other.x >= f.x ? input.right : input.left) || (other.x >= f.x ? input.left : input.right);
@@ -934,7 +957,7 @@
     // Wins, power stocks and the partial bar carry into the next round, as in KOF.
     state.fighters = state.fighters.map((old, slot) => Object.assign(fighter(old.id, slot, { style: old.style, boss: old.boss, reaches: old.reaches }), { wins: old.wins, energy: old.energy, stocks: old.stocks }));
     state.projectiles = []; state.effects = []; state.time = state.options.roundTime * 60; state.round++;
-    state.winner = null; state.hitstop = 0; state.firstHit = false; state.result = null;
+    state.winner = null; state.hitstop = 0; state.slowMotion = 0; state.firstHit = false; state.result = null;
     // The CPU's memory starts afresh; only its special budget carries over, as the power gauge does, so the limit of
     // CPU_SPECIALS a minute holds across a round change.
     state.cpuMemory = state.cpuMemory.map(old => Object.assign(cpuMemory(), { tokens: Math.min(old?.tokens ?? 0, CPU_TOKEN_CAP) }));
@@ -1007,7 +1030,7 @@
       f.y += f.vy; f.vy -= gravity(f);
       if (f.y <= 0) { f.y = 0; f.vy = 0; f.airVX = 0; f.landFrames = 6; f.airActed = false; f.airTech = false; f.superJump = false; f.floating = false; f.juggled = false; f.airRanks = []; }
     }
-    slideStep(f);
+    return slideStep(f);
   }
   function finishRound(state) {
     const [a, b] = state.fighters;
@@ -1018,7 +1041,7 @@
     state.result = { winner: state.winner, kind, perfect, time: Math.ceil(state.time / 60), hp: state.fighters.map(f => f.hp) };
     state.phase = 'roundover'; state.phaseFrames = 170;
     state.message = kind === 'doubleko' ? 'DOUBLE K.O.' : kind === 'ko' ? 'K.O.' : 'TIME OVER';
-    if (kind === 'ko') state.hitstop = Math.max(state.hitstop, 24);
+    if (kind === 'ko') { state.hitstop = Math.max(state.hitstop, 24); state.slowMotion = SLOW_MOTION; }
     state.fighters.forEach(f => { f.move = null; f.dash = 0; f.running = false; f.jumpSquat = 0; f.dizzy = 0; f.pose = f.hp === 0 ? 'tumble' : f.pose; });
     emit(state, 'ko', WIDTH / 2, 250, 1, 100, { kind });
   }
@@ -1033,8 +1056,13 @@
     }
     if (state.phase === 'roundover') {
       if (state.hitstop > 0) { state.hitstop--; return state; }
-      state.motionFrame++;
-      state.fighters.forEach(f => settle(f));
+      // K.O. slow motion: through SLOW_MOTION ticks after the freeze the bodies and the animation clock move on every
+      // other tick. The round-over timer below keeps its pace, so the round still ends on the same tick.
+      const still = state.slowMotion > 0 && state.slowMotion-- % 2 === 1;
+      if (!still) {
+        state.motionFrame++;
+        state.fighters.forEach(f => wallThud(state, f, settle(f)));
+      }
       // Poses resolve after bodies land: winner celebrates, a time-over loser kneels.
       if (state.phaseFrames === 110) {
         if (state.result?.perfect) state.message = 'PERFECT';
@@ -1061,8 +1089,10 @@
       // A press stays buffered for INPUT_BUFFER simulated frames; its press frame (state.frame, which also runs during
       // hitstop) orders it against other presses and times chords and the throw escape.
       for (const action of Object.keys(f.buffer)) if (input[action] && !f.lastInput[action]) { f.buffer[action] = INPUT_BUFFER; f.pressAt[action] = state.frame; }
-      // The direction held as S is pressed picks the light kick or the roundhouse (keypad digit, 6 = toward).
+      // The direction held as S is pressed picks the light kick or the roundhouse (keypad digit, 6 = toward), and the one
+      // held as F is pressed the one-button special.
       if (input.kick && !f.lastInput.kick) f.kickDir = digit;
+      if (input.special && !f.lastInput.special) f.specialDir = digit;
       // A press of up within SUPER_JUMP_WINDOW frames of a down direction (held on this frame too) is a super jump.
       if (input.down) f.downAt = state.frame;
       if (input.jump && !f.lastInput.jump) f.superPress = state.frame - f.downAt <= SUPER_JUMP_WINDOW;
@@ -1173,8 +1203,9 @@
           if (kind) { f.move = null; f.connected = false; startMove(state, f, next, input, { rapid: kind === 'rapid' }); }
         }
       }
-      // Rhythm rush chains: another attack press during recovery continues the rekka.
-      if (f.move === 'rekka' && f.rekka < MOVES.rekka.chain && f.moveFrame >= MOVES.rekka.startup + MOVES.rekka.active - 1 && NORMALS.some(a => f.buffer[a] > 0)) {
+      // Rhythm rush chains: another attack press during recovery continues the rekka (F too, so a rush started with
+      // → + F goes on with F).
+      if (f.move === 'rekka' && f.rekka < MOVES.rekka.chain && f.moveFrame >= MOVES.rekka.startup + MOVES.rekka.active - 1 && ATTACKS.some(a => f.buffer[a] > 0)) {
         const stage = f.rekka + 1; f.move = null; startMove(state, f, 'rekka', input, { chained: true }); f.rekka = stage;
       }
       if (f.dashRequest && !f.move && f.y === 0 && !f.jumpSquat) {
@@ -1206,6 +1237,8 @@
           if (f.superJump) f.hop = false;
           const movement = (input.right ? 1 : 0) - (input.left ? 1 : 0), run = f.running ? 1.45 : 1, arc = f.superJump ? JUMPS.super : f.hop ? JUMPS.hop : JUMPS.full;
           f.vy = arc.vy * style.jump; f.y = 1; f.airVX = movement * AIR_SPEED * run * arc.vx; f.landFrames = 0; f.running = false;
+          // A super jump's takeoff: the renderers raise a dust ring (the animation layer trails the jump itself).
+          if (f.superJump) emit(state, 'superjump', f.x, GROUND, f.facing, 20, { slot });
         }
         return;
       }
@@ -1278,7 +1311,11 @@
     // Pushback slides move both fighters in one pass after their own updates, so neither slot's decisions see the
     // other's slide earlier. A wall that stops a strike slide passes the stopped part to a grounded attacker.
     const slides = state.fighters.map(slideStep);
-    slides.forEach(({ wall }, slot) => { const other = state.fighters[1 - slot]; if (wall && other.y === 0) other.x = clamp(other.x - wall, WALL, WIDTH - WALL); });
+    slides.forEach((slide, slot) => {
+      const other = state.fighters[1 - slot];
+      if (slide.wall && other.y === 0) other.x = clamp(other.x - slide.wall, WALL, WIDTH - WALL);
+      wallThud(state, state.fighters[slot], slide);
+    });
     // Contact is rectangle overlap: the strike box against the target's body box or extended limb, for a target in
     // front of the attacker. Both fighters' contacts are found before either lands, so equal-timing attacks trade.
     const contacts = strikes.map(strike => ({ ...strike, at: hittable(strike.target) && (strike.target.x - strike.source.x) * strike.direction >= 0
@@ -1364,9 +1401,9 @@
   function moveList(fighterData = {}) {
     const style = STYLES[fighterData.style] || STYLES.balanced, special = fighterData.specialMove?.name || 'Energy Shot';
     return [
-      { name: special, input: '↓↘→ + attack (or F)', note: style.qcf === 'fastball' ? 'Fast short-range shot; F fires a slower standard shot' : style.qcf === 'doubleball' ? 'Twin projectile; F fires a single shot' : 'Projectile; F fires a lighter one-button version' },
-      { name: style.names.dp, input: '→↓↘ + attack', note: 'Invulnerable rising strike' },
-      { name: style.names.qcb, input: '↓↙← + attack', note: '' },
+      { name: special, input: '↓↘→ + attack, or F', note: (style.qcf === 'fastball' ? 'Fast short-range shot; F fires a slower standard shot' : style.qcf === 'doubleball' ? 'Twin projectile; F fires a single shot' : 'Projectile; F fires a lighter one-button version') + ' (F neutral, back or in the air)' },
+      { name: style.names.dp, input: '→↓↘ + attack, or ↓ + F', note: 'Invulnerable rising strike' },
+      { name: style.names.qcb, input: '↓↙← + attack, or → + F', note: '' },
       { name: fighterData.superMove?.name || 'Super Art', input: '↓↘→↓↘→ + attack or F + D', note: 'Costs one power stock; stronger at low health' },
       { name: 'Roundhouse', input: '→ + S', note: 'Long-reach heavy kick; standing only' },
       { name: 'Sweep (low)', input: '↓ + S', note: 'Knockdown; block it crouching' },

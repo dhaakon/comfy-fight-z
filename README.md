@@ -323,15 +323,17 @@ The **power gauge** under each fighter fills only from fighting (landing, blocki
 | Tap forward twice / back twice | Run / backstep |
 | Forward or back + D, close | Throw; press D as you are thrown to escape |
 | → + S / ↓ + S / ↓ + D | Roundhouse kick / sweep (a low knockdown) / launcher |
-| ↓↘→ + A, S or D (or **F**) | Projectile, one on screen at a time; F is a one-button version |
-| →↓↘ + A, S or D | Rising strike, invulnerable on startup |
-| ↓↙← + A, S or D | Style move: charging rush, armored charge, rhythm rush, anti-air shot, command grab or teleport |
+| ↓↘→ + A, S or D, or **F** (neutral, back or in the air) | Projectile, one on screen at a time; F fires a lighter one-button version |
+| →↓↘ + A, S or D, or **↓ + F** | Rising strike, invulnerable on startup |
+| ↓↙← + A, S or D, or **→ + F** | Style move: charging rush, armored charge, rhythm rush, anti-air shot, command grab or teleport |
 | ↓↘→↓↘→ + attack, or **F + D** | Super with a cut-in; costs one stock |
 | **A + S** | Evasive roll; while blocking, a guard-cancel roll for one stock |
 | **S + D** | Blowback knockdown; while blocking, a guard-cancel strike for one stock |
 | **G** | Taunt; drains the opponent's power gauge |
 
 Normals chain upward on hit or block (A → S → D → special or super), and jabs (A, ↓ + A) chain into each other twice. Sweeps and blowbacks never cancel. The launcher floats its victim: on a hit, hold or press ↑ inside its cancel window to super-jump after it at once, then chain air A → S → D (in the air each button works once per jump, on hit or block). Every air hit pops a launched victim up less, air D spikes it down and four air hits end a juggle; a launched victim that nothing hits before the top of its arc falls out of reach, so only a cancel follows a launch. The launcher still cancels into specials and supers, but shots and super beams pass under the floating victim; the rising strike and the rushes juggle it. Combo damage scales after the third hit, and only specials chip. Knocked-down fighters cannot be hit until they stand. Pressing an attack as you land performs a quick rise, except after a hard knockdown. Heavy damage in a short time leaves a fighter dizzy; mash buttons and directions to recover sooner. Counter hits, first attacks and reversals show banners.
+
+**F** is the one-button special: on its own or with back it fires the shot (also in the air), with ↓ it is the rising strike and with → the style move, so every special works without a motion; the direction counts as F is pressed. Hits shake the defender through the impact freeze, and sparks grow with the damage. A counter hit holds the impact two frames longer and flashes the screen negative, a slide that reaches the wall thuds, a super jump leaves an afterimage trail, and a K.O. plays out in slow motion after its freeze.
 
 ![Fighter selection in the included example](comfyui/docs/images/11-example-select.png)
 

@@ -674,3 +674,113 @@ test('slides: super hits slide 6 and the final one knocks down, knockdowns do no
   const hop = ready(), flier = hop.fighters[1]; hop.fighters[0].x = 200; Object.assign(flier, { x: 700, y: 60, vy: 0, slide: 3, airVX: 0 });
   step(hop); assert.equal(flier.x, 700); assert.ok(flier.slide < 3);
 });
+
+// Phase 6: the feel layer's effects and the one-button special by direction.
+const fresh = (s, type) => s.effects.filter(e => e.type === type && e.life === e.maxLife);
+test('a counter hit emits a counter effect and holds its impact two frames longer', () => {
+  // The jab connects on its fourth frame while the defender's heavy punch is still starting up.
+  const s = ready(); step(s, { punch: true }, { heavy: true }, E.MOVES.punch.startup);
+  assert.equal(s.fighters[1].counter, true); assert.equal(s.hitstop, 5 + 2);
+  const [counter] = fresh(s, 'counter');
+  assert.ok(counter, 'A counter effect'); assert.equal(counter.attacker, 0); assert.equal(counter.damage, Math.round(damage('punch') * 1.25));
+  assert.equal(fresh(s, 'hit').length, 1, 'The hit effect still comes with it');
+  const plain = ready(); step(plain, { punch: true }, {}, E.MOVES.punch.startup);
+  assert.equal(plain.hitstop, 5); assert.equal(plain.effects.some(e => e.type === 'counter'), false);
+  // The first hit of a round banners FIRST ATTACK, but a counter still emits its effect.
+  assert.equal(s.effects.find(e => e.type === 'banner').text, 'FIRST ATTACK');
+});
+
+test('a slide that reaches a wall thuds once, a midscreen slide never', () => {
+  const right = E.WIDTH - E.WALL, run = (defenderX, button = 'heavy') => {
+    const s = ready(), [a, d] = s.fighters; d.x = defenderX; a.x = defenderX - 80; const walls = [];
+    for (let t = 0; t < 60; t++) { E.tick(s, [t === 0 ? { [button]: true } : {}, {}]); walls.push(...fresh(s, 'wall')); }
+    return { walls, d };
+  };
+  // A heavy punch 20 units from the right wall slides the defender into it on the fifth slide frame.
+  const near = run(right - 20);
+  assert.equal(near.walls.length, 1); assert.equal(near.d.x, right);
+  assert.equal(near.walls[0].facing, 1); assert.equal(near.walls[0].x, right + 37); assert.ok(near.walls[0].force >= 1 && near.walls[0].force < 3, `force ${near.walls[0].force}`);
+  // A cornered defender thuds on the first slide frame, with the slide's full starting speed.
+  const cornered = run(right, 'punch');
+  assert.equal(cornered.walls.length, 1); assert.ok(Math.abs(cornered.walls[0].force - E.MOVES.punch.slide * .18) < 1e-9);
+  assert.equal(run(700).walls.length, 0);
+  // A new hit gives a new slide, which may thud again.
+  const s = ready(), [a, d] = s.fighters; d.x = right; a.x = right - 80; let walls = 0;
+  for (let t = 0; t < 40; t++) { E.tick(s, [{ punch: t === 0 || t === 15 }, {}]); walls += fresh(s, 'wall').length; }
+  assert.equal(walls, 2);
+});
+
+test('a super jump emits a superjump effect on its takeoff frame, a jump none', () => {
+  for (const superJump of [true, false]) {
+    const s = ready(), f = s.fighters[0]; s.fighters[1].x = 800; const seen = [];
+    if (superJump) step(s, { down: true });
+    for (let t = 0; t < 30; t++) { E.tick(s, [{ jump: true }, {}]); for (const e of fresh(s, 'superjump')) seen.push({ y: f.y, superJump: f.superJump, slot: e.slot, ground: e.y }); }
+    assert.deepEqual(seen, superJump ? [{ y: 1, superJump: true, slot: 0, ground: E.GROUND }] : []);
+  }
+});
+
+test('after a K.O. freeze the next 36 ticks move bodies and the animation clock at half speed, and the round still ends on time', () => {
+  const knockout = () => { const s = ready(); s.fighters[1].hp = 1; let t = 0; while (s.phase !== 'roundover') E.tick(s, [t++ === 0 ? { heavy: true } : {}, {}]); return s; };
+  const s = knockout(), d = s.fighters[1];
+  assert.equal(s.result.kind, 'ko'); assert.equal(s.slowMotion, 36); assert.equal(s.hitstop, 24);
+  step(s, {}, {}, 24); assert.equal(s.hitstop, 0); assert.equal(s.slowMotion, 36, 'Slow motion waits for the freeze');
+  const clock = s.motionFrame, moved = [];
+  for (let i = 0; i < 36; i++) { const x = d.x; step(s); moved.push(d.x !== x); }
+  assert.equal(s.motionFrame - clock, 18); assert.equal(s.slowMotion, 0);
+  assert.deepEqual(moved, Array.from({ length: 36 }, (_, i) => i % 2 === 0), 'The sliding body moves on every other tick');
+  step(s); assert.equal(s.motionFrame - clock, 19, 'Then full speed again');
+  // The round-over timer keeps its pace: the next round starts on the same tick as without slow motion.
+  const fast = knockout(); fast.slowMotion = 0; const slow = knockout(); let ticks = 0;
+  while (slow.phase === 'roundover') { step(slow); step(fast); ticks++; assert.equal(fast.phase, slow.phase, `tick ${ticks}`); }
+  assert.equal(slow.phase, 'intro'); assert.equal(slow.round, 2); assert.equal(slow.slowMotion, 0);
+  // No slow motion after a time over, which has no freeze either.
+  const time = ready(); time.time = 2; step(time, {}, {}, 3); assert.equal(time.result.kind, 'time'); assert.equal(time.slowMotion, 0);
+});
+
+test('F picks its special from the direction held as it is pressed', () => {
+  const start = (input, { style = 'balanced', setup } = {}) => {
+    const s = E.create(['a', 'b'], { cpu: false, profiles: { a: { style, boss: style === 'boss' } } }); s.phase = 'fight';
+    s.fighters[0].x = 400; s.fighters[1].x = 800; setup?.(s); step(s, input); return s.fighters[0].move;
+  };
+  assert.equal(start({ special: true }), 'special', 'Neutral F is the shot');
+  assert.equal(start({ left: true, special: true }), 'special', 'Back + F is the shot');
+  for (const held of [{ down: true }, { down: true, left: true }, { down: true, right: true }]) assert.equal(start({ ...held, special: true }), 'rising', `${Object.keys(held)} + F`);
+  for (const [style, data] of Object.entries(E.STYLES)) assert.equal(start({ right: true, special: true }, { style }), data.qcb, `${style}: toward + F`);
+  // Facing left, toward is left.
+  assert.equal(start({ left: true, special: true }, { setup: s => { s.fighters[0].x = 900; s.fighters[0].facing = -1; } }), 'rush');
+  // In the air F is the shot whatever the direction, and F + D with a stock is the super.
+  for (const held of [{}, { down: true }, { right: true }]) assert.equal(start({ ...held, special: true }, { setup: s => { s.fighters[0].y = 80; } }), 'special');
+  assert.equal(start({ special: true, heavy: true }, { setup: s => { s.fighters[0].stocks = 1; } }), 'super');
+  assert.equal(start({ down: true, special: true, heavy: true }, { setup: s => { s.fighters[0].stocks = 1; } }), 'super');
+  // With its own shot on screen neutral F waits, but down + F and toward + F do not, except the zoner's sky shot.
+  const shot = s => { s.projectiles.push({ owner: 0, x: 600, y: 105, from: 400, facing: 1, damage: 60, life: 150, hits: 1, cooldown: 0, speed: 8, kind: 'special' }); };
+  assert.equal(start({ special: true }, { setup: shot }), null);
+  assert.equal(start({ down: true, special: true }, { setup: shot }), 'rising');
+  assert.equal(start({ right: true, special: true }, { setup: shot }), 'rush');
+  assert.equal(start({ right: true, special: true }, { style: 'zoner', setup: shot }), null);
+});
+
+test('the one-button direction is read as F is pressed, and down + F cancels a crouching jab into the rising strike', () => {
+  // Pressed with down during an impact freeze and let go before it ends: still the rising strike.
+  const s = ready(); s.fighters[1].x = 800; s.hitstop = 4;
+  step(s, { down: true, special: true }); step(s, {}, {}, 3); assert.equal(s.fighters[0].move, null);
+  step(s); assert.equal(s.fighters[0].move, 'rising');
+  // Down + A, then F during the hit's freeze with down still held: the rising strike chains as a combo.
+  const c = ready(); let rising = false;
+  for (let t = 0; t < 40; t++) { E.tick(c, [{ down: true, punch: t === 0, special: t === 6 }, {}]); rising ||= c.fighters[0].move === 'rising'; }
+  assert.ok(rising); assert.equal(c.fighters[1].combo, 2); assert.equal(c.fighters[1].launched, true);
+  // The command list says so.
+  const inputs = Object.fromEntries(E.moveList({ style: 'balanced' }).map(move => [move.name, move.input]));
+  assert.match(inputs['Energy Shot'], /or F$/); assert.match(inputs['Rising Strike'], /↓ \+ F/); assert.match(inputs['Charging Rush'], /→ \+ F/);
+});
+
+test('a rhythm rush started with toward + F goes on with F', () => {
+  const s = E.create(['a', 'b'], { cpu: false, profiles: { a: { style: 'speed' } } }); s.phase = 'fight';
+  const f = s.fighters[0]; f.x = 400; s.fighters[1].x = 1100;
+  step(s, { right: true, special: true }); assert.equal(f.move, 'rekka'); assert.equal(f.rekka, 1);
+  for (const stage of [2, 3]) {
+    step(s, {}, {}, E.MOVES.rekka.startup + E.MOVES.rekka.active - 1); step(s, { special: true }); step(s);
+    assert.equal(f.rekka, stage, `F press ${stage - 1} continues the rush`);
+  }
+  step(s, {}, {}, 40); assert.equal(f.move, null);
+});
