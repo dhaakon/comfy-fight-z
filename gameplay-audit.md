@@ -1,5 +1,7 @@
 # Gameplay audit and plan (2026-11-06)
 
+**Status (2026-11-06).** Phases 0–6 are implemented on the `gameplay` branch; the "As implemented" notes under each phase record every deviation. Phase 7 (paid art, about $1.01) waits for approval.
+
 **Question.** Why does Comfy Fighter Z still play worse than `C:\Users\dhaak\Development\dad-fighter-z-repo` (DFZ, modelled on Marvel vs. Capcom 2) and Capcom fighters, and what fixes it?
 
 **Verdict.** The engine is a sound deterministic KOF-flavoured system, but five of its core numbers and models were never tuned against a reference: normals are slow and sticky, hits teleport the defender instead of sliding them, collision is a one-dimensional reach test, jumps are steerable, and the combo system stops at a three-hit chain with doubled damage. The CPU does not fight like a fighting-game CPU (no hit-confirms, no punishes). None of this needs new art; the main cast simply also lacks the motion cels Midterm Mayhem already has. The plan below is engine-first, measured by the same probe script used for this audit, so an agent can verify each phase without a human at the controls.
@@ -269,6 +271,7 @@ Review fixes (after the phase 2 review; each is pinned by a test in `build/test/
 
 - On a launcher hit, holding or pressing up inside the cancel window super-jumps immediately (no squat) toward the victim: vertical 16.5, horizontal `clamp((victim.x − x) / 22, −7, 7)`.
 - Launch: the victim leaves at vertical speed 14 under 0.9× gravity (about 48 frames, apex about 75 % of a body), drifts away 1 unit per frame and stays helpless until landing.
+- As implemented (integration): a launcher that hit refuses shot and super cancels, because the floating victim is above every shot and the beam; they could only whiff and spend a stock. On block they cancel as before. The rising strike, rushes and the super jump still follow a launch.
 - Air chain: air A → S → D up-rank, each at most once per jump, on hit or block inside the cancel window.
 - Juggle decay: every air hit on a launched victim re-pops them less (vertical speed = max(current × 0.3, 5.5 − 0.8 × juggle count)); air D spikes them down (vertical −7); `JUGGLE_LIMIT` (4) stays as the hard cap and downed victims stay unhittable.
 - Special and super cancels keep their rules. The rising strike keeps its launch.

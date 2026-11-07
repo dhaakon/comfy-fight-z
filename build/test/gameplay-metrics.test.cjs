@@ -439,14 +439,16 @@ test('phase 1: sweeps and blowbacks never cancel, and the launcher cancels only 
   notCancelled(['2D', '5D'], {}, 'The launcher does not cancel into a heavy punch');
   notCancelled(['2D', '5S'], {}, 'The launcher does not cancel into a light kick');
   notCancelled(['2D', '5D'], { block: true }, 'nor into a heavy punch on block');
-  // Phase 4: on hit the launcher floats its victim above a shot's flight, so a cancelled fireball passes under it, while
-  // a cancelled rising strike juggles it.
-  const launcher = E.VARIANTS.crouch.heavy, special = M.chain(E, ['2D', '236A']), rising = M.chain(E, ['2D', '623A']);
-  assert.equal(special.steps[1].move, 'fireball'); assert.ok(special.steps[1].startFrame < busyUntil(special.steps[0], launcher), 'The launcher cancels into a special');
+  // Phase 4: on hit the launcher floats its victim above every shot and the super beam, so it refuses those cancels
+  // there (they could only whiff); a cancelled rising strike juggles the victim. On block the shot and super cancel.
+  const launcher = E.VARIANTS.crouch.heavy, special = M.chain(E, ['2D', '236A'], { block: true }), rising = M.chain(E, ['2D', '623A']);
+  assert.equal(special.steps[1].move, 'fireball'); assert.ok(special.steps[1].startFrame < busyUntil(special.steps[0], launcher), 'The blocked launcher cancels into a special');
   assert.equal(rising.allHit, true, 'A rising strike cancelled from the launcher juggles its victim'); assert.ok(rising.steps[1].startFrame < busyUntil(rising.steps[0], launcher));
-  assert.equal(M.chain(E, ['2D', '236A'], { block: true }).connected, true, 'and does so on block');
-  const superCancel = M.chain(E, ['2D', 'F+D'], { stocks: 1 });
-  assert.equal(superCancel.steps[1].move, 'super'); assert.ok(superCancel.steps[1].startFrame < busyUntil(superCancel.steps[0], launcher), 'The launcher cancels into the super');
+  assert.equal(special.connected, true, 'and the cancelled shot connects on block');
+  const superCancel = M.chain(E, ['2D', 'F+D'], { stocks: 1, block: true });
+  assert.equal(superCancel.steps[1].move, 'super'); assert.ok(superCancel.steps[1].startFrame < busyUntil(superCancel.steps[0], launcher), 'The blocked launcher cancels into the super');
+  const refused = M.chain(E, ['2D', '236A']);
+  assert.ok(refused.steps[1].startFrame === null || refused.steps[1].startFrame >= busyUntil(refused.steps[0], launcher), 'A launcher that hit refuses the shot cancel');
 });
 
 // ---------------------------------------------------------------- phase 1 review: links, guard, supers, motions, slides, symmetry, art
@@ -539,8 +541,8 @@ test('phase 1: a stale crouch does not turn toward + S or toward + D into the 23
   assert.deepEqual(run([[{ ...D[2], punch: true }, 1], [D[2], 2], [D[5], 5], [{ ...D[6], kick: true }, 1], [D[6], 40]], 70), { moves: 'punch > roundhouse', combo: 2 });
   assert.deepEqual(run([[{ ...D[2], punch: true }, 1], [D[2], 2], [D[6], 7], [{ ...D[6], kick: true }, 1], [D[6], 40]], 70), { moves: 'punch > roundhouse', combo: 2 });
   // A crouching normal still cancels into the motion rolled from its held down (2, 3, 6). Phase 4: the launcher's victim
-  // floats above the fireball, so only the launch hits; the crouching jab's fireball connects.
-  assert.deepEqual(run([[{ ...D[2], heavy: true }, 1], [D[2], 6], [D[3], 1], [{ ...D[6], punch: true }, 1], [{}, 40]], 70), { moves: 'heavy > fireball', combo: 1 });
+  // floats above the fireball, so a launcher that hit refuses the shot cancel; the crouching jab's fireball connects.
+  assert.deepEqual(run([[{ ...D[2], heavy: true }, 1], [D[2], 6], [D[3], 1], [{ ...D[6], punch: true }, 1], [{}, 40]], 70), { moves: 'heavy', combo: 1 });
   assert.deepEqual(run([[{ ...D[2], punch: true }, 1], [D[2], 2], [D[3], 1], [{ ...D[6], punch: true }, 1], [{}, 40]], 70), { moves: 'punch > fireball', combo: 2 });
   assert.equal(M.chain(E, ['2A', '236A']).allHit, true, 'Crouching jab, then the fireball');
 });
@@ -1755,4 +1757,23 @@ test('integration: the launcher super jump emits its effect and trails; counters
   assert.equal(slow, 36, 'Thirty-six ticks of slow motion');
   assert.equal(kv.floating, false);
   assert.equal(next - ko, 24 + 170);
+});
+
+test('phase 4: a launcher that hit refuses shot and super cancels (the victim floats above them); on block they cancel', () => {
+  const started = { '236A': 'fireball', F: 'special', 'F+D': 'super' };
+  for (const blocked of [false, true]) for (const next of Object.keys(started)) {
+    const s = M.arena(E, { distance: 80, stocks: [1, 0] }), [a, d] = s.fighters, queue = M.inputFrames('2D');
+    // The follow-up is entered once, right after contact; a cancel is the move replacing the launcher mid-move.
+    let contact = false, entered = false, cancelled = false;
+    for (let t = 0; t < 40; t++) {
+      if (contact && !entered) { queue.push(...M.inputFrames(next)); entered = true; }
+      const before = a.move;
+      E.tick(s, [queue.length ? queue.shift() : {}, blocked ? { right: true } : {}]);
+      contact = contact || (blocked ? d.blockStun : d.launched);
+      if (before === 'heavy' && a.move === started[next]) cancelled = true;
+    }
+    assert.ok(contact, `the launcher ${blocked ? 'is blocked' : 'launches'}`);
+    assert.equal(cancelled, blocked, `${blocked ? 'blocked' : 'hit'} launcher ${blocked ? 'cancels' : 'refuses to cancel'} into ${next}`);
+    if (!blocked) assert.equal(a.stocks, 1, `the refused ${next} spends no stock`);
+  }
 });

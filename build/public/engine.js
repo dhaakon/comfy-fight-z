@@ -465,6 +465,9 @@
     if (!(f.y === 0 || ATTACKS.includes(next)) || meter(f) < (MOVES[next].cost || 0) || f.stocks < (MOVES[next].stocks || 0)) return null;
     const variant = variantOf(f, next, input), data = VARIANTS[variant]?.[next] || MOVES[next];
     if (airRankUsed(f, next, input)) return null;
+    // A launcher that hit floats its victim above every shot and the super beam, so those cancels are refused there
+    // (they could only whiff and waste a stock); on block they cancel as usual.
+    if (move.float && f.hitConfirmed && PROJECTILE_MOVES.has(next)) return null;
     if (data.rank > move.rank && data.rank >= (move.cancelRank || 0)) return 'chain';
     if (move.rank === 0 && data.rank === 0 && f.moveVariant !== 'air' && variant !== 'air' && (f.rapid || 0) < RAPID_FIRE) return 'rapid';
     return null;
