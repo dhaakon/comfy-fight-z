@@ -168,6 +168,8 @@
       // One stance held with a breath; alternating two unrelated drawings makes the body pop.
       result.pose = 'idle'; result.sy = 1 + Math.sin(beat / 11) * .015; result.sx = 1 - Math.sin(beat / 11) * .005;
     }
+    // A super jump leaves an afterimage trail from takeoff to landing, air attacks included (a hit ends it).
+    if (f.superJump && f.y > 0) result.trail = true;
     if (options.reducedMotion) { result.dx = 0; result.dy = 0; result.sx = 1; result.sy = 1; result.rotation = 0; result.trail = false; result.flash = 0; result.spin = 0; }
     return result;
   }

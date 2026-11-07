@@ -282,3 +282,20 @@ test('an anti-air jab reset plays hit, air tech and landing cels in order, with 
   assert.ok(frames.filter(f => f.y > 0).every(f => ['hit', 'jumpfall', 'apex', 'jump'].includes(f.pose)), `airborne cels: ${[...new Set(frames.filter(f => f.y > 0).map(f => f.pose))]}`);
   assert.ok(frames.filter(f => f.phase === 'landing').slice(0, 3).every(f => f.pose === 'land'), 'The landing lag shows the land cel');
 });
+
+test('a super jump trails afterimages from takeoff to landing, air attacks included; a jump does not', () => {
+  const { state, fighter } = scene();
+  Object.assign(fighter, { y: 150, vy: 10, superJump: true });
+  assert.deepEqual([A.sample(fighter, state).phase, A.sample(fighter, state).trail], ['air', true]);
+  fighter.superJump = false; assert.equal(A.sample(fighter, state).trail, false, 'A normal jump keeps no trail');
+  // An air kick's startup has no trail of its own, but inside a super jump it keeps the jump's.
+  Object.assign(fighter, { superJump: true, move: 'kick', moveVariant: 'air', moveFrame: 2 });
+  assert.deepEqual([A.sample(fighter, state).phase, A.sample(fighter, state).trail], ['anticipation', true]);
+  assert.equal(A.sample(fighter, state, { reducedMotion: true }).trail, false);
+  // The squat before takeoff and the landing do not trail.
+  Object.assign(fighter, { move: null, y: 0, vy: 0, jumpSquat: 2 }); assert.equal(A.sample(fighter, state).trail, false);
+  // Through the engine: a super jump trails from its takeoff frame.
+  const s = E.create(['a', 'b'], { cpu: false }); s.phase = 'fight'; const f = s.fighters[0]; s.fighters[1].x = 900;
+  E.tick(s, [{ down: true }, {}]); for (let t = 0; t < 5; t++) E.tick(s, [{ jump: true }, {}]);
+  assert.ok(f.y > 0 && f.superJump); assert.equal(A.sample(f, s).trail, true);
+});

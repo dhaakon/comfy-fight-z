@@ -289,9 +289,11 @@ function catalogue(E) {
   const items = [{ input: 'S+D', kind: 'system' }, { input: '6D', kind: 'system' }, { input: 'A+S', kind: 'system' }, { input: 'gc:S+D', kind: 'system' }, { input: 'gc:A+S', kind: 'system' }, { input: '5G', kind: 'system' }];
   for (const digit of ['5', '6', '4', '2', '3', '1']) for (const button of ['A', 'S', 'D']) items.push({ input: digit + button, kind: 'normal' });
   for (const button of ['A', 'S', 'D']) items.push({ input: 'j.' + button, kind: 'air' });
+  // The motions come before the one-button F directions, so a special that both start (2F is the rising strike, 6F the
+  // style's 214 special) keeps its motion as its row's input.
+  for (const style of styles) for (const motion of ['236A', '623A', '214A']) items.push({ input: motion, kind: 'special', style });
   for (const digit of ['5', '6', '4', '2']) items.push({ input: digit + 'F', kind: 'special' });
   items.push({ input: 'j.F', kind: 'special' });
-  for (const style of styles) for (const motion of ['236A', '623A', '214A']) items.push({ input: motion, kind: 'special', style });
   items.push({ input: 'F+D', kind: 'super' }, { input: 'F+D', kind: 'super', style: styles.includes('boss') ? 'boss' : undefined, boss: true });
   return items;
 }

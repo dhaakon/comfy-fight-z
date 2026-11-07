@@ -30,8 +30,10 @@
     const world = new PIXI.Container(); shaker.addChild(world);
     const fighterLayer = new PIXI.Container(), projectileLayer = new PIXI.Container(), effectLayer = new PIXI.Container(), sparks = new PIXI.Graphics(), fxLines = new PIXI.Graphics();
     const auraLayer = new PIXI.Container(), motionLines = new PIXI.Graphics(), trailLayer = new PIXI.Container(), burstLines = new PIXI.Graphics();
+    // Slide, wall and super-jump dust (the shared view.dust) draws over the fighters' feet with normal blending.
+    const dustLayer = new PIXI.Container();
     motionLines.blendMode = 'add'; burstLines.blendMode = 'add';
-    world.addChild(auraLayer, trailLayer, fighterLayer, motionLines, projectileLayer, effectLayer, fxLines, burstLines, sparks);
+    world.addChild(auraLayer, trailLayer, fighterLayer, dustLayer, motionLines, projectileLayer, effectLayer, fxLines, burstLines, sparks);
     const flash = new PIXI.Graphics(); flash.rect(0, 0, 960, 540).fill(0xffffff); flash.alpha = 0; flash.blendMode = 'add';
     const sparkLayer = new PIXI.Container(); world.addChild(sparkLayer);
     app.stage.addChild(stageLayer, titleTint, shaker, flash);
@@ -128,7 +130,8 @@ void main() {
       const current = A.sample(f, state, { reducedMotion, poses });
       const pose = A.resolvePose(current.pose, poses, f.pose), meta = poses[pose], image = meta && art(meta.src);
       entry.shadow.clear().ellipse(f.x, E.GROUND + 3, Math.max(22, 52 - f.y / 9), Math.max(4, 10 - f.y / 40)).fill({ color: 0x07101e, alpha: .33 });
-      if (!image) { entry.holder.visible = false; entry.trails.visible = false; drawStickFighter(entry.stick, f, data, state); entry.stick.visible = true; return; }
+      const shake = screen.hitShake ? screen.hitShake(f) : 0;
+      if (!image) { entry.holder.visible = false; entry.trails.visible = false; drawStickFighter(entry.stick, f, data, state); entry.stick.x += shake; entry.stick.visible = true; return; }
       entry.stick.visible = false;
       const clock = state?.motionFrame ?? state?.frame ?? 0, base = poses.idle || meta, scale = 225 / (base.bh || base.h || 400);
       if (!entry.history || clock < entry.clock) entry.history = [];
@@ -147,6 +150,8 @@ void main() {
       for (let i = used; i < entry.pool.length; i++) entry.pool[i].holder.visible = false;
       entry.trails.visible = used > 0;
       placeSprite(entry, entry.sprite, pose, f.x, f.y, f.facing, current, poses, E.GROUND, scale);
+      // Capcom hit shake through the impact freeze (the Canvas path's rule).
+      entry.holder.x += shake;
       // Hit flashes brighten the cel; mirror matches recolour the second fighter.
       if (current.flash > 0 || palette) {
         entry.filter.reset();
@@ -218,10 +223,16 @@ void main() {
       for (const e of state.effects) if (!motion.seen.has(e)) {
         motion.seen.add(e);
         if (e.type === 'hit') {
-          motion.flashAlpha = Math.max(motion.flashAlpha, e.heavy ? .55 : .18); burst(e.x, e.y, 0xfff1c9, e.heavy ? 12 : 6, e.heavy ? 150 : 70, e.heavy ? 12 : 8);
-          Object.assign(impact, { aberration: e.heavy ? .012 : .005, blur: e.heavy ? .04 : .015, ring: .02, ringStrength: e.heavy ? .02 : .008, center: toScreen(e.x, e.y) });
-          view.zoom += e.heavy ? .06 : .02;
+          // Spark tiers by damage (light, medium, heavy), as the shared sparks and the Canvas flash use them.
+          const tier = screen.sparkTier ? screen.sparkTier(e) : e.heavy ? 2 : 0, pick = values => values[tier];
+          motion.flashAlpha = Math.max(motion.flashAlpha, pick([.18, .35, .55])); burst(e.x, e.y, 0xfff1c9, pick([6, 9, 12]), pick([70, 110, 150]), pick([8, 10, 12]));
+          Object.assign(impact, { aberration: pick([.005, .008, .012]), blur: pick([.015, .025, .04]), ring: .02, ringStrength: pick([.008, .013, .02]), center: toScreen(e.x, e.y) });
+          view.zoom += pick([.02, .04, .06]);
         }
+        // A counter hit flashes the world negative (one full frame, then a half one) and throws a red burst.
+        if (e.type === 'counter') { Object.assign(impact, { invert: 1.5, center: toScreen(e.x, e.y) }); burst(e.x, e.y, 0xff2a2a, 10, 140, 12); }
+        if (e.type === 'wall') burst(e.x, e.y, 0xfff3c4, 6, 60 + 6 * Math.min(10, e.force || 3), 10);
+        if (e.type === 'superjump') burst(e.x, e.y - 30, colorOf(fighterData(e.slot ?? 0)?.color), 8, 110, 12);
         if (e.type === 'super') {
           motion.flashAlpha = .85; const data = fighterData(e.slot), x = e.x ?? fighters[e.slot]?.x ?? 480, y = e.y ?? E.GROUND - 110;
           burst(x, y, colorOf(data?.color), 18, 320, 26);
@@ -302,8 +313,19 @@ void main() {
           fxLines.circle(p.x, E.GROUND - p.y, radius).fill({ color, alpha: .35 }).circle(p.x, E.GROUND - p.y, radius * .55).fill({ color, alpha: .6 }).circle(p.x, E.GROUND - p.y, radius * .25).fill({ color: 0xfff8da, alpha: .95 });
         });
         state.effects.forEach(e => {
-          if (['ko', 'banner', 'super'].includes(e.type)) return;
+          if (['ko', 'banner', 'super', 'counter'].includes(e.type)) return;
           const progress = e.life / e.maxLife;
+          // The wall thud's streak and the super jump's ground ring are shapes, as on the Canvas path.
+          if (e.type === 'wall') {
+            fxLines.moveTo(e.x, e.y - 100).lineTo(e.x, Math.min(E.GROUND, e.y + 110));
+            for (let i = 0; i < 4; i++) { const y = e.y - 75 + i * 50; fxLines.moveTo(e.x, y).lineTo(e.x - e.facing * (18 + 34 * (1 - progress)), y - 6); }
+            fxLines.stroke({ width: 2 + 5 * progress, color: 0xfff3c4, alpha: progress, cap: 'round' }); return;
+          }
+          if (e.type === 'superjump') {
+            fxLines.ellipse(e.x, e.y, 30 + 80 * (1 - progress), 8 + 7 * (1 - progress));
+            for (const dx of [-26, 0, 26]) fxLines.moveTo(e.x + dx, e.y - 20 - 60 * (1 - progress)).lineTo(e.x + dx, e.y - 70 - 120 * (1 - progress));
+            fxLines.stroke({ width: 3, color: 0xffe7b0, alpha: progress, cap: 'round' }); return;
+          }
           if (effectSprite(effectLayer, effects, e.type, manifest, e.x, e.y, e.facing, progress, e.type === 'powerup' ? 230 : 115)) { effects++; return; }
           const color = e.type === 'block' ? 0x82d6c5 : 0xffc37f, stroke = { width: 3, color, alpha: progress };
           if (e.type === 'dust') fxLines.ellipse(e.x, e.y, 40 * (1 - progress) + 10, 9).stroke(stroke);
@@ -320,6 +342,15 @@ void main() {
         sprite.visible = true; sprite.position.set(pt.x, pt.y); sprite.tint = PIXI.Color.shared.setValue(pt.color).toNumber(); sprite.alpha = Math.max(0, pt.life / pt.max); sprite.scale.set(pt.size * .09);
       }
       for (let i = sparkIndex; i < sparkLayer.children.length; i++) sparkLayer.children[i].visible = false;
+      // Shared rings (blocks, heavy hits, counters) and dust puffs.
+      for (const r of view.rings) fxLines.circle(r.x, r.y, r.r).stroke({ width: r.width * (.4 + .6 * r.life / r.max), color: colorOf(r.color), alpha: Math.max(0, r.life / r.max) });
+      let dustIndex = 0;
+      for (const d of view.dust) {
+        let sprite = dustLayer.children[dustIndex++];
+        if (!sprite) { sprite = new PIXI.Sprite(glowTexture); sprite.anchor.set(.5); dustLayer.addChild(sprite); }
+        sprite.visible = true; sprite.position.set(d.x, d.y); sprite.tint = 0xd2c3a4; sprite.alpha = .5 * Math.max(0, d.life / d.max); sprite.scale.set(d.size / 40);
+      }
+      for (let i = dustIndex; i < dustLayer.children.length; i++) dustLayer.children[i].visible = false;
       sparks.clear();
       app.renderer.render(app.stage);
       // HUD, callouts, cut-in and training read-outs on the overlay canvas.

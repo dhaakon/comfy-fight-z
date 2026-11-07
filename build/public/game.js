@@ -954,9 +954,12 @@
       }
       if (effect.type === 'block' || effect.type === 'armor') cue('sfx_block', .45, 50);
       if (effect.type === 'dust') cue('sfx_land', .25, 120);
+      // Every counter hit stings, with or without its banner; a slide that reaches the wall thuds; a super jump whooshes.
+      if (effect.type === 'counter') cue('sfx_counter', .55, 0);
+      if (effect.type === 'wall') cue('sfx_land', .5, 80);
+      if (effect.type === 'superjump') cue('sfx_dash', .4, 120);
       if (effect.type === 'dizzy') cue('sfx_dizzy', .6, 0);
       if (effect.type === 'banner') {
-        if (effect.text === 'COUNTER') cue('sfx_counter', .55, 0);
         if (arcade && mode === 'arcade' && effect.slot === 0) arcade.score += { 'FIRST ATTACK': 3000, COUNTER: 500, REVERSAL: 2000, 'GUARD CANCEL': 500, 'THROW ESCAPE': 500, 'QUICK RISE': 300 }[effect.text] || 0;
       }
     }
@@ -969,7 +972,13 @@
     const previousPhase = state.phase, previousMoves = state.fighters.map(f => f.move), previousHealth = state.fighters.map(f => f.hp);
     // Keep each rendered fighter object stable for pose transitions and animation trails.
     const fighters = next.fighters.map((fighter, slot) => Object.assign(state.fighters[slot] || {}, fighter));
-    Object.assign(state, next, { fighters });
+    // Effects too: every snapshot carries new copies of the effects already shown. Matched by the frame each was emitted
+    // on (life counts down once a tick), its type, place and facing, they keep their objects, so the renderers' sparks,
+    // flashes (a counter's negative one included) and shakes fire once per effect instead of once per snapshot.
+    const emitted = (e, frame) => `${frame - (e.maxLife - e.life)}|${e.type}|${e.x}|${e.y}|${e.facing}`, shown = new Map();
+    for (const e of state.effects || []) { const key = emitted(e, state.frame); shown.set(key, [...(shown.get(key) || []), e]); }
+    const effects = (next.effects || []).map(e => Object.assign(shown.get(emitted(e, next.frame))?.shift() || {}, e));
+    Object.assign(state, next, { fighters, effects });
     presentState(previousPhase, previousMoves, previousHealth);
   }
   function networkMatch(message, role, side, fresh) {

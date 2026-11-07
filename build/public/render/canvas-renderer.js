@@ -55,11 +55,20 @@
     ctx.strokeStyle = '#1c2a2c'; ctx.lineWidth = 13; ctx.beginPath(); ctx.moveTo(-26 + stride, -8); ctx.lineTo(-5 + stride, -8); ctx.moveTo(27 - stride, -8); ctx.lineTo(45 - stride, -8); ctx.stroke();
     ctx.fillStyle = '#141f24'; ctx.fillRect(-15, -121, 30, 7); ctx.restore();
   }
+  // Capcom hit shake: through the impact freeze a fighter that has just been hit jitters 2 px either way (1 on a guard),
+  // alternating with every simulated frame (or network snapshot), so it holds still while the game is paused. Visual
+  // only; the Pixi path uses it too.
+  function hitShake(f) {
+    if (!state || reducedMotion.matches || !(state.hitstop > 0) || !(f.stun > 0) || f.hitAge !== 0) return 0;
+    return (view.ticks % 2 ? 1 : -1) * (f.blockStun ? 1 : 2);
+  }
   function drawFighter(f, slot) {
     const data = fighterData(slot);
     // Mirror matches recolor the second fighter so both players stay readable.
-    const palette = slot === 1 && selected[0] === selected[1] ? 155 : 0;
+    const palette = slot === 1 && selected[0] === selected[1] ? 155 : 0, shake = hitShake(f);
+    ctx.save(); if (shake) ctx.translate(shake, 0);
     if (!fighterRenderer?.draw(ctx, f, data, art, state, { ground: E.GROUND, height: 225, reducedMotion: reducedMotion.matches, palette })) fallbackFighter(f, data);
+    ctx.restore();
   }
   const PIXEL = "'Press Start 2P', Impact, sans-serif";
   function effect(name, x, y, facing = 1, opacity = 1, size = 120) {
@@ -175,8 +184,12 @@
   // Presentation-only camera: follows the fighters' midpoint across the wider
   // stage, pushes in when they are close and lifts for airborne exchanges.
   const FLOOR = E.GROUND, PARALLAX = .5;
-  const view = { x: (E.WIDTH - 960) / 2, zoom: 1, lift: 0, shake: 0, particles: [], combos: [null, null], seen: new WeakSet(), hpShown: [null, null], clock: { text: '', frames: 0 } };
-  function resetView() { Object.assign(view, { x: (E.WIDTH - 960) / 2, zoom: 1, lift: 0, shake: 0, particles: [], combos: [null, null], seen: new WeakSet(), hpShown: [null, null], clock: { text: '', frames: 0 } }); }
+  // flash: the additive white impact frame; invert: frames of negative flash left (counter hits); dust and rings are
+  // shared with the Pixi path, which draws them itself; beat counts drawn frames (slow-motion sparks) and ticks the
+  // simulated frames drawn (the hit shake; frameSeen is the last one).
+  const freshView = () => ({ x: (E.WIDTH - 960) / 2, zoom: 1, lift: 0, shake: 0, particles: [], dust: [], rings: [], flash: 0, invert: 0, beat: 0, ticks: 0, frameSeen: -1, dustClock: -1, combos: [null, null], seen: new WeakSet(), hpShown: [null, null], clock: { text: '', frames: 0 } });
+  const view = freshView();
+  function resetView() { Object.assign(view, freshView()); }
   function updateCamera(fighters, snap) {
     const [a, b] = fighters, distance = Math.abs(a.x - b.x), mid = (a.x + b.x) / 2;
     // MvC-style framing: fighters fill over half the frame when close (zoom 1.42, about 59% of the height)
@@ -206,21 +219,72 @@
     const offset = (view.x / travel) * (960 * scale - 960);
     ctx.save(); ctx.translate(-offset, FLOOR * (1 - scale) + view.lift * .5); ctx.scale(scale, scale); stageDraw(); ctx.restore();
   }
+  // Spark tiers by the damage a hit dealt, on the 1000-point life scale: light under 45, medium under 75, heavy from 75.
+  // Each tier sets the sparks, the camera shake and the impact flash (both renderers); a block throws cool sparks and a ring.
+  const SPARK_TIERS = [
+    { count: 8, speed: 6, size: 3, color: '#fff1c9', shake: 3, flash: .18 },
+    { count: 13, speed: 8, size: 3.5, color: '#ffe08a', shake: 5, flash: .35 },
+    { count: 20, speed: 10, size: 4.5, color: '#ffd27a', shake: 8, flash: .55 }
+  ];
+  const sparkTier = e => { const damage = (e.damage || 0) * 1000 / LIFE; return damage < 45 ? 0 : damage < 75 ? 1 : 2; };
   function spawnSparks(e) {
     if (reducedMotion.matches) return;
-    const count = e.type === 'block' ? 6 : e.heavy ? 18 : 10, color = e.type === 'block' ? '#9fd8e6' : e.heavy ? '#ffd27a' : '#fff1c9';
+    const block = e.type === 'block', tier = SPARK_TIERS[block ? 0 : sparkTier(e)];
+    const count = block ? 6 : tier.count, color = block ? '#9fd8e6' : tier.color, speed = block ? 6 : tier.speed;
     for (let i = 0; i < count; i++) {
-      const angle = (Math.random() - .5) * Math.PI * 1.2 + (e.facing > 0 ? 0 : Math.PI), speed = 3 + Math.random() * (e.heavy ? 9 : 6);
-      view.particles.push({ x: e.x, y: e.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2, life: 14 + Math.random() * 10, max: 24, color, size: e.heavy ? 4 : 3 });
+      const angle = (Math.random() - .5) * Math.PI * 1.2 + (e.facing > 0 ? 0 : Math.PI), v = 3 + Math.random() * speed;
+      view.particles.push({ x: e.x, y: e.y, vx: Math.cos(angle) * v, vy: Math.sin(angle) * v - 2, life: 14 + Math.random() * 10, max: 24, color, size: block ? 3 : tier.size });
     }
+    if (block) ring(e.x, e.y, 12, 3, '#9fd8e6', 3, 12);
+    else if (tier === SPARK_TIERS[2]) ring(e.x, e.y, 18, 6, '#ffe600', 4, 12);
+  }
+  // Rings expand and fade; dust puffs drift, swell and fade. Both live in world space.
+  function ring(x, y, r, grow, color, width, life) { view.rings.push({ x, y, r, grow, color, width, life, max: life }); }
+  function dust(x, y, dir, count, size) {
+    if (reducedMotion.matches) return;
+    for (let i = 0; i < count; i++) view.dust.push({ x: x + (Math.random() - .5) * 12, y: y - Math.random() * 8, vx: dir * (.5 + Math.random() * 1.6), vy: -(.2 + Math.random() * .9), size: size * (.7 + Math.random() * .6), life: 18 + Math.random() * 12, max: 30 });
   }
   function stepParticles() {
+    // K.O. slow motion: sparks and dust move on every other drawn frame too.
+    if (state?.slowMotion > 0 && !(state.hitstop > 0) && view.beat % 2) return;
     view.particles = view.particles.filter(pt => pt.life > 0);
     for (const pt of view.particles) { pt.x += pt.vx; pt.y += pt.vy; pt.vy += .45; pt.vx *= .92; pt.life--; }
+    view.dust = view.dust.filter(d => d.life > 0);
+    for (const d of view.dust) { d.x += d.vx; d.y += d.vy; d.vx *= .93; d.vy *= .96; d.size *= 1.02; d.life--; }
+    view.rings = view.rings.filter(r => r.life > 0);
+    for (const r of view.rings) { r.r += r.grow; r.grow *= .9; r.life--; }
   }
   function drawParticles() {
     for (const pt of view.particles) {
       ctx.globalAlpha = Math.max(0, pt.life / pt.max); ctx.fillStyle = pt.color; ctx.fillRect(pt.x - pt.size / 2, pt.y - pt.size / 2, pt.size, pt.size);
+    }
+    for (const r of view.rings) {
+      ctx.globalAlpha = Math.max(0, r.life / r.max); ctx.strokeStyle = r.color; ctx.lineWidth = r.width * (.4 + .6 * r.life / r.max);
+      ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  // A soft dust puff, drawn once: a radial gradient that fades to nothing at its edge.
+  let puff = null;
+  function puffImage() {
+    if (puff !== null) return puff;
+    try {
+      const image = root.document?.createElement('canvas'), g = image?.getContext('2d');
+      if (!g) return (puff = false);
+      image.width = image.height = 64;
+      const gradient = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gradient.addColorStop(0, 'rgba(214,200,170,.9)'); gradient.addColorStop(.5, 'rgba(214,200,170,.45)'); gradient.addColorStop(1, 'rgba(214,200,170,0)');
+      g.fillStyle = gradient; g.fillRect(0, 0, 64, 64); puff = image;
+    } catch { puff = false; }
+    return puff;
+  }
+  function drawDust() {
+    const image = puffImage();
+    ctx.fillStyle = '#d6c8aa';
+    for (const d of view.dust) {
+      ctx.globalAlpha = .6 * Math.max(0, d.life / d.max);
+      if (image) ctx.drawImage(image, d.x - d.size * 1.3, d.y - d.size, d.size * 2.6, d.size * 2);
+      else { ctx.globalAlpha *= .5; ctx.beginPath(); ctx.ellipse(d.x, d.y, d.size, d.size * .75, 0, 0, Math.PI * 2); ctx.fill(); }
     }
     ctx.globalAlpha = 1;
   }
@@ -266,7 +330,8 @@
   // Reads the frame the caller already tracks, sizes the canvas to the device and clears it. Nothing here mutates game state.
   function beginFrame(frame) {
     ({ state, manifest, stageIndex, selected, mode, arcade, training, cutin, goFrames, fighterRenderer, bestScore } = frame);
-    reducedMotion.matches = !!frame.reducedMotion; debugBoxes = !!frame.debugBoxes;
+    reducedMotion.matches = !!frame.reducedMotion; debugBoxes = !!frame.debugBoxes; view.beat++;
+    if (state && state.frame !== view.frameSeen) { view.frameSeen = state.frame; view.ticks++; }
     const density = Math.min(3, Math.max(1, (canvas.clientWidth || 960) * Math.min(root.devicePixelRatio || 1, 3) / 960));
     const backing = Math.round(960 * density);
     if (canvas.width !== backing) { canvas.width = backing; canvas.height = Math.round(540 * density); }
@@ -274,21 +339,57 @@
     ctx.clearRect(0, 0, 960, 540);
     return state?.fighters || E.create(selected.map(i => manifest.fighters[i].id)).fighters;
   }
-  // New engine effects shake the camera and spawn sparks exactly once each.
+  // New engine effects shake the camera and spawn sparks exactly once each. The impact flash and the negative flash are
+  // drawn by the Canvas path only (Pixi has its own); sparks, dust and rings are shared.
   function observeEffects() {
     if (state) for (const e of state.effects) if (!view.seen.has(e)) {
       view.seen.add(e);
-      if (e.type === 'hit') { spawnSparks(e); view.shake = Math.max(view.shake, e.heavy ? 8 : 3); }
+      if (e.type === 'hit') { const tier = SPARK_TIERS[sparkTier(e)]; spawnSparks(e); view.shake = Math.max(view.shake, tier.shake); view.flash = Math.max(view.flash, tier.flash); }
       if (e.type === 'block') { spawnSparks(e); view.shake = Math.max(view.shake, 1.5); }
+      if (e.type === 'counter') { view.invert = 2; if (!reducedMotion.matches) ring(e.x, e.y, 20, 7, '#ff2a2a', 5, 14); }
+      if (e.type === 'wall') {
+        // A wall thud: a shake by the force of the slide and dust down the wall and along the floor.
+        const force = Math.min(10, e.force || 3);
+        view.shake = Math.max(view.shake, 2 + force * .6);
+        dust(e.x, E.GROUND - 6, -e.facing, 3 + Math.round(force / 2), 12 + force * 1.5);
+        for (let i = 1; i <= 3; i++) dust(e.x, E.GROUND - i * 55, -e.facing, 1, 8 + force);
+      }
+      if (e.type === 'superjump') { dust(e.x - 20, E.GROUND - 4, -1, 4, 16); dust(e.x + 20, E.GROUND - 4, 1, 4, 16); view.shake = Math.max(view.shake, 2); }
       if (e.type === 'super') view.shake = Math.max(view.shake, 10);
       if (e.type === 'ko') view.shake = Math.max(view.shake, 14);
     }
+    // Slide dust: a puff at the feet of a grounded fighter sliding a unit a frame or more, once per simulated frame.
+    if (state && state.motionFrame !== view.dustClock) {
+      view.dustClock = state.motionFrame;
+      for (const f of state.fighters) if (f.y === 0 && Math.abs(f.slide || 0) >= 1) {
+        const speed = Math.abs(f.slide), dir = Math.sign(f.slide);
+        dust(f.x - dir * 22, E.GROUND - 4, -dir, speed > 4 ? 2 : 1, 8 + speed * 2);
+      }
+    }
+  }
+  // Effects drawn as shapes in world space: the wall thud's streak, the super jump's ground ring and the counter ring.
+  const FEEL_EFFECTS = new Set(['wall', 'superjump', 'counter']);
+  function feelEffect(e, progress) {
+    ctx.save(); ctx.globalAlpha = progress; ctx.lineCap = 'round';
+    if (e.type === 'wall') {
+      ctx.strokeStyle = '#fff3c4'; ctx.lineWidth = 2 + 5 * progress;
+      ctx.beginPath(); ctx.moveTo(e.x, e.y - 100); ctx.lineTo(e.x, Math.min(E.GROUND, e.y + 110));
+      for (let i = 0; i < 4; i++) { const y = e.y - 75 + i * 50; ctx.moveTo(e.x, y); ctx.lineTo(e.x - e.facing * (18 + 34 * (1 - progress)), y - 6); }
+      ctx.stroke();
+    } else if (e.type === 'superjump') {
+      ctx.strokeStyle = '#ffe7b0'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.ellipse(e.x, e.y, 30 + 80 * (1 - progress), 8 + 7 * (1 - progress), 0, 0, Math.PI * 2);
+      for (const dx of [-26, 0, 26]) { ctx.moveTo(e.x + dx, e.y - 20 - 60 * (1 - progress)); ctx.lineTo(e.x + dx, e.y - 70 - 120 * (1 - progress)); }
+      ctx.stroke();
+    }
+    ctx.restore();
   }
   function drawWorld(fighters) {
     stageLayer();
     if (!state && ui('title')) { ctx.globalAlpha = .6; cover(ui('title'), 0, 0, 960, 540); ctx.globalAlpha = 1; }
     ctx.save(); worldTransform();
     fighters.forEach(drawFighter);
+    drawDust();
     if (state) {
       state.projectiles.forEach(p => {
         const size = p.super ? 150 : 85, radius = p.super ? 55 : 28;
@@ -300,6 +401,7 @@
       state.effects.forEach(e => {
         if (['ko', 'banner', 'super'].includes(e.type)) return;
         const progress = e.life / e.maxLife;
+        if (FEEL_EFFECTS.has(e.type)) { feelEffect(e, progress); return; }
         if (effect(e.type, e.x, e.y, e.facing, progress, e.type === 'powerup' ? 230 : 115)) return;
         ctx.save(); ctx.globalAlpha = progress; ctx.strokeStyle = e.type === 'block' ? '#82d6c5' : '#ffc37f'; ctx.lineWidth = 3;
         ctx.beginPath(); if (e.type === 'dust') ctx.ellipse(e.x, e.y, 40 * (1 - progress) + 10, 9, 0, 0, 7);
@@ -344,17 +446,26 @@
       }
     }
   }
+  // The impact frames over the world (not the HUD), as on the Pixi path: an additive white flash on hits, by spark tier,
+  // and a negative flash for two frames on a counter hit.
+  function impactFrames() {
+    if (!reducedMotion.matches && state) {
+      if (view.flash > .02) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = view.flash; ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 960, 540); ctx.restore(); }
+      if (view.invert > 0) { ctx.save(); ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 960, 540); ctx.restore(); }
+    }
+    view.flash = view.flash * .62 < .02 ? 0 : view.flash * .62; view.invert = Math.max(0, view.invert - 1);
+  }
   function draw(frame) {
     const fighters = beginFrame(frame);
     updateCamera(fighters, !state); observeEffects(); stepParticles();
-    drawWorld(fighters); drawScreen(fighters);
+    drawWorld(fighters); impactFrames(); drawScreen(fighters);
   }
     // Colour of one point in the 960x540 layout, for tests that check the rendered stage.
     function pixel(x, y) {
       const k = canvas.width / 960, d = ctx.getImageData(Math.round(x * k), Math.round(y * k), 1, 1).data;
       return [d[0], d[1], d[2]];
     }
-    return { kind: 'canvas', draw, reset: resetView, pixel, view, beginFrame, updateCamera, observeEffects, stepParticles, drawScreen, drawHitboxes, clear: () => ctx.clearRect(0, 0, 960, 540) };
+    return { kind: 'canvas', draw, reset: resetView, pixel, view, beginFrame, updateCamera, observeEffects, stepParticles, drawScreen, drawHitboxes, hitShake, sparkTier, clear: () => ctx.clearRect(0, 0, 960, 540) };
   }
   root.CFZCanvasRenderer = { create: createCanvasRenderer };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
