@@ -186,6 +186,9 @@
     const targetLift = reducedMotion.matches ? 0 : Math.min(70, highest * .35);
     const ease = snap ? 1 : .12;
     view.zoom += (targetZoom - view.zoom) * (snap ? 1 : .08); view.zoom = Math.min(1.6, view.zoom); view.lift += (targetLift - view.lift) * ease;
+    // A fast rise (a super jump) outruns the easing: never stay zoomed in so far that the highest fighter's head, a body
+    // height above its feet, leaves the top of the frame.
+    view.zoom = Math.max(1, Math.min(view.zoom, (FLOOR + view.lift - 8) / (highest + E.SPRITE_HEIGHT)));
     const span = 960 / view.zoom, targetX = Math.max(0, Math.min(E.WIDTH - span, mid - span / 2));
     view.x += (targetX - view.x) * (snap ? 1 : .18);
     view.x = Math.max(0, Math.min(E.WIDTH - span, view.x));

@@ -618,6 +618,38 @@ function hitAt(E, c) {
   }
   return { hit: contact === 'hit', contact, knockdown, landedStanding: contact === 'hit' && !knockdown };
 }
+// Projectile jumps. Slot 0 (shooterStyle, balanced by default) fires `shot` (a numpad input such as 5F, 236A or F+D)
+// at slot 1 (`style`, the jumper) `distance` units away. The jumper starts its jump on frame k after the shot's first
+// input, for every k from 0 to `frames`: up held `hold` frames straight up (neutral), toward the shooter (forward) or
+// away (back); a hop taps up for one frame; a super jump holds down on frame k and up for `hold` frames after it. A
+// timing clears the shot when every projectile it fires leaves without touching the jumper (no hit and no block).
+const JUMP_KINDS = ['neutral', 'forward', 'back', 'hop', 'super'];
+function jumpPress(kind, t, k, hold, facing) {
+  if (kind === 'hop') return t === k ? { jump: true } : {};
+  if (kind === 'super') return t === k ? { down: true } : t > k && t <= k + hold ? { jump: true } : {};
+  return t >= k && t < k + hold ? dirInput(kind === 'forward' ? 9 : kind === 'back' ? 7 : 8, facing) : {};
+}
+function clearsShot(E, cfg, k) {
+  const s = arena(E, { distance: cfg.distance, styles: [cfg.shooterStyle, cfg.style], boss: [cfg.shooterStyle === 'boss', cfg.style === 'boss'], stocks: [E.STOCK_MAX || 3, 0] });
+  const queue = inputFrames(cfg.shot, 1), jumper = s.fighters[1];
+  let fired = false;
+  for (let t = 0; t < 400; t++) {
+    E.tick(s, [t < queue.length ? queue[t] : {}, jumpPress(cfg.jump, t, k, cfg.hold, jumper.facing)]);
+    if (freshContacts(s, 0).length) return false;
+    const shots = s.projectiles.filter(p => p.owner === 0);
+    if (shots.length) fired = true;
+    // Once every shot is gone or past the widest body box (55 units either side of the centre), none can touch it.
+    if (fired && shots.every(p => (p.x - jumper.x) * p.facing > (E.projectileBox ? E.projectileBox(p)[2] / 2 : 25) + 56)) return true;
+  }
+  return false;
+}
+function projectileJump(E, options = {}) {
+  const { style = 'balanced', shooterStyle = 'balanced', shot = '5F', distance = 350, jump = 'neutral', frames = 110, hold = 6 } = options;
+  if (!JUMP_KINDS.includes(jump)) throw new Error(`Unknown jump kind "${jump}": use ${JUMP_KINDS.join(', ')}`);
+  const cfg = { style, shooterStyle, shot: parseInput(shot), distance, jump, hold }, timings = [];
+  for (let k = 0; k <= frames; k++) if (clearsShot(E, cfg, k)) timings.push(k);
+  return { style, shooterStyle, shot: cfg.shot.text, distance, jump, frames, hold, timings, clears: timings.length };
+}
 // The vertical shape of hits: each move against an opponent held at each height, standing and crouching, plus
 // any explicit cases.
 function hitShape(E, options = {}) {
@@ -733,7 +765,7 @@ const signed = value => typeof value === 'number' ? (value > 0 ? '+' : '') + val
 const percent = (value, digits = 1) => typeof value === 'number' ? (value * 100).toFixed(digits) + '%' : '-';
 
 module.exports = {
-  measureMove, measureAll, jumps, chain, launcherFollowUp, hitShape, hitAt, cpuVsCpu, healthPacing, neutralMeter,
+  measureMove, measureAll, jumps, chain, launcherFollowUp, hitShape, hitAt, projectileJump, JUMP_KINDS, cpuVsCpu, healthPacing, neutralMeter,
   arena, parseInput, prettyInput, inputFrames, dirInput, canAct, actFrame, discover, catalogue, moveInfo, maxLife, bodyHeight, gauge, passiveRate, loadReference,
   signed, percent, round, POINT_BLANK, FAR
 };

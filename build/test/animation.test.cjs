@@ -237,3 +237,48 @@ test('pose resolution follows fallbacks to a required pose', () => {
   assert.equal(A.resolvePose('blowback', poses), 'hpunch');
   assert.equal(A.resolvePose('unknown', poses), 'idle');
 });
+
+test('air hitstun keeps the reaction cel in the air, the air tech shows the apex, and landing lag holds the land cel', () => {
+  const { state, fighter } = scene(), motion = { jumpfall: {}, apex: {}, land: {}, settle: {} };
+  // Air hitstun (an air reset): the reaction cel through the impact and never the standing settle, then the falling cel.
+  Object.assign(fighter, { y: 100, vy: 0, stun: 10, pose: 'hit', hitAge: 0 });
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'hit');
+  fighter.stun = 2; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'hit', 'No settle cel in the air');
+  Object.assign(fighter, { hitAge: 8, vy: -3, stun: 6 });
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'jumpfall', 'Falling after the impact: the falling jump cel when the fighter has one');
+  assert.equal(A.sample(fighter, state).pose, 'hit', 'otherwise the hit cel');
+  fighter.heavyHit = true; assert.equal(A.sample(fighter, state, { poses: { hitheavy: {} } }).pose, 'hitheavy', 'A counter hit takes the heavy reaction');
+  // The air tech: the apex cel (or the jump cel) through its invulnerable frames, then the usual airborne cels.
+  Object.assign(fighter, { stun: 0, heavyHit: false, pose: 'jump', airTech: true, invulnerable: 4, vy: -6 });
+  const tech = A.sample(fighter, state, { poses: motion });
+  assert.deepEqual([tech.phase, tech.pose], ['airtech', 'apex']); assert.equal(A.sample(fighter, state).pose, 'jump');
+  fighter.invulnerable = 0; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'jumpfall');
+  // Landing lag holds the land cel (the crouch without it) until it ends, then the settle.
+  Object.assign(fighter, { y: 0, vy: 0, airTech: false, landLag: 1, landFrames: 2, pose: 'crouch' });
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'land'); assert.equal(A.sample(fighter, state).pose, 'crouch');
+  fighter.landLag = 0; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'settle');
+  // A super jump draws the jump and apex cels as any jump does.
+  Object.assign(fighter, { y: 150, vy: 10, superJump: true, landFrames: 0 });
+  assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'jump'); fighter.vy = 1; assert.equal(A.sample(fighter, state, { poses: motion }).pose, 'apex');
+});
+
+test('an anti-air jab reset plays hit, air tech and landing cels in order, with no standing cel in the air', () => {
+  const motion = { jumpfall: {}, apex: {}, land: {}, settle: {} };
+  const state = E.create(['a', 'b'], { cpu: false }); state.phase = 'fight';
+  const [a, d] = state.fighters; a.x = 400; d.x = 480;
+  let hit = false;
+  const frames = [];
+  for (let t = 0; t < 90; t++) {
+    if (!hit) { d.y = 120; d.vy = 0; }
+    E.tick(state, [t ? {} : { punch: true }, {}]);
+    if (state.effects.some(e => e.life === e.maxLife && e.type === 'hit')) hit = true;
+    if (hit) { const s = A.sample(d, state, { poses: motion }); frames.push({ y: d.y, phase: s.phase, pose: s.pose }); }
+    if (hit && d.y === 0 && !d.stun && !d.landLag && d.landFrames === 0) break;
+  }
+  // A tech low enough lands inside its invulnerable frames, with no plain airborne stretch after it.
+  const phases = frames.map(f => f.phase).filter((phase, i, list) => phase !== list[i - 1]);
+  assert.deepEqual(phases.filter(phase => phase !== 'air'), ['hit', 'airtech', 'landing', 'idle'], phases.join(' > '));
+  assert.ok(!phases.includes('air') || phases.indexOf('air') === 2, phases.join(' > '));
+  assert.ok(frames.filter(f => f.y > 0).every(f => ['hit', 'jumpfall', 'apex', 'jump'].includes(f.pose)), `airborne cels: ${[...new Set(frames.filter(f => f.y > 0).map(f => f.pose))]}`);
+  assert.ok(frames.filter(f => f.phase === 'landing').slice(0, 3).every(f => f.pose === 'land'), 'The landing lag shows the land cel');
+});

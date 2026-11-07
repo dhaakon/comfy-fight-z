@@ -26,6 +26,15 @@
   const MAX_DIST = SCREEN_W - 2 * WALL - 40;
   const WALK_FORWARD = 4.6, WALK_BACK = 3.8, RUN_SPEED = 8.2, AIR_SPEED = 4.2, CANCEL_WINDOW = 9;
   const MOTION_WINDOW = 16, DASH_TAP = 12, JUGGLE_LIMIT = 4, JUMP_SQUAT = 4;
+  // Jumps are committed: the takeoff fixes the vertical speed and the horizontal speed (a share of AIR_SPEED, from the
+  // direction held on the last squat frame), and nothing steers in the air. Holding up jumps, a tap hops, and a down
+  // direction (1, 2 or 3) on any of the SUPER_JUMP_WINDOW frames before up is pressed (or with it) super-jumps.
+  const JUMPS = Object.freeze({ full: Object.freeze({ vy: 13, vx: 1 }), hop: Object.freeze({ vy: 9.6, vx: 1.12 }), super: Object.freeze({ vy: 16.5, vx: 1.15 }) }), SUPER_JUMP_WINDOW = 10;
+  // A jump that attacked or was hit lands with LANDING_LAG frames of no action and no guard; an empty jump has none.
+  // An air reset (an airReset light on an airborne target that is not launched) keeps AIR_RESET_LIFT of the target's
+  // vertical speed, so it falls under gravity, and drifts it away at AIR_RESET_DRIFT a frame. When that hitstun runs
+  // out before the landing, the target air-techs: AIR_TECH invulnerable frames, then no attacks until it lands.
+  const LANDING_LAG = 3, AIR_RESET_LIFT = .3, AIR_RESET_DRIFT = 1.5, AIR_TECH = 6;
   // Life points on the Capcom scale, so damage and combo scaling stay fine-grained. Desperation below a quarter.
   const MAX_HP = 1000, DESPERATION_HP = MAX_HP / 4;
   // KOF-style power gauge: each full bar becomes a stock, up to three. Meter only comes from fighting:
@@ -51,10 +60,11 @@
   // Base damage from which a strike hits heavy: longer hitstop, heavy sparks and the heavy reaction cel.
   const HEAVY_DAMAGE = 60;
   // Collision rectangles are [x, y, width, height]: x the left edge, y the bottom edge above the ground.
-  // Hurtboxes, width x height from the feet and centred on the fighter: standing; crouching (crouching, crouch-blocking
-  // or in a crouching attack); jumping; launched or in air hitstun, which starts AIR_HIT_LIFT above the feet. A
-  // fighter lying down after a knockdown has none.
-  const HURT = Object.freeze({ stand: [74, 225], crouch: [80, 140], air: [70, 170], airHit: [110, 130] }), AIR_HIT_LIFT = 20;
+  // Hurtboxes, width x height centred on the fighter: standing and crouching (crouching, crouch-blocking or in a
+  // crouching attack) from the feet; airborne and not hit, legs tucked, from AIR_LIFT above the feet (the jump squat
+  // keeps the standing box); launched or in air hitstun from AIR_HIT_LIFT above the feet. A fighter lying down after a
+  // knockdown has none.
+  const HURT = Object.freeze({ stand: [74, 225], crouch: [80, 140], air: [70, 150], airHit: [110, 130] }), AIR_LIFT = 30, AIR_HIT_LIFT = 20;
   // A strike's hitbox spans its height band above the attacker's feet and runs forward from HIT_START in front of the
   // attacker's centre to its reach less half a standing body, so the contact range against a standing opponent is the
   // move's reach. Through the strike's active and recovery frames its limb can be hit: the inner LIMB share of the box.
@@ -84,10 +94,12 @@
   // band: a strike's hitbox height above the attacker's feet, [low, high]; reach sets how far forward it runs. Every
   // strike has one; throws and command grabs reach the opponent's centre instead.
   // chip: share of damage a blocked special still deals; normals never chip.
+  // airReset: on an airborne target that is not launched the hit is an air reset (air hitstun, then an air tech and a
+  // landing on its feet). Every other hit on an airborne target knocks it down.
   const MOVES = {
     // A jab, S light kick, D heavy punch, toward + S roundhouse (standing only).
-    punch: { startup: 4, active: 3, recovery: 7, reach: 100, band: [110, 175], damage: 32, pose: 'punch', hitStun: 14, blockStun: 11, slide: 18, rank: 0 },
-    kick: { startup: 5, active: 3, recovery: 9, reach: 118, band: [60, 140], damage: 36, pose: 'lkick', hitStun: 15, blockStun: 12, slide: 22, rank: 1 },
+    punch: { startup: 4, active: 3, recovery: 7, reach: 100, band: [110, 175], damage: 32, pose: 'punch', hitStun: 14, blockStun: 11, slide: 18, rank: 0, airReset: true },
+    kick: { startup: 5, active: 3, recovery: 9, reach: 118, band: [60, 140], damage: 36, pose: 'lkick', hitStun: 15, blockStun: 12, slide: 22, rank: 1, airReset: true },
     heavy: { startup: 8, active: 4, recovery: 15, reach: 138, band: [120, 195], damage: 70, pose: 'hpunch', hitStun: 21, blockStun: 15, slide: 36, rank: 2 },
     roundhouse: { startup: 10, active: 4, recovery: 18, reach: 150, band: [150, 215], damage: 82, pose: 'kick', hitStun: 22, blockStun: 16, slide: 46, rank: 2 },
     // S + D: blowback (KOF C + D). Knocks down on hit and never cancels; guard cancels can use it.
@@ -117,14 +129,14 @@
   };
   const VARIANTS = {
     crouch: {
-      punch: { startup: 4, active: 3, recovery: 8, reach: 94, band: [55, 110], damage: 28, pose: 'cjab', hitStun: 14, blockStun: 12, slide: 16, rank: 0 },
+      punch: { startup: 4, active: 3, recovery: 8, reach: 94, band: [55, 110], damage: 28, pose: 'cjab', hitStun: 14, blockStun: 12, slide: 16, rank: 0, airReset: true },
       kick: { startup: 9, active: 4, recovery: 20, reach: 150, band: [0, 38], damage: 68, pose: 'sweep', height: 'low', knockdown: true, blockStun: 14, slide: 22, rank: 2, noCancel: true },
       // The launcher cancels only into specials and supers.
       heavy: { startup: 7, active: 5, recovery: 23, reach: 118, band: [90, 250], damage: 60, pose: 'launcher', launch: 10, blockStun: 16, slide: 20, rank: 2, cancelRank: 3 }
     },
     air: {
-      punch: { startup: 5, active: 8, recovery: 5, reach: 102, band: [60, 150], damage: 30, pose: 'airpunch', height: 'high', hitStun: 16, blockStun: 12, slide: 10, rank: 0 },
-      kick: { startup: 6, active: 8, recovery: 6, reach: 136, band: [0, 100], damage: 36, pose: 'airkick', height: 'high', hitStun: 17, blockStun: 13, slide: 12, rank: 1 },
+      punch: { startup: 5, active: 8, recovery: 5, reach: 102, band: [60, 150], damage: 30, pose: 'airpunch', height: 'high', hitStun: 16, blockStun: 12, slide: 10, rank: 0, airReset: true },
+      kick: { startup: 6, active: 8, recovery: 6, reach: 136, band: [0, 100], damage: 36, pose: 'airkick', height: 'high', hitStun: 17, blockStun: 13, slide: 12, rank: 1, airReset: true },
       heavy: { startup: 7, active: 6, recovery: 7, reach: 124, band: [20, 130], damage: 66, pose: 'airpunch', height: 'high', hitStun: 19, blockStun: 14, slide: 16, rank: 2 }
     }
   };
@@ -149,6 +161,10 @@
       x: WIDTH / 2 + (slot ? 190 : -190), y: 0, vy: 0, vx: 0, facing: slot ? -1 : 1,
       hp: MAX_HP, energy: 0, stocks: 0, wins: 0, pose: 'idle', move: null, moveFrame: 0,
       moveVariant: 'standing', landFrames: 0, launched: false, hitAge: 99, airVX: 0,
+      // superJump: the jump under way (from its squat to its landing) is a super jump; superPress: the last press of up
+      // came within SUPER_JUMP_WINDOW frames of down (downAt, the last frame down was held). airActed: this airborne
+      // stretch attacked or was hit, so it lands with landLag frames left. airTech: air-teched, no attacks until landing.
+      superJump: false, superPress: false, downAt: -99, landLag: 0, airActed: false, airTech: false,
       hitDone: false, connected: false, stun: 0, blockStun: false, stunAtStart: 0, blockStunAtStart: false, guard: false, crouching: false, hitCrouch: false, lastInput: {},
       dash: 0, dashDir: 0, invulnerable: 0, juggle: 0, combo: 0, comboDamage: 0, counter: false,
       running: false, skid: 0, jumpSquat: 0, hop: false, armor: 0, rekka: 0, dizzy: 0, dizzyMeter: 0,
@@ -204,17 +220,19 @@
   // found it in (hitCrouch), as in Capcom games: holding down in hitstun does not duck the rest of a combo, nor does
   // letting go stand into it. Otherwise it is the crouch the player holds, crouching or crouch-blocking; blockstun
   // follows the stick, so a guard can still switch height.
+  // A fighter in landing lag cannot act, so it cannot crouch either: it keeps the standing box.
   function crouched(f) {
     if (f.y > 0) return false;
     if (f.move) return f.moveVariant === 'crouch';
     if (reeling(f)) return !!f.hitCrouch;
-    return !!f.crouching && !f.dizzy && !f.dash && !f.running && !f.jumpSquat;
+    return !!f.crouching && !f.dizzy && !f.dash && !f.running && !f.jumpSquat && !f.landLag;
   }
   // The body box for the fighter's state; null while it lies down after a knockdown.
   function hurtbox(f) {
     if (down(f)) return null;
     if (f.launched || (f.y > 0 && f.stun > 0 && !f.blockStun)) { const [w, h] = HURT.airHit; return [f.x - w / 2, f.y + AIR_HIT_LIFT, w, h]; }
-    const [w, h] = f.y > 0 ? HURT.air : crouched(f) ? HURT.crouch : HURT.stand;
+    if (f.y > 0) { const [w, h] = HURT.air; return [f.x - w / 2, f.y + AIR_LIFT, w, h]; }
+    const [w, h] = crouched(f) ? HURT.crouch : HURT.stand;
     return [f.x - w / 2, f.y, w, h];
   }
   function strikeBox(f, move) {
@@ -284,12 +302,22 @@
     target.hitAge = 0; target.counter = counter; target.heavyHit = !blocked && (damage >= HEAVY_DAMAGE || counter);
     target.pose = blocked ? 'block' : 'hit';
     target.move = null; target.connected = false; target.dash = 0; target.running = false; target.jumpSquat = 0; target.rekka = 0;
-    if (!blocked && target.hp > 0 && (move.launch || move.knockdown || wasAirborne)) knockDown(target, move, wasAirborne);
+    // A hit ends a jump in progress (its squat included), an air tech and a landing lag.
+    target.superJump = false; target.airTech = false; target.landLag = 0;
+    // An airReset light on an airborne target that is not launched is an air reset: air hitstun for the move's
+    // hitstun, falling under gravity with AIR_RESET_LIFT of its vertical speed and drifting away from the attacker.
+    // Every other hit on an airborne target knocks it down (and launched targets keep the juggle rules).
+    const airReset = !blocked && wasAirborne && !target.launched && !!move.airReset && !move.launch && !move.knockdown;
+    if (!blocked && target.hp > 0 && (move.launch || move.knockdown || wasAirborne && !airReset)) knockDown(target, move, wasAirborne);
+    if (airReset) { target.vy *= AIR_RESET_LIFT; target.airVX = direction * AIR_RESET_DRIFT; }
+    // An air reset lands free and can guard at once, so an anti-air never guarantees a follow-up; only a jump that
+    // itself attacked lands with the lag (being reset also clears the victim's own air attack).
+    if (wasAirborne && !blocked) target.airActed = false;
     target.hitCrouch = !blocked && !target.launched && crouchedAtHit;
     // Pushback slides over the following frames (a new hit replaces the slide); launched and knocked-down
-    // fighters drift through the air instead. Blocked strikes slide 1.15x as far; projectiles and super hits slide
-    // their own distance either way. A strike's slide that a wall stops pushes a grounded attacker back.
-    const sliding = blocked || !target.launched, strike = !!move.startup;
+    // fighters drift through the air instead, as does an air reset. Blocked strikes slide 1.15x as far; projectiles and
+    // super hits slide their own distance either way. A strike's slide that a wall stops pushes a grounded attacker back.
+    const sliding = blocked || !target.launched && !airReset, strike = !!move.startup;
     target.slide = sliding ? direction * (move.slide ?? DEFAULT_SLIDE) * (blocked && strike ? BLOCK_SLIDE : 1) * SLIDE_START : 0;
     target.slideWall = sliding && strike;
     // A super's own hits build no meter for its owner (as in Capcom games), so a landed super never pays for itself.
@@ -412,7 +440,8 @@
     }
     if (shot && self.y === 0) {
       const r = random(state);
-      if (r < .35 + level * .04) input.jump = true;
+      // Jumps are committed, so the CPU holds up and toward through the jump squat: a full forward jump over the shot.
+      if (r < .35 + level * .04) { Object.assign(input, { jump: true, [toward]: true }); memory.plan = Array.from({ length: JUMP_SQUAT }, () => ({ jump: true, [toward]: true })); }
       else if (r < .55 + level * .03 && level >= 4) { input.punch = true; input.kick = true; }
       else input[away] = true;
       return input;
@@ -467,6 +496,8 @@
     const data = MOVES[action];
     f.move = action; f.moveFrame = 0; f.hitDone = false; f.connected = false; f.guard = false; f.dash = 0; f.running = false; f.skid = 0;
     f.moveVariant = variant;
+    // An attack in the air earns the landing lag.
+    if (f.y > 0) f.airActed = true;
     // Rapid-fire chains count consecutive rank-0 cancels; any other start resets the count.
     f.rapid = rapid ? (f.rapid || 0) + 1 : 0;
     // A move uses up the presses it came from. A plain button (and the roundhouse or throw it makes) uses its own
@@ -513,7 +544,7 @@
     f.vx = 0;
     if (f.y > 0 || f.vy > 0) {
       f.y += f.vy; f.vy -= .65;
-      if (f.y <= 0) { f.y = 0; f.vy = 0; f.airVX = 0; f.landFrames = 6; }
+      if (f.y <= 0) { f.y = 0; f.vy = 0; f.airVX = 0; f.landFrames = 6; f.airActed = false; f.airTech = false; f.superJump = false; }
     }
     slideStep(f);
   }
@@ -571,6 +602,9 @@
       for (const action of Object.keys(f.buffer)) if (input[action] && !f.lastInput[action]) { f.buffer[action] = INPUT_BUFFER; f.pressAt[action] = state.frame; }
       // The direction held as S is pressed picks the light kick or the roundhouse (keypad digit, 6 = toward).
       if (input.kick && !f.lastInput.kick) f.kickDir = digit;
+      // A press of up within SUPER_JUMP_WINDOW frames of a down direction (held on this frame too) is a super jump.
+      if (input.down) f.downAt = state.frame;
+      if (input.jump && !f.lastInput.jump) f.superPress = state.frame - f.downAt <= SUPER_JUMP_WINDOW;
       // Two taps of the same direction within a short window run or backstep.
       for (const side of ['left', 'right']) if (input[side] && !f.lastInput[side]) {
         if (state.frame - f.taps[side] <= DASH_TAP && f.y === 0 && !input.down) f.dashRequest = side;
@@ -600,7 +634,8 @@
       // Backward walking should animate as walking, not slide in the guard pose
       // when there is no attack nearby. Startup and existing projectiles count
       // as threats so blocking remains responsive on the contact frame.
-      f.guard = !f.move && !f.stun && !f.dash && !f.dizzy && !f.running && !f.jumpSquat && f.y === 0 && !!(nearbyStrike || incomingShot) && !!(f.facing === 1 ? input.left : input.right);
+      // No guard in the landing lag (landLag is the lag frames still to come).
+      f.guard = !f.move && !f.stun && !f.dash && !f.dizzy && !f.running && !f.jumpSquat && !f.landLag && f.y === 0 && !!(nearbyStrike || incomingShot) && !!(f.facing === 1 ? input.left : input.right);
     });
     const strikes = [];
     state.fighters.forEach((f, slot) => {
@@ -611,10 +646,18 @@
       if (f.y > 0 || f.vy > 0) {
         f.y += f.vy; f.vy -= .65;
         if (f.launched && f.y > 0) f.x = clamp(f.x - f.facing * 2.2, WALL, WIDTH - WALL);
+        // Air hitstun drifts at the speed the air reset gave (in a move or free, the code below carries airVX).
+        else if (f.y > 0 && f.stun > 0 && !f.blockStun && f.airVX) { const previousX = f.x; f.x = clamp(f.x + f.airVX, WALL, WIDTH - WALL); f.vx = f.x - previousX; }
         // Any attack button during a tumble requests a quick recovery roll.
         if (f.launched && ATTACKS.some(a => f.buffer[a] > 0) && !f.hardKnockdown) f.quickRise = true;
         if (f.y <= 0) {
           f.y = 0; f.vy = 0; f.airVX = 0; f.landFrames = 6;
+          // A jump that attacked or was hit lands with the landing lag, this frame the first of it; an empty one has none.
+          if (f.airActed && !f.launched) f.landLag = LANDING_LAG;
+          const teched = f.airTech;
+          f.airActed = false; f.airTech = false; f.superJump = false;
+          // An air tech ends its hitstun in the air, so the dizzy check that a ground recovery runs happens on landing.
+          if (teched && !f.launched && f.hp > 0 && f.dizzyMeter >= DIZZY_LIMIT) { f.dizzy = DIZZY_FRAMES; f.dizzyMeter = 0; f.pose = 'dizzy'; emit(state, 'dizzy', f.x, GROUND - 220, f.facing, DIZZY_FRAMES); }
           if (f.launched) {
             f.juggle = 0;
             if (f.quickRise) { f.stun = 8; f.invulnerable = 12; f.dash = 8; f.dashDir = -f.facing; banner(state, slot, 'QUICK RISE'); }
@@ -640,6 +683,8 @@
         }
         if (f.stun === 0 && !f.move) {
           if (f.launched) f.invulnerable = Math.max(f.invulnerable, 6);
+          // Air hitstun that runs out before the landing ends in an air tech: invulnerable, then no attacks until landing.
+          else if (f.y > 0 && !f.blockStun) { f.invulnerable = Math.max(f.invulnerable, AIR_TECH); f.airTech = true; }
           f.pose = 'idle'; f.launched = false; f.blockStun = false; f.counter = false; f.quickRise = false;
           // Accumulated dizzy damage stuns a fighter who recovers on the ground.
           if (f.dizzyMeter >= DIZZY_LIMIT && f.y === 0 && f.hp > 0) { f.dizzy = DIZZY_FRAMES; f.dizzyMeter = 0; f.pose = 'dizzy'; emit(state, 'dizzy', f.x, GROUND - 220, f.facing, DIZZY_FRAMES); }
@@ -647,6 +692,8 @@
         if (!f.move) { f.dashRequest = null; if (f.dash > 0 && f.y === 0) { const previousX = f.x; f.x = clamp(f.x + f.dashDir * 8, WALL, WIDTH - WALL); f.vx = f.x - previousX; f.dash--; f.pose = 'roll'; } return; }
       }
       if (!f.stun && !f.launched) { f.neutralFrames++; f.dizzyMeter = Math.max(0, f.dizzyMeter - DIZZY_DRAIN); } else f.neutralFrames = 0;
+      // Landing lag: no action (no walk, dash, jump or attack) until it runs out; presses stay buffered.
+      if (f.landLag > 0 && !f.move) { f.dashRequest = null; f.pose = 'crouch'; return; }
       // Connected normals cancel inside the window, as in arcade fighters: up-rank into a stronger normal,
       // special or super, and rank-0 normals into each other up to twice in a row. Whiffs never cancel, nor do
       // sweeps and blowbacks; the launcher cancels only into specials and supers.
@@ -682,12 +729,14 @@
         f.dash = 0;
       }
       if (f.jumpSquat > 0 && !f.move) {
-        // Four-frame jump squat: holding up makes a full jump, a tap makes a hop.
+        // Four-frame jump squat: holding up makes a full jump, a tap makes a hop and a press of up just after down a super
+        // jump (never a hop). The direction held on the last squat frame fixes the horizontal speed for the whole jump.
         f.jumpSquat--; f.pose = 'crouch';
         if (!input.jump) f.hop = true;
         if (!f.jumpSquat) {
-          const movement = (input.right ? 1 : 0) - (input.left ? 1 : 0), run = f.running ? 1.45 : 1;
-          f.vy = (f.hop ? 9.6 : 13) * style.jump; f.y = 1; f.airVX = movement * AIR_SPEED * run * (f.hop ? 1.12 : 1); f.landFrames = 0; f.running = false;
+          if (f.superJump) f.hop = false;
+          const movement = (input.right ? 1 : 0) - (input.left ? 1 : 0), run = f.running ? 1.45 : 1, arc = f.superJump ? JUMPS.super : f.hop ? JUMPS.hop : JUMPS.full;
+          f.vy = arc.vy * style.jump; f.y = 1; f.airVX = movement * AIR_SPEED * run * arc.vx; f.landFrames = 0; f.running = false;
         }
         return;
       }
@@ -695,16 +744,16 @@
         const movement = (input.right ? 1 : 0) - (input.left ? 1 : 0);
         const previousX = f.x, forwardHeld = movement === f.facing;
         if (f.running && (!forwardHeld || f.y > 0 || input.down)) { f.running = false; f.skid = f.y === 0 ? 5 : 0; }
-        if (f.y > 0 && movement) f.airVX = movement * AIR_SPEED;
+        // In the air the takeoff speed carries on unchanged: a jump is committed.
         let speed = f.y > 0 ? f.airVX : f.guard ? 0 : movement * (movement === f.facing ? WALK_FORWARD : WALK_BACK) * style.walk;
         if (f.running) speed = f.facing * RUN_SPEED * style.walk;
         else if (f.skid > 0) { speed = f.facing * f.skid * .8; f.skid--; }
         f.x = clamp(f.x + (input.down && f.y === 0 && !f.running ? 0 : speed), WALL, WIDTH - WALL);
         f.vx = f.x - previousX;
-        if (f.buffer.jump > 0 && f.y === 0) { f.jumpSquat = JUMP_SQUAT; f.hop = !input.jump; f.buffer.jump = 0; }
+        if (f.buffer.jump > 0 && f.y === 0) { f.jumpSquat = JUMP_SQUAT; f.hop = !input.jump; f.buffer.jump = 0; f.superJump = !!f.superPress; }
         f.pose = f.y > 0 ? 'jump' : f.jumpSquat ? 'crouch' : f.running ? (state.frame % 12 < 6 ? 'run' : 'run2') : input.down ? 'crouch' : f.guard ? 'block' : movement ? (state.frame % 20 < 10 ? 'walk' : 'walk2') : (state.frame % 48 < 24 ? 'idle' : 'stance2');
-        // Motion specials, throws, supers and system moves need footing; F still fires in the air.
-        const action = f.jumpSquat ? null : command(state, f, other, input);
+        // Motion specials, throws, supers and system moves need footing; F still fires in the air, but not after an air tech.
+        const action = f.jumpSquat || f.airTech ? null : command(state, f, other, input);
         if (action && (f.y === 0 || ATTACKS.includes(action)) && f.stocks >= (MOVES[action]?.stocks || 0)) startMove(state, f, action, input);
       }
       if (f.move) {
@@ -766,7 +815,9 @@
     const contacts = strikes.map(strike => ({ ...strike, at: hittable(strike.target) && (strike.target.x - strike.source.x) * strike.direction >= 0
       ? contactPoint(strikeBox(strike.source, strike.move), strike.target) : null })).filter(contact => contact.at);
     for (const { source, target, move, direction, at } of contacts) { dealHit(state, target, source, move.damage, at.x, direction, move, at.y); source.hitDone = true; source.connected = true; }
-    state.fighters.forEach(f => { for (const action of Object.keys(f.buffer)) f.buffer[action] = Math.max(0, f.buffer[action] - 1); });
+    // The landing lag counts down once contacts have resolved, so a lag frame keeps its standing box; like stun, what is
+    // left is the lag still to come.
+    state.fighters.forEach(f => { for (const action of Object.keys(f.buffer)) f.buffer[action] = Math.max(0, f.buffer[action] - 1); if (f.landLag > 0) f.landLag--; });
     const [a, b] = state.fighters;
     state.projectiles.forEach(p => {
       // A shot a clash cancelled earlier this frame, on its rival's turn, neither moves nor hits.
@@ -856,6 +907,7 @@
       { name: 'Evasive roll', input: 'A + S', note: 'Invulnerable roll; guard cancel with a stock while blocking' },
       { name: 'Throw', input: '→ or ← + D up close', note: 'Press D as you are thrown to escape' },
       { name: 'Run / backstep', input: '→→ / ←←', note: 'Tap ↑ to hop, hold ↑ to jump' },
+      { name: 'Super jump', input: '↓ then ↑', note: 'Higher and longer; no jump can be steered once it leaves the ground' },
       { name: 'Taunt', input: 'G', note: 'Drains the opponent’s power gauge' }
     ];
   }

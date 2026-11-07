@@ -69,7 +69,10 @@
       // A hit reaction keeps the posture the hit found (the engine's hitCrouch); a guard follows the stick.
       const reaction = f.hitCrouch ? pick('hitlow', 'hit') : f.heavyHit ? pick('hitheavy', 'hit') : 'hit';
       const guarding = f.crouching ? pick('crouchblock', 'crouch') : pick('guardhit', 'block');
-      result.pose = f.launched ? f.y > 0 ? 'tumble' : f.stun > 5 ? 'down' : 'getup' : f.pose === 'block' ? guarding : f.stun <= 3 ? pick('settle', 'stance2') : reaction;
+      // Air hitstun (an air reset) keeps the reaction cel in the air, never a standing settle; once the impact has
+      // played and the fighter falls, the falling jump cel takes over when the fighter has one.
+      const airHit = f.y > 0 ? (f.hitAge || 0) >= 6 && f.vy < -2 && has('jumpfall') ? 'jumpfall' : reaction : null;
+      result.pose = f.launched ? f.y > 0 ? 'tumble' : f.stun > 5 ? 'down' : 'getup' : f.pose === 'block' ? guarding : airHit || (f.stun <= 3 ? pick('settle', 'stance2') : reaction);
       // Impact: a sharp shove and squash on the first frames of the reaction.
       const impact = f.pose === 'block' ? 0 : Math.max(0, 1 - (f.hitAge || 0) / 3);
       result.dx = -(f.pose === 'block' ? 5 : 14 + 6 * impact) * Math.min(1, f.stun / 10);
@@ -130,14 +133,17 @@
       result.rotation = .03;
     } else if (f.jumpSquat > 0) {
       result.phase = 'jumpsquat'; result.pose = pick('land', 'crouch'); result.sx = 1.08; result.sy = .88;
+    } else if (f.y > 0 && f.airTech && f.invulnerable > 0) {
+      // The air tech after an air reset: the jump apex cel (or the jump cel) through its invulnerable frames.
+      result.phase = 'airtech'; result.pose = pick('apex', 'jump');
     } else if (f.y > 0) {
       result.phase = 'air';
       result.pose = f.vy < -2 && has('jumpfall') ? 'jumpfall' : Math.abs(f.vy) < 4 ? pick('apex', 'entrance') : 'jump';
       result.sx = 1 - Math.min(.04, Math.abs(f.vy) * .003); result.sy = 1 + Math.min(.05, Math.abs(f.vy) * .004);
       result.rotation = clamp((f.vx || 0) * f.facing * .008, -.03, .03);
-    } else if (f.landFrames > 0) {
-      // Landing compression, then a brief settle before the stance.
-      result.phase = 'landing'; result.pose = f.landFrames > 3 ? pick('land', 'crouch') : pick('settle', 'stance2');
+    } else if (f.landFrames > 0 || f.landLag > 0) {
+      // Landing compression, then a brief settle before the stance. The landing lag of an attacking jump holds the land cel.
+      result.phase = 'landing'; result.pose = f.landFrames > 3 || f.landLag > 0 ? pick('land', 'crouch') : pick('settle', 'stance2');
       result.sx = 1 + .1 * f.landFrames / 6; result.sy = 1 - .13 * f.landFrames / 6;
     } else if (f.crouching || f.pose === 'crouch') {
       result.phase = 'crouch'; result.pose = f.guard ? pick('crouchblock', 'crouch') : 'crouch'; result.sy = 1 + Math.sin(beat / 15) * .005;

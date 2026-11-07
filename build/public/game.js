@@ -817,8 +817,10 @@
     const watch = training.watch;
     if (watch) {
       if (state.effects.some(e => e.life === e.maxLife && e.attacker === 0)) watch.result = state.effects.some(e => e.type === 'hit' && e.life === e.maxLife) ? 'hit' : 'block';
-      if (!player.move && !player.stun && watch.p1 === undefined) watch.p1 = state.motionFrame;
-      if (!dummy.stun && !dummy.move && watch.dummy === undefined && watch.p1 !== undefined) watch.dummy = state.motionFrame;
+      // A fighter is free once out of its move and stun, its landing lag and an air tech (which forbids attacks until landing).
+      const free = f => !f.move && !f.stun && !f.landLag && !f.airTech;
+      if (free(player) && watch.p1 === undefined) watch.p1 = state.motionFrame;
+      if (free(dummy) && watch.dummy === undefined && watch.p1 !== undefined) watch.dummy = state.motionFrame;
       if (watch.p1 !== undefined && (watch.result === 'whiff' || watch.dummy !== undefined)) {
         const data = E.moveData({ move: watch.move, moveVariant: watch.variant }) || {};
         training.frameData = { move: watch.move, startup: data.startup, total: (data.startup || 0) + (data.active || 0) + (data.recovery || 0), result: watch.result,

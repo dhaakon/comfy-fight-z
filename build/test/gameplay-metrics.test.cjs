@@ -22,13 +22,15 @@ test('the probe and the frame-data table run without the dad-fighter-z repo', ()
   assert.equal(M.loadReference(nowhere), null);
   const probe = tool('gameplay-probe.cjs', [], { DFZ_REPO: nowhere });
   assert.equal(probe.status, 0, probe.stderr);
-  for (const section of ['== OURS normals', '== jumps', '== launcher follow-up', '== chains', '== health pacing', '== CPU vs CPU', '== vertical hit shape']) assert.ok(probe.stdout.includes(section), section);
+  for (const section of ['== OURS normals', '== jumps', '== projectile jumps', '== launcher follow-up', '== chains', '== health pacing', '== CPU vs CPU', '== vertical hit shape']) assert.ok(probe.stdout.includes(section), section);
   assert.match(probe.stdout, /dad-fighter-z engine not found/);
   assert.doesNotMatch(probe.stdout, /^DFZ /m, 'No reference rows without the reference engine');
   const json = tool('gameplay-probe.cjs', ['--json'], { DFZ_REPO: nowhere });
   assert.equal(json.status, 0, json.stderr);
   const report = JSON.parse(json.stdout);
   assert.equal(report.reference, false); assert.equal(report.cpu.length, 3); assert.ok(report.normals.length >= 9);
+  // Every style, both shots, every jump kind and the three distances.
+  assert.equal(report.projectileJumps.length, Object.keys(E.STYLES).length * 2 * M.JUMP_KINDS.length * 3);
   const table = tool('frame-data.cjs', [], { DFZ_REPO: nowhere });
   assert.equal(table.status, 0, table.stderr);
   for (const heading of ['Ground normals:', 'Air normals', 'System moves:', 'Specials:', 'Supers:']) assert.ok(table.stdout.includes(heading), heading);
@@ -634,10 +636,10 @@ test('phase 2: hurtboxes follow the posture, and a strike box runs from 20 units
   const guard = M.arena(E), g = guard.fighters[1];
   for (let t = 0; t < 8; t++) E.tick(guard, [t ? {} : { down: true, punch: true }, M.dirInput(1, -1)]);
   assert.ok(g.blockStun && g.stun > 0, 'The crouching jab is blocked low'); assert.deepEqual(E.boxes(g).hurt, [g.x - 40, 0, 80, 140], 'crouch-blocking');
-  // Jumping 70 x 170 from the feet.
+  // Jumping (phase 3): 70 x 150 from 30 above the feet, legs tucked.
   const jump = M.arena(E, { distance: 600 }), [j] = jump.fighters;
   for (let t = 0; t < 10; t++) E.tick(jump, [{ jump: true }, {}]);
-  assert.ok(j.y > 0); assert.deepEqual(E.boxes(j).hurt, [j.x - 35, j.y, 70, 170], 'jumping');
+  assert.ok(j.y > 0); assert.deepEqual(E.boxes(j).hurt, [j.x - 35, j.y + 30, 70, 150], 'jumping');
   // Launched: 110 x 130 from 20 above the feet; lying down after the knockdown there is no hurtbox at all.
   const launch = M.arena(E), v = launch.fighters[1];
   for (let t = 0; t < 12; t++) E.tick(launch, [t ? {} : { down: true, heavy: true }, {}]);
@@ -672,9 +674,10 @@ test('phase 2: the roundhouse whiffs over a crouching opponent and hits a standi
   for (const move of ['5S', '5D', '2A', '2S', '2D', 'S+D']) assert.equal(M.hitAt(E, { move, crouch: true }), true, `${move} hits a croucher`);
 });
 
-test('phase 2: a jump clears a sweep once its feet are above 38, and a launcher hits a jumper whose feet are at 135', () => {
-  for (const height of [10, 30, 37.9]) assert.equal(M.hitAt(E, { move: '2S', height }), true, `The sweep hits feet at ${height}`);
-  for (const height of [38.1, 45, 60, 89]) assert.equal(M.hitAt(E, { move: '2S', height }), false, `Feet at ${height} clear the sweep`);
+test('phase 2: a jump clears a sweep once its feet are above 8, and a launcher hits a jumper whose feet are at 135', () => {
+  // The sweep reaches 38 above the floor and phase 3 tucks the jump box 30 above the feet, so feet above 8 clear it.
+  for (const height of [1, 5, 7.9]) assert.equal(M.hitAt(E, { move: '2S', height }), true, `The sweep hits feet at ${height}`);
+  for (const height of [8.1, 10, 30, 37.9, 45, 60, 89]) assert.equal(M.hitAt(E, { move: '2S', height }), false, `Feet at ${height} clear the sweep`);
   assert.equal(M.hitAt(E, { move: '2D', height: 135 }), true, 'The launcher hits a jumper whose feet are at 135');
 });
 
@@ -712,17 +715,18 @@ test("phase 2: a heavy punch that cannot reach the body hits a whiffed roundhous
   assert.deepEqual([p.hp, q.hp], [E.MAX_HP - round.damage, E.MAX_HP - round.damage]);
 });
 
-test('phase 2: projectiles hit crouchers and pass under a jumper whose feet are above 125', () => {
+test('phase 2: projectiles hit crouchers and pass under a jumper whose feet are above 95', () => {
+  // Shots fly 85-125 above the floor and phase 3 tucks the jump box 30 above the feet, so feet above 95 pass over them.
   for (const move of ['5F', '236A']) {
     assert.equal(M.hitAt(E, { move, crouch: true }), true, `${move} hits a croucher at point blank`);
     assert.equal(M.hitAt(E, { move, crouch: true, distance: 300 }), true, `${move} hits a croucher from 300`);
-    assert.equal(M.hitAt(E, { move, height: 124, distance: 300 }), true, `${move} hits a jumper whose feet are at 124`);
-    assert.equal(M.hitAt(E, { move, height: 126, distance: 300 }), false, `${move} passes under a jumper whose feet are at 126`);
+    assert.equal(M.hitAt(E, { move, height: 94, distance: 300 }), true, `${move} hits a jumper whose feet are at 94`);
+    assert.equal(M.hitAt(E, { move, height: 96, distance: 300 }), false, `${move} passes under a jumper whose feet are at 96`);
   }
-  // Projectiles are 50 x 40 boxes centred on their position and the super beam 70 x 60, so the beam passes under feet above 135.
+  // Projectiles are 50 x 40 boxes centred on their position and the super beam 70 x 60 (75-135), so the beam passes under feet above 105.
   assert.deepEqual(E.projectileBox({ x: 300, y: 105 }), [275, 85, 50, 40]); assert.deepEqual(E.projectileBox({ x: 300, y: 105, super: true }), [265, 75, 70, 60]);
-  assert.equal(M.hitAt(E, { move: 'F+D', height: 134, distance: 300, window: 120 }), true, 'The beam hits a jumper whose feet are at 134');
-  assert.equal(M.hitAt(E, { move: 'F+D', height: 136, distance: 300, window: 120 }), false, 'and passes under one at 136');
+  assert.equal(M.hitAt(E, { move: 'F+D', height: 104, distance: 300, window: 120 }), true, 'The beam hits a jumper whose feet are at 104');
+  assert.equal(M.hitAt(E, { move: 'F+D', height: 106, distance: 300, window: 120 }), false, 'and passes under one at 106');
 });
 
 test("phase 2: a strike box only hits a target whose centre is in front of the attacker's", () => {
@@ -945,4 +949,204 @@ test('phase 2: E.boxes says whether a hit can land, so the overlay pales an invu
   Object.assign(d, { launched: true, y: 100, vy: 0, stun: 20, juggle: 99 });
   assert.equal(E.boxes(d).hittable, false, 'A launched body at the juggle limit cannot be hit');
   d.juggle = 0; assert.equal(E.boxes(d).hittable, true, 'and one below it can');
+});
+
+// ---------------------------------------------------------------- phase 3: committed jumps and the air game
+// The targets of gameplay-audit.md phase 3: committed arcs, the super jump, air resets and air techs, landing lag and
+// the tucked jump box that lets a full jump clear a shot.
+// The x travelled on each airborne frame of a jump by slot 0 (opponent 600 units away): squat(t) is held until takeoff,
+// air(t) once airborne.
+const flight = (squat, air = () => ({})) => {
+  const s = M.arena(E, { distance: 600 }), f = s.fighters[0], dx = [];
+  let airborne = 0;
+  for (let t = 0; t < 120; t++) {
+    const x = f.x;
+    E.tick(s, [f.y > 0 ? air(airborne++, f.facing) : squat(t, f.facing), {}]);
+    if (f.y > 0 && x !== f.x) dx.push(+(f.x - x).toFixed(9));
+    if (airborne && f.y === 0) break;
+  }
+  return dx;
+};
+
+test('phase 3: jumps are committed arcs of the same height and length, and only an attacking jump has landing lag', () => {
+  const jump = M.jumps(E);
+  assert.deepEqual([jump.committed, jump.reverses, jump.steers, jump.airControl], [true, false, false, 'committed arc'], 'The probe reports a committed arc');
+  // Jump and hop heights and durations stay: 42 and 31 airborne frames, apex 137.5 and 76.7 units, a four-frame squat.
+  assert.deepEqual([jump.full.airtime, jump.full.apexUnits, jump.hop.airtime, jump.hop.apexUnits, jump.full.squat], [42, 137.5, 31, 76.7, 4]);
+  assert.deepEqual(jump.landingLag, { empty: 0, attacked: 3 }, 'Three frames of landing lag after an attacking jump, none after an empty one');
+  // The direction held on the last squat frame fixes the horizontal speed for the whole jump, whatever is held in the air.
+  const forward = flight((t, facing) => M.dirInput(9, facing), (t, facing) => M.dirInput(t > 6 ? 4 : 6, facing));
+  assert.ok(forward.length > 30 && forward.every(dx => Math.abs(dx - 4.2) < 1e-9), `A forward jump that holds back keeps 4.2 a frame: ${[...new Set(forward)]}`);
+  const neutral = flight((t, facing) => M.dirInput(8, facing), (t, facing) => M.dirInput(6, facing));
+  assert.deepEqual(neutral, [], 'A neutral jump that holds forward in the air stays in place');
+  const late = flight((t, facing) => M.dirInput(t < 3 ? 8 : 9, facing));
+  assert.ok(late.length > 30 && late.every(dx => Math.abs(dx - 4.2) < 1e-9), 'Toward pressed on the last squat frame still makes a forward jump');
+  const hop = flight((t, facing) => t === 0 ? { jump: true } : M.dirInput(6, facing), (t, facing) => M.dirInput(4, facing));
+  assert.ok(hop.length > 20 && hop.every(dx => Math.abs(dx - 4.2 * 1.12) < 1e-9), `A forward hop keeps 1.12x: ${[...new Set(hop)]}`);
+  // Air attacks keep the momentum.
+  const kick = flight((t, facing) => M.dirInput(9, facing), t => t === 3 ? { kick: true } : {});
+  assert.ok(kick.length > 30 && kick.every(dx => Math.abs(dx - 4.2) < 1e-9), 'An air kick keeps the jump momentum');
+});
+
+test('phase 3: a down direction within the ten frames before up super-jumps: higher, longer and 1.15x as fast', () => {
+  const superJump = M.jumps(E).superJump;
+  assert.equal(superJump.isSuper, true);
+  // Vertical speed 16.5: with the engine's integration that is 52 airborne frames and an apex of 97 % of a body.
+  assert.ok(superJump.airtime >= 49 && superJump.airtime <= 53, `super jump airtime ${superJump.airtime}`);
+  assert.ok(superJump.apex >= .9 && superJump.apex <= 1, `super jump apex ${superJump.apex}`);
+  // script: [input, frames] pairs for slot 0, then up held. Returns the takeoff kind and the speeds of the jump.
+  const jumpAfter = (script, up = M.dirInput(8, 1), hold = 6) => {
+    const s = M.arena(E, { distance: 600 }), f = s.fighters[0], frames = [];
+    for (const [input, count] of script) for (let i = 0; i < count; i++) frames.push(input);
+    for (let i = 0; i < hold; i++) frames.push(up);
+    let apex = 0, flagged = false, vx = null, airtime = 0;
+    for (let t = 0; t < 140; t++) {
+      E.tick(s, [frames[t] || {}, {}]);
+      if (f.y > 0) { airtime++; apex = Math.max(apex, f.y); flagged ||= f.superJump; if (vx === null) vx = f.airVX; }
+      else if (airtime) break;
+    }
+    return { super: flagged, apex: M.round(apex, 1), airtime, vx: M.round(vx, 6), landed: { superJump: f.superJump, y: f.y } };
+  };
+  const full = jumpAfter([]);
+  assert.deepEqual([full.super, full.apex, full.airtime], [false, 137.5, 42], 'Up alone is a full jump');
+  for (const gap of [1, 5, 10]) assert.equal(jumpAfter([[{ down: true }, 1], [{}, gap - 1]]).super, true, `Down ${gap} frame(s) before up super-jumps`);
+  assert.equal(jumpAfter([[{ down: true }, 1], [{}, 10]]).super, false, 'Down 11 frames before up is a full jump');
+  assert.equal(jumpAfter([[{ down: true }, 20]]).super, true, 'Up from a held crouch super-jumps');
+  for (const digit of [1, 3]) assert.equal(jumpAfter([[M.dirInput(digit, 1), 1]]).super, true, `Down direction ${digit} counts`);
+  const tapped = jumpAfter([[{ down: true }, 1]], { jump: true }, 1);
+  assert.deepEqual([tapped.super, tapped.airtime], [true, superJump.airtime], 'A tap of up after down is a super jump, never a hop');
+  const both = jumpAfter([], { down: true, jump: true }, 1);
+  assert.equal(both.super, true, 'Down held with the press of up counts too');
+  // 1.15x the horizontal speed of a jump, fixed at takeoff; the flag clears on landing.
+  const forward = jumpAfter([[M.dirInput(3, 1), 1]], M.dirInput(9, 1));
+  assert.deepEqual([forward.super, forward.vx], [true, M.round(4.2 * 1.15, 6)]);
+  assert.deepEqual(forward.landed, { superJump: false, y: 0 }, 'The super-jump flag clears on landing');
+  assert.equal(jumpAfter([], M.dirInput(9, 1)).vx, 4.2);
+  const superFlight = flight((t, facing) => t === 0 ? M.dirInput(3, facing) : M.dirInput(9, facing), (t, facing) => M.dirInput(4, facing));
+  assert.ok(superFlight.length > 40 && superFlight.every(dx => Math.abs(dx - 4.2 * 1.15) < 1e-9), 'A super jump cannot be steered either');
+});
+
+test('phase 3: the tucked jump box lets a full jump clear a shot and a sweep catch a jumper only on its takeoff frame', () => {
+  // Slot 1 holds up from frame 0 (squat frames 0-3, takeoff on frame 4); slot 0's sweep is first active on frame `first`.
+  const swept = first => {
+    const s = M.arena(E), [a, d] = s.fighters, sweep = E.VARIANTS.crouch.kick, boxes = [];
+    Object.assign(a, { move: 'kick', moveVariant: 'crouch', moveFrame: sweep.startup - 1 - first });
+    let hit = false;
+    for (let t = 0; t < first + sweep.active && !hit; t++) { E.tick(s, [{ down: true }, { jump: true }]); boxes.push(E.boxes(d).hurt); hit = freshOf(s, 'hit', 0).length > 0; }
+    return { hit, boxes };
+  };
+  assert.equal(swept(4).hit, true, 'A sweep active from the takeoff frame catches the jumper');
+  const late = swept(5);
+  assert.equal(late.hit, false, 'One frame later the feet are 14 up and the sweep passes under');
+  assert.deepEqual(late.boxes.slice(0, 4).map(box => [box[1], box[3]]), [[0, 225], [0, 225], [0, 225], [0, 225]], 'The jump squat keeps the standing box');
+  assert.deepEqual(late.boxes.slice(4, 6).map(box => [box[1], box[2], box[3]]), [[31, 70, 150], [44, 70, 150]], 'Airborne: 70 x 150 from 30 above the feet (1, then 14)');
+});
+
+test('phase 3: a balanced neutral jump clears a shot at several timings, a forward jump at many more, and a hop never', () => {
+  const clears = (style, shot, distance, jump) => M.projectileJump(E, { style, shot, distance, jump }).clears;
+  const report = M.projectileJump(E, { shot: '5F', distance: 350, jump: 'neutral' });
+  assert.deepEqual([report.shot, report.frames, report.timings.length], ['5F', 110, report.clears]);
+  for (const shot of ['5F', '236A']) for (const distance of [250, 350, 450]) {
+    const neutral = clears('balanced', shot, distance, 'neutral'), forward = clears('balanced', shot, distance, 'forward');
+    assert.ok(neutral >= 3, `A balanced neutral jump clears ${shot} from ${distance} at ${neutral} timings`);
+    // From 250 the forward jump's window opens before the shot is fired, so the 110 frames after the shot cut it short.
+    assert.ok(forward > neutral && (distance === 250 || forward >= 2 * neutral), `A forward jump clears ${shot} from ${distance} at ${forward} timings (neutral ${neutral})`);
+    for (const style of ['power', 'grappler']) assert.ok(clears(style, shot, distance, 'forward') >= 1, `The ${style} style clears ${shot} from ${distance} with a forward jump`);
+    for (const style of Object.keys(E.STYLES)) assert.equal(clears(style, shot, distance, 'hop'), 0, `A ${style} hop never clears ${shot} from ${distance}`);
+  }
+  assert.throws(() => M.projectileJump(E, { jump: 'sideways' }), /Unknown jump kind/);
+});
+
+test('phase 3: light hits reset an airborne opponent to a standing landing, and heavier hits knock it down', () => {
+  // Air to air (the attacker held 100 up), and anti-airs from the ground, against an opponent held 60 up.
+  for (const [move, reset] of [['j.A', true], ['j.S', true], ['j.D', false], ['5A', true], ['5S', true], ['2A', true], ['5D', false], ['6S', false], ['2D', false], ['S+D', false], ['5F', false]]) {
+    const r = M.hitAt(E, { move, height: 60, detail: true });
+    assert.deepEqual([r.hit, r.knockdown, r.landedStanding], [true, !reset, reset], `${move} ${reset ? 'resets' : 'knocks down'} an airborne opponent`);
+  }
+  // A light hit on a launched victim keeps the juggle rules: it stays launched and the juggle count rises.
+  const s = M.arena(E), [a, d] = s.fighters;
+  Object.assign(d, { launched: true, y: 100, vy: 0, stun: 30, juggle: 1, pose: 'tumble' });
+  Object.assign(a, { move: 'punch', moveVariant: 'standing', moveFrame: E.MOVES.punch.startup - 1 });
+  E.tick(s, [{}, {}]);
+  assert.deepEqual([freshOf(s, 'hit', 0).length, d.launched, d.juggle], [1, true, 2], 'A jab juggles a launched victim as before');
+});
+
+test('phase 3: an air reset is the move\'s hitstun falling away, then an air tech and a free landing on the feet', () => {
+  // Slot 1 is held `height` up, still, until slot 0's strike (an air move from 100 up) connects; then both fall freely.
+  // With mash, slot 1 presses A on alternate frames once it has teched. A taunt pressed on a copy probes when it can act.
+  const reset = (move, { counter = false, mash = false, height = 120 } = {}) => {
+    const s = M.arena(E), [a, d] = s.fighters, queue = M.inputFrames(move), air = M.parseInput(move).air, log = [];
+    let contact = null;
+    for (let t = 0; t < 200; t++) {
+      if (!contact) { d.y = height; d.vy = 0; if (air) { a.y = 100; a.vy = 0; } if (counter) Object.assign(d, { move: 'heavy', moveVariant: 'standing', moveFrame: 1 }); }
+      const before = { y: d.y, vy: d.vy, x: d.x }, motion = s.motionFrame;
+      const free = contact && d.y === 0 && M.canAct(E, s, 1);
+      E.tick(s, [queue.length ? queue.shift() : {}, mash && contact && d.airTech && t % 2 ? { punch: true } : {}]);
+      if (!contact && freshOf(s, 'hit', 0).length) contact = { t, stun: d.stun, launched: d.launched, pose: d.pose, vy: d.vy, vyBefore: before.vy, hittable: E.boxes(d).hittable };
+      else if (contact) log.push({ simulated: s.motionFrame > motion, y: d.y, dx: d.x - before.x, stun: d.stun, tech: d.airTech, invulnerable: d.invulnerable, hittable: E.boxes(d).hittable, move: d.move, landLag: d.landLag, free, launched: d.launched });
+      if (free) break;
+    }
+    return { contact, log: log.filter(f => f.simulated), free: log.filter(f => f.simulated).findIndex(f => f.free) };
+  };
+  // The light kick reaches feet below 110, so it meets its victim lower.
+  for (const [move, stun, height] of [['5A', E.MOVES.punch.hitStun, 120], ['5S', E.MOVES.kick.hitStun, 100], ['j.A', E.VARIANTS.air.punch.hitStun, 120], ['j.S', E.VARIANTS.air.kick.hitStun, 120]]) {
+    const { contact, log, free } = reset(move, { height });
+    assert.ok(contact, `${move} connects`);
+    assert.deepEqual([contact.stun, contact.launched, contact.pose], [stun, false, 'hit'], `${move}: air hitstun for the move's hitstun`);
+    const hitstun = log.slice(0, stun), teched = log.findIndex(f => f.tech), touchdown = log.findIndex(f => f.y === 0);
+    assert.ok(hitstun.every((f, i) => f.y > 0 && Math.abs(f.dx - 1.5) < 1e-9 && (i === 0 || f.y < hitstun[i - 1].y)), `${move}: falls and drifts away 1.5 a frame through the hitstun`);
+    // The stun runs out in the air: six invulnerable frames, then hittable but no attack until it lands.
+    assert.equal(teched, stun - 1, `${move}: the air tech on the frame the hitstun runs out`);
+    // (A low reset may land inside those frames; landing frees it at once, so the log can end before the seventh.)
+    const guarded = log.slice(teched, teched + 7).map(f => f.hittable);
+    assert.ok(guarded.length >= 6 || touchdown < teched + 6, `${move}: logged through the invulnerability or landed inside it`);
+    assert.deepEqual(guarded, [false, false, false, false, false, false, true].slice(0, guarded.length), `${move}: six invulnerable frames`);
+    // On its feet (never launched) it lands free, like an empty jump: no landing lag, so it can guard at once and an
+    // anti-air never guarantees a follow-up.
+    assert.ok(touchdown > teched && log.every(f => !f.launched), `${move}: lands on its feet`);
+    assert.ok(log[touchdown].landLag === 0 && free - touchdown <= 1, `${move}: no landing lag after an air reset`);
+    // Presses after the tech start nothing in the air; the last one stays buffered and comes out on the landing.
+    const mashed = reset(move, { mash: true, height }).log, landed = mashed.findIndex(f => f.y === 0);
+    assert.ok(mashed.slice(teched, landed).every(f => f.y > 0 && f.tech && f.move === null), `${move}: no attack until it lands`);
+    assert.equal(mashed[landed].move, 'punch', `${move}: the buffered press comes out on the landing`);
+  }
+  // A counter hit adds 4 to the air hitstun, as on the ground.
+  assert.equal(reset('5A', { counter: true }).contact.stun, E.MOVES.punch.hitStun + 4);
+  // A full dizzy meter dizzies a fighter whose hitstun ran out in an air tech, on landing.
+  const s = M.arena(E), [, d] = s.fighters, queue = M.inputFrames('5A'); d.dizzyMeter = E.DIZZY_LIMIT - 5;
+  let hit = false, dizzy = false;
+  for (let t = 0; t < 200 && !dizzy; t++) { if (!hit) { d.y = 120; d.vy = 0; } E.tick(s, [queue.length ? queue.shift() : {}, {}]); hit = hit || d.stun > 0; dizzy = d.dizzy > 0 && d.y === 0; }
+  assert.ok(hit && dizzy, 'An air-teched fighter with a full dizzy meter is dizzied when it lands');
+});
+
+test('phase 3: landing lag stands and cannot guard, and the CPU answers an incoming shot with a full jump', () => {
+  // Slot 1 lands from a jump (it attacked, or not) as slot 0's jab, staged, becomes active `delay` frames later; slot 1 holds back.
+  const landing = (attacked, delay) => {
+    const s = M.arena(E), [a, d] = s.fighters;
+    Object.assign(d, { y: 2, vy: -3, airActed: attacked });
+    Object.assign(a, { move: 'punch', moveVariant: 'standing', moveFrame: E.MOVES.punch.startup - 1 - delay });
+    let result = null, height = null;
+    for (let t = 0; t <= delay && !result; t++) {
+      E.tick(s, [{}, { right: true, down: true }]);
+      height = E.boxes(d).hurt[3];
+      result = freshOf(s, 'hit', 0).length ? 'hit' : freshOf(s, 'block', 0).length ? 'block' : null;
+    }
+    return { result, height, landLag: d.landLag };
+  };
+  assert.deepEqual([0, 1, 2, 3].map(delay => landing(true, delay).result), ['hit', 'hit', 'hit', 'block'], 'No guard on the touchdown frame and the two lag frames after it');
+  assert.deepEqual([0, 1, 2].map(delay => landing(true, delay).height), [225, 225, 225], 'The landing lag stands, down held or not');
+  assert.equal(landing(true, 3).height, 140, 'Then the held down crouches');
+  assert.deepEqual([landing(false, 0).result, landing(false, 1).result], ['hit', 'block'], 'An empty jump guards from the frame after touchdown');
+  // The CPU (slot 1) sees a shot 220 units away: when it jumps, it holds up and toward through the squat.
+  const takeoffs = [];
+  for (let seed = 1; seed <= 12; seed++) {
+    const s = E.create(['p1', 'p2'], { cpuSlots: [false, true], seed, cpuLevel: 8 });
+    s.phase = 'fight'; s.message = '';
+    const [p, c] = s.fighters; p.x = 300; c.x = 700; p.facing = 1; c.facing = -1;
+    s.projectiles.push({ owner: 0, x: c.x - 220, y: 105, from: p.x, facing: 1, damage: 60, life: 150, hits: 1, cooldown: 0, speed: 8, kind: 'special' });
+    for (let t = 0; t < 12 && c.y === 0; t++) E.tick(s, [{}, {}]);
+    if (c.y > 0) takeoffs.push({ hop: c.hop, toward: Math.sign(c.airVX) === Math.sign(p.x - c.x) });
+  }
+  assert.ok(takeoffs.length >= 3, `The CPU jumped in ${takeoffs.length} of 12 seeds`);
+  assert.ok(takeoffs.every(t => !t.hop && t.toward), `Every CPU jump over the shot is a full forward jump: ${JSON.stringify(takeoffs)}`);
 });

@@ -23,14 +23,21 @@ const chains = [['5A', '5S', '5D', '5F'], ['5A', '5S', '5D', '236A'], ['5A', '5A
 const pacing = M.healthPacing(E), neutral = M.neutralMeter(E);
 const throwRow = M.measureMove(E, { input: '6D', block: false }), superRow = M.measureMove(E, { input: 'F+D', block: false });
 const cpu = seeds.map(seed => M.cpuVsCpu(E, { seed, level, seconds: 60 }));
-const shape = M.hitShape(E, { moves: ['5A', '2S', '2D'], heights: [0, 37, 39, 60, 89, 95, 135, 175] });
+const shape = M.hitShape(E, { moves: ['5A', '2S', '2D'], heights: [0, 7, 9, 60, 89, 135, 144, 146, 175, 219, 221] });
 const crouching = ['5A', '5S', '6S', '5D', '2S'].map(move => [move, M.hitAt(E, { move, crouch: true })]);
-const antiAir = ['5A', '5D', 'j.A'].map(move => [move, M.hitAt(E, { move, height: 60, detail: true })]);
+const antiAir = ['5A', '5S', '5D', 'j.A', 'j.S', 'j.D'].map(move => [move, M.hitAt(E, { move, height: 60, detail: true })]);
 // Air kick against a standing opponent from two heights, and shots against a croucher and jumpers 300 units away.
 const airKick = [150, 240].map(height => [height, M.hitAt(E, { move: 'j.S', attackerHeight: height })]);
-const shots = [['crouching', { crouch: true }], ['feet at 124', { height: 124 }], ['feet at 126', { height: 126 }]].map(([label, c]) => [label, M.hitAt(E, { move: '5F', distance: 300, ...c })]);
+const shots = [['crouching', { crouch: true }], ['feet at 94', { height: 94 }], ['feet at 96', { height: 96 }]].map(([label, c]) => [label, M.hitAt(E, { move: '5F', distance: 300, ...c })]);
+// Jumping a projectile: per jumper style, shot (from a balanced shooter), distance and jump kind, the press timings out of
+// the 0-110 frames after the shot is pressed that clear it (gameplay-metrics.cjs projectileJump).
+const JUMP_STYLES = Object.keys(E.STYLES || { balanced: 1 }), SHOT_DISTANCES = [250, 350, 450];
+const projectileJumps = JUMP_STYLES.flatMap(style => ['5F', '236A'].flatMap(shot => M.JUMP_KINDS.flatMap(kind => SHOT_DISTANCES.map(distance => {
+  const { timings, clears } = M.projectileJump(E, { style, shot, distance, jump: kind });
+  return { style, shot, distance, jump: kind, clears, timings };
+}))));
 
-if (args.includes('--json')) console.log(JSON.stringify({ maxLife: LIFE, bodyHeight: BODY, normals, jumps: jump, launcher: { jump: launch, superjump: superLaunch }, chains, pacing, neutral, cpu, shape, crouching: Object.fromEntries(crouching), antiAir: Object.fromEntries(antiAir), airKick: Object.fromEntries(airKick), shots: Object.fromEntries(shots), reference: !!D }, null, 2));
+if (args.includes('--json')) console.log(JSON.stringify({ maxLife: LIFE, bodyHeight: BODY, normals, jumps: jump, launcher: { jump: launch, superjump: superLaunch }, chains, pacing, neutral, cpu, shape, crouching: Object.fromEntries(crouching), antiAir: Object.fromEntries(antiAir), airKick: Object.fromEntries(airKick), shots: Object.fromEntries(shots), projectileJumps, reference: !!D }, null, 2));
 else printReport();
 
 function printReport() {
@@ -58,6 +65,13 @@ function printReport() {
     const dJump = vh => { let h = 0, v = vh, frames = 0, apex = 0; do { v -= D.C.GRAV; h += v; frames++; apex = Math.max(apex, h); } while (h > 0); return { frames, apex }; };
     const dj = dJump(D.C.JUMP_VH), dsj = dJump(D.C.SJUMP_VH);
     console.log(`DFZ  full ${dj.frames}f apex ${pct(dj.apex, DBODY)}, super ${dsj.frames}f apex ${pct(dsj.apex, DBODY)}, squat 3f, air control: committed arc (vx fixed at takeoff)`);
+  }
+
+  // --- projectile jumps: how many press timings clear a shot, per jumper style, shot, distance and jump kind
+  console.log(`\n== projectile jumps (balanced shooter; press timings out of 0-110 frames after the shot that clear it, from ${SHOT_DISTANCES.join(' / ')} units)`);
+  for (const style of JUMP_STYLES) for (const shot of ['5F', '236A']) {
+    const cells = M.JUMP_KINDS.map(kind => `${kind} ${SHOT_DISTANCES.map(distance => projectileJumps.find(r => r.style === style && r.shot === shot && r.jump === kind && r.distance === distance).clears).join('/')}`);
+    console.log(`OURS ${style.padEnd(9)} ${(shot === '5F' ? 'F shot' : '236A').padEnd(6)}  ${cells.join('  ')}`);
   }
 
   // --- launcher follow-up: can the launcher's owner land an air hit before the victim recovers?
@@ -112,10 +126,10 @@ function printReport() {
   console.log(`sweep hits an opponent held at height ${shape.heights.join('/')}: ${shape.heights.map(h => row('2S').heights[h]).join('/')}`);
   console.log(`launcher hits an opponent held at height ${shape.heights.join('/')}: ${shape.heights.map(h => row('2D').heights[h]).join('/')}`);
   console.log(`against a crouching opponent: ${crouching.map(([move, hit]) => `${move} ${hit ? 'hits' : 'whiffs'}`).join(', ')}`);
-  console.log(`against an opponent held 60 up (air reset or knockdown): ${antiAir.map(([move, r]) => `${move} ${!r.hit ? 'whiffs' : r.knockdown ? 'knocks down' : 'resets'}`).join(', ')}`);
+  console.log(`against an opponent held 60 up (air reset or knockdown; air moves from 100 up): ${antiAir.map(([move, r]) => `${move} ${!r.hit ? 'whiffs' : r.knockdown ? 'knocks down' : 'resets'}`).join(', ')}`);
   console.log(`air kick against a standing opponent from height ${airKick.map(([height, hit]) => `${height}: ${hit ? 'hits' : 'whiffs'}`).join(', ')}`);
   console.log(`F shot from 300 against an opponent ${shots.map(([label, hit]) => `${label}: ${hit ? 'hits' : 'passes'}`).join(', ')}`);
-  if (E.boxes && E.projectileBox) console.log('OURS: rectangle hit and hurt boxes (stand 74x225, crouch 80x140, jump 70x170, air hit 110x130 from 20 up, limbs through recovery; shots 50x40, beam 70x60)');
+  if (E.boxes && E.projectileBox) console.log('OURS: rectangle hit and hurt boxes (stand 74x225, crouch 80x140, jump 70x150 from 30 up, air hit 110x130 from 20 up, limbs through recovery; shots 50x40, beam 70x60)');
   if (D) console.log('DFZ: rectangle hit and hurt boxes per move and state (stand 92x285, crouch 100x190, airhit 140x170); the sweep box is 44 tall at the floor, LP spans 167-223');
   if (!D) console.log('\n(dad-fighter-z engine not found; set DFZ_REPO to compare)');
 }
