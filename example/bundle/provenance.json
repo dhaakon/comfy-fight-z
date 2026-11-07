@@ -1041,6 +1041,160 @@
       "height": 1536,
       "pixelsIdentical": true,
       "rgbaSha256": "298dc8b8a4c1e195657741b3b218e7626bbe4047a0a7fb726c66f66bb461c9bf"
+    },
+    {
+      "id": "brick_sheetF",
+      "sourceSha256": "3af2e126f3014557d1eb49f26e1b00661b87670eb96e986169126e6f66d22947",
+      "packagedSha256": "565f450bac15be78585452b59b83420ed3a2842446a03aec00730ec2e71c8980",
+      "sourceBytes": 4555430,
+      "bytes": 3345932,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "5087ad6614234b49c0a942adce6df30a8460dbbff67de0d172f7b85ee0705f80"
+    },
+    {
+      "id": "brick_sheetG",
+      "sourceSha256": "dbf9162ebf4cc8d35a4d650da8504bdc15c78318fd889856de43e6a59c5895e0",
+      "packagedSha256": "e1e1f0bc43925293f0dc1fdb4b5681c89a47c885f076982e74b28366d01315ce",
+      "sourceBytes": 4532739,
+      "bytes": 3311018,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "da17ed97e0047d6212e41e4fa26ea7559728c1a60297a535232e77bab5a0372f"
+    },
+    {
+      "id": "bylaw_sheetF",
+      "sourceSha256": "c52df31409134bfebaf6bb5e012bd5e4a527850e18e6b2c0c7e386127fa8e5f2",
+      "packagedSha256": "e927a34db1a7b257fb22eca6c9e0c186bd6e498da8e88529dfccf88d6fb7b2f8",
+      "sourceBytes": 4474169,
+      "bytes": 3258486,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "d7d91e9d73b15f77e205050bed4e421bb15dcb3be73f30fbded6f93ae83043d4"
+    },
+    {
+      "id": "bylaw_sheetG",
+      "sourceSha256": "b9c7e6f61193d723f8ed5d869b44e563aeb8130805a6a7fe96c8d3395dc7dde0",
+      "packagedSha256": "d01ea544d9d5e299a992c5d67a811d276a0aae2cd585dab883007f8b03f1d5da",
+      "sourceBytes": 4446122,
+      "bytes": 3259796,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "024cc2ac5bccb2673145575e692aabb84eed6fc62660e60d15807c8f32224660"
+    },
+    {
+      "id": "griddle_sheetF",
+      "sourceSha256": "dae75d939b86c601f7e4d08128cd97cd20f7e05e06853baef00106b3d0e7b3eb",
+      "packagedSha256": "d87cba09526fd96fc89898e07a8b8103e4e303489ac91c32cd2a9cfa4fe41174",
+      "sourceBytes": 4661120,
+      "bytes": 3470158,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "930316ee952202cc1dca70afb1a6e06ffe12613cf723bbb28248d53c8fe0f3ab"
+    },
+    {
+      "id": "griddle_sheetG",
+      "sourceSha256": "f4642e92ff5f4ee7402130107195fa55ff197c74f737dac4acdad0ced8513ac0",
+      "packagedSha256": "df24b097cd41e3c1d04a41754b45b33f697a1d94c743fc375d4f61c488afdced",
+      "sourceBytes": 4719748,
+      "bytes": 3525280,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "9e70f8e9841c80bd400548bb3bd8eb9b562947384d3d7c530f134d881a15dfdf"
+    },
+    {
+      "id": "nimbus_sheetF",
+      "sourceSha256": "8f436d235ca2f89a45f202fa0141609462575bd4f658bf44fd307d8dfaf54be6",
+      "packagedSha256": "d1f62d2173ad010f9f242f25a277c9d42bfc92b2732b8544a9ccb9c79b5835d2",
+      "sourceBytes": 4565833,
+      "bytes": 3383162,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "47433a3c2a8367bd1e0cd3a1d638daae9d087e102f707a74a6f05a964fa52390"
+    },
+    {
+      "id": "nimbus_sheetG",
+      "sourceSha256": "36570d48611fcf8f0d7964836670af6fe16f55cc14079007023375c9bcd1f42d",
+      "packagedSha256": "662e43ec46d46040d5f3468d5d9e8ddc7d0d17b1bcc4ca8d6be9cbc1ffa60dab",
+      "sourceBytes": 4534503,
+      "bytes": 3351674,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "4e2a4c0265caf7e86abc3e31912e3a3730276de953e827c0cb10601dc0ef7633"
+    },
+    {
+      "id": "rivet_sheetF",
+      "sourceSha256": "887d6a73eac3b3de910961ad5678d7d25823bf458826845e0cb2255d0d284e4d",
+      "packagedSha256": "20ba065dbdc204fd2441961056d9822cc5d17cb4dfadc2fdf69490c2f3208c3b",
+      "sourceBytes": 4267008,
+      "bytes": 3115726,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "d0ce88f9b7eeb8274eb481b72b5f6a29b2857af5056c47f04237b2b0d1f17027"
+    },
+    {
+      "id": "rivet_sheetG",
+      "sourceSha256": "bc077be2c00665a0674311276e2641000443421ee0b6741593034db7ab34bf76",
+      "packagedSha256": "dfb308472a8405b426b9f6f625e5ffbb807165d0229199bcb202846c41ec72b2",
+      "sourceBytes": 4319130,
+      "bytes": 3150226,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "a323fa8cb6cd9f17b960e117e159d576f20f6bcba5e110ae4589845429c479d8"
+    },
+    {
+      "id": "switchback_sheetF",
+      "sourceSha256": "97b54ee6dc0957776f38ff6f40dd8fe80295390f4942dac24f83ffc9b1c7287b",
+      "packagedSha256": "41ea2c4923bb31c94c11e53953a93ec796130f6e6906cab153285c90aa3336c6",
+      "sourceBytes": 4347716,
+      "bytes": 3258302,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "6a9e0670d6e5b9c73f30b591812dbdb972b386dc00a1f9ba1b933172a2337e5e"
+    },
+    {
+      "id": "switchback_sheetG",
+      "sourceSha256": "700ba6d4cebaf93995f56fc4fc28e558cf48896b99d4cc6ee8341058f05b586b",
+      "packagedSha256": "8340dc3903a349c70133311986380c30ded02be4d54a21396522a9fcddec2e54",
+      "sourceBytes": 4281378,
+      "bytes": 3199338,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "b944a4cc4bad78aad3e2919e27fcbfb8c20eec63e10c0728e8e7189046557505"
+    },
+    {
+      "id": "tempo_sheetF",
+      "sourceSha256": "0c78b39b2b9c1d63babbbbe3ff463463582aa70172122ecf4a6fed4ce4f2639b",
+      "packagedSha256": "23555479ca9bdf48807fdd107e0ff240f8deb2c6f8d178b046d7f0eaaa8a668f",
+      "sourceBytes": 4322223,
+      "bytes": 3208098,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "015eacfdaaa2cdce679897439635dfa0c0414dd92138ec6a293b37e694791504"
+    },
+    {
+      "id": "tempo_sheetG",
+      "sourceSha256": "cb65b4602ec486cf948228f3f5c52f532b406efa8aabb4a4e143171ceae0ff7d",
+      "packagedSha256": "4bfb12c71e9f8b4a32a48b3d6604ac0b9a6f68e41d9d9a2bdf988a26da27002d",
+      "sourceBytes": 4275325,
+      "bytes": 3170422,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "65dd6000cb18e5d562ba38bca0f32a87c9029002afe6e560a4f878f1ac21dec1"
     }
   ],
   "audio": [
@@ -3159,5 +3313,12 @@
   "generationPlanSha256": "466bf6a613e95ad18011d064b8d6e36d5c5d7be3ffea16a7744424bf2861584c",
   "generation": {
     "cloudOnly": true
+  },
+  "motionSheets": {
+    "addedAt": "2026-11-06",
+    "run": "output/test-runs/canonical-motion-20261106",
+    "model": "Gemini Nano Banana 2.1 (2K)",
+    "estimatedUSD": 1.009008,
+    "note": "sheetF/sheetG generated with each fighter's accepted reference and sheet A; the 89 earlier images are unchanged."
   }
 }

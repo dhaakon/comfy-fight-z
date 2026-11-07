@@ -382,7 +382,21 @@
       "rooftop_source",
       "rooftop",
       "arcade_source",
-      "arcade"
+      "arcade",
+      "brick_sheetF",
+      "brick_sheetG",
+      "bylaw_sheetF",
+      "bylaw_sheetG",
+      "griddle_sheetF",
+      "griddle_sheetG",
+      "nimbus_sheetF",
+      "nimbus_sheetG",
+      "rivet_sheetF",
+      "rivet_sheetG",
+      "switchback_sheetF",
+      "switchback_sheetG",
+      "tempo_sheetF",
+      "tempo_sheetG"
     ],
     "expectedAudio": [
       "menu_music",
@@ -484,7 +498,31 @@
       "fighter_bylaw_ko",
       "fighter_bylaw_win",
       "fighter_bylaw_intro"
-    ]
+    ],
+    "motionSheets": {
+      "sheetF": [
+        "load",
+        "punchwhip",
+        "kickwhip",
+        "recoil",
+        "settle",
+        "stepin",
+        "stepout",
+        "dashload",
+        "dashpass"
+      ],
+      "sheetG": [
+        "idle1",
+        "idle2",
+        "idle3",
+        "idle4",
+        "idle5",
+        "apex",
+        "land",
+        "kickrecoil",
+        "guardhit"
+      ]
+    }
   },
   "assets": [
     {
@@ -1890,6 +1928,328 @@
       "width": 2752,
       "height": 1536,
       "bytes": 3912106
+    },
+    {
+      "id": "brick_sheetF",
+      "kind": "sprites",
+      "fighter": "brick",
+      "key": true,
+      "poses": [
+        "load",
+        "punchwhip",
+        "kickwhip",
+        "recoil",
+        "settle",
+        "stepin",
+        "stepout",
+        "dashload",
+        "dashpass"
+      ],
+      "sheet": "sheetF",
+      "src": "raw/brick_sheetF.webp",
+      "sha256": "565f450bac15be78585452b59b83420ed3a2842446a03aec00730ec2e71c8980",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3345932
+    },
+    {
+      "id": "brick_sheetG",
+      "kind": "sprites",
+      "fighter": "brick",
+      "key": true,
+      "poses": [
+        "idle1",
+        "idle2",
+        "idle3",
+        "idle4",
+        "idle5",
+        "apex",
+        "land",
+        "kickrecoil",
+        "guardhit"
+      ],
+      "sheet": "sheetG",
+      "src": "raw/brick_sheetG.webp",
+      "sha256": "e1e1f0bc43925293f0dc1fdb4b5681c89a47c885f076982e74b28366d01315ce",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3311018
+    },
+    {
+      "id": "bylaw_sheetF",
+      "kind": "sprites",
+      "fighter": "bylaw",
+      "key": true,
+      "poses": [
+        "load",
+        "punchwhip",
+        "kickwhip",
+        "recoil",
+        "settle",
+        "stepin",
+        "stepout",
+        "dashload",
+        "dashpass"
+      ],
+      "sheet": "sheetF",
+      "src": "raw/bylaw_sheetF.webp",
+      "sha256": "e927a34db1a7b257fb22eca6c9e0c186bd6e498da8e88529dfccf88d6fb7b2f8",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3258486
+    },
+    {
+      "id": "bylaw_sheetG",
+      "kind": "sprites",
+      "fighter": "bylaw",
+      "key": true,
+      "poses": [
+        "idle1",
+        "idle2",
+        "idle3",
+        "idle4",
+        "idle5",
+        "apex",
+        "land",
+        "kickrecoil",
+        "guardhit"
+      ],
+      "sheet": "sheetG",
+      "src": "raw/bylaw_sheetG.webp",
+      "sha256": "d01ea544d9d5e299a992c5d67a811d276a0aae2cd585dab883007f8b03f1d5da",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3259796
+    },
+    {
+      "id": "griddle_sheetF",
+      "kind": "sprites",
+      "fighter": "griddle",
+      "key": true,
+      "poses": [
+        "load",
+        "punchwhip",
+        "kickwhip",
+        "recoil",
+        "settle",
+        "stepin",
+        "stepout",
+        "dashload",
+        "dashpass"
+      ],
+      "sheet": "sheetF",
+      "src": "raw/griddle_sheetF.webp",
+      "sha256": "d87cba09526fd96fc89898e07a8b8103e4e303489ac91c32cd2a9cfa4fe41174",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3470158
+    },
+    {
+      "id": "griddle_sheetG",
+      "kind": "sprites",
+      "fighter": "griddle",
+      "key": true,
+      "poses": [
+        "idle1",
+        "idle2",
+        "idle3",
+        "idle4",
+        "idle5",
+        "apex",
+        "land",
+        "kickrecoil",
+        "guardhit"
+      ],
+      "sheet": "sheetG",
+      "src": "raw/griddle_sheetG.webp",
+      "sha256": "df24b097cd41e3c1d04a41754b45b33f697a1d94c743fc375d4f61c488afdced",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3525280
+    },
+    {
+      "id": "nimbus_sheetF",
+      "kind": "sprites",
+      "fighter": "nimbus",
+      "key": true,
+      "poses": [
+        "load",
+        "punchwhip",
+        "kickwhip",
+        "recoil",
+        "settle",
+        "stepin",
+        "stepout",
+        "dashload",
+        "dashpass"
+      ],
+      "sheet": "sheetF",
+      "src": "raw/nimbus_sheetF.webp",
+      "sha256": "d1f62d2173ad010f9f242f25a277c9d42bfc92b2732b8544a9ccb9c79b5835d2",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3383162
+    },
+    {
+      "id": "nimbus_sheetG",
+      "kind": "sprites",
+      "fighter": "nimbus",
+      "key": true,
+      "poses": [
+        "idle1",
+        "idle2",
+        "idle3",
+        "idle4",
+        "idle5",
+        "apex",
+        "land",
+        "kickrecoil",
+        "guardhit"
+      ],
+      "sheet": "sheetG",
+      "src": "raw/nimbus_sheetG.webp",
+      "sha256": "662e43ec46d46040d5f3468d5d9e8ddc7d0d17b1bcc4ca8d6be9cbc1ffa60dab",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3351674
+    },
+    {
+      "id": "rivet_sheetF",
+      "kind": "sprites",
+      "fighter": "rivet",
+      "key": true,
+      "poses": [
+        "load",
+        "punchwhip",
+        "kickwhip",
+        "recoil",
+        "settle",
+        "stepin",
+        "stepout",
+        "dashload",
+        "dashpass"
+      ],
+      "sheet": "sheetF",
+      "src": "raw/rivet_sheetF.webp",
+      "sha256": "20ba065dbdc204fd2441961056d9822cc5d17cb4dfadc2fdf69490c2f3208c3b",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3115726
+    },
+    {
+      "id": "rivet_sheetG",
+      "kind": "sprites",
+      "fighter": "rivet",
+      "key": true,
+      "poses": [
+        "idle1",
+        "idle2",
+        "idle3",
+        "idle4",
+        "idle5",
+        "apex",
+        "land",
+        "kickrecoil",
+        "guardhit"
+      ],
+      "sheet": "sheetG",
+      "src": "raw/rivet_sheetG.webp",
+      "sha256": "dfb308472a8405b426b9f6f625e5ffbb807165d0229199bcb202846c41ec72b2",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3150226
+    },
+    {
+      "id": "switchback_sheetF",
+      "kind": "sprites",
+      "fighter": "switchback",
+      "key": true,
+      "poses": [
+        "load",
+        "punchwhip",
+        "kickwhip",
+        "recoil",
+        "settle",
+        "stepin",
+        "stepout",
+        "dashload",
+        "dashpass"
+      ],
+      "sheet": "sheetF",
+      "src": "raw/switchback_sheetF.webp",
+      "sha256": "41ea2c4923bb31c94c11e53953a93ec796130f6e6906cab153285c90aa3336c6",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3258302
+    },
+    {
+      "id": "switchback_sheetG",
+      "kind": "sprites",
+      "fighter": "switchback",
+      "key": true,
+      "poses": [
+        "idle1",
+        "idle2",
+        "idle3",
+        "idle4",
+        "idle5",
+        "apex",
+        "land",
+        "kickrecoil",
+        "guardhit"
+      ],
+      "sheet": "sheetG",
+      "src": "raw/switchback_sheetG.webp",
+      "sha256": "8340dc3903a349c70133311986380c30ded02be4d54a21396522a9fcddec2e54",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3199338
+    },
+    {
+      "id": "tempo_sheetF",
+      "kind": "sprites",
+      "fighter": "tempo",
+      "key": true,
+      "poses": [
+        "load",
+        "punchwhip",
+        "kickwhip",
+        "recoil",
+        "settle",
+        "stepin",
+        "stepout",
+        "dashload",
+        "dashpass"
+      ],
+      "sheet": "sheetF",
+      "src": "raw/tempo_sheetF.webp",
+      "sha256": "23555479ca9bdf48807fdd107e0ff240f8deb2c6f8d178b046d7f0eaaa8a668f",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3208098
+    },
+    {
+      "id": "tempo_sheetG",
+      "kind": "sprites",
+      "fighter": "tempo",
+      "key": true,
+      "poses": [
+        "idle1",
+        "idle2",
+        "idle3",
+        "idle4",
+        "idle5",
+        "apex",
+        "land",
+        "kickrecoil",
+        "guardhit"
+      ],
+      "sheet": "sheetG",
+      "src": "raw/tempo_sheetG.webp",
+      "sha256": "4bfb12c71e9f8b4a32a48b3d6604ac0b9a6f68e41d9d9a2bdf988a26da27002d",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3170422
     }
   ]
 }

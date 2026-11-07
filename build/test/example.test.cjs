@@ -73,7 +73,12 @@ test('the reviewed classic six-fighter release still verifies exactly, and canno
 
 test('the shipped generated example is complete, portable and contains no unmapped private media', async () => {
   const bundle = path.resolve(__dirname, '../../example/bundle'), result = await verifyBundle(bundle), { contract } = result;
-  assert.equal(result.entries.length, contract.images + contract.audio); assert.equal(result.poseCount, contract.fighters * contract.poses);
+  // The optional motion sheets (sheetF/sheetG) ship for the whole cast: two more images and 18 more cels per fighter.
+  const motion = result.manifest.game.motionSheets || {}, motionIds = new Set(Object.keys(motion));
+  const withMotion = result.manifest.game.fighters.filter(f => result.manifest.assets.some(a => a.fighter === f.id && motionIds.has(a.sheet))).length;
+  assert.equal(withMotion, contract.fighters, 'Every fighter carries the motion sheets');
+  assert.equal(result.entries.length, contract.images + withMotion * motionIds.size + contract.audio);
+  assert.equal(result.poseCount, contract.fighters * contract.poses + withMotion * Object.values(motion).flat().length);
   for (const filename of ['assets.json', 'audio.json', 'provenance.json']) {
     const json = fs.readFileSync(path.join(bundle, filename), 'utf8');
     assert.doesNotMatch(json, /[A-Za-z]:[\\/]|\/(?:Users|home)\/|private-archive/);

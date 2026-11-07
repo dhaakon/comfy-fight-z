@@ -367,7 +367,7 @@ For a public deployment with online matches and phone controllers, see the [host
 | [`example/`](example/README.md) | Complete generated bundle, combined workflow and a free build command |
 | [`output/`](output/README.md) | Generated bundles, local previews and exports |
 
-`build/` contains source code. Use `npm run example` for the included generated game. The development command `npm run build` replaces `output/game/` with the canonical source preview; it does not rebuild the included example.
+`build/` contains source code. Use `npm run example` for the included generated game. `npm run build` builds `output/game/` from `build/public/`, whose accepted runtime media is adopted from the verified example, so it is the full canonical cast with its art; `npm run example` rebuilds and verifies the included bundle itself.
 
 ## Common fixes
 

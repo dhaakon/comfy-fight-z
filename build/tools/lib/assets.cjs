@@ -96,7 +96,7 @@ function mirrored(cell) {
   return { canvas: flipped, bounds: bounds(flipped) };
 }
 // Mirrors the browser builder: fighter sheets keep native resolution (up to 2100 px); `mirror` lists cells to flip.
-async function sheetCells(file, poses, keyed = true, { native = false, mirror = [] } = {}) {
+async function sheetCells(file, poses, keyed = true, { native = false, mirror = [], figures = null } = {}) {
   const image = await loadImage(file);
   const flip = out => { for (const pose of mirror) if (out[pose]) out[pose] = mirrored(out[pose]); return out; };
   if (image.width < 90 || image.height < 90) throw new Error(`Sheet too small: ${file}`);
@@ -111,7 +111,7 @@ async function sheetCells(file, poses, keyed = true, { native = false, mirror = 
     const sheet = createCanvas(width, Math.round(width * image.height / image.width)), ctx = sheet.getContext('2d');
     ctx.drawImage(image, 0, 0, sheet.width, sheet.height); keyGreen(sheet);
     let cells;
-    try { cells = segmentSheet(ctx.getImageData(0, 0, sheet.width, sheet.height).data, sheet.width, sheet.height); }
+    try { cells = segmentSheet(ctx.getImageData(0, 0, sheet.width, sheet.height).data, sheet.width, sheet.height, { picks: poses.map(pose => figures?.[pose] || null) }); }
     catch (error) { throw new Error(`${path.basename(file)}: ${error.message}`); }
     cells.forEach((pixels, i) => {
       const canvas = createCanvas(pixels.width, pixels.height), context = canvas.getContext('2d');
@@ -253,7 +253,7 @@ async function buildAssets({ root = DEFAULT_ROOT, strict = false } = {}) {
     }
     for (const job of present.filter(j => j.kind === 'sprites')) {
       const collection = spriteCells.get(job.fighter) || {};
-      const cells = await sheetCells(inside(root, job.output), job.poses, job.key !== false, { native: true, mirror: job.mirror || [] });
+      const cells = await sheetCells(inside(root, job.output), job.poses, job.key !== false, { native: true, mirror: job.mirror || [], figures: job.figures || null });
       for (const [pose, cell] of Object.entries(cells)) {
         if (collection[pose]) throw new Error(`Duplicate pose ${job.fighter}/${pose}`);
         collection[pose] = { ...cell, sheet: job.sheet || job.id };

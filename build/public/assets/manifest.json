@@ -2,163 +2,5503 @@
   "version": 1,
   "title": "Comfy Fighter Z",
   "subtitle": "Higgsfield Open Source Saga",
-  "demoSource": "fictional-text-only",
-  "generationPending": true,
-  "generationStatus": "The previous photo-derived demo has been retired. New fictional artwork and audio have not been generated; this is a media-free gameplay prototype.",
   "fighters": [
     {
       "id": "griddle",
       "name": "Griddle",
+      "introTagline": "The grill is hot. Your winning streak is toast.",
       "description": "A completely invented cheerful barbecue dad in his late forties. Short, broad, powerful build with a round expressive face, warm brown skin, a bald head and a compact triangular auburn beard. Wears a brick-red sleeveless utility apron over a cream short-sleeve shirt, navy work trousers, oversized orange heatproof wrist cuffs and dark brown ankle boots. The apron ends above the knees, leaving both legs clearly visible. No hat, handheld utensils, lettering or loose accessories. His low boxing guard and bright grin give him a friendly powerhouse silhouette.",
       "specialMove": {
         "name": "Sizzle Burst",
         "description": "Griddle plants both boots, twists his torso and thrusts one open orange-cuffed palm toward the right, releasing a compact orange-and-gold flame ball. The free hand guards his chest. Keep the fire close to the forward palm so the game can launch a separate projectile; preserve the entire body and both feet inside the sprite cell."
       },
-      "introTagline": "The grill is hot. Your winning streak is toast.",
-      "color": "#ff8b3d",
-      "style": "grappler",
       "superMove": {
         "name": "Five-Alarm Cookout",
         "description": "Griddle plants both boots, thrusts both orange-cuffed palms forward toward the right and releases a low rolling wave of orange-and-gold flame that hugs the ground. Keep the flame compact near his palms in sprite art; the game supplies the traveling wave."
       },
+      "style": "grappler",
       "winQuote": "Well done. Just how I like my steaks, and my opponents.",
       "ending": "With the trophy on the grill shelf, Griddle throws the biggest block party the cul-de-sac has ever seen. Even Baron Bylaw shows up for a plate, and leaves with a recipe card and a smile he swears was only smoke in his eyes.",
-      "poses": {}
+      "color": "#ff8b3d",
+      "poses": {
+        "idle": {
+          "src": "assets/fighters/griddle_idle.webp",
+          "w": 273,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk": {
+          "src": "assets/fighters/griddle_walk.webp",
+          "w": 252,
+          "h": 403,
+          "ax": 123,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punch": {
+          "src": "assets/fighters/griddle_punch.webp",
+          "w": 399,
+          "h": 403,
+          "ax": 148,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kick": {
+          "src": "assets/fighters/griddle_kick.webp",
+          "w": 371,
+          "h": 403,
+          "ax": 125,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "block": {
+          "src": "assets/fighters/griddle_block.webp",
+          "w": 296,
+          "h": 403,
+          "ax": 142,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "hit": {
+          "src": "assets/fighters/griddle_hit.webp",
+          "w": 358,
+          "h": 416,
+          "ax": 189,
+          "ay": 414,
+          "top": 1,
+          "bh": 413
+        },
+        "special": {
+          "src": "assets/fighters/griddle_special.webp",
+          "w": 344,
+          "h": 439,
+          "ax": 146,
+          "ay": 437,
+          "top": 1,
+          "bh": 436
+        },
+        "down": {
+          "src": "assets/fighters/griddle_down.webp",
+          "w": 441,
+          "h": 193,
+          "ax": 196,
+          "ay": 191,
+          "top": 1,
+          "bh": 190
+        },
+        "win": {
+          "src": "assets/fighters/griddle_win.webp",
+          "w": 286,
+          "h": 442,
+          "ax": 137,
+          "ay": 440,
+          "top": 1,
+          "bh": 439
+        },
+        "stance2": {
+          "src": "assets/fighters/griddle_stance2.webp",
+          "w": 274,
+          "h": 403,
+          "ax": 132,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouch": {
+          "src": "assets/fighters/griddle_crouch.webp",
+          "w": 269,
+          "h": 356,
+          "ax": 127,
+          "ay": 354,
+          "top": 1,
+          "bh": 353
+        },
+        "sweep": {
+          "src": "assets/fighters/griddle_sweep.webp",
+          "w": 387,
+          "h": 301,
+          "ax": 188,
+          "ay": 299,
+          "top": 1,
+          "bh": 298
+        },
+        "launcher": {
+          "src": "assets/fighters/griddle_launcher.webp",
+          "w": 321,
+          "h": 416,
+          "ax": 138,
+          "ay": 414,
+          "top": 1,
+          "bh": 413
+        },
+        "jump": {
+          "src": "assets/fighters/griddle_jump.webp",
+          "w": 284,
+          "h": 397,
+          "ax": 58,
+          "ay": 395,
+          "top": 1,
+          "bh": 394
+        },
+        "airkick": {
+          "src": "assets/fighters/griddle_airkick.webp",
+          "w": 397,
+          "h": 333,
+          "ax": 172,
+          "ay": 331,
+          "top": 1,
+          "bh": 330
+        },
+        "hpunch": {
+          "src": "assets/fighters/griddle_hpunch.webp",
+          "w": 404,
+          "h": 403,
+          "ax": 149,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dash": {
+          "src": "assets/fighters/griddle_dash.webp",
+          "w": 387,
+          "h": 380,
+          "ax": 83,
+          "ay": 378,
+          "top": 1,
+          "bh": 377
+        },
+        "tumble": {
+          "src": "assets/fighters/griddle_tumble.webp",
+          "w": 378,
+          "h": 308,
+          "ax": 265,
+          "ay": 306,
+          "top": 1,
+          "bh": 305
+        },
+        "walk2": {
+          "src": "assets/fighters/griddle_walk2.webp",
+          "w": 253,
+          "h": 403,
+          "ax": 122,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "lkick": {
+          "src": "assets/fighters/griddle_lkick.webp",
+          "w": 392,
+          "h": 403,
+          "ax": 146,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "cjab": {
+          "src": "assets/fighters/griddle_cjab.webp",
+          "w": 352,
+          "h": 347,
+          "ax": 127,
+          "ay": 345,
+          "top": 1,
+          "bh": 344
+        },
+        "airpunch": {
+          "src": "assets/fighters/griddle_airpunch.webp",
+          "w": 356,
+          "h": 408,
+          "ax": 63,
+          "ay": 406,
+          "top": 1,
+          "bh": 405
+        },
+        "throw": {
+          "src": "assets/fighters/griddle_throw.webp",
+          "w": 419,
+          "h": 403,
+          "ax": 161,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "taunt": {
+          "src": "assets/fighters/griddle_taunt.webp",
+          "w": 318,
+          "h": 432,
+          "ax": 154,
+          "ay": 430,
+          "top": 1,
+          "bh": 429
+        },
+        "getup": {
+          "src": "assets/fighters/griddle_getup.webp",
+          "w": 364,
+          "h": 305,
+          "ax": 187,
+          "ay": 303,
+          "top": 1,
+          "bh": 302
+        },
+        "powerup": {
+          "src": "assets/fighters/griddle_powerup.webp",
+          "w": 367,
+          "h": 442,
+          "ax": 178,
+          "ay": 440,
+          "top": 1,
+          "bh": 439
+        },
+        "entrance": {
+          "src": "assets/fighters/griddle_entrance.webp",
+          "w": 284,
+          "h": 403,
+          "ax": 137,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk3": {
+          "src": "assets/fighters/griddle_walk3.webp",
+          "w": 183,
+          "h": 403,
+          "ax": 86,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk4": {
+          "src": "assets/fighters/griddle_walk4.webp",
+          "w": 279,
+          "h": 403,
+          "ax": 139,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run": {
+          "src": "assets/fighters/griddle_run.webp",
+          "w": 357,
+          "h": 403,
+          "ax": 71,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run2": {
+          "src": "assets/fighters/griddle_run2.webp",
+          "w": 339,
+          "h": 403,
+          "ax": 272,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "backstep": {
+          "src": "assets/fighters/griddle_backstep.webp",
+          "w": 233,
+          "h": 403,
+          "ax": 65,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "jumpfall": {
+          "src": "assets/fighters/griddle_jumpfall.webp",
+          "w": 263,
+          "h": 422,
+          "ax": 112,
+          "ay": 420,
+          "top": 1,
+          "bh": 419
+        },
+        "crouchblock": {
+          "src": "assets/fighters/griddle_crouchblock.webp",
+          "w": 324,
+          "h": 392,
+          "ax": 159,
+          "ay": 390,
+          "top": 1,
+          "bh": 389
+        },
+        "hitlow": {
+          "src": "assets/fighters/griddle_hitlow.webp",
+          "w": 353,
+          "h": 340,
+          "ax": 171,
+          "ay": 338,
+          "top": 1,
+          "bh": 337
+        },
+        "hitheavy": {
+          "src": "assets/fighters/griddle_hitheavy.webp",
+          "w": 312,
+          "h": 392,
+          "ax": 145,
+          "ay": 390,
+          "top": 1,
+          "bh": 389
+        },
+        "punchwind": {
+          "src": "assets/fighters/griddle_punchwind.webp",
+          "w": 391,
+          "h": 403,
+          "ax": 167,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwind": {
+          "src": "assets/fighters/griddle_kickwind.webp",
+          "w": 225,
+          "h": 403,
+          "ax": 89,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "heavywind": {
+          "src": "assets/fighters/griddle_heavywind.webp",
+          "w": 428,
+          "h": 403,
+          "ax": 172,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "roll": {
+          "src": "assets/fighters/griddle_roll.webp",
+          "w": 367,
+          "h": 232,
+          "ax": 229,
+          "ay": 230,
+          "top": 1,
+          "bh": 229
+        },
+        "blowback": {
+          "src": "assets/fighters/griddle_blowback.webp",
+          "w": 375,
+          "h": 403,
+          "ax": 161,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "super": {
+          "src": "assets/fighters/griddle_super.webp",
+          "w": 434,
+          "h": 407,
+          "ax": 258,
+          "ay": 405,
+          "top": 1,
+          "bh": 404
+        },
+        "dizzy": {
+          "src": "assets/fighters/griddle_dizzy.webp",
+          "w": 284,
+          "h": 403,
+          "ax": 151,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "win2": {
+          "src": "assets/fighters/griddle_win2.webp",
+          "w": 310,
+          "h": 437,
+          "ax": 157,
+          "ay": 435,
+          "top": 1,
+          "bh": 434
+        },
+        "lose": {
+          "src": "assets/fighters/griddle_lose.webp",
+          "w": 334,
+          "h": 310,
+          "ax": 164,
+          "ay": 308,
+          "top": 1,
+          "bh": 307
+        },
+        "load": {
+          "src": "assets/fighters/griddle_load.webp",
+          "w": 337,
+          "h": 404,
+          "ax": 163,
+          "ay": 402,
+          "top": 1,
+          "bh": 401
+        },
+        "punchwhip": {
+          "src": "assets/fighters/griddle_punchwhip.webp",
+          "w": 408,
+          "h": 403,
+          "ax": 148,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwhip": {
+          "src": "assets/fighters/griddle_kickwhip.webp",
+          "w": 316,
+          "h": 422,
+          "ax": 131,
+          "ay": 420,
+          "top": 1,
+          "bh": 419
+        },
+        "recoil": {
+          "src": "assets/fighters/griddle_recoil.webp",
+          "w": 384,
+          "h": 403,
+          "ax": 136,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "settle": {
+          "src": "assets/fighters/griddle_settle.webp",
+          "w": 296,
+          "h": 403,
+          "ax": 142,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepin": {
+          "src": "assets/fighters/griddle_stepin.webp",
+          "w": 235,
+          "h": 403,
+          "ax": 116,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepout": {
+          "src": "assets/fighters/griddle_stepout.webp",
+          "w": 273,
+          "h": 403,
+          "ax": 129,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dashload": {
+          "src": "assets/fighters/griddle_dashload.webp",
+          "w": 307,
+          "h": 377,
+          "ax": 88,
+          "ay": 375,
+          "top": 1,
+          "bh": 374
+        },
+        "dashpass": {
+          "src": "assets/fighters/griddle_dashpass.webp",
+          "w": 317,
+          "h": 362,
+          "ax": 90,
+          "ay": 360,
+          "top": 1,
+          "bh": 359
+        },
+        "idle1": {
+          "src": "assets/fighters/griddle_idle1.webp",
+          "w": 274,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle2": {
+          "src": "assets/fighters/griddle_idle2.webp",
+          "w": 276,
+          "h": 403,
+          "ax": 134,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle3": {
+          "src": "assets/fighters/griddle_idle3.webp",
+          "w": 283,
+          "h": 403,
+          "ax": 144,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle4": {
+          "src": "assets/fighters/griddle_idle4.webp",
+          "w": 268,
+          "h": 403,
+          "ax": 129,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle5": {
+          "src": "assets/fighters/griddle_idle5.webp",
+          "w": 296,
+          "h": 403,
+          "ax": 143,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "apex": {
+          "src": "assets/fighters/griddle_apex.webp",
+          "w": 212,
+          "h": 348,
+          "ax": 92,
+          "ay": 346,
+          "top": 1,
+          "bh": 345
+        },
+        "land": {
+          "src": "assets/fighters/griddle_land.webp",
+          "w": 357,
+          "h": 400,
+          "ax": 171,
+          "ay": 398,
+          "top": 1,
+          "bh": 397
+        },
+        "kickrecoil": {
+          "src": "assets/fighters/griddle_kickrecoil.webp",
+          "w": 382,
+          "h": 431,
+          "ax": 177,
+          "ay": 429,
+          "top": 1,
+          "bh": 428
+        },
+        "guardhit": {
+          "src": "assets/fighters/griddle_guardhit.webp",
+          "w": 333,
+          "h": 403,
+          "ax": 163,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        }
+      },
+      "sourceImage": "assets/references/griddle_source.webp",
+      "portrait": "assets/portraits/griddle_portrait.webp",
+      "hero": "assets/heroes/griddle_hero.webp",
+      "cutin": "assets/cutins/griddle_cutin.webp",
+      "endingArt": "assets/endings/griddle_ending.webp"
     },
     {
       "id": "rivet",
       "name": "Rivet",
+      "introTagline": "I fix everything. Your stance is next.",
       "description": "A completely invented workshop dad in his early fifties. Tall muscular build, deep umber skin, a long angular face, short silver tightly curled hair and an assertive half-smile. Indigo mechanic's jumpsuit with sleeves rolled to the elbows, a wide copper belt, compact copper forearm bracers and steel-gray work boots. Simple uncluttered silhouette with no tools hanging from the belt, no goggles, no hat and no writing. His grounded open-hand guard suggests precision and strength.",
       "specialMove": {
         "name": "Magnet Crash",
         "description": "Rivet draws both bracers together at the waist and drives one palm toward the right, launching a tight cyan magnetic pulse with three small copper fragments orbiting its center. Keep the effect near the palm, the other arm guarding the body and every limb fully inside the sprite cell. No large floating tools or duplicated arms."
       },
-      "introTagline": "I fix everything. Your stance is next.",
-      "color": "#58c7ff",
-      "style": "balanced",
       "superMove": {
         "name": "Full Overhaul",
         "description": "Rivet snaps both copper bracers together and drives one palm toward the right, firing a tight cyan magnetic spiral with copper fragments orbiting its core. Keep the spiral compact near the palm in sprite art."
       },
+      "style": "balanced",
       "winQuote": "Tightened every loose bolt. You were the last one.",
       "ending": "Rivet spends the prize money fixing every flickering streetlight on the block, then opens a free Saturday fix-it workshop in his garage. The line of neighbors carrying broken toasters wraps around the corner.",
-      "poses": {}
+      "color": "#58c7ff",
+      "poses": {
+        "idle": {
+          "src": "assets/fighters/rivet_idle.webp",
+          "w": 272,
+          "h": 403,
+          "ax": 130,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "walk": {
+          "src": "assets/fighters/rivet_walk.webp",
+          "w": 220,
+          "h": 403,
+          "ax": 112,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punch": {
+          "src": "assets/fighters/rivet_punch.webp",
+          "w": 341,
+          "h": 403,
+          "ax": 129,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kick": {
+          "src": "assets/fighters/rivet_kick.webp",
+          "w": 361,
+          "h": 403,
+          "ax": 129,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "block": {
+          "src": "assets/fighters/rivet_block.webp",
+          "w": 275,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "hit": {
+          "src": "assets/fighters/rivet_hit.webp",
+          "w": 241,
+          "h": 405,
+          "ax": 110,
+          "ay": 403,
+          "top": 1,
+          "bh": 402
+        },
+        "special": {
+          "src": "assets/fighters/rivet_special.webp",
+          "w": 313,
+          "h": 427,
+          "ax": 144,
+          "ay": 425,
+          "top": 1,
+          "bh": 424
+        },
+        "down": {
+          "src": "assets/fighters/rivet_down.webp",
+          "w": 433,
+          "h": 158,
+          "ax": 218,
+          "ay": 155,
+          "top": 1,
+          "bh": 154
+        },
+        "win": {
+          "src": "assets/fighters/rivet_win.webp",
+          "w": 266,
+          "h": 439,
+          "ax": 123,
+          "ay": 437,
+          "top": 1,
+          "bh": 436
+        },
+        "stance2": {
+          "src": "assets/fighters/rivet_stance2.webp",
+          "w": 290,
+          "h": 403,
+          "ax": 139,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouch": {
+          "src": "assets/fighters/rivet_crouch.webp",
+          "w": 258,
+          "h": 334,
+          "ax": 120,
+          "ay": 332,
+          "top": 1,
+          "bh": 331
+        },
+        "sweep": {
+          "src": "assets/fighters/rivet_sweep.webp",
+          "w": 413,
+          "h": 275,
+          "ax": 224,
+          "ay": 273,
+          "top": 1,
+          "bh": 272
+        },
+        "launcher": {
+          "src": "assets/fighters/rivet_launcher.webp",
+          "w": 295,
+          "h": 422,
+          "ax": 136,
+          "ay": 420,
+          "top": 1,
+          "bh": 419
+        },
+        "jump": {
+          "src": "assets/fighters/rivet_jump.webp",
+          "w": 254,
+          "h": 392,
+          "ax": 86,
+          "ay": 390,
+          "top": 1,
+          "bh": 389
+        },
+        "airkick": {
+          "src": "assets/fighters/rivet_airkick.webp",
+          "w": 415,
+          "h": 323,
+          "ax": 157,
+          "ay": 321,
+          "top": 1,
+          "bh": 320
+        },
+        "hpunch": {
+          "src": "assets/fighters/rivet_hpunch.webp",
+          "w": 389,
+          "h": 403,
+          "ax": 160,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "dash": {
+          "src": "assets/fighters/rivet_dash.webp",
+          "w": 391,
+          "h": 377,
+          "ax": 61,
+          "ay": 375,
+          "top": 1,
+          "bh": 374
+        },
+        "tumble": {
+          "src": "assets/fighters/rivet_tumble.webp",
+          "w": 400,
+          "h": 266,
+          "ax": 258,
+          "ay": 264,
+          "top": 1,
+          "bh": 263
+        },
+        "walk2": {
+          "src": "assets/fighters/rivet_walk2.webp",
+          "w": 258,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "lkick": {
+          "src": "assets/fighters/rivet_lkick.webp",
+          "w": 324,
+          "h": 403,
+          "ax": 123,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "cjab": {
+          "src": "assets/fighters/rivet_cjab.webp",
+          "w": 362,
+          "h": 327,
+          "ax": 128,
+          "ay": 325,
+          "top": 1,
+          "bh": 324
+        },
+        "airpunch": {
+          "src": "assets/fighters/rivet_airpunch.webp",
+          "w": 287,
+          "h": 410,
+          "ax": 47,
+          "ay": 408,
+          "top": 1,
+          "bh": 407
+        },
+        "throw": {
+          "src": "assets/fighters/rivet_throw.webp",
+          "w": 403,
+          "h": 403,
+          "ax": 153,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "taunt": {
+          "src": "assets/fighters/rivet_taunt.webp",
+          "w": 252,
+          "h": 429,
+          "ax": 107,
+          "ay": 427,
+          "top": 1,
+          "bh": 426
+        },
+        "getup": {
+          "src": "assets/fighters/rivet_getup.webp",
+          "w": 386,
+          "h": 260,
+          "ax": 191,
+          "ay": 258,
+          "top": 1,
+          "bh": 257
+        },
+        "powerup": {
+          "src": "assets/fighters/rivet_powerup.webp",
+          "w": 329,
+          "h": 407,
+          "ax": 162,
+          "ay": 405,
+          "top": 1,
+          "bh": 404
+        },
+        "entrance": {
+          "src": "assets/fighters/rivet_entrance.webp",
+          "w": 161,
+          "h": 403,
+          "ax": 72,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk3": {
+          "src": "assets/fighters/rivet_walk3.webp",
+          "w": 211,
+          "h": 403,
+          "ax": 104,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk4": {
+          "src": "assets/fighters/rivet_walk4.webp",
+          "w": 271,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run": {
+          "src": "assets/fighters/rivet_run.webp",
+          "w": 394,
+          "h": 403,
+          "ax": 67,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run2": {
+          "src": "assets/fighters/rivet_run2.webp",
+          "w": 403,
+          "h": 403,
+          "ax": 345,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "backstep": {
+          "src": "assets/fighters/rivet_backstep.webp",
+          "w": 264,
+          "h": 403,
+          "ax": 58,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "jumpfall": {
+          "src": "assets/fighters/rivet_jumpfall.webp",
+          "w": 187,
+          "h": 417,
+          "ax": 74,
+          "ay": 415,
+          "top": 1,
+          "bh": 414
+        },
+        "crouchblock": {
+          "src": "assets/fighters/rivet_crouchblock.webp",
+          "w": 313,
+          "h": 394,
+          "ax": 147,
+          "ay": 392,
+          "top": 1,
+          "bh": 391
+        },
+        "hitlow": {
+          "src": "assets/fighters/rivet_hitlow.webp",
+          "w": 297,
+          "h": 383,
+          "ax": 137,
+          "ay": 381,
+          "top": 1,
+          "bh": 380
+        },
+        "hitheavy": {
+          "src": "assets/fighters/rivet_hitheavy.webp",
+          "w": 333,
+          "h": 382,
+          "ax": 176,
+          "ay": 380,
+          "top": 1,
+          "bh": 379
+        },
+        "punchwind": {
+          "src": "assets/fighters/rivet_punchwind.webp",
+          "w": 316,
+          "h": 403,
+          "ax": 136,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwind": {
+          "src": "assets/fighters/rivet_kickwind.webp",
+          "w": 217,
+          "h": 403,
+          "ax": 103,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "heavywind": {
+          "src": "assets/fighters/rivet_heavywind.webp",
+          "w": 350,
+          "h": 403,
+          "ax": 171,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "roll": {
+          "src": "assets/fighters/rivet_roll.webp",
+          "w": 270,
+          "h": 211,
+          "ax": 154,
+          "ay": 209,
+          "top": 1,
+          "bh": 208
+        },
+        "blowback": {
+          "src": "assets/fighters/rivet_blowback.webp",
+          "w": 406,
+          "h": 403,
+          "ax": 33,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "super": {
+          "src": "assets/fighters/rivet_super.webp",
+          "w": 314,
+          "h": 423,
+          "ax": 144,
+          "ay": 421,
+          "top": 1,
+          "bh": 420
+        },
+        "dizzy": {
+          "src": "assets/fighters/rivet_dizzy.webp",
+          "w": 216,
+          "h": 403,
+          "ax": 85,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "win2": {
+          "src": "assets/fighters/rivet_win2.webp",
+          "w": 258,
+          "h": 424,
+          "ax": 126,
+          "ay": 422,
+          "top": 1,
+          "bh": 421
+        },
+        "lose": {
+          "src": "assets/fighters/rivet_lose.webp",
+          "w": 312,
+          "h": 315,
+          "ax": 145,
+          "ay": 313,
+          "top": 1,
+          "bh": 312
+        },
+        "load": {
+          "src": "assets/fighters/rivet_load.webp",
+          "w": 273,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punchwhip": {
+          "src": "assets/fighters/rivet_punchwhip.webp",
+          "w": 341,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwhip": {
+          "src": "assets/fighters/rivet_kickwhip.webp",
+          "w": 278,
+          "h": 411,
+          "ax": 131,
+          "ay": 409,
+          "top": 1,
+          "bh": 408
+        },
+        "recoil": {
+          "src": "assets/fighters/rivet_recoil.webp",
+          "w": 349,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "settle": {
+          "src": "assets/fighters/rivet_settle.webp",
+          "w": 276,
+          "h": 403,
+          "ax": 132,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepin": {
+          "src": "assets/fighters/rivet_stepin.webp",
+          "w": 243,
+          "h": 403,
+          "ax": 122,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepout": {
+          "src": "assets/fighters/rivet_stepout.webp",
+          "w": 282,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dashload": {
+          "src": "assets/fighters/rivet_dashload.webp",
+          "w": 297,
+          "h": 388,
+          "ax": 148,
+          "ay": 386,
+          "top": 1,
+          "bh": 385
+        },
+        "dashpass": {
+          "src": "assets/fighters/rivet_dashpass.webp",
+          "w": 320,
+          "h": 370,
+          "ax": 66,
+          "ay": 368,
+          "top": 1,
+          "bh": 367
+        },
+        "idle1": {
+          "src": "assets/fighters/rivet_idle1.webp",
+          "w": 273,
+          "h": 403,
+          "ax": 131,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "idle2": {
+          "src": "assets/fighters/rivet_idle2.webp",
+          "w": 277,
+          "h": 403,
+          "ax": 136,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle3": {
+          "src": "assets/fighters/rivet_idle3.webp",
+          "w": 276,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle4": {
+          "src": "assets/fighters/rivet_idle4.webp",
+          "w": 276,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle5": {
+          "src": "assets/fighters/rivet_idle5.webp",
+          "w": 270,
+          "h": 403,
+          "ax": 129,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "apex": {
+          "src": "assets/fighters/rivet_apex.webp",
+          "w": 192,
+          "h": 321,
+          "ax": 78,
+          "ay": 319,
+          "top": 2,
+          "bh": 317
+        },
+        "land": {
+          "src": "assets/fighters/rivet_land.webp",
+          "w": 352,
+          "h": 410,
+          "ax": 156,
+          "ay": 408,
+          "top": 1,
+          "bh": 407
+        },
+        "kickrecoil": {
+          "src": "assets/fighters/rivet_kickrecoil.webp",
+          "w": 410,
+          "h": 428,
+          "ax": 186,
+          "ay": 426,
+          "top": 1,
+          "bh": 425
+        },
+        "guardhit": {
+          "src": "assets/fighters/rivet_guardhit.webp",
+          "w": 257,
+          "h": 403,
+          "ax": 118,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        }
+      },
+      "sourceImage": "assets/references/rivet_source.webp",
+      "portrait": "assets/portraits/rivet_portrait.webp",
+      "hero": "assets/heroes/rivet_hero.webp",
+      "cutin": "assets/cutins/rivet_cutin.webp",
+      "endingArt": "assets/endings/rivet_ending.webp"
     },
     {
       "id": "tempo",
       "name": "Tempo",
+      "introTagline": "Keep up with the beat, or take a seat.",
       "description": "A completely invented music-teacher parent in their late thirties. Compact athletic build, light olive skin, a heart-shaped face, short coral-red swept pixie hair and expressive dark eyebrows. Cropped magenta track jacket over a plain cream shirt, tapered midnight-blue trousers, cream high-top sneakers and two simple violet padded wristbands. A small pair of rounded headphones rests snugly at the collar without a loose cable. Lively upright kickboxing guard; no handheld instrument, brand marks or green accents.",
       "specialMove": {
         "name": "Beat Drop",
         "description": "Tempo pivots on the back foot, brings both palms together and pushes them toward the right to launch one compact magenta-and-violet sound ring. A short pair of concentric rings stays near the hands. Keep the face, complete body and both shoes visible without duplicated silhouettes or musical-note lettering."
       },
-      "introTagline": "Keep up with the beat, or take a seat.",
-      "color": "#f46bc4",
-      "style": "speed",
       "superMove": {
         "name": "Encore Fortissimo",
         "description": "Tempo spins into a forward kick toward the right that releases a large magenta-and-violet sound shockwave of three concentric rings. Keep the rings close to the kicking foot in sprite art."
       },
+      "style": "speed",
       "winQuote": "You were off-beat from the very first round.",
       "ending": "Tempo turns the empty lot into an open-air stage. By the end of summer the whole neighborhood sings the encore together, even the neighbors who swore they could not carry a tune.",
-      "poses": {}
+      "color": "#f46bc4",
+      "poses": {
+        "idle": {
+          "src": "assets/fighters/tempo_idle.webp",
+          "w": 240,
+          "h": 403,
+          "ax": 112,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk": {
+          "src": "assets/fighters/tempo_walk.webp",
+          "w": 240,
+          "h": 403,
+          "ax": 120,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punch": {
+          "src": "assets/fighters/tempo_punch.webp",
+          "w": 345,
+          "h": 403,
+          "ax": 137,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kick": {
+          "src": "assets/fighters/tempo_kick.webp",
+          "w": 366,
+          "h": 403,
+          "ax": 124,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "block": {
+          "src": "assets/fighters/tempo_block.webp",
+          "w": 292,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "hit": {
+          "src": "assets/fighters/tempo_hit.webp",
+          "w": 216,
+          "h": 381,
+          "ax": 100,
+          "ay": 379,
+          "top": 1,
+          "bh": 378
+        },
+        "special": {
+          "src": "assets/fighters/tempo_special.webp",
+          "w": 317,
+          "h": 402,
+          "ax": 123,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "down": {
+          "src": "assets/fighters/tempo_down.webp",
+          "w": 437,
+          "h": 145,
+          "ax": 270,
+          "ay": 143,
+          "top": 1,
+          "bh": 142
+        },
+        "win": {
+          "src": "assets/fighters/tempo_win.webp",
+          "w": 220,
+          "h": 414,
+          "ax": 116,
+          "ay": 412,
+          "top": 1,
+          "bh": 411
+        },
+        "stance2": {
+          "src": "assets/fighters/tempo_stance2.webp",
+          "w": 252,
+          "h": 403,
+          "ax": 120,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouch": {
+          "src": "assets/fighters/tempo_crouch.webp",
+          "w": 216,
+          "h": 317,
+          "ax": 94,
+          "ay": 315,
+          "top": 1,
+          "bh": 314
+        },
+        "sweep": {
+          "src": "assets/fighters/tempo_sweep.webp",
+          "w": 384,
+          "h": 265,
+          "ax": 208,
+          "ay": 263,
+          "top": 1,
+          "bh": 262
+        },
+        "launcher": {
+          "src": "assets/fighters/tempo_launcher.webp",
+          "w": 241,
+          "h": 397,
+          "ax": 115,
+          "ay": 395,
+          "top": 2,
+          "bh": 393
+        },
+        "jump": {
+          "src": "assets/fighters/tempo_jump.webp",
+          "w": 195,
+          "h": 384,
+          "ax": 51,
+          "ay": 382,
+          "top": 1,
+          "bh": 381
+        },
+        "airkick": {
+          "src": "assets/fighters/tempo_airkick.webp",
+          "w": 361,
+          "h": 285,
+          "ax": 122,
+          "ay": 283,
+          "top": 1,
+          "bh": 282
+        },
+        "hpunch": {
+          "src": "assets/fighters/tempo_hpunch.webp",
+          "w": 363,
+          "h": 403,
+          "ax": 144,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dash": {
+          "src": "assets/fighters/tempo_dash.webp",
+          "w": 353,
+          "h": 367,
+          "ax": 64,
+          "ay": 365,
+          "top": 1,
+          "bh": 364
+        },
+        "tumble": {
+          "src": "assets/fighters/tempo_tumble.webp",
+          "w": 358,
+          "h": 241,
+          "ax": 226,
+          "ay": 239,
+          "top": 1,
+          "bh": 238
+        },
+        "walk2": {
+          "src": "assets/fighters/tempo_walk2.webp",
+          "w": 239,
+          "h": 403,
+          "ax": 117,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "lkick": {
+          "src": "assets/fighters/tempo_lkick.webp",
+          "w": 352,
+          "h": 403,
+          "ax": 124,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "cjab": {
+          "src": "assets/fighters/tempo_cjab.webp",
+          "w": 310,
+          "h": 355,
+          "ax": 112,
+          "ay": 353,
+          "top": 1,
+          "bh": 352
+        },
+        "airpunch": {
+          "src": "assets/fighters/tempo_airpunch.webp",
+          "w": 302,
+          "h": 401,
+          "ax": 45,
+          "ay": 399,
+          "top": 1,
+          "bh": 398
+        },
+        "throw": {
+          "src": "assets/fighters/tempo_throw.webp",
+          "w": 380,
+          "h": 403,
+          "ax": 137,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "taunt": {
+          "src": "assets/fighters/tempo_taunt.webp",
+          "w": 209,
+          "h": 399,
+          "ax": 94,
+          "ay": 397,
+          "top": 1,
+          "bh": 396
+        },
+        "getup": {
+          "src": "assets/fighters/tempo_getup.webp",
+          "w": 292,
+          "h": 295,
+          "ax": 148,
+          "ay": 293,
+          "top": 1,
+          "bh": 292
+        },
+        "powerup": {
+          "src": "assets/fighters/tempo_powerup.webp",
+          "w": 332,
+          "h": 406,
+          "ax": 161,
+          "ay": 404,
+          "top": 1,
+          "bh": 403
+        },
+        "entrance": {
+          "src": "assets/fighters/tempo_entrance.webp",
+          "w": 169,
+          "h": 403,
+          "ax": 81,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "walk3": {
+          "src": "assets/fighters/tempo_walk3.webp",
+          "w": 150,
+          "h": 403,
+          "ax": 73,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk4": {
+          "src": "assets/fighters/tempo_walk4.webp",
+          "w": 243,
+          "h": 403,
+          "ax": 120,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "run": {
+          "src": "assets/fighters/tempo_run.webp",
+          "w": 310,
+          "h": 403,
+          "ax": 56,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run2": {
+          "src": "assets/fighters/tempo_run2.webp",
+          "w": 358,
+          "h": 403,
+          "ax": 305,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "backstep": {
+          "src": "assets/fighters/tempo_backstep.webp",
+          "w": 212,
+          "h": 403,
+          "ax": 68,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "jumpfall": {
+          "src": "assets/fighters/tempo_jumpfall.webp",
+          "w": 249,
+          "h": 378,
+          "ax": 177,
+          "ay": 376,
+          "top": 2,
+          "bh": 374
+        },
+        "crouchblock": {
+          "src": "assets/fighters/tempo_crouchblock.webp",
+          "w": 244,
+          "h": 350,
+          "ax": 109,
+          "ay": 348,
+          "top": 1,
+          "bh": 347
+        },
+        "hitlow": {
+          "src": "assets/fighters/tempo_hitlow.webp",
+          "w": 263,
+          "h": 322,
+          "ax": 116,
+          "ay": 320,
+          "top": 1,
+          "bh": 319
+        },
+        "hitheavy": {
+          "src": "assets/fighters/tempo_hitheavy.webp",
+          "w": 272,
+          "h": 370,
+          "ax": 147,
+          "ay": 368,
+          "top": 1,
+          "bh": 367
+        },
+        "punchwind": {
+          "src": "assets/fighters/tempo_punchwind.webp",
+          "w": 286,
+          "h": 403,
+          "ax": 125,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwind": {
+          "src": "assets/fighters/tempo_kickwind.webp",
+          "w": 192,
+          "h": 403,
+          "ax": 88,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "heavywind": {
+          "src": "assets/fighters/tempo_heavywind.webp",
+          "w": 370,
+          "h": 403,
+          "ax": 162,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "roll": {
+          "src": "assets/fighters/tempo_roll.webp",
+          "w": 291,
+          "h": 175,
+          "ax": 188,
+          "ay": 173,
+          "top": 1,
+          "bh": 172
+        },
+        "blowback": {
+          "src": "assets/fighters/tempo_blowback.webp",
+          "w": 308,
+          "h": 403,
+          "ax": 148,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "super": {
+          "src": "assets/fighters/tempo_super.webp",
+          "w": 394,
+          "h": 372,
+          "ax": 154,
+          "ay": 370,
+          "top": 1,
+          "bh": 369
+        },
+        "dizzy": {
+          "src": "assets/fighters/tempo_dizzy.webp",
+          "w": 224,
+          "h": 403,
+          "ax": 84,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "win2": {
+          "src": "assets/fighters/tempo_win2.webp",
+          "w": 195,
+          "h": 437,
+          "ax": 90,
+          "ay": 434,
+          "top": 1,
+          "bh": 433
+        },
+        "lose": {
+          "src": "assets/fighters/tempo_lose.webp",
+          "w": 253,
+          "h": 276,
+          "ax": 118,
+          "ay": 274,
+          "top": 1,
+          "bh": 273
+        },
+        "load": {
+          "src": "assets/fighters/tempo_load.webp",
+          "w": 288,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punchwhip": {
+          "src": "assets/fighters/tempo_punchwhip.webp",
+          "w": 338,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwhip": {
+          "src": "assets/fighters/tempo_kickwhip.webp",
+          "w": 340,
+          "h": 385,
+          "ax": 122,
+          "ay": 383,
+          "top": 1,
+          "bh": 382
+        },
+        "recoil": {
+          "src": "assets/fighters/tempo_recoil.webp",
+          "w": 342,
+          "h": 403,
+          "ax": 124,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "settle": {
+          "src": "assets/fighters/tempo_settle.webp",
+          "w": 291,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepin": {
+          "src": "assets/fighters/tempo_stepin.webp",
+          "w": 197,
+          "h": 403,
+          "ax": 96,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "stepout": {
+          "src": "assets/fighters/tempo_stepout.webp",
+          "w": 269,
+          "h": 403,
+          "ax": 126,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dashload": {
+          "src": "assets/fighters/tempo_dashload.webp",
+          "w": 259,
+          "h": 343,
+          "ax": 116,
+          "ay": 341,
+          "top": 1,
+          "bh": 340
+        },
+        "dashpass": {
+          "src": "assets/fighters/tempo_dashpass.webp",
+          "w": 312,
+          "h": 350,
+          "ax": 62,
+          "ay": 348,
+          "top": 1,
+          "bh": 347
+        },
+        "idle1": {
+          "src": "assets/fighters/tempo_idle1.webp",
+          "w": 240,
+          "h": 403,
+          "ax": 112,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle2": {
+          "src": "assets/fighters/tempo_idle2.webp",
+          "w": 236,
+          "h": 403,
+          "ax": 110,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle3": {
+          "src": "assets/fighters/tempo_idle3.webp",
+          "w": 240,
+          "h": 403,
+          "ax": 112,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle4": {
+          "src": "assets/fighters/tempo_idle4.webp",
+          "w": 258,
+          "h": 403,
+          "ax": 119,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle5": {
+          "src": "assets/fighters/tempo_idle5.webp",
+          "w": 282,
+          "h": 403,
+          "ax": 128,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "apex": {
+          "src": "assets/fighters/tempo_apex.webp",
+          "w": 160,
+          "h": 296,
+          "ax": 68,
+          "ay": 294,
+          "top": 1,
+          "bh": 293
+        },
+        "land": {
+          "src": "assets/fighters/tempo_land.webp",
+          "w": 268,
+          "h": 364,
+          "ax": 135,
+          "ay": 362,
+          "top": 1,
+          "bh": 361
+        },
+        "kickrecoil": {
+          "src": "assets/fighters/tempo_kickrecoil.webp",
+          "w": 395,
+          "h": 390,
+          "ax": 193,
+          "ay": 388,
+          "top": 1,
+          "bh": 387
+        },
+        "guardhit": {
+          "src": "assets/fighters/tempo_guardhit.webp",
+          "w": 321,
+          "h": 403,
+          "ax": 149,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        }
+      },
+      "sourceImage": "assets/references/tempo_source.webp",
+      "portrait": "assets/portraits/tempo_portrait.webp",
+      "hero": "assets/heroes/tempo_hero.webp",
+      "cutin": "assets/cutins/tempo_cutin.webp",
+      "endingArt": "assets/endings/tempo_ending.webp"
     },
     {
       "id": "nimbus",
       "name": "Nimbus",
+      "introTagline": "I raised a garden. I can handle a little thunder.",
       "description": "A completely invented community-garden mom in her mid forties. Medium-height sturdy build, golden-brown skin, a square kind face, a thick cream-colored braid tucked into a short loop at the back of the head, and a determined smile. Plum-purple short-sleeve work coveralls, a broad lavender waist sash with short tucked ends, pale blue fitted forearm cuffs and dark violet rain boots. No plants carried on the body, trailing fabric, watering can, hat, green clothing or lettering. A calm balanced martial-arts stance with open hands.",
       "specialMove": {
         "name": "Cloudburst Palm",
         "description": "Nimbus lowers her center of gravity and extends the forward palm toward the right, forming a compact lavender cloud surrounded by pale blue water droplets. The opposite hand remains tucked near the ribs. Confine all droplets near the attacking palm; do not hide the face or crop either rain boot."
       },
-      "introTagline": "I raised a garden. I can handle a little thunder.",
-      "color": "#b99cff",
-      "style": "zoner",
       "superMove": {
         "name": "Thunderhead Bloom",
         "description": "Nimbus raises both open palms toward the right and launches a dense lavender storm cloud crackling with pale blue lightning. Keep the cloud compact and attached to her palms in sprite art."
       },
+      "style": "zoner",
       "winQuote": "Storms pass. Gardens grow. You lost.",
       "ending": "Where the association office once stood, Nimbus plants a community garden. The first sunflower blooms by autumn, and every kid on the street gets a little plot of their own.",
-      "poses": {}
+      "color": "#b99cff",
+      "poses": {
+        "idle": {
+          "src": "assets/fighters/nimbus_idle.webp",
+          "w": 255,
+          "h": 403,
+          "ax": 117,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk": {
+          "src": "assets/fighters/nimbus_walk.webp",
+          "w": 241,
+          "h": 403,
+          "ax": 123,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punch": {
+          "src": "assets/fighters/nimbus_punch.webp",
+          "w": 353,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kick": {
+          "src": "assets/fighters/nimbus_kick.webp",
+          "w": 367,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "block": {
+          "src": "assets/fighters/nimbus_block.webp",
+          "w": 264,
+          "h": 403,
+          "ax": 123,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "hit": {
+          "src": "assets/fighters/nimbus_hit.webp",
+          "w": 243,
+          "h": 397,
+          "ax": 102,
+          "ay": 395,
+          "top": 1,
+          "bh": 394
+        },
+        "special": {
+          "src": "assets/fighters/nimbus_special.webp",
+          "w": 326,
+          "h": 412,
+          "ax": 120,
+          "ay": 410,
+          "top": 1,
+          "bh": 409
+        },
+        "down": {
+          "src": "assets/fighters/nimbus_down.webp",
+          "w": 442,
+          "h": 120,
+          "ax": 236,
+          "ay": 118,
+          "top": 1,
+          "bh": 117
+        },
+        "win": {
+          "src": "assets/fighters/nimbus_win.webp",
+          "w": 220,
+          "h": 428,
+          "ax": 91,
+          "ay": 426,
+          "top": 1,
+          "bh": 425
+        },
+        "stance2": {
+          "src": "assets/fighters/nimbus_stance2.webp",
+          "w": 252,
+          "h": 403,
+          "ax": 116,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouch": {
+          "src": "assets/fighters/nimbus_crouch.webp",
+          "w": 250,
+          "h": 363,
+          "ax": 112,
+          "ay": 361,
+          "top": 1,
+          "bh": 360
+        },
+        "sweep": {
+          "src": "assets/fighters/nimbus_sweep.webp",
+          "w": 389,
+          "h": 293,
+          "ax": 179,
+          "ay": 291,
+          "top": 1,
+          "bh": 290
+        },
+        "launcher": {
+          "src": "assets/fighters/nimbus_launcher.webp",
+          "w": 297,
+          "h": 414,
+          "ax": 132,
+          "ay": 411,
+          "top": 1,
+          "bh": 410
+        },
+        "jump": {
+          "src": "assets/fighters/nimbus_jump.webp",
+          "w": 241,
+          "h": 400,
+          "ax": 39,
+          "ay": 398,
+          "top": 1,
+          "bh": 397
+        },
+        "airkick": {
+          "src": "assets/fighters/nimbus_airkick.webp",
+          "w": 374,
+          "h": 307,
+          "ax": 107,
+          "ay": 305,
+          "top": 1,
+          "bh": 304
+        },
+        "hpunch": {
+          "src": "assets/fighters/nimbus_hpunch.webp",
+          "w": 359,
+          "h": 403,
+          "ax": 140,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dash": {
+          "src": "assets/fighters/nimbus_dash.webp",
+          "w": 354,
+          "h": 361,
+          "ax": 66,
+          "ay": 359,
+          "top": 1,
+          "bh": 358
+        },
+        "tumble": {
+          "src": "assets/fighters/nimbus_tumble.webp",
+          "w": 383,
+          "h": 223,
+          "ax": 173,
+          "ay": 221,
+          "top": 1,
+          "bh": 220
+        },
+        "walk2": {
+          "src": "assets/fighters/nimbus_walk2.webp",
+          "w": 209,
+          "h": 403,
+          "ax": 104,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "lkick": {
+          "src": "assets/fighters/nimbus_lkick.webp",
+          "w": 385,
+          "h": 403,
+          "ax": 141,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "cjab": {
+          "src": "assets/fighters/nimbus_cjab.webp",
+          "w": 346,
+          "h": 350,
+          "ax": 136,
+          "ay": 348,
+          "top": 1,
+          "bh": 347
+        },
+        "airpunch": {
+          "src": "assets/fighters/nimbus_airpunch.webp",
+          "w": 337,
+          "h": 406,
+          "ax": 39,
+          "ay": 404,
+          "top": 1,
+          "bh": 403
+        },
+        "throw": {
+          "src": "assets/fighters/nimbus_throw.webp",
+          "w": 406,
+          "h": 403,
+          "ax": 147,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "taunt": {
+          "src": "assets/fighters/nimbus_taunt.webp",
+          "w": 232,
+          "h": 426,
+          "ax": 101,
+          "ay": 424,
+          "top": 1,
+          "bh": 423
+        },
+        "getup": {
+          "src": "assets/fighters/nimbus_getup.webp",
+          "w": 335,
+          "h": 293,
+          "ax": 187,
+          "ay": 291,
+          "top": 1,
+          "bh": 290
+        },
+        "powerup": {
+          "src": "assets/fighters/nimbus_powerup.webp",
+          "w": 305,
+          "h": 405,
+          "ax": 144,
+          "ay": 403,
+          "top": 1,
+          "bh": 402
+        },
+        "entrance": {
+          "src": "assets/fighters/nimbus_entrance.webp",
+          "w": 202,
+          "h": 403,
+          "ax": 93,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk3": {
+          "src": "assets/fighters/nimbus_walk3.webp",
+          "w": 184,
+          "h": 403,
+          "ax": 87,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk4": {
+          "src": "assets/fighters/nimbus_walk4.webp",
+          "w": 272,
+          "h": 403,
+          "ax": 137,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run": {
+          "src": "assets/fighters/nimbus_run.webp",
+          "w": 357,
+          "h": 403,
+          "ax": 79,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run2": {
+          "src": "assets/fighters/nimbus_run2.webp",
+          "w": 373,
+          "h": 403,
+          "ax": 316,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "backstep": {
+          "src": "assets/fighters/nimbus_backstep.webp",
+          "w": 224,
+          "h": 403,
+          "ax": 59,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "jumpfall": {
+          "src": "assets/fighters/nimbus_jumpfall.webp",
+          "w": 228,
+          "h": 406,
+          "ax": 148,
+          "ay": 404,
+          "top": 1,
+          "bh": 403
+        },
+        "crouchblock": {
+          "src": "assets/fighters/nimbus_crouchblock.webp",
+          "w": 244,
+          "h": 339,
+          "ax": 106,
+          "ay": 337,
+          "top": 1,
+          "bh": 336
+        },
+        "hitlow": {
+          "src": "assets/fighters/nimbus_hitlow.webp",
+          "w": 282,
+          "h": 334,
+          "ax": 104,
+          "ay": 332,
+          "top": 1,
+          "bh": 331
+        },
+        "hitheavy": {
+          "src": "assets/fighters/nimbus_hitheavy.webp",
+          "w": 356,
+          "h": 370,
+          "ax": 149,
+          "ay": 368,
+          "top": 1,
+          "bh": 367
+        },
+        "punchwind": {
+          "src": "assets/fighters/nimbus_punchwind.webp",
+          "w": 322,
+          "h": 403,
+          "ax": 136,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "kickwind": {
+          "src": "assets/fighters/nimbus_kickwind.webp",
+          "w": 222,
+          "h": 403,
+          "ax": 85,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "heavywind": {
+          "src": "assets/fighters/nimbus_heavywind.webp",
+          "w": 389,
+          "h": 403,
+          "ax": 159,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "roll": {
+          "src": "assets/fighters/nimbus_roll.webp",
+          "w": 340,
+          "h": 232,
+          "ax": 211,
+          "ay": 230,
+          "top": 1,
+          "bh": 229
+        },
+        "blowback": {
+          "src": "assets/fighters/nimbus_blowback.webp",
+          "w": 348,
+          "h": 403,
+          "ax": 150,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "super": {
+          "src": "assets/fighters/nimbus_super.webp",
+          "w": 383,
+          "h": 407,
+          "ax": 138,
+          "ay": 405,
+          "top": 1,
+          "bh": 404
+        },
+        "dizzy": {
+          "src": "assets/fighters/nimbus_dizzy.webp",
+          "w": 261,
+          "h": 403,
+          "ax": 132,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "win2": {
+          "src": "assets/fighters/nimbus_win2.webp",
+          "w": 231,
+          "h": 444,
+          "ax": 115,
+          "ay": 442,
+          "top": 1,
+          "bh": 441
+        },
+        "lose": {
+          "src": "assets/fighters/nimbus_lose.webp",
+          "w": 304,
+          "h": 316,
+          "ax": 143,
+          "ay": 314,
+          "top": 1,
+          "bh": 313
+        },
+        "load": {
+          "src": "assets/fighters/nimbus_load.webp",
+          "w": 255,
+          "h": 403,
+          "ax": 117,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punchwhip": {
+          "src": "assets/fighters/nimbus_punchwhip.webp",
+          "w": 371,
+          "h": 403,
+          "ax": 127,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwhip": {
+          "src": "assets/fighters/nimbus_kickwhip.webp",
+          "w": 365,
+          "h": 403,
+          "ax": 143,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "recoil": {
+          "src": "assets/fighters/nimbus_recoil.webp",
+          "w": 349,
+          "h": 403,
+          "ax": 124,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "settle": {
+          "src": "assets/fighters/nimbus_settle.webp",
+          "w": 264,
+          "h": 403,
+          "ax": 123,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepin": {
+          "src": "assets/fighters/nimbus_stepin.webp",
+          "w": 226,
+          "h": 403,
+          "ax": 115,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepout": {
+          "src": "assets/fighters/nimbus_stepout.webp",
+          "w": 258,
+          "h": 403,
+          "ax": 118,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dashload": {
+          "src": "assets/fighters/nimbus_dashload.webp",
+          "w": 305,
+          "h": 350,
+          "ax": 56,
+          "ay": 348,
+          "top": 1,
+          "bh": 347
+        },
+        "dashpass": {
+          "src": "assets/fighters/nimbus_dashpass.webp",
+          "w": 333,
+          "h": 341,
+          "ax": 179,
+          "ay": 338,
+          "top": 1,
+          "bh": 337
+        },
+        "idle1": {
+          "src": "assets/fighters/nimbus_idle1.webp",
+          "w": 255,
+          "h": 403,
+          "ax": 117,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle2": {
+          "src": "assets/fighters/nimbus_idle2.webp",
+          "w": 254,
+          "h": 403,
+          "ax": 117,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle3": {
+          "src": "assets/fighters/nimbus_idle3.webp",
+          "w": 257,
+          "h": 403,
+          "ax": 118,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle4": {
+          "src": "assets/fighters/nimbus_idle4.webp",
+          "w": 266,
+          "h": 403,
+          "ax": 124,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle5": {
+          "src": "assets/fighters/nimbus_idle5.webp",
+          "w": 262,
+          "h": 403,
+          "ax": 122,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "apex": {
+          "src": "assets/fighters/nimbus_apex.webp",
+          "w": 214,
+          "h": 326,
+          "ax": 100,
+          "ay": 324,
+          "top": 1,
+          "bh": 323
+        },
+        "land": {
+          "src": "assets/fighters/nimbus_land.webp",
+          "w": 294,
+          "h": 391,
+          "ax": 127,
+          "ay": 389,
+          "top": 1,
+          "bh": 388
+        },
+        "kickrecoil": {
+          "src": "assets/fighters/nimbus_kickrecoil.webp",
+          "w": 387,
+          "h": 425,
+          "ax": 140,
+          "ay": 423,
+          "top": 1,
+          "bh": 422
+        },
+        "guardhit": {
+          "src": "assets/fighters/nimbus_guardhit.webp",
+          "w": 269,
+          "h": 403,
+          "ax": 124,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        }
+      },
+      "sourceImage": "assets/references/nimbus_source.webp",
+      "portrait": "assets/portraits/nimbus_portrait.webp",
+      "hero": "assets/heroes/nimbus_hero.webp",
+      "cutin": "assets/cutins/nimbus_cutin.webp",
+      "endingArt": "assets/endings/nimbus_ending.webp"
     },
     {
       "id": "switchback",
       "name": "Switchback",
+      "introTagline": "School run complete. Express knockout incoming.",
       "description": "A completely invented bicycle-courier dad in his early forties. Tall lean build, cool dark-brown skin, a narrow expressive face, shaved head and a thin silver eyebrow notch. Wears a smooth amber bicycle helmet with open face and no visor, a bright yellow fitted windbreaker, maroon tapered riding trousers, navy fingerless gloves and navy-and-yellow trainers. No bicycle, bag, loose straps, glasses or brand marks. A light forward-leaning boxing guard and springy stance create a fast angular silhouette.",
       "specialMove": {
         "name": "Express Pulse",
         "description": "Switchback lunges with a sharp forward palm toward the right and releases a compact golden arrow-shaped energy pulse. Two short yellow motion streaks hug the attacking forearm. Keep one body only, with the rear foot planted and all helmet, gloves and shoes safely inside the sprite cell."
       },
-      "introTagline": "School run complete. Express knockout incoming.",
-      "color": "#ffd44d",
-      "style": "trickster",
       "superMove": {
         "name": "Rush Hour Relay",
         "description": "Switchback bursts forward in a blur of short golden streaks and finishes with a sharp palm strike toward the right that releases a long golden arrow pulse. Keep the streaks hugging his body in sprite art."
       },
+      "style": "trickster",
       "winQuote": "Delivered. No signature required.",
       "ending": "Switchback trades the trophy for a fleet of secondhand bikes and starts a neighborhood courier club. Nothing on the block is ever late again, especially not dinner.",
-      "poses": {}
+      "color": "#ffd44d",
+      "poses": {
+        "idle": {
+          "src": "assets/fighters/switchback_idle.webp",
+          "w": 227,
+          "h": 403,
+          "ax": 103,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "walk": {
+          "src": "assets/fighters/switchback_walk.webp",
+          "w": 269,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punch": {
+          "src": "assets/fighters/switchback_punch.webp",
+          "w": 365,
+          "h": 403,
+          "ax": 139,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kick": {
+          "src": "assets/fighters/switchback_kick.webp",
+          "w": 372,
+          "h": 403,
+          "ax": 116,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "block": {
+          "src": "assets/fighters/switchback_block.webp",
+          "w": 289,
+          "h": 403,
+          "ax": 139,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "hit": {
+          "src": "assets/fighters/switchback_hit.webp",
+          "w": 299,
+          "h": 388,
+          "ax": 143,
+          "ay": 386,
+          "top": 1,
+          "bh": 385
+        },
+        "special": {
+          "src": "assets/fighters/switchback_special.webp",
+          "w": 366,
+          "h": 413,
+          "ax": 152,
+          "ay": 411,
+          "top": 1,
+          "bh": 410
+        },
+        "down": {
+          "src": "assets/fighters/switchback_down.webp",
+          "w": 438,
+          "h": 103,
+          "ax": 314,
+          "ay": 101,
+          "top": 1,
+          "bh": 100
+        },
+        "win": {
+          "src": "assets/fighters/switchback_win.webp",
+          "w": 224,
+          "h": 482,
+          "ax": 106,
+          "ay": 480,
+          "top": 1,
+          "bh": 479
+        },
+        "stance2": {
+          "src": "assets/fighters/switchback_stance2.webp",
+          "w": 266,
+          "h": 403,
+          "ax": 126,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouch": {
+          "src": "assets/fighters/switchback_crouch.webp",
+          "w": 229,
+          "h": 336,
+          "ax": 103,
+          "ay": 334,
+          "top": 1,
+          "bh": 333
+        },
+        "sweep": {
+          "src": "assets/fighters/switchback_sweep.webp",
+          "w": 354,
+          "h": 248,
+          "ax": 209,
+          "ay": 246,
+          "top": 1,
+          "bh": 245
+        },
+        "launcher": {
+          "src": "assets/fighters/switchback_launcher.webp",
+          "w": 284,
+          "h": 421,
+          "ax": 131,
+          "ay": 419,
+          "top": 1,
+          "bh": 418
+        },
+        "jump": {
+          "src": "assets/fighters/switchback_jump.webp",
+          "w": 221,
+          "h": 387,
+          "ax": 60,
+          "ay": 385,
+          "top": 1,
+          "bh": 384
+        },
+        "airkick": {
+          "src": "assets/fighters/switchback_airkick.webp",
+          "w": 369,
+          "h": 303,
+          "ax": 148,
+          "ay": 301,
+          "top": 1,
+          "bh": 300
+        },
+        "hpunch": {
+          "src": "assets/fighters/switchback_hpunch.webp",
+          "w": 368,
+          "h": 403,
+          "ax": 154,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dash": {
+          "src": "assets/fighters/switchback_dash.webp",
+          "w": 362,
+          "h": 382,
+          "ax": 59,
+          "ay": 380,
+          "top": 1,
+          "bh": 379
+        },
+        "tumble": {
+          "src": "assets/fighters/switchback_tumble.webp",
+          "w": 358,
+          "h": 259,
+          "ax": 188,
+          "ay": 257,
+          "top": 2,
+          "bh": 255
+        },
+        "walk2": {
+          "src": "assets/fighters/switchback_walk2.webp",
+          "w": 234,
+          "h": 403,
+          "ax": 116,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "lkick": {
+          "src": "assets/fighters/switchback_lkick.webp",
+          "w": 343,
+          "h": 403,
+          "ax": 97,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "cjab": {
+          "src": "assets/fighters/switchback_cjab.webp",
+          "w": 354,
+          "h": 364,
+          "ax": 131,
+          "ay": 362,
+          "top": 1,
+          "bh": 361
+        },
+        "airpunch": {
+          "src": "assets/fighters/switchback_airpunch.webp",
+          "w": 334,
+          "h": 415,
+          "ax": 41,
+          "ay": 413,
+          "top": 1,
+          "bh": 412
+        },
+        "throw": {
+          "src": "assets/fighters/switchback_throw.webp",
+          "w": 387,
+          "h": 403,
+          "ax": 161,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "taunt": {
+          "src": "assets/fighters/switchback_taunt.webp",
+          "w": 202,
+          "h": 423,
+          "ax": 95,
+          "ay": 421,
+          "top": 1,
+          "bh": 420
+        },
+        "getup": {
+          "src": "assets/fighters/switchback_getup.webp",
+          "w": 405,
+          "h": 296,
+          "ax": 212,
+          "ay": 294,
+          "top": 1,
+          "bh": 293
+        },
+        "powerup": {
+          "src": "assets/fighters/switchback_powerup.webp",
+          "w": 267,
+          "h": 418,
+          "ax": 124,
+          "ay": 416,
+          "top": 1,
+          "bh": 415
+        },
+        "entrance": {
+          "src": "assets/fighters/switchback_entrance.webp",
+          "w": 302,
+          "h": 403,
+          "ax": 143,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk3": {
+          "src": "assets/fighters/switchback_walk3.webp",
+          "w": 190,
+          "h": 403,
+          "ax": 91,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk4": {
+          "src": "assets/fighters/switchback_walk4.webp",
+          "w": 272,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run": {
+          "src": "assets/fighters/switchback_run.webp",
+          "w": 355,
+          "h": 403,
+          "ax": 61,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run2": {
+          "src": "assets/fighters/switchback_run2.webp",
+          "w": 374,
+          "h": 403,
+          "ax": 320,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "backstep": {
+          "src": "assets/fighters/switchback_backstep.webp",
+          "w": 219,
+          "h": 403,
+          "ax": 66,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "jumpfall": {
+          "src": "assets/fighters/switchback_jumpfall.webp",
+          "w": 182,
+          "h": 392,
+          "ax": 62,
+          "ay": 390,
+          "top": 1,
+          "bh": 389
+        },
+        "crouchblock": {
+          "src": "assets/fighters/switchback_crouchblock.webp",
+          "w": 248,
+          "h": 367,
+          "ax": 105,
+          "ay": 365,
+          "top": 1,
+          "bh": 364
+        },
+        "hitlow": {
+          "src": "assets/fighters/switchback_hitlow.webp",
+          "w": 314,
+          "h": 356,
+          "ax": 120,
+          "ay": 354,
+          "top": 1,
+          "bh": 353
+        },
+        "hitheavy": {
+          "src": "assets/fighters/switchback_hitheavy.webp",
+          "w": 353,
+          "h": 384,
+          "ax": 136,
+          "ay": 382,
+          "top": 1,
+          "bh": 381
+        },
+        "punchwind": {
+          "src": "assets/fighters/switchback_punchwind.webp",
+          "w": 303,
+          "h": 403,
+          "ax": 145,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwind": {
+          "src": "assets/fighters/switchback_kickwind.webp",
+          "w": 211,
+          "h": 403,
+          "ax": 100,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "heavywind": {
+          "src": "assets/fighters/switchback_heavywind.webp",
+          "w": 372,
+          "h": 404,
+          "ax": 170,
+          "ay": 402,
+          "top": 1,
+          "bh": 401
+        },
+        "roll": {
+          "src": "assets/fighters/switchback_roll.webp",
+          "w": 286,
+          "h": 238,
+          "ax": 157,
+          "ay": 235,
+          "top": 1,
+          "bh": 234
+        },
+        "blowback": {
+          "src": "assets/fighters/switchback_blowback.webp",
+          "w": 312,
+          "h": 403,
+          "ax": 148,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "super": {
+          "src": "assets/fighters/switchback_super.webp",
+          "w": 385,
+          "h": 386,
+          "ax": 87,
+          "ay": 383,
+          "top": 1,
+          "bh": 382
+        },
+        "dizzy": {
+          "src": "assets/fighters/switchback_dizzy.webp",
+          "w": 230,
+          "h": 403,
+          "ax": 95,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "win2": {
+          "src": "assets/fighters/switchback_win2.webp",
+          "w": 285,
+          "h": 432,
+          "ax": 140,
+          "ay": 430,
+          "top": 1,
+          "bh": 429
+        },
+        "lose": {
+          "src": "assets/fighters/switchback_lose.webp",
+          "w": 302,
+          "h": 304,
+          "ax": 140,
+          "ay": 302,
+          "top": 1,
+          "bh": 301
+        },
+        "load": {
+          "src": "assets/fighters/switchback_load.webp",
+          "w": 227,
+          "h": 403,
+          "ax": 103,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punchwhip": {
+          "src": "assets/fighters/switchback_punchwhip.webp",
+          "w": 351,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwhip": {
+          "src": "assets/fighters/switchback_kickwhip.webp",
+          "w": 258,
+          "h": 408,
+          "ax": 138,
+          "ay": 406,
+          "top": 1,
+          "bh": 405
+        },
+        "recoil": {
+          "src": "assets/fighters/switchback_recoil.webp",
+          "w": 352,
+          "h": 403,
+          "ax": 139,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "settle": {
+          "src": "assets/fighters/switchback_settle.webp",
+          "w": 289,
+          "h": 403,
+          "ax": 139,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepin": {
+          "src": "assets/fighters/switchback_stepin.webp",
+          "w": 250,
+          "h": 403,
+          "ax": 120,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepout": {
+          "src": "assets/fighters/switchback_stepout.webp",
+          "w": 267,
+          "h": 403,
+          "ax": 125,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dashload": {
+          "src": "assets/fighters/switchback_dashload.webp",
+          "w": 297,
+          "h": 350,
+          "ax": 138,
+          "ay": 348,
+          "top": 1,
+          "bh": 347
+        },
+        "dashpass": {
+          "src": "assets/fighters/switchback_dashpass.webp",
+          "w": 360,
+          "h": 358,
+          "ax": 58,
+          "ay": 356,
+          "top": 1,
+          "bh": 355
+        },
+        "idle1": {
+          "src": "assets/fighters/switchback_idle1.webp",
+          "w": 228,
+          "h": 403,
+          "ax": 103,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle2": {
+          "src": "assets/fighters/switchback_idle2.webp",
+          "w": 227,
+          "h": 403,
+          "ax": 102,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle3": {
+          "src": "assets/fighters/switchback_idle3.webp",
+          "w": 229,
+          "h": 403,
+          "ax": 104,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle4": {
+          "src": "assets/fighters/switchback_idle4.webp",
+          "w": 281,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle5": {
+          "src": "assets/fighters/switchback_idle5.webp",
+          "w": 286,
+          "h": 403,
+          "ax": 137,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "apex": {
+          "src": "assets/fighters/switchback_apex.webp",
+          "w": 167,
+          "h": 317,
+          "ax": 55,
+          "ay": 315,
+          "top": 1,
+          "bh": 314
+        },
+        "land": {
+          "src": "assets/fighters/switchback_land.webp",
+          "w": 287,
+          "h": 368,
+          "ax": 148,
+          "ay": 366,
+          "top": 1,
+          "bh": 365
+        },
+        "kickrecoil": {
+          "src": "assets/fighters/switchback_kickrecoil.webp",
+          "w": 368,
+          "h": 398,
+          "ax": 114,
+          "ay": 396,
+          "top": 1,
+          "bh": 395
+        },
+        "guardhit": {
+          "src": "assets/fighters/switchback_guardhit.webp",
+          "w": 302,
+          "h": 403,
+          "ax": 140,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        }
+      },
+      "sourceImage": "assets/references/switchback_source.webp",
+      "portrait": "assets/portraits/switchback_portrait.webp",
+      "hero": "assets/heroes/switchback_hero.webp",
+      "cutin": "assets/cutins/switchback_cutin.webp",
+      "endingArt": "assets/endings/switchback_ending.webp"
     },
     {
       "id": "brick",
       "name": "Brick",
+      "introTagline": "I built this block. Now hold your ground.",
       "description": "A completely invented neighborhood caretaker granddad in his early sixties. Very tall square heavyweight build, pale freckled skin, a broad rectangular face, flat silver crew cut and thick silver handlebar moustache. Wears a sleeveless rose-red quilted work vest over a charcoal fitted shirt, sand-colored work trousers, simple dark red knuckle wraps and chunky charcoal boots. No tools, cape, hat or lettering. A wide upright wrestling guard, massive shoulders and a warm stubborn grin make an unmistakable blocky silhouette.",
       "specialMove": {
         "name": "Foundation Break",
         "description": "Brick braces his wide stance and drives both wrapped hands forward toward the right, launching one compact rose-red block of energy edged in pale gold. The effect resembles a solid pressure wave rather than actual building debris. Preserve one complete fighter, both boots and the entire forward reach inside the sprite cell."
       },
-      "introTagline": "I built this block. Now hold your ground.",
-      "color": "#ff6677",
-      "style": "power",
       "superMove": {
         "name": "Load-Bearing Avalanche",
         "description": "Brick slams both wrapped fists down and sends a massive rose-red pressure wave edged in pale gold rolling along the ground toward the right. Keep the wave compact near his fists in sprite art."
       },
+      "style": "power",
       "winQuote": "Built to last. You were not.",
       "ending": "Brick rebuilds the old playground with his own two hands, plank by plank. When the first kid swings higher than the fence, he finally sits down on the new bench and lets himself grin.",
-      "poses": {}
+      "color": "#ff6677",
+      "poses": {
+        "idle": {
+          "src": "assets/fighters/brick_idle.webp",
+          "w": 270,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk": {
+          "src": "assets/fighters/brick_walk.webp",
+          "w": 260,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punch": {
+          "src": "assets/fighters/brick_punch.webp",
+          "w": 355,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kick": {
+          "src": "assets/fighters/brick_kick.webp",
+          "w": 362,
+          "h": 403,
+          "ax": 120,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "block": {
+          "src": "assets/fighters/brick_block.webp",
+          "w": 269,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "hit": {
+          "src": "assets/fighters/brick_hit.webp",
+          "w": 264,
+          "h": 400,
+          "ax": 123,
+          "ay": 398,
+          "top": 1,
+          "bh": 397
+        },
+        "special": {
+          "src": "assets/fighters/brick_special.webp",
+          "w": 320,
+          "h": 420,
+          "ax": 144,
+          "ay": 418,
+          "top": 1,
+          "bh": 417
+        },
+        "down": {
+          "src": "assets/fighters/brick_down.webp",
+          "w": 486,
+          "h": 174,
+          "ax": 234,
+          "ay": 172,
+          "top": 1,
+          "bh": 171
+        },
+        "win": {
+          "src": "assets/fighters/brick_win.webp",
+          "w": 266,
+          "h": 448,
+          "ax": 134,
+          "ay": 446,
+          "top": 1,
+          "bh": 445
+        },
+        "stance2": {
+          "src": "assets/fighters/brick_stance2.webp",
+          "w": 284,
+          "h": 403,
+          "ax": 140,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouch": {
+          "src": "assets/fighters/brick_crouch.webp",
+          "w": 258,
+          "h": 341,
+          "ax": 119,
+          "ay": 339,
+          "top": 1,
+          "bh": 338
+        },
+        "sweep": {
+          "src": "assets/fighters/brick_sweep.webp",
+          "w": 385,
+          "h": 280,
+          "ax": 213,
+          "ay": 278,
+          "top": 1,
+          "bh": 277
+        },
+        "launcher": {
+          "src": "assets/fighters/brick_launcher.webp",
+          "w": 334,
+          "h": 411,
+          "ax": 136,
+          "ay": 409,
+          "top": 1,
+          "bh": 408
+        },
+        "jump": {
+          "src": "assets/fighters/brick_jump.webp",
+          "w": 218,
+          "h": 411,
+          "ax": 63,
+          "ay": 409,
+          "top": 1,
+          "bh": 408
+        },
+        "airkick": {
+          "src": "assets/fighters/brick_airkick.webp",
+          "w": 373,
+          "h": 326,
+          "ax": 141,
+          "ay": 324,
+          "top": 1,
+          "bh": 323
+        },
+        "hpunch": {
+          "src": "assets/fighters/brick_hpunch.webp",
+          "w": 388,
+          "h": 403,
+          "ax": 154,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dash": {
+          "src": "assets/fighters/brick_dash.webp",
+          "w": 373,
+          "h": 387,
+          "ax": 73,
+          "ay": 385,
+          "top": 1,
+          "bh": 384
+        },
+        "tumble": {
+          "src": "assets/fighters/brick_tumble.webp",
+          "w": 402,
+          "h": 281,
+          "ax": 259,
+          "ay": 279,
+          "top": 1,
+          "bh": 278
+        },
+        "walk2": {
+          "src": "assets/fighters/brick_walk2.webp",
+          "w": 269,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "lkick": {
+          "src": "assets/fighters/brick_lkick.webp",
+          "w": 358,
+          "h": 403,
+          "ax": 111,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "cjab": {
+          "src": "assets/fighters/brick_cjab.webp",
+          "w": 336,
+          "h": 354,
+          "ax": 119,
+          "ay": 352,
+          "top": 1,
+          "bh": 351
+        },
+        "airpunch": {
+          "src": "assets/fighters/brick_airpunch.webp",
+          "w": 274,
+          "h": 421,
+          "ax": 66,
+          "ay": 419,
+          "top": 1,
+          "bh": 418
+        },
+        "throw": {
+          "src": "assets/fighters/brick_throw.webp",
+          "w": 428,
+          "h": 403,
+          "ax": 162,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "taunt": {
+          "src": "assets/fighters/brick_taunt.webp",
+          "w": 258,
+          "h": 424,
+          "ax": 123,
+          "ay": 422,
+          "top": 1,
+          "bh": 421
+        },
+        "getup": {
+          "src": "assets/fighters/brick_getup.webp",
+          "w": 364,
+          "h": 323,
+          "ax": 173,
+          "ay": 321,
+          "top": 1,
+          "bh": 320
+        },
+        "powerup": {
+          "src": "assets/fighters/brick_powerup.webp",
+          "w": 393,
+          "h": 432,
+          "ax": 188,
+          "ay": 430,
+          "top": 1,
+          "bh": 429
+        },
+        "entrance": {
+          "src": "assets/fighters/brick_entrance.webp",
+          "w": 295,
+          "h": 403,
+          "ax": 145,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk3": {
+          "src": "assets/fighters/brick_walk3.webp",
+          "w": 188,
+          "h": 403,
+          "ax": 90,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk4": {
+          "src": "assets/fighters/brick_walk4.webp",
+          "w": 266,
+          "h": 403,
+          "ax": 134,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run": {
+          "src": "assets/fighters/brick_run.webp",
+          "w": 370,
+          "h": 404,
+          "ax": 81,
+          "ay": 402,
+          "top": 1,
+          "bh": 401
+        },
+        "run2": {
+          "src": "assets/fighters/brick_run2.webp",
+          "w": 375,
+          "h": 403,
+          "ax": 303,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "backstep": {
+          "src": "assets/fighters/brick_backstep.webp",
+          "w": 230,
+          "h": 403,
+          "ax": 73,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "jumpfall": {
+          "src": "assets/fighters/brick_jumpfall.webp",
+          "w": 219,
+          "h": 399,
+          "ax": 104,
+          "ay": 397,
+          "top": 1,
+          "bh": 396
+        },
+        "crouchblock": {
+          "src": "assets/fighters/brick_crouchblock.webp",
+          "w": 268,
+          "h": 372,
+          "ax": 127,
+          "ay": 370,
+          "top": 1,
+          "bh": 369
+        },
+        "hitlow": {
+          "src": "assets/fighters/brick_hitlow.webp",
+          "w": 273,
+          "h": 338,
+          "ax": 123,
+          "ay": 336,
+          "top": 1,
+          "bh": 335
+        },
+        "hitheavy": {
+          "src": "assets/fighters/brick_hitheavy.webp",
+          "w": 371,
+          "h": 385,
+          "ax": 150,
+          "ay": 383,
+          "top": 1,
+          "bh": 382
+        },
+        "punchwind": {
+          "src": "assets/fighters/brick_punchwind.webp",
+          "w": 347,
+          "h": 403,
+          "ax": 143,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwind": {
+          "src": "assets/fighters/brick_kickwind.webp",
+          "w": 237,
+          "h": 403,
+          "ax": 88,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "heavywind": {
+          "src": "assets/fighters/brick_heavywind.webp",
+          "w": 366,
+          "h": 403,
+          "ax": 152,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "roll": {
+          "src": "assets/fighters/brick_roll.webp",
+          "w": 259,
+          "h": 225,
+          "ax": 65,
+          "ay": 223,
+          "top": 1,
+          "bh": 222
+        },
+        "blowback": {
+          "src": "assets/fighters/brick_blowback.webp",
+          "w": 377,
+          "h": 403,
+          "ax": 151,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "super": {
+          "src": "assets/fighters/brick_super.webp",
+          "w": 419,
+          "h": 329,
+          "ax": 241,
+          "ay": 327,
+          "top": 1,
+          "bh": 326
+        },
+        "dizzy": {
+          "src": "assets/fighters/brick_dizzy.webp",
+          "w": 259,
+          "h": 403,
+          "ax": 109,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "win2": {
+          "src": "assets/fighters/brick_win2.webp",
+          "w": 248,
+          "h": 448,
+          "ax": 126,
+          "ay": 446,
+          "top": 1,
+          "bh": 445
+        },
+        "lose": {
+          "src": "assets/fighters/brick_lose.webp",
+          "w": 320,
+          "h": 315,
+          "ax": 152,
+          "ay": 313,
+          "top": 1,
+          "bh": 312
+        },
+        "load": {
+          "src": "assets/fighters/brick_load.webp",
+          "w": 276,
+          "h": 403,
+          "ax": 132,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punchwhip": {
+          "src": "assets/fighters/brick_punchwhip.webp",
+          "w": 331,
+          "h": 403,
+          "ax": 142,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwhip": {
+          "src": "assets/fighters/brick_kickwhip.webp",
+          "w": 319,
+          "h": 416,
+          "ax": 124,
+          "ay": 414,
+          "top": 1,
+          "bh": 413
+        },
+        "recoil": {
+          "src": "assets/fighters/brick_recoil.webp",
+          "w": 388,
+          "h": 403,
+          "ax": 136,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "settle": {
+          "src": "assets/fighters/brick_settle.webp",
+          "w": 269,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepin": {
+          "src": "assets/fighters/brick_stepin.webp",
+          "w": 242,
+          "h": 403,
+          "ax": 111,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepout": {
+          "src": "assets/fighters/brick_stepout.webp",
+          "w": 287,
+          "h": 403,
+          "ax": 138,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dashload": {
+          "src": "assets/fighters/brick_dashload.webp",
+          "w": 299,
+          "h": 371,
+          "ax": 91,
+          "ay": 369,
+          "top": 1,
+          "bh": 368
+        },
+        "dashpass": {
+          "src": "assets/fighters/brick_dashpass.webp",
+          "w": 302,
+          "h": 358,
+          "ax": 88,
+          "ay": 356,
+          "top": 1,
+          "bh": 355
+        },
+        "idle1": {
+          "src": "assets/fighters/brick_idle1.webp",
+          "w": 270,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle2": {
+          "src": "assets/fighters/brick_idle2.webp",
+          "w": 267,
+          "h": 403,
+          "ax": 128,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle3": {
+          "src": "assets/fighters/brick_idle3.webp",
+          "w": 266,
+          "h": 403,
+          "ax": 129,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle4": {
+          "src": "assets/fighters/brick_idle4.webp",
+          "w": 263,
+          "h": 403,
+          "ax": 128,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle5": {
+          "src": "assets/fighters/brick_idle5.webp",
+          "w": 265,
+          "h": 403,
+          "ax": 128,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "apex": {
+          "src": "assets/fighters/brick_apex.webp",
+          "w": 202,
+          "h": 344,
+          "ax": 86,
+          "ay": 342,
+          "top": 1,
+          "bh": 341
+        },
+        "land": {
+          "src": "assets/fighters/brick_land.webp",
+          "w": 340,
+          "h": 390,
+          "ax": 169,
+          "ay": 388,
+          "top": 1,
+          "bh": 387
+        },
+        "kickrecoil": {
+          "src": "assets/fighters/brick_kickrecoil.webp",
+          "w": 324,
+          "h": 413,
+          "ax": 175,
+          "ay": 411,
+          "top": 1,
+          "bh": 410
+        },
+        "guardhit": {
+          "src": "assets/fighters/brick_guardhit.webp",
+          "w": 280,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        }
+      },
+      "sourceImage": "assets/references/brick_source.webp",
+      "portrait": "assets/portraits/brick_portrait.webp",
+      "hero": "assets/heroes/brick_hero.webp",
+      "cutin": "assets/cutins/brick_cutin.webp",
+      "endingArt": "assets/endings/brick_ending.webp"
     },
     {
       "id": "bylaw",
       "name": "Baron Bylaw",
+      "introTagline": "This tournament is now in violation. Prepare for enforcement.",
       "description": "A completely invented imposing neighborhood-association president in his late fifties and the final boss of the tournament. Very tall broad-shouldered build, light olive skin, a sharp angular face, slicked-back black hair with silver streaks and a neat thin moustache. Wears a charcoal double-breasted coat with gold piping ending at mid-thigh, a burgundy vest, a white high-collared shirt, charcoal trousers and polished black knee boots. One ornate golden gauntlet covers his right forearm and hand. No hat, cape, clipboard, cane, lettering or insignia. A commanding upright guard with the gauntlet raised gives him a regal, intimidating silhouette.",
       "specialMove": {
         "name": "Ordinance Orb",
         "description": "Baron Bylaw thrusts his golden gauntlet toward the right and releases a compact glowing golden orb edged in deep burgundy light. The free hand stays behind his back. Keep the energy close to the gauntlet and the complete body, coat and both boots inside the sprite cell."
       },
-      "introTagline": "This tournament is now in violation. Prepare for enforcement.",
-      "color": "#d4a72c",
-      "style": "boss",
       "superMove": {
         "name": "Final Notice",
         "description": "Baron Bylaw raises his golden gauntlet overhead and hurls a towering wall of golden light edged in burgundy toward the right. Keep the light attached to the gauntlet in sprite art."
       },
+      "style": "boss",
       "winQuote": "Appeal denied. Permanently.",
       "ending": "The Baron reviews the tournament results, signs one final notice and quietly tears it in half. Perhaps the neighborhood was never his to rule, only his to look after.",
       "boss": true,
-      "poses": {}
+      "color": "#d4a72c",
+      "poses": {
+        "idle": {
+          "src": "assets/fighters/bylaw_idle.webp",
+          "w": 230,
+          "h": 403,
+          "ax": 111,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk": {
+          "src": "assets/fighters/bylaw_walk.webp",
+          "w": 242,
+          "h": 403,
+          "ax": 127,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punch": {
+          "src": "assets/fighters/bylaw_punch.webp",
+          "w": 346,
+          "h": 403,
+          "ax": 129,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kick": {
+          "src": "assets/fighters/bylaw_kick.webp",
+          "w": 383,
+          "h": 403,
+          "ax": 153,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "block": {
+          "src": "assets/fighters/bylaw_block.webp",
+          "w": 263,
+          "h": 403,
+          "ax": 127,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "hit": {
+          "src": "assets/fighters/bylaw_hit.webp",
+          "w": 233,
+          "h": 384,
+          "ax": 82,
+          "ay": 382,
+          "top": 1,
+          "bh": 381
+        },
+        "special": {
+          "src": "assets/fighters/bylaw_special.webp",
+          "w": 280,
+          "h": 423,
+          "ax": 115,
+          "ay": 421,
+          "top": 1,
+          "bh": 420
+        },
+        "down": {
+          "src": "assets/fighters/bylaw_down.webp",
+          "w": 437,
+          "h": 137,
+          "ax": 252,
+          "ay": 135,
+          "top": 1,
+          "bh": 134
+        },
+        "win": {
+          "src": "assets/fighters/bylaw_win.webp",
+          "w": 215,
+          "h": 436,
+          "ax": 101,
+          "ay": 434,
+          "top": 1,
+          "bh": 433
+        },
+        "stance2": {
+          "src": "assets/fighters/bylaw_stance2.webp",
+          "w": 235,
+          "h": 403,
+          "ax": 111,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouch": {
+          "src": "assets/fighters/bylaw_crouch.webp",
+          "w": 253,
+          "h": 335,
+          "ax": 119,
+          "ay": 333,
+          "top": 1,
+          "bh": 332
+        },
+        "sweep": {
+          "src": "assets/fighters/bylaw_sweep.webp",
+          "w": 399,
+          "h": 263,
+          "ax": 227,
+          "ay": 261,
+          "top": 1,
+          "bh": 260
+        },
+        "launcher": {
+          "src": "assets/fighters/bylaw_launcher.webp",
+          "w": 272,
+          "h": 407,
+          "ax": 125,
+          "ay": 405,
+          "top": 1,
+          "bh": 404
+        },
+        "jump": {
+          "src": "assets/fighters/bylaw_jump.webp",
+          "w": 241,
+          "h": 403,
+          "ax": 42,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "airkick": {
+          "src": "assets/fighters/bylaw_airkick.webp",
+          "w": 382,
+          "h": 300,
+          "ax": 141,
+          "ay": 298,
+          "top": 1,
+          "bh": 297
+        },
+        "hpunch": {
+          "src": "assets/fighters/bylaw_hpunch.webp",
+          "w": 418,
+          "h": 403,
+          "ax": 155,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dash": {
+          "src": "assets/fighters/bylaw_dash.webp",
+          "w": 363,
+          "h": 351,
+          "ax": 52,
+          "ay": 349,
+          "top": 2,
+          "bh": 347
+        },
+        "tumble": {
+          "src": "assets/fighters/bylaw_tumble.webp",
+          "w": 381,
+          "h": 321,
+          "ax": 209,
+          "ay": 319,
+          "top": 2,
+          "bh": 317
+        },
+        "walk2": {
+          "src": "assets/fighters/bylaw_walk2.webp",
+          "w": 215,
+          "h": 403,
+          "ax": 107,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "lkick": {
+          "src": "assets/fighters/bylaw_lkick.webp",
+          "w": 407,
+          "h": 403,
+          "ax": 159,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "cjab": {
+          "src": "assets/fighters/bylaw_cjab.webp",
+          "w": 334,
+          "h": 338,
+          "ax": 118,
+          "ay": 336,
+          "top": 1,
+          "bh": 335
+        },
+        "airpunch": {
+          "src": "assets/fighters/bylaw_airpunch.webp",
+          "w": 316,
+          "h": 379,
+          "ax": 33,
+          "ay": 377,
+          "top": 1,
+          "bh": 376
+        },
+        "throw": {
+          "src": "assets/fighters/bylaw_throw.webp",
+          "w": 333,
+          "h": 403,
+          "ax": 141,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "taunt": {
+          "src": "assets/fighters/bylaw_taunt.webp",
+          "w": 217,
+          "h": 405,
+          "ax": 74,
+          "ay": 403,
+          "top": 1,
+          "bh": 402
+        },
+        "getup": {
+          "src": "assets/fighters/bylaw_getup.webp",
+          "w": 306,
+          "h": 326,
+          "ax": 143,
+          "ay": 324,
+          "top": 1,
+          "bh": 323
+        },
+        "powerup": {
+          "src": "assets/fighters/bylaw_powerup.webp",
+          "w": 341,
+          "h": 374,
+          "ax": 168,
+          "ay": 372,
+          "top": 1,
+          "bh": 371
+        },
+        "entrance": {
+          "src": "assets/fighters/bylaw_entrance.webp",
+          "w": 168,
+          "h": 403,
+          "ax": 79,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk3": {
+          "src": "assets/fighters/bylaw_walk3.webp",
+          "w": 182,
+          "h": 403,
+          "ax": 92,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walk4": {
+          "src": "assets/fighters/bylaw_walk4.webp",
+          "w": 244,
+          "h": 403,
+          "ax": 121,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "run": {
+          "src": "assets/fighters/bylaw_run.webp",
+          "w": 348,
+          "h": 399,
+          "ax": 52,
+          "ay": 397,
+          "top": 1,
+          "bh": 396
+        },
+        "run2": {
+          "src": "assets/fighters/bylaw_run2.webp",
+          "w": 351,
+          "h": 403,
+          "ax": 290,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "backstep": {
+          "src": "assets/fighters/bylaw_backstep.webp",
+          "w": 246,
+          "h": 403,
+          "ax": 85,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "jumpfall": {
+          "src": "assets/fighters/bylaw_jumpfall.webp",
+          "w": 231,
+          "h": 401,
+          "ax": 134,
+          "ay": 399,
+          "top": 1,
+          "bh": 398
+        },
+        "crouchblock": {
+          "src": "assets/fighters/bylaw_crouchblock.webp",
+          "w": 253,
+          "h": 349,
+          "ax": 118,
+          "ay": 347,
+          "top": 2,
+          "bh": 345
+        },
+        "hitlow": {
+          "src": "assets/fighters/bylaw_hitlow.webp",
+          "w": 233,
+          "h": 331,
+          "ax": 109,
+          "ay": 329,
+          "top": 2,
+          "bh": 327
+        },
+        "hitheavy": {
+          "src": "assets/fighters/bylaw_hitheavy.webp",
+          "w": 344,
+          "h": 373,
+          "ax": 138,
+          "ay": 371,
+          "top": 1,
+          "bh": 370
+        },
+        "punchwind": {
+          "src": "assets/fighters/bylaw_punchwind.webp",
+          "w": 313,
+          "h": 403,
+          "ax": 140,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "kickwind": {
+          "src": "assets/fighters/bylaw_kickwind.webp",
+          "w": 230,
+          "h": 403,
+          "ax": 106,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "heavywind": {
+          "src": "assets/fighters/bylaw_heavywind.webp",
+          "w": 356,
+          "h": 403,
+          "ax": 140,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "roll": {
+          "src": "assets/fighters/bylaw_roll.webp",
+          "w": 310,
+          "h": 230,
+          "ax": 170,
+          "ay": 228,
+          "top": 1,
+          "bh": 227
+        },
+        "blowback": {
+          "src": "assets/fighters/bylaw_blowback.webp",
+          "w": 339,
+          "h": 403,
+          "ax": 145,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "super": {
+          "src": "assets/fighters/bylaw_super.webp",
+          "w": 365,
+          "h": 391,
+          "ax": 141,
+          "ay": 389,
+          "top": 1,
+          "bh": 388
+        },
+        "dizzy": {
+          "src": "assets/fighters/bylaw_dizzy.webp",
+          "w": 234,
+          "h": 403,
+          "ax": 99,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "win2": {
+          "src": "assets/fighters/bylaw_win2.webp",
+          "w": 198,
+          "h": 412,
+          "ax": 95,
+          "ay": 410,
+          "top": 1,
+          "bh": 409
+        },
+        "lose": {
+          "src": "assets/fighters/bylaw_lose.webp",
+          "w": 279,
+          "h": 268,
+          "ax": 136,
+          "ay": 266,
+          "top": 1,
+          "bh": 265
+        },
+        "load": {
+          "src": "assets/fighters/bylaw_load.webp",
+          "w": 272,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "punchwhip": {
+          "src": "assets/fighters/bylaw_punchwhip.webp",
+          "w": 345,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "kickwhip": {
+          "src": "assets/fighters/bylaw_kickwhip.webp",
+          "w": 274,
+          "h": 391,
+          "ax": 149,
+          "ay": 389,
+          "top": 1,
+          "bh": 388
+        },
+        "recoil": {
+          "src": "assets/fighters/bylaw_recoil.webp",
+          "w": 357,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "settle": {
+          "src": "assets/fighters/bylaw_settle.webp",
+          "w": 262,
+          "h": 403,
+          "ax": 127,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepin": {
+          "src": "assets/fighters/bylaw_stepin.webp",
+          "w": 214,
+          "h": 403,
+          "ax": 107,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "stepout": {
+          "src": "assets/fighters/bylaw_stepout.webp",
+          "w": 236,
+          "h": 403,
+          "ax": 111,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "dashload": {
+          "src": "assets/fighters/bylaw_dashload.webp",
+          "w": 323,
+          "h": 367,
+          "ax": 75,
+          "ay": 365,
+          "top": 1,
+          "bh": 364
+        },
+        "dashpass": {
+          "src": "assets/fighters/bylaw_dashpass.webp",
+          "w": 312,
+          "h": 336,
+          "ax": 65,
+          "ay": 334,
+          "top": 1,
+          "bh": 333
+        },
+        "idle1": {
+          "src": "assets/fighters/bylaw_idle1.webp",
+          "w": 229,
+          "h": 403,
+          "ax": 110,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "idle2": {
+          "src": "assets/fighters/bylaw_idle2.webp",
+          "w": 231,
+          "h": 403,
+          "ax": 111,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle3": {
+          "src": "assets/fighters/bylaw_idle3.webp",
+          "w": 230,
+          "h": 403,
+          "ax": 111,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle4": {
+          "src": "assets/fighters/bylaw_idle4.webp",
+          "w": 244,
+          "h": 403,
+          "ax": 117,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "idle5": {
+          "src": "assets/fighters/bylaw_idle5.webp",
+          "w": 252,
+          "h": 403,
+          "ax": 122,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "apex": {
+          "src": "assets/fighters/bylaw_apex.webp",
+          "w": 221,
+          "h": 314,
+          "ax": 110,
+          "ay": 312,
+          "top": 1,
+          "bh": 311
+        },
+        "land": {
+          "src": "assets/fighters/bylaw_land.webp",
+          "w": 270,
+          "h": 373,
+          "ax": 108,
+          "ay": 371,
+          "top": 1,
+          "bh": 370
+        },
+        "kickrecoil": {
+          "src": "assets/fighters/bylaw_kickrecoil.webp",
+          "w": 360,
+          "h": 375,
+          "ax": 144,
+          "ay": 373,
+          "top": 1,
+          "bh": 372
+        },
+        "guardhit": {
+          "src": "assets/fighters/bylaw_guardhit.webp",
+          "w": 281,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        }
+      },
+      "sourceImage": "assets/references/bylaw_source.webp",
+      "portrait": "assets/portraits/bylaw_portrait.webp",
+      "hero": "assets/heroes/bylaw_hero.webp",
+      "cutin": "assets/cutins/bylaw_cutin.webp",
+      "endingArt": "assets/endings/bylaw_ending.webp"
     }
   ],
   "stages": [
     {
       "id": "yard",
       "name": "The Yard",
-      "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines."
+      "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+      "sourceImage": "assets/references/yard_source.webp",
+      "src": "assets/stages/yard.webp"
     },
     {
       "id": "rooftop",
       "name": "Sunset Rooftop",
-      "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders."
+      "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
+      "sourceImage": "assets/references/rooftop_source.webp",
+      "src": "assets/stages/rooftop.webp"
     },
     {
       "id": "arcade",
       "name": "Midnight Arcade",
-      "description": "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders."
+      "description": "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.",
+      "sourceImage": "assets/references/arcade_source.webp",
+      "src": "assets/stages/arcade.webp"
     }
   ],
-  "ui": {},
-  "effects": {},
-  "audio": {}
+  "ui": {
+    "title": "assets/ui/title.webp",
+    "select": "assets/ui/select.webp",
+    "logo": "assets/ui/logo.webp",
+    "hud": "assets/ui/hud.webp",
+    "icons": "assets/ui/icons.webp"
+  },
+  "effects": {
+    "hit": {
+      "src": "assets/effects/hit.webp",
+      "w": 306,
+      "h": 273,
+      "ax": 141,
+      "ay": 270,
+      "top": 2,
+      "bh": 268
+    },
+    "block": {
+      "src": "assets/effects/block.webp",
+      "w": 284,
+      "h": 309,
+      "ax": 151,
+      "ay": 306,
+      "top": 2,
+      "bh": 304
+    },
+    "projectile": {
+      "src": "assets/effects/projectile.webp",
+      "w": 363,
+      "h": 230,
+      "ax": 208,
+      "ay": 227,
+      "top": 2,
+      "bh": 225
+    },
+    "dust": {
+      "src": "assets/effects/dust.webp",
+      "w": 366,
+      "h": 285,
+      "ax": 184,
+      "ay": 282,
+      "top": 2,
+      "bh": 280
+    },
+    "ko": {
+      "src": "assets/effects/ko.webp",
+      "w": 419,
+      "h": 390,
+      "ax": 199,
+      "ay": 387,
+      "top": 2,
+      "bh": 385
+    },
+    "powerup": {
+      "src": "assets/effects/powerup.webp",
+      "w": 314,
+      "h": 391,
+      "ax": 157,
+      "ay": 388,
+      "top": 2,
+      "bh": 386
+    },
+    "dash": {
+      "src": "assets/effects/dash.webp",
+      "w": 343,
+      "h": 300,
+      "ax": 145,
+      "ay": 297,
+      "top": 2,
+      "bh": 295
+    },
+    "launch": {
+      "src": "assets/effects/launch.webp",
+      "w": 357,
+      "h": 376,
+      "ax": 178,
+      "ay": 373,
+      "top": 2,
+      "bh": 371
+    },
+    "spark": {
+      "src": "assets/effects/spark.webp",
+      "w": 314,
+      "h": 314,
+      "ax": 155,
+      "ay": 311,
+      "top": 2,
+      "bh": 309
+    }
+  },
+  "audio": {
+    "menu_music": {
+      "id": "menu_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": true,
+      "src": "assets/audio/menu_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 60.05551,
+      "codec": "mp3",
+      "bytes": 1380335
+    },
+    "yard_music": {
+      "id": "yard_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": true,
+      "src": "assets/audio/yard_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 75.023673,
+      "codec": "mp3",
+      "bytes": 1725316
+    },
+    "ann_select": {
+      "id": "ann_select",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_select.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.880816,
+      "codec": "mp3",
+      "bytes": 23851
+    },
+    "ann_ko": {
+      "id": "ann_ko",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.880816,
+      "codec": "mp3",
+      "bytes": 21682
+    },
+    "ann_victory": {
+      "id": "ann_victory",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_victory.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.48898,
+      "codec": "mp3",
+      "bytes": 18660
+    },
+    "sfx_punch": {
+      "id": "sfx_punch",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_punch.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.626939,
+      "codec": "mp3",
+      "bytes": 12620
+    },
+    "sfx_kick": {
+      "id": "sfx_kick",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_kick.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.835918,
+      "codec": "mp3",
+      "bytes": 14963
+    },
+    "sfx_block": {
+      "id": "sfx_block",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_block.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.626939,
+      "codec": "mp3",
+      "bytes": 14603
+    },
+    "sfx_special": {
+      "id": "sfx_special",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_special.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 1.227755,
+      "codec": "mp3",
+      "bytes": 26138
+    },
+    "fighter_griddle_special": {
+      "id": "fighter_griddle_special",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "griddle",
+      "loop": false,
+      "src": "assets/audio/fighter_griddle_special.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.410612,
+      "codec": "mp3",
+      "bytes": 18821
+    },
+    "fighter_rivet_special": {
+      "id": "fighter_rivet_special",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "rivet",
+      "loop": false,
+      "src": "assets/audio/fighter_rivet_special.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.724082,
+      "codec": "mp3",
+      "bytes": 21242
+    },
+    "fighter_tempo_special": {
+      "id": "fighter_tempo_special",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "tempo",
+      "loop": false,
+      "src": "assets/audio/fighter_tempo_special.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.227755,
+      "codec": "mp3",
+      "bytes": 14383
+    },
+    "fighter_nimbus_special": {
+      "id": "fighter_nimbus_special",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "nimbus",
+      "loop": false,
+      "src": "assets/audio/fighter_nimbus_special.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.802449,
+      "codec": "mp3",
+      "bytes": 22234
+    },
+    "fighter_switchback_special": {
+      "id": "fighter_switchback_special",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "switchback",
+      "loop": false,
+      "src": "assets/audio/fighter_switchback_special.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.724082,
+      "codec": "mp3",
+      "bytes": 20851
+    },
+    "fighter_brick_special": {
+      "id": "fighter_brick_special",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "brick",
+      "loop": false,
+      "src": "assets/audio/fighter_brick_special.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.724082,
+      "codec": "mp3",
+      "bytes": 21351
+    },
+    "fighter_griddle_intro": {
+      "id": "fighter_griddle_intro",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "griddle",
+      "loop": false,
+      "src": "assets/audio/fighter_griddle_intro.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 3.552653,
+      "codec": "mp3",
+      "bytes": 44192
+    },
+    "fighter_rivet_intro": {
+      "id": "fighter_rivet_intro",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "rivet",
+      "loop": false,
+      "src": "assets/audio/fighter_rivet_intro.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 3.395918,
+      "codec": "mp3",
+      "bytes": 42209
+    },
+    "fighter_tempo_intro": {
+      "id": "fighter_tempo_intro",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "tempo",
+      "loop": false,
+      "src": "assets/audio/fighter_tempo_intro.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.690612,
+      "codec": "mp3",
+      "bytes": 33859
+    },
+    "fighter_nimbus_intro": {
+      "id": "fighter_nimbus_intro",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "nimbus",
+      "loop": false,
+      "src": "assets/audio/fighter_nimbus_intro.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 3.317551,
+      "codec": "mp3",
+      "bytes": 40883
+    },
+    "fighter_switchback_intro": {
+      "id": "fighter_switchback_intro",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "switchback",
+      "loop": false,
+      "src": "assets/audio/fighter_switchback_intro.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 3.709388,
+      "codec": "mp3",
+      "bytes": 45548
+    },
+    "fighter_brick_intro": {
+      "id": "fighter_brick_intro",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "brick",
+      "loop": false,
+      "src": "assets/audio/fighter_brick_intro.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 3.082449,
+      "codec": "mp3",
+      "bytes": 37462
+    },
+    "select_music": {
+      "id": "select_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": true,
+      "src": "assets/audio/select_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 45.00898,
+      "codec": "mp3",
+      "bytes": 1082375
+    },
+    "rooftop_music": {
+      "id": "rooftop_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": true,
+      "src": "assets/audio/rooftop_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 75.023673,
+      "codec": "mp3",
+      "bytes": 1764627
+    },
+    "arcade_music": {
+      "id": "arcade_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": true,
+      "src": "assets/audio/arcade_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 75.023673,
+      "codec": "mp3",
+      "bytes": 1755977
+    },
+    "boss_music": {
+      "id": "boss_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": true,
+      "src": "assets/audio/boss_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 75.023673,
+      "codec": "mp3",
+      "bytes": 1755514
+    },
+    "victory_music": {
+      "id": "victory_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": false,
+      "src": "assets/audio/victory_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 10.083265,
+      "codec": "mp3",
+      "bytes": 228067
+    },
+    "continue_music": {
+      "id": "continue_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": true,
+      "src": "assets/audio/continue_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 20.035918,
+      "codec": "mp3",
+      "bytes": 430939
+    },
+    "gameover_music": {
+      "id": "gameover_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": false,
+      "src": "assets/audio/gameover_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 8.045714,
+      "codec": "mp3",
+      "bytes": 177569
+    },
+    "ending_music": {
+      "id": "ending_music",
+      "kind": "audio",
+      "category": "music",
+      "loop": true,
+      "src": "assets/audio/ending_music.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 60.05551,
+      "codec": "mp3",
+      "bytes": 1333762
+    },
+    "ann_title": {
+      "id": "ann_title",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_title.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.037551,
+      "codec": "mp3",
+      "bytes": 26066
+    },
+    "ann_versus": {
+      "id": "ann_versus",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_versus.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.306122,
+      "codec": "mp3",
+      "bytes": 17147
+    },
+    "ann_round1": {
+      "id": "ann_round1",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_round1.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.567347,
+      "codec": "mp3",
+      "bytes": 18555
+    },
+    "ann_round2": {
+      "id": "ann_round2",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_round2.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.724082,
+      "codec": "mp3",
+      "bytes": 20065
+    },
+    "ann_round3": {
+      "id": "ann_round3",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_round3.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.802449,
+      "codec": "mp3",
+      "bytes": 22258
+    },
+    "ann_final": {
+      "id": "ann_final",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_final.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.567347,
+      "codec": "mp3",
+      "bytes": 21609
+    },
+    "ann_ready": {
+      "id": "ann_ready",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_ready.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.227755,
+      "codec": "mp3",
+      "bytes": 14589
+    },
+    "ann_go": {
+      "id": "ann_go",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_go.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.07102,
+      "codec": "mp3",
+      "bytes": 11646
+    },
+    "ann_doubleko": {
+      "id": "ann_doubleko",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_doubleko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.194286,
+      "codec": "mp3",
+      "bytes": 26897
+    },
+    "ann_timeover": {
+      "id": "ann_timeover",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_timeover.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.567347,
+      "codec": "mp3",
+      "bytes": 20225
+    },
+    "ann_perfect": {
+      "id": "ann_perfect",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_perfect.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.149388,
+      "codec": "mp3",
+      "bytes": 12897
+    },
+    "ann_draw": {
+      "id": "ann_draw",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_draw.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.410612,
+      "codec": "mp3",
+      "bytes": 17484
+    },
+    "ann_youwin": {
+      "id": "ann_youwin",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_youwin.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.847347,
+      "codec": "mp3",
+      "bytes": 33625
+    },
+    "ann_youlose": {
+      "id": "ann_youlose",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_youlose.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 3.082449,
+      "codec": "mp3",
+      "bytes": 35948
+    },
+    "ann_continue": {
+      "id": "ann_continue",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_continue.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.149388,
+      "codec": "mp3",
+      "bytes": 12899
+    },
+    "ann_gameover": {
+      "id": "ann_gameover",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_gameover.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.724082,
+      "codec": "mp3",
+      "bytes": 21316
+    },
+    "ann_finalbattle": {
+      "id": "ann_finalbattle",
+      "kind": "audio",
+      "category": "voice",
+      "loop": false,
+      "src": "assets/audio/ann_finalbattle.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.645714,
+      "codec": "mp3",
+      "bytes": 20745
+    },
+    "sfx_heavy": {
+      "id": "sfx_heavy",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_heavy.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 1.044898,
+      "codec": "mp3",
+      "bytes": 22586
+    },
+    "sfx_projectile_hit": {
+      "id": "sfx_projectile_hit",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_projectile_hit.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.914286,
+      "codec": "mp3",
+      "bytes": 18620
+    },
+    "sfx_whiff": {
+      "id": "sfx_whiff",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_whiff.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.522449,
+      "codec": "mp3",
+      "bytes": 11993
+    },
+    "sfx_whiff_heavy": {
+      "id": "sfx_whiff_heavy",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_whiff_heavy.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.626939,
+      "codec": "mp3",
+      "bytes": 10998
+    },
+    "sfx_jump": {
+      "id": "sfx_jump",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_jump.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.522449,
+      "codec": "mp3",
+      "bytes": 10950
+    },
+    "sfx_land": {
+      "id": "sfx_land",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_land.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.522449,
+      "codec": "mp3",
+      "bytes": 11209
+    },
+    "sfx_dash": {
+      "id": "sfx_dash",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_dash.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.626939,
+      "codec": "mp3",
+      "bytes": 11991
+    },
+    "sfx_throw": {
+      "id": "sfx_throw",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_throw.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 1.044898,
+      "codec": "mp3",
+      "bytes": 19191
+    },
+    "sfx_super": {
+      "id": "sfx_super",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_super.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 1.645714,
+      "codec": "mp3",
+      "bytes": 26072
+    },
+    "sfx_ko": {
+      "id": "sfx_ko",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 1.645714,
+      "codec": "mp3",
+      "bytes": 22007
+    },
+    "sfx_counter": {
+      "id": "sfx_counter",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_counter.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.626939,
+      "codec": "mp3",
+      "bytes": 13714
+    },
+    "sfx_dizzy": {
+      "id": "sfx_dizzy",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_dizzy.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 1.227755,
+      "codec": "mp3",
+      "bytes": 26552
+    },
+    "sfx_menu_move": {
+      "id": "sfx_menu_move",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_menu_move.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.522449,
+      "codec": "mp3",
+      "bytes": 11473
+    },
+    "sfx_menu_select": {
+      "id": "sfx_menu_select",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_menu_select.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.626939,
+      "codec": "mp3",
+      "bytes": 12197
+    },
+    "sfx_menu_back": {
+      "id": "sfx_menu_back",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_menu_back.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.522449,
+      "codec": "mp3",
+      "bytes": 7191
+    },
+    "sfx_timer": {
+      "id": "sfx_timer",
+      "kind": "audio",
+      "category": "sfx",
+      "loop": false,
+      "src": "assets/audio/sfx_timer.mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 0.522449,
+      "codec": "mp3",
+      "bytes": 11679
+    },
+    "fighter_griddle_super": {
+      "id": "fighter_griddle_super",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "griddle",
+      "loop": false,
+      "src": "assets/audio/fighter_griddle_super.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.115918,
+      "codec": "mp3",
+      "bytes": 25603
+    },
+    "fighter_griddle_attack": {
+      "id": "fighter_griddle_attack",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "griddle",
+      "loop": false,
+      "src": "assets/audio/fighter_griddle_attack.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.227755,
+      "codec": "mp3",
+      "bytes": 13109
+    },
+    "fighter_griddle_hurt": {
+      "id": "fighter_griddle_hurt",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "griddle",
+      "loop": false,
+      "src": "assets/audio/fighter_griddle_hurt.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.272653,
+      "codec": "mp3",
+      "bytes": 24660
+    },
+    "fighter_griddle_ko": {
+      "id": "fighter_griddle_ko",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "griddle",
+      "loop": false,
+      "src": "assets/audio/fighter_griddle_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.35102,
+      "codec": "mp3",
+      "bytes": 26229
+    },
+    "fighter_griddle_win": {
+      "id": "fighter_griddle_win",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "griddle",
+      "loop": false,
+      "src": "assets/audio/fighter_griddle_win.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 4.91102,
+      "codec": "mp3",
+      "bytes": 66441
+    },
+    "fighter_rivet_super": {
+      "id": "fighter_rivet_super",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "rivet",
+      "loop": false,
+      "src": "assets/audio/fighter_rivet_super.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.037551,
+      "codec": "mp3",
+      "bytes": 25157
+    },
+    "fighter_rivet_attack": {
+      "id": "fighter_rivet_attack",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "rivet",
+      "loop": false,
+      "src": "assets/audio/fighter_rivet_attack.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.227755,
+      "codec": "mp3",
+      "bytes": 13919
+    },
+    "fighter_rivet_hurt": {
+      "id": "fighter_rivet_hurt",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "rivet",
+      "loop": false,
+      "src": "assets/audio/fighter_rivet_hurt.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.724082,
+      "codec": "mp3",
+      "bytes": 17282
+    },
+    "fighter_rivet_ko": {
+      "id": "fighter_rivet_ko",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "rivet",
+      "loop": false,
+      "src": "assets/audio/fighter_rivet_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.272653,
+      "codec": "mp3",
+      "bytes": 23807
+    },
+    "fighter_rivet_win": {
+      "id": "fighter_rivet_win",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "rivet",
+      "loop": false,
+      "src": "assets/audio/fighter_rivet_win.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 3.63102,
+      "codec": "mp3",
+      "bytes": 42854
+    },
+    "fighter_tempo_super": {
+      "id": "fighter_tempo_super",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "tempo",
+      "loop": false,
+      "src": "assets/audio/fighter_tempo_super.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.586122,
+      "codec": "mp3",
+      "bytes": 31381
+    },
+    "fighter_tempo_attack": {
+      "id": "fighter_tempo_attack",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "tempo",
+      "loop": false,
+      "src": "assets/audio/fighter_tempo_attack.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.07102,
+      "codec": "mp3",
+      "bytes": 12428
+    },
+    "fighter_tempo_hurt": {
+      "id": "fighter_tempo_hurt",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "tempo",
+      "loop": false,
+      "src": "assets/audio/fighter_tempo_hurt.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.802449,
+      "codec": "mp3",
+      "bytes": 18213
+    },
+    "fighter_tempo_ko": {
+      "id": "fighter_tempo_ko",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "tempo",
+      "loop": false,
+      "src": "assets/audio/fighter_tempo_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.272653,
+      "codec": "mp3",
+      "bytes": 23877
+    },
+    "fighter_tempo_win": {
+      "id": "fighter_tempo_win",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "tempo",
+      "loop": false,
+      "src": "assets/audio/fighter_tempo_win.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.925714,
+      "codec": "mp3",
+      "bytes": 36446
+    },
+    "fighter_nimbus_super": {
+      "id": "fighter_nimbus_super",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "nimbus",
+      "loop": false,
+      "src": "assets/audio/fighter_nimbus_super.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.115918,
+      "codec": "mp3",
+      "bytes": 25361
+    },
+    "fighter_nimbus_attack": {
+      "id": "fighter_nimbus_attack",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "nimbus",
+      "loop": false,
+      "src": "assets/audio/fighter_nimbus_attack.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 0.992653,
+      "codec": "mp3",
+      "bytes": 11649
+    },
+    "fighter_nimbus_hurt": {
+      "id": "fighter_nimbus_hurt",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "nimbus",
+      "loop": false,
+      "src": "assets/audio/fighter_nimbus_hurt.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.880816,
+      "codec": "mp3",
+      "bytes": 19780
+    },
+    "fighter_nimbus_ko": {
+      "id": "fighter_nimbus_ko",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "nimbus",
+      "loop": false,
+      "src": "assets/audio/fighter_nimbus_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.272653,
+      "codec": "mp3",
+      "bytes": 25551
+    },
+    "fighter_nimbus_win": {
+      "id": "fighter_nimbus_win",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "nimbus",
+      "loop": false,
+      "src": "assets/audio/fighter_nimbus_win.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 4.205714,
+      "codec": "mp3",
+      "bytes": 53682
+    },
+    "fighter_switchback_super": {
+      "id": "fighter_switchback_super",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "switchback",
+      "loop": false,
+      "src": "assets/audio/fighter_switchback_super.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.272653,
+      "codec": "mp3",
+      "bytes": 27482
+    },
+    "fighter_switchback_attack": {
+      "id": "fighter_switchback_attack",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "switchback",
+      "loop": false,
+      "src": "assets/audio/fighter_switchback_attack.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.07102,
+      "codec": "mp3",
+      "bytes": 11284
+    },
+    "fighter_switchback_hurt": {
+      "id": "fighter_switchback_hurt",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "switchback",
+      "loop": false,
+      "src": "assets/audio/fighter_switchback_hurt.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.880816,
+      "codec": "mp3",
+      "bytes": 18631
+    },
+    "fighter_switchback_ko": {
+      "id": "fighter_switchback_ko",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "switchback",
+      "loop": false,
+      "src": "assets/audio/fighter_switchback_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.429388,
+      "codec": "mp3",
+      "bytes": 24660
+    },
+    "fighter_switchback_win": {
+      "id": "fighter_switchback_win",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "switchback",
+      "loop": false,
+      "src": "assets/audio/fighter_switchback_win.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.925714,
+      "codec": "mp3",
+      "bytes": 33992
+    },
+    "fighter_brick_super": {
+      "id": "fighter_brick_super",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "brick",
+      "loop": false,
+      "src": "assets/audio/fighter_brick_super.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.586122,
+      "codec": "mp3",
+      "bytes": 31101
+    },
+    "fighter_brick_attack": {
+      "id": "fighter_brick_attack",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "brick",
+      "loop": false,
+      "src": "assets/audio/fighter_brick_attack.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 0.992653,
+      "codec": "mp3",
+      "bytes": 11598
+    },
+    "fighter_brick_hurt": {
+      "id": "fighter_brick_hurt",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "brick",
+      "loop": false,
+      "src": "assets/audio/fighter_brick_hurt.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.724082,
+      "codec": "mp3",
+      "bytes": 17096
+    },
+    "fighter_brick_ko": {
+      "id": "fighter_brick_ko",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "brick",
+      "loop": false,
+      "src": "assets/audio/fighter_brick_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.35102,
+      "codec": "mp3",
+      "bytes": 25657
+    },
+    "fighter_brick_win": {
+      "id": "fighter_brick_win",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "brick",
+      "loop": false,
+      "src": "assets/audio/fighter_brick_win.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.690612,
+      "codec": "mp3",
+      "bytes": 31205
+    },
+    "fighter_bylaw_special": {
+      "id": "fighter_bylaw_special",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "bylaw",
+      "loop": false,
+      "src": "assets/audio/fighter_bylaw_special.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.802449,
+      "codec": "mp3",
+      "bytes": 19285
+    },
+    "fighter_bylaw_super": {
+      "id": "fighter_bylaw_super",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "bylaw",
+      "loop": false,
+      "src": "assets/audio/fighter_bylaw_super.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.959184,
+      "codec": "mp3",
+      "bytes": 23827
+    },
+    "fighter_bylaw_attack": {
+      "id": "fighter_bylaw_attack",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "bylaw",
+      "loop": false,
+      "src": "assets/audio/fighter_bylaw_attack.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 1.07102,
+      "codec": "mp3",
+      "bytes": 12089
+    },
+    "fighter_bylaw_hurt": {
+      "id": "fighter_bylaw_hurt",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "bylaw",
+      "loop": false,
+      "src": "assets/audio/fighter_bylaw_hurt.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.037551,
+      "codec": "mp3",
+      "bytes": 19806
+    },
+    "fighter_bylaw_ko": {
+      "id": "fighter_bylaw_ko",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "bylaw",
+      "loop": false,
+      "src": "assets/audio/fighter_bylaw_ko.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.272653,
+      "codec": "mp3",
+      "bytes": 24923
+    },
+    "fighter_bylaw_win": {
+      "id": "fighter_bylaw_win",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "bylaw",
+      "loop": false,
+      "src": "assets/audio/fighter_bylaw_win.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 2.76898,
+      "codec": "mp3",
+      "bytes": 33840
+    },
+    "fighter_bylaw_intro": {
+      "id": "fighter_bylaw_intro",
+      "kind": "audio",
+      "category": "voice",
+      "fighter": "bylaw",
+      "loop": false,
+      "src": "assets/audio/fighter_bylaw_intro.mp3",
+      "sampleRate": 44100,
+      "channels": 1,
+      "duration": 4.284082,
+      "codec": "mp3",
+      "bytes": 52092
+    }
+  }
 }

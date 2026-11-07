@@ -111,7 +111,7 @@ async function review(options) {
       const image = await loadImage(path.join(bundle, sheet.src)), canvas = createCanvas(image.width, image.height), ctx = canvas.getContext('2d');
       ctx.drawImage(image, 0, 0); if (sheet.key !== false) keyGreen(canvas);
       let boxes;
-      try { boxes = segmentSheet(ctx.getImageData(0, 0, image.width, image.height).data, image.width, image.height); }
+      try { boxes = segmentSheet(ctx.getImageData(0, 0, image.width, image.height).data, image.width, image.height, { picks: sheet.poses.map(pose => sheet.figures?.[pose] || null) }); }
       catch (error) { report.flags.push({ fighter: fighter.id, sheet: sheet.sheet, issue: error.message }); continue; }
       sheet.poses.forEach((pose, i) => cells.push({ pose, sheet: sheet.sheet, image: canvas, box: boxes[i], width: image.width, height: image.height }));
     }

@@ -90,6 +90,8 @@ export function validateManifest(input) {
       if (asset.kind === 'sprites' && asset.sheet && layouts[asset.sheet] && JSON.stringify(asset.poses) !== JSON.stringify(layouts[asset.sheet])) throw new Error(`${asset.id} pose order disagrees with the ${asset.sheet} layout.`);
       // Reviewed correction: cells drawn facing the wrong way are flipped at build time.
       if (asset.mirror !== undefined && (!Array.isArray(asset.mirror) || asset.mirror.some(p => !asset.poses.includes(p)))) throw new Error(`${asset.id} mirror must list poses from that sheet.`);
+      // Reviewed correction: where the model drew an extra figure or shifted a row, `figures` picks each pose's figure.
+      if (asset.figures !== undefined && (!asset.figures || typeof asset.figures !== 'object' || Array.isArray(asset.figures) || Object.entries(asset.figures).some(([p, v]) => !asset.poses.includes(p) || !Array.isArray(v) || v.length !== 2 || v.some(n => typeof n !== 'number' || !(n >= 0 && n <= 1))))) throw new Error(`${asset.id} figures must map poses from that sheet to [x, y] fractions.`);
       claims.push(...asset.poses.map(p => asset.kind === 'sprites' ? `assets/fighters/${asset.fighter}_${p}.png` : `assets/effects/${p}.png`));
     } else claims.push(`${asset.kind}/${asset.fighter || asset.stage || asset.id}`);
     for (const claim of claims) {
@@ -222,7 +224,7 @@ function sheetCells(image, job, native = false) {
     const sheet = canvas(width, width * image.height / image.width);
     const context = sheet.getContext('2d', { willReadFrequently: true });
     context.drawImage(image, 0, 0, sheet.width, sheet.height); keyGreen(sheet);
-    const cells = segmentSheet(context.getImageData(0, 0, sheet.width, sheet.height).data, sheet.width, sheet.height);
+    const cells = segmentSheet(context.getImageData(0, 0, sheet.width, sheet.height).data, sheet.width, sheet.height, { picks: job.poses.map(pose => job.figures?.[pose] || null) });
     cells.forEach((pixels, i) => {
       const cell = canvas(pixels.width, pixels.height), ctx = cell.getContext('2d', { willReadFrequently: true });
       const data = ctx.createImageData(pixels.width, pixels.height); data.data.set(pixels.data); ctx.putImageData(data, 0, 0);

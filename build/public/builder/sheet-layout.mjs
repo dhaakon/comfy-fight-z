@@ -1,6 +1,8 @@
 // Split keyed artwork by its connected silhouettes, not by clipping at grid edges.
 // Coordinates remain in the input image's scale. Source pixels are never changed.
-export function segmentSheet(data, width, height) {
+// options.picks: a reviewed point [x, y] (fractions of the sheet) per cell, or null. A pick chooses the figure whose
+// centre lies nearest that point, for sheets where the model drew an extra figure or shifted a row.
+export function segmentSheet(data, width, height, { picks = [] } = {}) {
   if (!Number.isInteger(width) || !Number.isInteger(height) || width < 9 || height < 9 || data?.length !== width * height * 4) throw new Error('Invalid sheet pixel data.');
   const cw = width / 3, ch = height / 3, size = width * height;
   const labels = new Int32Array(size), queue = new Int32Array(size);
@@ -41,6 +43,15 @@ export function segmentSheet(data, width, height) {
     if (item.right - item.left > cw * 1.8 || item.bottom - item.top > ch * 1.8) throw new Error('Sheet silhouettes overlap multiple cells; separate the poses before building.');
     if (!anchors[item.slot] || item.count > anchors[item.slot].count) anchors[item.slot] = item;
   }
+  picks.forEach((pick, slot) => {
+    if (!pick) return;
+    const px = pick[0] * width, py = pick[1] * height;
+    let chosen = null, best = Infinity;
+    for (const item of components) if (item.count >= minimum) { const d = Math.hypot(item.cx - px, item.cy - py); if (d < best) { best = d; chosen = item; } }
+    if (!chosen || best > Math.hypot(cw, ch) * .25) throw new Error(`No figure near the reviewed pick for cell ${slot + 1}.`);
+    anchors[slot] = chosen;
+  });
+  if (anchors.every(Boolean) && new Set(anchors).size !== 9) throw new Error('Reviewed picks give one figure to two cells.');
   if (anchors.some(item => !item)) throw new Error(`Cannot isolate all nine sheet poses (empty cells: ${anchors.flatMap((item, i) => item ? [] : [i + 1]).join(', ')}).`);
   const owners = new Int8Array(components.length + 1); owners.fill(-1);
   anchors.forEach((item, slot) => { owners[item.id] = slot; });
@@ -54,6 +65,10 @@ export function segmentSheet(data, width, height) {
       const candidate = gap + (slot === item.slot ? 0 : .025);
       if (gap <= .45 && candidate < score) { score = candidate; best = slot; }
     });
+    // Image models sometimes draw a tenth figure beside a pose. A detached silhouette that is most of a figure tall
+    // and a quarter of its pixels is that extra drawing, not a loose limb or an effect, so it joins no cel.
+    const anchor = best >= 0 ? anchors[best] : null;
+    if (anchor && distance(item, anchor) > 0 && item.bottom - item.top > (anchor.bottom - anchor.top) * .75 && item.count > anchor.count * .25) best = -1;
     owners[item.id] = best;
   }
   const boxes = anchors.map(item => ({ x: item.left, y: item.top, right: item.right, bottom: item.bottom }));

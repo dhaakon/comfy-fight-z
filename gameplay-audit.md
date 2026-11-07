@@ -1,6 +1,6 @@
 # Gameplay audit and plan (2026-11-06)
 
-**Status (2026-11-06).** Phases 0–6 are implemented on the `gameplay` branch; the "As implemented" notes under each phase record every deviation. Phase 7 (paid art, about $1.01) waits for approval.
+**Status (2026-11-06).** Phases 0–7 are done on the `gameplay` branch; the "As implemented" notes under each phase record every deviation. Phase 7 generated sheets F and G for the canonical cast and the boss ($1.01, approved), merged them into `example/bundle/` and adopted the verified export as the canonical runtime.
 
 **Question.** Why does Comfy Fighter Z still play worse than `C:\Users\dhaak\Development\dad-fighter-z-repo` (DFZ, modelled on Marvel vs. Capcom 2) and Capcom fighters, and what fixes it?
 
