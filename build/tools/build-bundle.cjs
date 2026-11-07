@@ -176,7 +176,9 @@ async function main(options) {
     builderPage.on('pageerror', error => report.browserErrors.push(error.message));
     await builderPage.goto(`${projectServer.url}/builder/`);
     await builderPage.locator('#folder-input').setInputFiles(bundle);
-    await builderPage.waitForFunction(() => document.querySelector('#fighter-list').children.length >= 2 || document.querySelector('#status').classList.contains('error'));
+    // The builder draws the fighter list before it reads audio.json and video.json and maps the source files, so wait
+    // for its own completion message rather than the list (a large bundle otherwise reads 0/N mid-load).
+    await builderPage.waitForFunction(() => /source files matched/.test(document.querySelector('#status').textContent) || document.querySelector('#status').classList.contains('error'), null, { timeout: 180000 });
     if (await builderPage.locator('#status').evaluate(element => element.classList.contains('error'))) throw new Error(await builderPage.locator('#status').textContent());
     assert.equal(await builderPage.locator('#file-count').textContent(), `${manifest.assets.length}/${manifest.assets.length}`, 'All source images must load');
     assert.equal(await builderPage.locator('#allow-placeholders').isChecked(), false, 'Real test must not permit placeholder assets');

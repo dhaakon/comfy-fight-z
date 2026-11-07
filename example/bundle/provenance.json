@@ -1217,6 +1217,138 @@
       "height": 2048,
       "pixelsIdentical": true,
       "rgbaSha256": "6460c84aa765c9300ca21d24167321be50236a37f4934bf9db62829b35a72e9f"
+    },
+    {
+      "id": "rivet_sheetI",
+      "sourceSha256": "2541394b4517906c9d5611db77a5efc2ca8b1ae885448152260b039a6e0040dc",
+      "packagedSha256": "3e90ffc3f0c5165ea405d9a1c4705fe2dddbd4d1e2290bca1fa90841605d241b",
+      "sourceBytes": 4447744,
+      "bytes": 3249530,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "41d703b9c585f4b07200db5cb0bb5bf6d676d0ae5b28dda4c6b9cfe5b6e0f170"
+    },
+    {
+      "id": "tempo_sheetH",
+      "sourceSha256": "24329f743c6a5aadd055d3ee1ad56c8005046ccb81ee254ce5c3e1d10d75da7f",
+      "packagedSha256": "51135d93e24c10e509812fd2ec23d5e3e83ee3209a18250f35060ccebadc0e39",
+      "sourceBytes": 4344204,
+      "bytes": 3240196,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "6bd5c9f909b2d4c9236e8b64c18c7c8017cc1101d1e2cffd90b5261abb7a1394"
+    },
+    {
+      "id": "tempo_sheetI",
+      "sourceSha256": "602009916e2fdbb9726e29727223a82f9810a909209cae3e094967d2ebaddae3",
+      "packagedSha256": "235a29557be0edc8e60880720bdeac0f326bc7a9535087cea2c8427945d71cf6",
+      "sourceBytes": 4290079,
+      "bytes": 3201936,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "2c9029dc365eb90b153795a7746e37430cae9ef29bff8dc09e7b00af287b392d"
+    },
+    {
+      "id": "nimbus_sheetH",
+      "sourceSha256": "77185dd81009f509af623a5ce10ec5962017d3b3aa3ab8ce55d39a2dd561bccd",
+      "packagedSha256": "e17281780e9ebcbdd57331d76bc86b864ac59ad83538dccc76df1f9952d2199c",
+      "sourceBytes": 4527522,
+      "bytes": 3332488,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "607bdb217b5f0ea3b5604cf65c613be73009c9468ef8224a8915bddc13b75c7a"
+    },
+    {
+      "id": "nimbus_sheetI",
+      "sourceSha256": "3176872c395c9de9ba25179aef526bcfdfffe9ad536d633eaad01c03bd82a1ee",
+      "packagedSha256": "454e2fc8b2ada442083c9d6783eb10d1d406780a390229745c19f36884d915b0",
+      "sourceBytes": 4929401,
+      "bytes": 3282494,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "182daa09de57b7c0678fad99e3a551a6676aabf81e56b620aaf536cda224f29d"
+    },
+    {
+      "id": "switchback_sheetH",
+      "sourceSha256": "362296a83c8ad011dcb221c168eda0f02927db819d8be0b4eec33ef1e3f8ba4c",
+      "packagedSha256": "f51ae921ec45706295ed1eabd0b5656be882ce07956377b8ac5ad374ef2c0f94",
+      "sourceBytes": 4282364,
+      "bytes": 3172494,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "024f76f820601a52a161f23519beb49b685e89e933bd79a19eec8b44064438c2"
+    },
+    {
+      "id": "switchback_sheetI",
+      "sourceSha256": "e3c235ac08521f2f0606440e60d5dfdc507496824fce3e29753a28fbe89897d5",
+      "packagedSha256": "85738abc258a20cbc915014769b2ddd7412e5e784705e645d709a91bab09960a",
+      "sourceBytes": 4453426,
+      "bytes": 3349506,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "5870aa37a0838a9635aeecbba04dcd53d6a0262fbb01fa6cc3ed799b6a315c58"
+    },
+    {
+      "id": "brick_sheetH",
+      "sourceSha256": "e653f16cdfcde6de3c050bbb698cd0588cc32c61cebee5f85204577f7084fe7f",
+      "packagedSha256": "3befa1abb6fad286919c3a765665b7c457653e6bc85b2632187942e83c60ddf8",
+      "sourceBytes": 4462864,
+      "bytes": 3262182,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "5e320eb5e4597e8d0cb576c05d6e2456abd12376aad2acea2a82d61e0507efc8"
+    },
+    {
+      "id": "brick_sheetI",
+      "sourceSha256": "a6ab6dec54ae4c7724a9e768b2b1b46264d097a945548aca9b750637a47fd3bf",
+      "packagedSha256": "03f9e9673805c1075663904b6ac20349cd8105fbabd581cbf54119c10d2bae0e",
+      "sourceBytes": 4558009,
+      "bytes": 3350728,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "9a977ec89c2e61bf4868703384017836d2c9f1c01052356461c2aea14273c965"
+    },
+    {
+      "id": "bylaw_sheetH",
+      "sourceSha256": "373d8a673f3531308a5376a6a63aa04d710f92bf45f820b12bcb5b2402931f9b",
+      "packagedSha256": "6fdd8e84164caae2758c10d467d3fa93cee4a3b1f3125b6dfef883e21ec0eed4",
+      "sourceBytes": 4409467,
+      "bytes": 3219252,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "4cc648c3437983a6f4174add40ba0d3b2fb56a8e10d51bdc45f13e16c8b59757"
+    },
+    {
+      "id": "bylaw_sheetI",
+      "sourceSha256": "c196605699ca7b83a2e907b6220581a8667963e57f03302a30b98f10ba0066a6",
+      "packagedSha256": "ce6a701f618df455528e1b47ef79541f0303ac3eb88a6b823efcb96bbd38683b",
+      "sourceBytes": 4399106,
+      "bytes": 3215134,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "0edc780e23cd5fb4e286ee26b5e05c82ab7d58e42de85745f6c2fbf839afdd55"
+    },
+    {
+      "id": "rivet_sheetH",
+      "sourceSha256": "fe3bb4556380fa35338b4150ce486d269162a8c99ffeb9f69faa852143232a5a",
+      "packagedSha256": "89d2db9414bddf83219053a74e7d112cb3249eab85c3779ad8d3233c8984830d",
+      "sourceBytes": 4252240,
+      "bytes": 3100796,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "a88c38669152e93203cdf66aed03d4c4766daa069e8d79b9cd9b20c248940b21"
     }
   ],
   "audio": [
@@ -3360,6 +3492,42 @@
       ],
       "run": "output/test-runs/canonical-motion-20261106",
       "model": "Gemini Nano Banana 2.1 (2K)"
+    },
+    {
+      "addedAt": "2026-11-07",
+      "ids": [
+        "rivet_sheetI",
+        "tempo_sheetH",
+        "tempo_sheetI",
+        "nimbus_sheetH",
+        "nimbus_sheetI",
+        "switchback_sheetH",
+        "switchback_sheetI",
+        "brick_sheetH",
+        "brick_sheetI",
+        "bylaw_sheetH",
+        "bylaw_sheetI",
+        "rivet_sheetH"
+      ],
+      "run": "output/test-runs/canonical-motion-20261106",
+      "model": "Gemini Nano Banana 2.1 (2K)"
+    },
+    {
+      "addedAt": "2026-11-07",
+      "ids": [
+        "rivet_sheetI",
+        "nimbus_sheetH",
+        "nimbus_sheetI"
+      ],
+      "run": "output/test-runs/canonical-motion-20261106",
+      "model": "Gemini Nano Banana 2.1 (2K)"
+    },
+    {
+      "addedAt": "2026-11-07",
+      "ids": [
+        "nimbus_sheetI"
+      ],
+      "note": "nimbus_sheetI is a reviewed assembly of four generations of the same sheet (pipeline.json assembledSheets in output/test-runs/canonical-motion-20261106): the base drawing with the extension cell from the third attempt and the follow-through cell from the first, copied pixel for pixel, because every attempt drew one sweep frame standing."
     }
   ]
 }

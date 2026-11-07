@@ -81,6 +81,8 @@ It uploads the fighter's accepted identity (and the stage, for an intro) from th
 ```
 node build/tools/new-game.cjs add-sheets --run output/test-runs/<name>-<date> --approve-usd 0.87   # sheetF + sheetG for every fighter, $0.144 per fighter
 node build/tools/new-game.cjs add-sheets --run output/test-runs/<name>-<date> --sheets sheetH,sheetI --fighters <id> --approve-usd 0.15   # drawn walks, crouch-down, roll and sweep for one fighter
+node build/tools/set-aside-sheets.cjs output/test-runs/<name>-<date> <id>_sheetH   # make room for a redraw (keeps the old PNG in set-aside/)
+node build/tools/new-game.cjs add-sheets --run output/test-runs/<name>-<date> --sheets sheetH --fighters <id> --reference-sheet sheetF --approve-usd 0.08   # redraw against a clean nine-figure sheet
 ```
 
 It uploads each fighter's identity and accepted sheet A (as `reference_sheet`), generates the two sheets one node at a time, appends their records and `game.motionSheets` to `assets.json`, and leaves everything else untouched. `--asset title_video` and `--asset select_video` redraw the menu loops from the accepted ensemble and select art the same way. `--video-model` / `--video-resolution` override the run's project settings for that clip (this is how a run made on LTX moves its clips to Seedance). Do these after any whole-workflow re-roll, because the whole-workflow exporters rewrite the manifests from their own cached records.

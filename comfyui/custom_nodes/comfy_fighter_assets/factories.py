@@ -69,10 +69,10 @@ POSE_HINTS = {
     "roll3": "later in the forward roll: body rotated further, sitting up out of the tuck with knees still to the chest, feet coming down to the floor",
     "roll4": "finishing the roll: on one knee in a low crouch, coming up, facing right",
     "rollrise": "standing back up into the upright fighting guard after the roll, facing right",
-    "sweepwind": "starting a low sweep kick: dropping into a deep crouch with one hand on the floor, the attacking leg beginning to swing outward to the RIGHT",
-    "sweepfull": "low sweep kick at full extension: crouched on the planted leg with both hands on the floor, the attacking leg straight out along the floor to the RIGHT",
-    "sweepthrough": "sweep follow-through: the sweeping leg carried past its furthest point, body spinning low over the planted leg, hands on the floor",
-    "sweepback": "recovering from the sweep: drawing the leg back under the body into the low crouching guard, facing right",
+    "sweepwind": "starting a low sweep kick: dropping into a deep crouch with one hand on the floor, the attacking leg beginning to swing outward to the RIGHT just above the floor",
+    "sweepfull": "low sweep kick at full extension: crouched low on the bent planted leg with both hands on the floor, the attacking leg straight out ALONG THE FLOOR to the RIGHT with the foot at ankle height, never raised to the knee or hip",
+    "sweepthrough": "sweep follow-through: the sweeping leg carried past its furthest point along the floor, body spinning low over the planted leg, hands on the floor, the whole body still close to the ground",
+    "sweepback": "recovering from the sweep: drawing the leg back under the body into the low crouching guard, still crouched low (not standing), facing right",
     "guardhit": "absorbing a blocked hit, forearms crossed and jolted back, weight pushed onto the rear foot, feet sliding, head tucked",
 }
 # Arcade art beyond the 27 required poses: two optional in-between sheets and an ending illustration.
@@ -399,11 +399,11 @@ def _sheet_note(sheet):
     if sheet == "sheetH":
         return ("Cells 1 to 4 are one walking cycle moving to the RIGHT (contact, passing, opposite contact, passing) and cells 5 to 8 one walking cycle moving backward "
                 "to the LEFT while the character keeps facing RIGHT with a cautious guard. Keep the identical scale, outfit, line weight and head size in every cell; only the legs, "
-                "hips and arms change between cells, and the fists stay up in the same fighting guard in all eight walking cells (never swinging down). Cell 9 is a half crouch, clearly lower than standing, at the same scale. Exactly nine figures, one per cell. ")
+                "hips and arms change between cells, the fists stay up in the same closed-fist fighting guard in all eight walking cells (never swinging down, never an open palm), and every walking cell shows the body in the same side-on profile facing RIGHT (never turning toward the viewer). Cell 9 is a half crouch, clearly lower than standing, at the same scale. Exactly nine figures, one per cell. No text, labels, numbers, motion lines or effects anywhere. ")
     if sheet == "sheetI":
         return ("Cells 1 to 5 are one continuous evasive forward roll toward the RIGHT (dive, tucked roll, later tucked roll, kneeling, upright guard) and cells 6 to 9 one "
-                "continuous low sweep kick toward the RIGHT (chamber, full extension, follow-through, recovery). Keep the identical scale, outfit and line weight; the roll "
-                "frames are compact and low to the floor. Exactly nine figures, one per cell. ")
+                "continuous low sweep kick toward the RIGHT in which cells 6 to 9 ALL show the character crouched low near the floor: 6 the chamber (hands on the floor, the leg starting outward), 7 the full extension (the leg straight out along the floor), 8 the follow-through (the leg swept past, still crouched with a hand on the floor), 9 the recovery (back in a low crouching guard). Keep the identical scale, outfit and line weight; the roll "
+                "frames are compact and low to the floor, and every sweep cell stays crouched low with the sweeping leg along the floor at ankle height (never standing upright, never a raised kick). Exactly nine figures, one per cell. No text, labels, numbers, motion lines, swooshes or effects anywhere. ")
     if sheet == "sheetF":
         return "These nine cells are transition frames between this character's existing key poses: match the key-pose scale, line weight and stance exactly. "
     return "These are named key poses, not a nine-frame animation loop. "

@@ -1341,6 +1341,168 @@
           "ay": 401,
           "top": 1,
           "bh": 400
+        },
+        "roll1": {
+          "src": "assets/fighters/rivet_roll1.webp",
+          "w": 388,
+          "h": 268,
+          "ax": 194,
+          "ay": 266,
+          "top": 1,
+          "bh": 265
+        },
+        "roll2": {
+          "src": "assets/fighters/rivet_roll2.webp",
+          "w": 235,
+          "h": 229,
+          "ax": 115,
+          "ay": 227,
+          "top": 1,
+          "bh": 226
+        },
+        "roll3": {
+          "src": "assets/fighters/rivet_roll3.webp",
+          "w": 240,
+          "h": 282,
+          "ax": 154,
+          "ay": 280,
+          "top": 1,
+          "bh": 279
+        },
+        "roll4": {
+          "src": "assets/fighters/rivet_roll4.webp",
+          "w": 303,
+          "h": 318,
+          "ax": 145,
+          "ay": 316,
+          "top": 1,
+          "bh": 315
+        },
+        "rollrise": {
+          "src": "assets/fighters/rivet_rollrise.webp",
+          "w": 262,
+          "h": 403,
+          "ax": 125,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "sweepwind": {
+          "src": "assets/fighters/rivet_sweepwind.webp",
+          "w": 344,
+          "h": 308,
+          "ax": 125,
+          "ay": 306,
+          "top": 1,
+          "bh": 305
+        },
+        "sweepfull": {
+          "src": "assets/fighters/rivet_sweepfull.webp",
+          "w": 378,
+          "h": 311,
+          "ax": 128,
+          "ay": 309,
+          "top": 1,
+          "bh": 308
+        },
+        "sweepthrough": {
+          "src": "assets/fighters/rivet_sweepthrough.webp",
+          "w": 409,
+          "h": 272,
+          "ax": 241,
+          "ay": 270,
+          "top": 1,
+          "bh": 269
+        },
+        "sweepback": {
+          "src": "assets/fighters/rivet_sweepback.webp",
+          "w": 265,
+          "h": 393,
+          "ax": 115,
+          "ay": 390,
+          "top": 2,
+          "bh": 388
+        },
+        "walkf1": {
+          "src": "assets/fighters/rivet_walkf1.webp",
+          "w": 286,
+          "h": 403,
+          "ax": 137,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf2": {
+          "src": "assets/fighters/rivet_walkf2.webp",
+          "w": 210,
+          "h": 403,
+          "ax": 104,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf3": {
+          "src": "assets/fighters/rivet_walkf3.webp",
+          "w": 287,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf4": {
+          "src": "assets/fighters/rivet_walkf4.webp",
+          "w": 220,
+          "h": 403,
+          "ax": 112,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb1": {
+          "src": "assets/fighters/rivet_walkb1.webp",
+          "w": 276,
+          "h": 403,
+          "ax": 127,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb2": {
+          "src": "assets/fighters/rivet_walkb2.webp",
+          "w": 253,
+          "h": 403,
+          "ax": 116,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb3": {
+          "src": "assets/fighters/rivet_walkb3.webp",
+          "w": 291,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb4": {
+          "src": "assets/fighters/rivet_walkb4.webp",
+          "w": 275,
+          "h": 403,
+          "ax": 132,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouchdown": {
+          "src": "assets/fighters/rivet_crouchdown.webp",
+          "w": 253,
+          "h": 371,
+          "ax": 118,
+          "ay": 369,
+          "top": 1,
+          "bh": 368
         }
       },
       "sourceImage": "assets/references/rivet_source.webp",
@@ -1933,6 +2095,168 @@
           "ay": 401,
           "top": 1,
           "bh": 400
+        },
+        "walkf1": {
+          "src": "assets/fighters/tempo_walkf1.webp",
+          "w": 240,
+          "h": 403,
+          "ax": 112,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf2": {
+          "src": "assets/fighters/tempo_walkf2.webp",
+          "w": 241,
+          "h": 403,
+          "ax": 121,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf3": {
+          "src": "assets/fighters/tempo_walkf3.webp",
+          "w": 280,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "walkf4": {
+          "src": "assets/fighters/tempo_walkf4.webp",
+          "w": 240,
+          "h": 403,
+          "ax": 120,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb1": {
+          "src": "assets/fighters/tempo_walkb1.webp",
+          "w": 277,
+          "h": 403,
+          "ax": 125,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb2": {
+          "src": "assets/fighters/tempo_walkb2.webp",
+          "w": 219,
+          "h": 403,
+          "ax": 96,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb3": {
+          "src": "assets/fighters/tempo_walkb3.webp",
+          "w": 277,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb4": {
+          "src": "assets/fighters/tempo_walkb4.webp",
+          "w": 285,
+          "h": 403,
+          "ax": 140,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouchdown": {
+          "src": "assets/fighters/tempo_crouchdown.webp",
+          "w": 220,
+          "h": 344,
+          "ax": 101,
+          "ay": 342,
+          "top": 1,
+          "bh": 341
+        },
+        "roll1": {
+          "src": "assets/fighters/tempo_roll1.webp",
+          "w": 389,
+          "h": 257,
+          "ax": 197,
+          "ay": 255,
+          "top": 2,
+          "bh": 253
+        },
+        "roll2": {
+          "src": "assets/fighters/tempo_roll2.webp",
+          "w": 218,
+          "h": 241,
+          "ax": 134,
+          "ay": 239,
+          "top": 1,
+          "bh": 238
+        },
+        "roll3": {
+          "src": "assets/fighters/tempo_roll3.webp",
+          "w": 257,
+          "h": 302,
+          "ax": 177,
+          "ay": 300,
+          "top": 1,
+          "bh": 299
+        },
+        "roll4": {
+          "src": "assets/fighters/tempo_roll4.webp",
+          "w": 283,
+          "h": 313,
+          "ax": 133,
+          "ay": 311,
+          "top": 1,
+          "bh": 310
+        },
+        "rollrise": {
+          "src": "assets/fighters/tempo_rollrise.webp",
+          "w": 291,
+          "h": 403,
+          "ax": 132,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "sweepwind": {
+          "src": "assets/fighters/tempo_sweepwind.webp",
+          "w": 359,
+          "h": 307,
+          "ax": 167,
+          "ay": 305,
+          "top": 1,
+          "bh": 304
+        },
+        "sweepfull": {
+          "src": "assets/fighters/tempo_sweepfull.webp",
+          "w": 385,
+          "h": 306,
+          "ax": 186,
+          "ay": 304,
+          "top": 1,
+          "bh": 303
+        },
+        "sweepthrough": {
+          "src": "assets/fighters/tempo_sweepthrough.webp",
+          "w": 327,
+          "h": 301,
+          "ax": 215,
+          "ay": 299,
+          "top": 1,
+          "bh": 298
+        },
+        "sweepback": {
+          "src": "assets/fighters/tempo_sweepback.webp",
+          "w": 247,
+          "h": 341,
+          "ax": 109,
+          "ay": 339,
+          "top": 1,
+          "bh": 338
         }
       },
       "sourceImage": "assets/references/tempo_source.webp",
@@ -2525,6 +2849,168 @@
           "ay": 401,
           "top": 1,
           "bh": 400
+        },
+        "walkf1": {
+          "src": "assets/fighters/nimbus_walkf1.webp",
+          "w": 255,
+          "h": 403,
+          "ax": 117,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf2": {
+          "src": "assets/fighters/nimbus_walkf2.webp",
+          "w": 205,
+          "h": 403,
+          "ax": 84,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf3": {
+          "src": "assets/fighters/nimbus_walkf3.webp",
+          "w": 285,
+          "h": 403,
+          "ax": 139,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "walkf4": {
+          "src": "assets/fighters/nimbus_walkf4.webp",
+          "w": 227,
+          "h": 403,
+          "ax": 106,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb1": {
+          "src": "assets/fighters/nimbus_walkb1.webp",
+          "w": 265,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb2": {
+          "src": "assets/fighters/nimbus_walkb2.webp",
+          "w": 226,
+          "h": 403,
+          "ax": 114,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb3": {
+          "src": "assets/fighters/nimbus_walkb3.webp",
+          "w": 286,
+          "h": 403,
+          "ax": 136,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb4": {
+          "src": "assets/fighters/nimbus_walkb4.webp",
+          "w": 270,
+          "h": 403,
+          "ax": 140,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouchdown": {
+          "src": "assets/fighters/nimbus_crouchdown.webp",
+          "w": 248,
+          "h": 371,
+          "ax": 111,
+          "ay": 369,
+          "top": 1,
+          "bh": 368
+        },
+        "roll1": {
+          "src": "assets/fighters/nimbus_roll1.webp",
+          "w": 392,
+          "h": 281,
+          "ax": 195,
+          "ay": 279,
+          "top": 1,
+          "bh": 278
+        },
+        "roll2": {
+          "src": "assets/fighters/nimbus_roll2.webp",
+          "w": 254,
+          "h": 276,
+          "ax": 118,
+          "ay": 274,
+          "top": 1,
+          "bh": 273
+        },
+        "roll3": {
+          "src": "assets/fighters/nimbus_roll3.webp",
+          "w": 274,
+          "h": 337,
+          "ax": 198,
+          "ay": 335,
+          "top": 1,
+          "bh": 334
+        },
+        "roll4": {
+          "src": "assets/fighters/nimbus_roll4.webp",
+          "w": 279,
+          "h": 334,
+          "ax": 123,
+          "ay": 332,
+          "top": 1,
+          "bh": 331
+        },
+        "rollrise": {
+          "src": "assets/fighters/nimbus_rollrise.webp",
+          "w": 244,
+          "h": 403,
+          "ax": 115,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "sweepwind": {
+          "src": "assets/fighters/nimbus_sweepwind.webp",
+          "w": 408,
+          "h": 323,
+          "ax": 192,
+          "ay": 321,
+          "top": 1,
+          "bh": 320
+        },
+        "sweepfull": {
+          "src": "assets/fighters/nimbus_sweepfull.webp",
+          "w": 375,
+          "h": 323,
+          "ax": 190,
+          "ay": 321,
+          "top": 1,
+          "bh": 320
+        },
+        "sweepthrough": {
+          "src": "assets/fighters/nimbus_sweepthrough.webp",
+          "w": 406,
+          "h": 296,
+          "ax": 214,
+          "ay": 294,
+          "top": 1,
+          "bh": 293
+        },
+        "sweepback": {
+          "src": "assets/fighters/nimbus_sweepback.webp",
+          "w": 311,
+          "h": 339,
+          "ax": 157,
+          "ay": 337,
+          "top": 1,
+          "bh": 336
         }
       },
       "sourceImage": "assets/references/nimbus_source.webp",
@@ -3117,6 +3603,168 @@
           "ay": 400,
           "top": 1,
           "bh": 399
+        },
+        "walkf1": {
+          "src": "assets/fighters/switchback_walkf1.webp",
+          "w": 228,
+          "h": 403,
+          "ax": 103,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf2": {
+          "src": "assets/fighters/switchback_walkf2.webp",
+          "w": 269,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf3": {
+          "src": "assets/fighters/switchback_walkf3.webp",
+          "w": 304,
+          "h": 403,
+          "ax": 139,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "walkf4": {
+          "src": "assets/fighters/switchback_walkf4.webp",
+          "w": 266,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb1": {
+          "src": "assets/fighters/switchback_walkb1.webp",
+          "w": 256,
+          "h": 403,
+          "ax": 121,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb2": {
+          "src": "assets/fighters/switchback_walkb2.webp",
+          "w": 307,
+          "h": 403,
+          "ax": 144,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb3": {
+          "src": "assets/fighters/switchback_walkb3.webp",
+          "w": 309,
+          "h": 403,
+          "ax": 148,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb4": {
+          "src": "assets/fighters/switchback_walkb4.webp",
+          "w": 240,
+          "h": 403,
+          "ax": 122,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "crouchdown": {
+          "src": "assets/fighters/switchback_crouchdown.webp",
+          "w": 228,
+          "h": 367,
+          "ax": 104,
+          "ay": 365,
+          "top": 1,
+          "bh": 364
+        },
+        "roll1": {
+          "src": "assets/fighters/switchback_roll1.webp",
+          "w": 375,
+          "h": 239,
+          "ax": 167,
+          "ay": 237,
+          "top": 1,
+          "bh": 236
+        },
+        "roll2": {
+          "src": "assets/fighters/switchback_roll2.webp",
+          "w": 212,
+          "h": 224,
+          "ax": 118,
+          "ay": 222,
+          "top": 1,
+          "bh": 221
+        },
+        "roll3": {
+          "src": "assets/fighters/switchback_roll3.webp",
+          "w": 247,
+          "h": 285,
+          "ax": 165,
+          "ay": 283,
+          "top": 1,
+          "bh": 282
+        },
+        "roll4": {
+          "src": "assets/fighters/switchback_roll4.webp",
+          "w": 269,
+          "h": 314,
+          "ax": 117,
+          "ay": 312,
+          "top": 1,
+          "bh": 311
+        },
+        "rollrise": {
+          "src": "assets/fighters/switchback_rollrise.webp",
+          "w": 260,
+          "h": 403,
+          "ax": 121,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "sweepwind": {
+          "src": "assets/fighters/switchback_sweepwind.webp",
+          "w": 251,
+          "h": 309,
+          "ax": 118,
+          "ay": 307,
+          "top": 1,
+          "bh": 306
+        },
+        "sweepfull": {
+          "src": "assets/fighters/switchback_sweepfull.webp",
+          "w": 373,
+          "h": 308,
+          "ax": 113,
+          "ay": 306,
+          "top": 1,
+          "bh": 305
+        },
+        "sweepthrough": {
+          "src": "assets/fighters/switchback_sweepthrough.webp",
+          "w": 279,
+          "h": 315,
+          "ax": 111,
+          "ay": 313,
+          "top": 1,
+          "bh": 312
+        },
+        "sweepback": {
+          "src": "assets/fighters/switchback_sweepback.webp",
+          "w": 263,
+          "h": 344,
+          "ax": 116,
+          "ay": 342,
+          "top": 1,
+          "bh": 341
         }
       },
       "sourceImage": "assets/references/switchback_source.webp",
@@ -3709,6 +4357,168 @@
           "ay": 401,
           "top": 1,
           "bh": 400
+        },
+        "walkf1": {
+          "src": "assets/fighters/brick_walkf1.webp",
+          "w": 270,
+          "h": 403,
+          "ax": 130,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf2": {
+          "src": "assets/fighters/brick_walkf2.webp",
+          "w": 259,
+          "h": 403,
+          "ax": 135,
+          "ay": 401,
+          "top": 2,
+          "bh": 399
+        },
+        "walkf3": {
+          "src": "assets/fighters/brick_walkf3.webp",
+          "w": 299,
+          "h": 403,
+          "ax": 134,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf4": {
+          "src": "assets/fighters/brick_walkf4.webp",
+          "w": 266,
+          "h": 403,
+          "ax": 126,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb1": {
+          "src": "assets/fighters/brick_walkb1.webp",
+          "w": 283,
+          "h": 403,
+          "ax": 145,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb2": {
+          "src": "assets/fighters/brick_walkb2.webp",
+          "w": 227,
+          "h": 403,
+          "ax": 109,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb3": {
+          "src": "assets/fighters/brick_walkb3.webp",
+          "w": 279,
+          "h": 403,
+          "ax": 134,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb4": {
+          "src": "assets/fighters/brick_walkb4.webp",
+          "w": 244,
+          "h": 403,
+          "ax": 127,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouchdown": {
+          "src": "assets/fighters/brick_crouchdown.webp",
+          "w": 257,
+          "h": 372,
+          "ax": 115,
+          "ay": 370,
+          "top": 1,
+          "bh": 369
+        },
+        "roll1": {
+          "src": "assets/fighters/brick_roll1.webp",
+          "w": 391,
+          "h": 268,
+          "ax": 198,
+          "ay": 266,
+          "top": 1,
+          "bh": 265
+        },
+        "roll2": {
+          "src": "assets/fighters/brick_roll2.webp",
+          "w": 251,
+          "h": 244,
+          "ax": 142,
+          "ay": 241,
+          "top": 1,
+          "bh": 240
+        },
+        "roll3": {
+          "src": "assets/fighters/brick_roll3.webp",
+          "w": 281,
+          "h": 289,
+          "ax": 187,
+          "ay": 287,
+          "top": 1,
+          "bh": 286
+        },
+        "roll4": {
+          "src": "assets/fighters/brick_roll4.webp",
+          "w": 297,
+          "h": 324,
+          "ax": 133,
+          "ay": 322,
+          "top": 1,
+          "bh": 321
+        },
+        "rollrise": {
+          "src": "assets/fighters/brick_rollrise.webp",
+          "w": 263,
+          "h": 403,
+          "ax": 127,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "sweepwind": {
+          "src": "assets/fighters/brick_sweepwind.webp",
+          "w": 337,
+          "h": 309,
+          "ax": 139,
+          "ay": 307,
+          "top": 1,
+          "bh": 306
+        },
+        "sweepfull": {
+          "src": "assets/fighters/brick_sweepfull.webp",
+          "w": 400,
+          "h": 295,
+          "ax": 100,
+          "ay": 292,
+          "top": 2,
+          "bh": 290
+        },
+        "sweepthrough": {
+          "src": "assets/fighters/brick_sweepthrough.webp",
+          "w": 374,
+          "h": 312,
+          "ax": 234,
+          "ay": 310,
+          "top": 1,
+          "bh": 309
+        },
+        "sweepback": {
+          "src": "assets/fighters/brick_sweepback.webp",
+          "w": 284,
+          "h": 356,
+          "ax": 122,
+          "ay": 354,
+          "top": 1,
+          "bh": 353
         }
       },
       "sourceImage": "assets/references/brick_source.webp",
@@ -4302,6 +5112,168 @@
           "ay": 401,
           "top": 2,
           "bh": 399
+        },
+        "walkf1": {
+          "src": "assets/fighters/bylaw_walkf1.webp",
+          "w": 230,
+          "h": 403,
+          "ax": 110,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf2": {
+          "src": "assets/fighters/bylaw_walkf2.webp",
+          "w": 238,
+          "h": 403,
+          "ax": 123,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf3": {
+          "src": "assets/fighters/bylaw_walkf3.webp",
+          "w": 242,
+          "h": 403,
+          "ax": 117,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf4": {
+          "src": "assets/fighters/bylaw_walkf4.webp",
+          "w": 247,
+          "h": 403,
+          "ax": 120,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb1": {
+          "src": "assets/fighters/bylaw_walkb1.webp",
+          "w": 254,
+          "h": 403,
+          "ax": 128,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb2": {
+          "src": "assets/fighters/bylaw_walkb2.webp",
+          "w": 244,
+          "h": 403,
+          "ax": 121,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb3": {
+          "src": "assets/fighters/bylaw_walkb3.webp",
+          "w": 245,
+          "h": 403,
+          "ax": 119,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb4": {
+          "src": "assets/fighters/bylaw_walkb4.webp",
+          "w": 211,
+          "h": 403,
+          "ax": 108,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "crouchdown": {
+          "src": "assets/fighters/bylaw_crouchdown.webp",
+          "w": 238,
+          "h": 352,
+          "ax": 111,
+          "ay": 350,
+          "top": 1,
+          "bh": 349
+        },
+        "roll1": {
+          "src": "assets/fighters/bylaw_roll1.webp",
+          "w": 370,
+          "h": 284,
+          "ax": 105,
+          "ay": 282,
+          "top": 1,
+          "bh": 281
+        },
+        "roll2": {
+          "src": "assets/fighters/bylaw_roll2.webp",
+          "w": 253,
+          "h": 231,
+          "ax": 128,
+          "ay": 229,
+          "top": 1,
+          "bh": 228
+        },
+        "roll3": {
+          "src": "assets/fighters/bylaw_roll3.webp",
+          "w": 281,
+          "h": 299,
+          "ax": 167,
+          "ay": 297,
+          "top": 1,
+          "bh": 296
+        },
+        "roll4": {
+          "src": "assets/fighters/bylaw_roll4.webp",
+          "w": 285,
+          "h": 306,
+          "ax": 128,
+          "ay": 304,
+          "top": 1,
+          "bh": 303
+        },
+        "rollrise": {
+          "src": "assets/fighters/bylaw_rollrise.webp",
+          "w": 262,
+          "h": 403,
+          "ax": 126,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "sweepwind": {
+          "src": "assets/fighters/bylaw_sweepwind.webp",
+          "w": 397,
+          "h": 300,
+          "ax": 158,
+          "ay": 298,
+          "top": 1,
+          "bh": 297
+        },
+        "sweepfull": {
+          "src": "assets/fighters/bylaw_sweepfull.webp",
+          "w": 416,
+          "h": 304,
+          "ax": 135,
+          "ay": 302,
+          "top": 1,
+          "bh": 301
+        },
+        "sweepthrough": {
+          "src": "assets/fighters/bylaw_sweepthrough.webp",
+          "w": 374,
+          "h": 291,
+          "ax": 213,
+          "ay": 289,
+          "top": 1,
+          "bh": 288
+        },
+        "sweepback": {
+          "src": "assets/fighters/bylaw_sweepback.webp",
+          "w": 269,
+          "h": 359,
+          "ax": 120,
+          "ay": 357,
+          "top": 1,
+          "bh": 356
         }
       },
       "sourceImage": "assets/references/bylaw_source.webp",

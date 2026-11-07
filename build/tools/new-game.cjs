@@ -4,7 +4,8 @@
 //   node build/tools/new-game.cjs review  --run output/test-runs/<name>
 //   node build/tools/new-game.cjs reroll  --run output/test-runs/<name> --node <id or title> --approve-usd <amount>
 //   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle>|title_video|select_video --approve-usd <amount> [--video-model <name>] [--video-resolution 720p|1080p]
-//   node build/tools/new-game.cjs add-sheets --run output/test-runs/<name> --approve-usd <amount> [--sheets sheetF,sheetG] [--fighters a,b]
+//   node build/tools/new-game.cjs add-sheets --run output/test-runs/<name> --approve-usd <amount> [--sheets sheetF,sheetG] [--fighters a,b] [--reference-sheet sheetF]
+//     (--reference-sheet picks the accepted sheet sent as the style reference, default sheet A; use a clean one when sheet A has an extra figure)
 //   node build/tools/new-game.cjs export  --run output/test-runs/<name> [--out output/exports/<name>]
 //   node build/tools/new-game.cjs install --run output/test-runs/<name> [--slot <id>]
 //   node build/tools/new-game.cjs status  --run output/test-runs/<name>
@@ -21,7 +22,7 @@ const now = () => new Date().toISOString();
 
 function parse(argv) {
   const [command, ...rest] = argv, options = {};
-  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters'];
+  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters', '--reference-sheet'];
   for (let i = 0; i < rest.length; i++) {
     if (rest[i] === '--no-media') options.media = false;
     else if (rest[i] === '--no-audio') options.audio = false;
@@ -378,7 +379,10 @@ async function addSheets(options) {
     const definition = Object.fromEntries(['name', 'description', 'special_name', 'special_description', 'intro_tagline', 'color', 'character_id', 'fighting_style', 'super_name', 'super_description', 'win_quote', 'ending', 'role'].filter(key => factory.inputs[key] !== undefined).map(key => [key, factory.inputs[key]]));
     prompt[`${fighter.id}_character`] = { class_type: 'CFZCharacterDefinition', inputs: definition, _meta: { title: `Character | ${fighter.id}` } };
     prompt[`${fighter.id}_reference`] = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.id === `${fighter.id}_reference`)) }, _meta: { title: `Accepted identity | ${fighter.id}` } };
-    prompt[`${fighter.id}_sheetA`] = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.id === `${fighter.id}_sheet`)) }, _meta: { title: `Accepted sheet A | ${fighter.id}` } };
+    // The style reference is sheet A unless --reference-sheet names another accepted sheet (one drawn with exactly nine figures).
+    const referenceId = `${fighter.id}_${options.referenceSheet || 'sheet'}`, referenceRecord = assets.assets.find(item => item.id === referenceId && item.kind === 'sprites');
+    if (!referenceRecord) throw new Error(`--reference-sheet ${options.referenceSheet}: ${referenceId} is not an accepted sheet in the bundle.`);
+    prompt[`${fighter.id}_sheetA`] = { class_type: 'LoadImage', inputs: { image: await upload(referenceRecord) }, _meta: { title: `Accepted reference sheet ${options.referenceSheet || 'sheet'} | ${fighter.id}` } };
     for (const sheet of planned.sheets) {
       const id = `${fighter.id}_${sheet}`;
       prompt[id] = { class_type: 'CFZSpriteSheet', inputs: { project: ['project', 0], character: [`${fighter.id}_character`, 0], reference: [`${fighter.id}_reference`, 0], reference_sheet: [`${fighter.id}_sheetA`, 0], sheet }, _meta: { title: `${fighter.id} | ${sheet}` } };
@@ -387,7 +391,7 @@ async function addSheets(options) {
     }
   }
   const file = path.join(directory, `add-sheets-${Date.now()}.api.json`); fs.writeFileSync(file, JSON.stringify(prompt, null, 2) + '\n');
-  const entry = { at: now(), sheets: planned.sheets, fighters: planned.fighters.map(f => f.id), estimatedUSD: planned.estimatedUSD, approvedUSD: approved, prompt: path.basename(file) };
+  const entry = { at: now(), sheets: planned.sheets, fighters: planned.fighters.map(f => f.id), estimatedUSD: planned.estimatedUSD, approvedUSD: approved, prompt: path.basename(file), ...(options.referenceSheet ? { referenceSheet: options.referenceSheet } : {}) };
   state.addedSheets.push(entry); fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
   console.log(`Generating ${planned.sheets.join(' and ')} for ${planned.fighters.length} fighter(s) (about $${planned.estimatedUSD}), one paid node at a time.`);
   const status = node([path.join(ROOT, 'comfyui/tools/run-sequential.cjs'), '--workflow', file, '--server', server]);
