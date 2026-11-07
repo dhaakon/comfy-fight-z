@@ -75,7 +75,8 @@ const originalManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/mani
 
     page = await pageFor({ 0: { src: 'assets/video/intro-missing.mp4', duration: 8 } }, { missing: true });
     await page.waitForFunction(() => FighterDebug.presentation().introMedia === 'sprite', null, { timeout: 6000 });
-    assert.equal(await page.locator('#intro-actor').count(), 1);
+    // The sprite fallback draws the entrance animation when the fighter has idle art, otherwise its portrait or initial.
+    assert.equal(await page.locator('#intro-portrait').locator('canvas, img, span').count(), 1, 'The intro half shows a sprite, portrait or emblem fallback');
     assert.equal(await page.locator('#intro-video').isVisible(), false);
     assert.equal(await page.evaluate(() => FighterDebug.snapshot().frame), 0);
     await page.click('#intro-skip'); await page.waitForFunction(() => FighterDebug.snapshot().phase === 'fight');

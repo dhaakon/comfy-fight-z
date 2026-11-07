@@ -42,9 +42,12 @@ const baseManifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/manifest
     await page.waitForFunction(() => document.querySelector('#title-video').paused && FighterDebug.presentation().titleMedia === 'image');
     await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, value: false }); document.dispatchEvent(new Event('visibilitychange')); });
     await page.waitForFunction(() => FighterDebug.presentation().titleMedia === 'video');
-    await page.emulateMedia({ reducedMotion: 'reduce' }); await page.waitForFunction(() => document.querySelector('#title-video').paused && FighterDebug.presentation().titleMedia === 'image');
-    await page.emulateMedia({ reducedMotion: 'no-preference' }); await page.waitForFunction(() => FighterDebug.presentation().titleMedia === 'video');
-    console.log('PASS title loops muted, pauses in settings/selection/hidden tabs, resumes and honors reduced motion'); await page.close();
+    // The game ignores prefers-reduced-motion on purpose (AGENTS.md), so the title keeps looping when it is requested.
+    await page.emulateMedia({ reducedMotion: 'reduce' }); await page.waitForTimeout(400);
+    assert.equal(await page.evaluate(() => FighterDebug.presentation().titleMedia), 'video', 'Reduced motion does not stop the title loop');
+    assert.equal(await page.locator('#title-video').evaluate(v => !v.paused), true);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    console.log('PASS title loops muted, pauses in settings/selection/hidden tabs, resumes, and ignores reduced motion on purpose'); await page.close();
     page = await pageFor({ opening: { id: 'opening', src: 'assets/video/opening.mp4', duration: 2, hasAudio: false } });
     await page.waitForFunction(() => FighterDebug.presentation().screen === 'opening');
     assert.equal(await page.locator('#opening-sound').isVisible(), false); assert.equal(await page.locator('#opening-video').evaluate(v => v.muted), true);
