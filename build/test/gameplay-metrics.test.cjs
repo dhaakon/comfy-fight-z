@@ -1150,3 +1150,228 @@ test('phase 3: landing lag stands and cannot guard, and the CPU answers an incom
   assert.ok(takeoffs.length >= 3, `The CPU jumped in ${takeoffs.length} of 12 seeds`);
   assert.ok(takeoffs.every(t => !t.hop && t.toward), `Every CPU jump over the shot is a full forward jump: ${JSON.stringify(takeoffs)}`);
 });
+
+// ---------------------------------------------------------------- phase 5: a CPU that confirms, punishes and blocks
+// The targets of gameplay-audit.md phase 5, measured by CPU versus CPU over seeds 1-3 of 60 s. Combo targets read
+// longestConfirm (no super-beam hits), as the phase 0 notes say. Staged scenarios use well-mixed seeds, because
+// xorshift32's first draws from small seeds are near zero and would decide every first roll the same way.
+const CPU_SEEDS = [1, 2, 3];
+const mixedSeeds = count => Array.from({ length: count }, (_, i) => (Math.imul(i + 1, 0x9e3779b1) >>> 0) || 1);
+const cpuRuns = (level, options = {}) => CPU_SEEDS.map(seed => M.cpuVsCpu(E, { level, seed, seconds: 60, ...options }));
+const slotSum = (runs, slot, key) => runs.reduce((sum, run) => sum + run.slots[slot][key], 0);
+const blockRate = (runs, slot) => slotSum(runs, slot, 'strikeBlocks') / slotSum(runs, slot, 'strikesFaced');
+// Slot 0 scripted, slot 1 the CPU `gap` units in front; watch(state, before, frame) returns the outcome or null.
+function cpuStage(level, seed, gap, script, frames, watch, arrange) {
+  const s = E.create(['p', 'c'], { cpuSlots: [false, true], seed, cpuLevel: level });
+  s.phase = 'fight'; s.message = '';
+  const [p, c] = s.fighters; p.x = 500; c.x = 500 + gap; p.facing = 1; c.facing = -1;
+  if (arrange) arrange(s);
+  for (let t = 0; t < frames; t++) {
+    const before = JSON.parse(JSON.stringify(s.fighters));
+    E.tick(s, [script(s, t) || {}, {}]);
+    const out = watch(s, before, t);
+    if (out !== null) return out;
+  }
+  return false;
+}
+const stagedCount = (level, ...args) => mixedSeeds(20).filter(seed => cpuStage(level, seed, ...args) === true).length;
+
+test('phase 5: CPU levels are set per slot, and cpuLevel alone sets both', () => {
+  assert.deepEqual(E.create(['a', 'b'], { cpuLevels: [8, 1] }).options.cpuLevels, [8, 1]);
+  assert.deepEqual(E.create(['a', 'b'], { cpuLevel: 6 }).options.cpuLevels, [6, 6]);
+  assert.deepEqual(E.create(['a', 'b'], { cpuLevels: [12, 0] }).options.cpuLevels, [8, 4], 'Out-of-range levels clamp to 1-8, a missing one falls back to cpuLevel');
+  const run = M.cpuVsCpu(E, { seed: 1, levels: [8, 1], seconds: 5 });
+  assert.equal(run.perSlotLevels, true); assert.deepEqual(run.levelsApplied, [8, 1]);
+});
+
+test('phase 5: level-4 CPUs confirm, block 40-80 %, whiff-punish, anti-air and keep to 8 specials a minute', () => {
+  const runs = cpuRuns(4);
+  const confirms = runs.map(run => run.totals.longestConfirm);
+  assert.ok(confirms.every(n => n >= 4), `Longest confirm of 4 or more in every seed: ${confirms}`);
+  assert.ok(confirms.some(n => n >= 5), `Longest confirm of 5 or more in one seed: ${confirms}`);
+  for (const slot of [0, 1]) {
+    const rate = blockRate(runs, slot);
+    assert.ok(rate >= .4 && rate <= .8, `CPU ${slot} blocks ${(rate * 100).toFixed(1)} % of the strikes that reach it`);
+    assert.ok(slotSum(runs, slot, 'whiffPunishes') >= 1, `CPU ${slot} whiff-punishes across the seeds`);
+    assert.ok(slotSum(runs, slot, 'antiAirs') >= 1, `CPU ${slot} anti-airs across the seeds`);
+    for (const run of runs) assert.ok(run.slots[slot].specialsPerMinute <= 8, `CPU ${slot} starts ${run.slots[slot].specialsPerMinute} specials a minute (seed ${run.seed})`);
+  }
+});
+
+test('phase 5: a level-1 CPU blocks under 15 % and never combos past two hits', () => {
+  const runs = cpuRuns(1);
+  for (const slot of [0, 1]) {
+    const rate = blockRate(runs, slot);
+    assert.ok(rate < .15, `CPU ${slot} blocks ${(rate * 100).toFixed(1)} %`);
+    for (const run of runs) assert.ok(run.slots[slot].longestConfirm <= 2, `CPU ${slot} confirms ${run.slots[slot].longestConfirm} hits (seed ${run.seed})`);
+  }
+});
+
+test('phase 5: level 8 beats level 1 in at least four of five seeded matches, from either slot', () => {
+  for (const [levels, winner] of [[[8, 1], 0], [[1, 8], 1]]) {
+    const matches = [1, 2, 3, 4, 5].map(seed => M.cpuVsCpu(E, { levels, seed, match: true }));
+    assert.ok(matches.every(match => match.matchOver), 'Every match finishes');
+    const won = matches.filter(match => match.winner === winner).length;
+    assert.ok(won >= 4, `Level 8 in slot ${winner} wins ${won} of 5`);
+  }
+});
+
+test('phase 5: staged CPU reactions scale with level: throw escapes, whiff punishes, anti-airs and guard cancels', () => {
+  const thrown = level => stagedCount(level, 70, (s, t) => t === 0 ? { right: true, heavy: true } : {}, 30,
+    s => s.effects.some(e => e.type === 'banner' && e.text === 'THROW ESCAPE') ? true : s.fighters[1].launched ? false : null);
+  // A roundhouse whiffed from 175 units, punished when the CPU hits it during its recovery (the heavy reaches the leg).
+  const punished = level => stagedCount(level, 175, (s, t) => t === 0 ? { right: true, kick: true } : {}, 60,
+    (s, before) => freshOf(s, 'hit', 1).length ? before[0].move === 'roundhouse' : before[0].move && !s.fighters[0].move ? false : null);
+  // A forward jump-in from 230 with an air heavy on the way down, anti-aired when the CPU hits it in the air.
+  const jumpIn = (s, t) => {
+    const p = s.fighters[0];
+    if (t < 6) return { jump: true, right: true };
+    if (p.y > 0 && p.y < 110 && p.vy < 0 && !p.move) return { heavy: true };
+  };
+  const antiAired = level => stagedCount(level, 230, jumpIn, 90, (s, before) => freshOf(s, 'hit', 1).length ? before[0].y > 0
+    : freshOf(s, 'hit', 0).length || freshOf(s, 'block', 0).length || before[0].y > 0 && s.fighters[0].y === 0 ? false : null);
+  // A heavy punch blocked from 100 units by a CPU that holds a stock (told to guard).
+  const cancelled = level => stagedCount(level, 100, (s, t) => t === 0 ? { heavy: true } : {}, 40, s => ['gcRoll', 'gcBlowback'].includes(s.fighters[1].move) ? true : null,
+    s => { s.fighters[1].stocks = 1; Object.assign(s.cpuMemory[1], { started: true, guardUntil: 999 }); });
+  const [tech1, tech8] = [thrown(1), thrown(8)], [punish1, punish8] = [punished(1), punished(8)], [air1, air8] = [antiAired(1), antiAired(8)];
+  assert.ok(tech1 <= 7 && tech8 >= 12, `Throw escapes in 20 seeds: level 1 ${tech1}, level 8 ${tech8}`);
+  assert.ok(punish1 <= 10 && punish8 >= 16, `Whiff punishes of a roundhouse: level 1 ${punish1}, level 8 ${punish8}`);
+  assert.ok(air1 <= 10 && air8 >= 16, `Anti-airs of a jump-in: level 1 ${air1}, level 8 ${air8}`);
+  assert.equal(cancelled(5), 0, 'No guard cancel below level 6');
+  assert.ok(cancelled(8) >= 1, 'Level 8 guard-cancels with a stock');
+});
+
+test('phase 5: the CPU guards by height: crouching against a grounded opponent, standing against a jump it has seen', () => {
+  const told = s => Object.assign(s.cpuMemory[1], { started: true, guardUntil: 999 });
+  for (const level of [1, 4, 8]) {
+    const crouches = stagedCount(level, 150, () => ({}), 12, (s, before, t) => t === 11 ? s.fighters[1].crouching && !!s.fighters[1].lastInput.right : null, told);
+    const reaction = Math.max(2, 14 - 1.5 * level);
+    const stands = stagedCount(level, 300, (s, t) => t < 6 ? { jump: true, right: true } : {}, 40,
+      s => s.motionFrame > reaction + 8 && s.fighters[0].y > 0 && s.fighters[0].y < 120 ? !s.fighters[1].crouching && !!s.fighters[1].lastInput.right : null, told);
+    assert.deepEqual([crouches, stands], [20, 20], `Level ${level}`);
+  }
+  // In CPU versus CPU every block of a sweep is crouching and every block of an air normal standing.
+  let lows = 0, highs = 0;
+  for (const level of [4, 8]) for (const seed of CPU_SEEDS) {
+    const s = E.create(['a', 'b'], { cpuSlots: [true, true], seed, cpuLevel: level }); s.phase = 'fight'; s.message = '';
+    for (let t = 0; t < 3600 && s.phase !== 'matchover'; t++) {
+      E.tick(s, [{}, {}]);
+      for (const e of freshOf(s, 'block')) {
+        const a = s.fighters[e.attacker], d = s.fighters[1 - e.attacker], height = a?.move && E.moveData(a).height;
+        if (height === 'low') { lows++; assert.ok(d.crouching || d.blockStunAtStart, 'A sweep is blocked crouching'); }
+        if (height === 'high') { highs++; assert.ok(!d.crouching || d.blockStunAtStart, 'An air normal is blocked standing'); }
+      }
+    }
+  }
+  assert.ok(lows > 0 && highs > 0, `CPUs blocked ${lows} sweeps and ${highs} air normals`);
+});
+
+test('phase 5: supers only punish, finish a combo or the round, or come in desperation; taunts need a 30 % lead at range', () => {
+  const contexts = { combo: 0, punish: 0, desperate: 0, finish: 0 };
+  for (const level of [4, 8]) for (const styles of [['balanced', 'balanced'], ['zoner', 'speed'], ['grappler', 'boss']]) for (const seed of [1, 2]) {
+    const profiles = { a: { style: styles[0], boss: styles[0] === 'boss' }, b: { style: styles[1], boss: styles[1] === 'boss' } };
+    const s = E.create(['a', 'b'], { cpuSlots: [true, true], seed, cpuLevel: level, profiles }); s.phase = 'fight'; s.message = '';
+    for (let t = 0; t < 3600 && s.phase !== 'matchover'; t++) {
+      const before = JSON.parse(JSON.stringify(s.fighters));
+      E.tick(s, [{}, {}]);
+      s.fighters.forEach((f, i) => {
+        const me = before[i], foe = before[1 - i], data = foe.move && E.moveData(foe);
+        if (f.move === 'super' && me.move !== 'super') {
+          const kind = foe.stun > 0 && !foe.blockStun || foe.launched ? 'combo' : data && foe.moveFrame >= data.startup + data.active ? 'punish'
+            : me.hp <= E.MAX_HP / 4 ? 'desperate' : foe.hp <= 200 ? 'finish' : null;
+          assert.ok(kind, `A super at ${t} (level ${level}, ${styles}) against ${foe.move || 'an idle opponent'} at ${foe.hp}`);
+          contexts[kind]++;
+        }
+        if (f.move === 'taunt' && me.move !== 'taunt') assert.ok(me.hp - foe.hp >= .3 * E.MAX_HP && Math.abs(me.x - foe.x) > 320, 'A taunt needs a 30 % lead at range');
+      });
+    }
+  }
+  assert.ok(contexts.combo > 0 && contexts.punish > 0, JSON.stringify(contexts));
+  // With a 40 % lead and the opponent 420 units away, a CPU may taunt before it walks in.
+  const taunts = mixedSeeds(8).filter(seed => cpuStage(4, seed, 420, () => ({}), 300, s => s.fighters[1].move === 'taunt' ? true : null,
+    s => { s.fighters[0].hp = 500; s.fighters[1].hp = 900; })).length;
+  assert.ok(taunts >= 1, `${taunts} of 8 CPUs taunted`);
+});
+
+test('phase 5: spacing follows the style: zoners keep their range, grapplers crowd', () => {
+  const median = style => {
+    const gaps = [];
+    for (const seed of [1, 2]) {
+      const s = E.create(['a', 'b'], { cpuSlots: [true, true], seed, cpuLevel: 4, profiles: { a: { style }, b: { style } } }); s.phase = 'fight'; s.message = '';
+      for (let t = 0; t < 3600 && s.phase === 'fight'; t++) {
+        E.tick(s, [{}, {}]);
+        if (s.fighters.every(f => !f.move && !f.stun && f.y === 0) && !s.cpuMemory.some(m => m.script)) gaps.push(Math.abs(s.fighters[0].x - s.fighters[1].x));
+      }
+    }
+    return gaps.sort((a, b) => a - b)[gaps.length >> 1];
+  };
+  const [zoner, trickster, balanced, grappler] = ['zoner', 'trickster', 'balanced', 'grappler'].map(median);
+  assert.ok(zoner >= 300 && trickster >= 190 && trickster < zoner && balanced >= 130 && balanced < trickster && grappler < balanced,
+    `Median gaps in mirror matches: zoner ${zoner}, trickster ${trickster}, balanced ${balanced}, grappler ${grappler}`);
+});
+
+test('phase 5: CPU memory is plain JSON, starts afresh every round and replays exactly; the launcher route ends cleanly', () => {
+  let s = null, checked = 0, launchersEnded = 0, leakedJumps = 0;
+  for (const seed of [9, 10, 11, 12]) {
+    s = E.create(['a', 'b'], { cpuSlots: [true, true], seed, cpuLevel: 6 }); s.phase = 'fight'; s.message = '';
+    const launchEnd = [-99, -99];
+    for (let t = 0; t < 4000 && s.phase !== 'matchover'; t++) {
+      if (t % 400 === 199) {
+        // A JSON round trip of the whole state (CPU memory included) continues exactly as the original.
+        const copy = JSON.parse(JSON.stringify(s));
+        for (let k = 0; k < 120; k++) { E.tick(s, [{}, {}]); E.tick(copy, [{}, {}]); }
+        assert.equal(JSON.stringify(copy), JSON.stringify(s)); checked++;
+      }
+      const before = s.fighters.map(f => [f.move, f.moveVariant]);
+      E.tick(s, [{}, {}]);
+      s.fighters.forEach((f, i) => {
+        // Without the phase 4 super-jump cancel the launcher route stops at the launcher: no jump leaks out of it.
+        if (before[i][0] === 'heavy' && before[i][1] === 'crouch' && !f.move && f.y === 0) { launchEnd[i] = t; launchersEnded++; }
+        if (f.jumpSquat === 4 && t - launchEnd[i] <= 2) leakedJumps++;
+      });
+    }
+  }
+  assert.ok(checked >= 20); assert.ok(launchersEnded > 0, 'Level-6 CPUs launch'); assert.equal(leakedJumps, 0);
+  // A new round rebuilds the memory; only the special budget carries over.
+  s.cpuMemory[0].tokens = 1.5; s.cpuMemory[0].script = { steps: ['5A'] };
+  E.resetRound(s);
+  assert.equal(s.cpuMemory[0].tokens, 1.5); assert.equal(s.cpuMemory[0].script, null); assert.deepEqual(s.cpuMemory[0].plan, []);
+  const replay = () => M.cpuVsCpu(E, { level: 4, seed: 2, seconds: 30 });
+  assert.deepEqual(replay(), replay());
+});
+
+// Scripted players in slot 0 against the CPU in slot 1 for one round of up to 60 s: [player life, CPU life, seconds].
+function versusPlayer(level, seed, play) {
+  const s = E.create(['p', 'c'], { cpuSlots: [false, true], seed, cpuLevel: level, roundsToWin: 1 }); s.phase = 'fight'; s.message = '';
+  let t = 0;
+  for (; t < 3600 && s.phase === 'fight'; t++) E.tick(s, [play(s, t) || {}, {}]);
+  return [s.fighters[0].hp, s.fighters[1].hp, t / 60];
+}
+const awayFrom = s => s.fighters[1].x > s.fighters[0].x ? 'left' : 'right', towardOf = s => awayFrom(s) === 'left' ? 'right' : 'left';
+
+test('phase 5: the CPU answers safe pressure and opens a player who only blocks; committed inputs hold through hitstop', () => {
+  const seeds = mixedSeeds(4);
+  // Mashed jabs at point blank, walking in when out of reach: the jab is +1 on block, so guarding alone never ends it.
+  const masher = (s, t) => Math.abs(s.fighters[1].x - s.fighters[0].x) > 90 ? { [towardOf(s)]: true } : t % 6 < 3 ? { punch: true } : {};
+  const mashed = seeds.map(seed => versusPlayer(8, seed, masher));
+  assert.ok(mashed.every(([player]) => player === 0), `Level 8 knocks out a jab masher: ${JSON.stringify(mashed)}`);
+  assert.ok(mashed.reduce((sum, [, cpu]) => sum + cpu, 0) / mashed.length > .7 * E.MAX_HP, 'and loses under 30 % of its life on average');
+  // A crouching guard is opened by throws and jump-ins, a standing guard by throws and sweeps; an idle player falls
+  // faster to a stronger CPU, which does not guard against an opponent that never attacks.
+  const crouching = s => ({ down: true, [awayFrom(s)]: true }), standing = s => ({ [awayFrom(s)]: true });
+  for (const [name, play, level, limit] of [['crouching', crouching, 8, 40], ['standing', standing, 8, 40], ['crouching', crouching, 4, 60]]) {
+    const runs = seeds.map(seed => versusPlayer(level, seed, play));
+    assert.ok(runs.every(([player, , seconds]) => player === 0 && seconds <= limit), `Level ${level} opens a ${name} guard within ${limit} s: ${JSON.stringify(runs)}`);
+  }
+  const idleTime = level => seeds.reduce((sum, seed) => sum + versusPlayer(level, seed, () => ({}))[2], 0);
+  assert.ok(idleTime(8) < idleTime(1), 'An idle player falls faster to level 8 than to level 1');
+  // A hitstop frame does not simulate, so it holds a committed sequence (here a forward jump's press and squat) unused.
+  const s = E.create(['p', 'c'], { cpuSlots: [false, true], seed: 5, cpuLevel: 4 }); s.phase = 'fight'; s.message = '';
+  Object.assign(s.cpuMemory[1], { started: true, next: 999, plan: Array.from({ length: 5 }, () => ({ jump: true, left: true })) });
+  s.hitstop = 3;
+  for (let t = 0; t < 3; t++) E.tick(s, [{}, {}]);
+  assert.equal(s.cpuMemory[1].plan.length, 5, 'No planned input is used up during hitstop');
+  for (let t = 0; t < 6 && !(s.fighters[1].y > 0); t++) E.tick(s, [{}, {}]);
+  const c = s.fighters[1];
+  assert.ok(c.y > 0 && !c.hop && c.airVX < 0, `A full jump toward the left (y ${c.y}, hop ${c.hop}, airVX ${c.airVX})`);
+});
