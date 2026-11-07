@@ -190,7 +190,7 @@
       hitDone: false, connected: false, stun: 0, blockStun: false, stunAtStart: 0, blockStunAtStart: false, guard: false, crouching: false, hitCrouch: false, lastInput: {},
       dash: 0, dashDir: 0, invulnerable: 0, juggle: 0, combo: 0, comboDamage: 0, counter: false,
       running: false, skid: 0, jumpSquat: 0, hop: false, armor: 0, rekka: 0, dizzy: 0, dizzyMeter: 0,
-      quickRise: false, hardKnockdown: false, neutralFrames: 0, standFrames: 0,
+      quickRise: false, hardKnockdown: false, neutralFrames: 0, standFrames: 0, crouchFrames: 0, uncrouch: 0,
       // wallThud: the current slide has already thudded against a wall. specialDir: the keypad direction held as F was
       // pressed, which picks the one-button special (as kickDir picks the light kick or the roundhouse).
       slide: 0, slideWall: false, wallThud: false, rapid: 0, kickDir: 5, specialDir: 5,
@@ -1332,6 +1332,10 @@
       }
       // Consecutive frames standing in neutral; the animation layer restarts the breathing loop from it. Visual only.
       f.standFrames = !f.move && f.y === 0 && !f.stun && !f.dash && !f.running && !f.jumpSquat && !f.crouching && !f.dizzy && f.landFrames === 0 && Math.abs(f.vx) < .1 ? f.standFrames + 1 : 0;
+      // Frames spent crouching in neutral, and a short count after standing back up: the crouch-down transition cel. Visual only.
+      const crouched = f.crouching && !f.move && !f.stun && !f.dizzy && f.y === 0;
+      f.uncrouch = !crouched && f.crouchFrames > 0 && !f.move && !f.stun && f.y === 0 ? 3 : Math.max(0, (f.uncrouch || 0) - 1);
+      f.crouchFrames = crouched ? (f.crouchFrames || 0) + 1 : 0;
     });
     // Pushback slides move both fighters in one pass after their own updates, so neither slot's decisions see the
     // other's slide earlier. A wall that stops a strike slide passes the stopped part to a grounded attacker.

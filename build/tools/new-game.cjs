@@ -14,7 +14,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const ROOT = path.resolve(__dirname, '../..');
-const SHEETS = ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE'];
+const SHEETS = ['sheet', 'sheetB', 'sheetC', 'sheetD', 'sheetE', 'sheetF', 'sheetG', 'sheetH', 'sheetI'];
 const SLOT = /^[a-z0-9][a-z0-9-]{1,31}$/;
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 const now = () => new Date().toISOString();
@@ -335,7 +335,7 @@ async function rerollArt(options) {
 const MOTION_SHEETS = ['sheetF', 'sheetG'];
 function sheetPlan(workflow, bundleGame, options = {}) {
   const sheets = (options.sheets ? options.sheets.split(',') : MOTION_SHEETS).map(s => s.trim()).filter(Boolean);
-  const layouts = read(path.join(ROOT, 'comfyui/config/game.json')).motionSheets || {};
+  const config = read(path.join(ROOT, 'comfyui/config/game.json')), layouts = { ...(config.motionSheets || {}), ...(config.detailSheets || {}) };
   for (const sheet of sheets) if (!layouts[sheet]) throw new Error(`--sheets must name motion sheets from comfyui/config/game.json (${Object.keys(layouts).join(', ')}).`);
   const wanted = options.fighters ? options.fighters.split(',').map(s => s.trim()) : bundleGame.fighters.map(f => f.id);
   const fighters = wanted.map(id => {
@@ -400,7 +400,9 @@ async function addSheets(options) {
     const target = path.join(bundle, 'raw', files[0].name), bytes = fs.readFileSync(target), digest = crypto.createHash('sha256').update(bytes).digest('hex'), image = await loadImage(bytes);
     assets.assets.push({ id: save.id, kind: 'sprites', fighter: save.fighter, key: true, poses: planned.layouts[save.sheet], sheet: save.sheet, src: `raw/${files[0].name}`, sha256: digest, width: image.width, height: image.height });
   }
-  assets.game.motionSheets = planned.layouts;
+  const config = read(path.join(ROOT, 'comfyui/config/game.json'));
+  if (planned.sheets.some(sheet => Object.hasOwn(config.motionSheets || {}, sheet))) assets.game.motionSheets = config.motionSheets;
+  if (planned.sheets.some(sheet => Object.hasOwn(config.detailSheets || {}, sheet))) assets.game.detailSheets = config.detailSheets;
   if (Array.isArray(assets.game.expectedAssets)) assets.game.expectedAssets.push(...saves.map(save => save.id));
   fs.writeFileSync(assetsFile, JSON.stringify(assets, null, 2) + '\n');
   entry.ok = true; entry.added = saves.map(save => save.id); fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');

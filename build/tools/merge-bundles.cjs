@@ -34,12 +34,13 @@ function readMap(folder, filename, schema) {
 }
 function baseContract(manifest) {
   if (!manifest || manifest.partial) throw new Error('A complete base assets.json is required; a partial patch cannot be the base.');
-  const game = manifest.game, standardSheets = canonical().sheets, extraSheets = canonical().extraSheets || {}, motionSheets = canonical().motionSheets || {};
+  const game = manifest.game, standardSheets = canonical().sheets, extraSheets = canonical().extraSheets || {}, motionSheets = canonical().motionSheets || {}, detailSheets = canonical().detailSheets || {};
   if (!game || typeof game.title !== 'string' || !game.title.trim() || !Array.isArray(game.fighters) || game.fighters.length < 2 || !Array.isArray(game.stages) || !game.stages.length || !isDeepStrictEqual(game.sheets, standardSheets)) throw new Error('Complete base requires a title, two fighters, an environment and the three standard pose layouts.');
   if (game.extraSheets !== undefined && !isDeepStrictEqual(game.extraSheets, extraSheets)) throw new Error('Complete base changes the optional arcade pose layouts.');
   if (game.motionSheets !== undefined && !isDeepStrictEqual(game.motionSheets, motionSheets)) throw new Error('Complete base changes the optional motion pose layouts.');
+  if (game.detailSheets !== undefined && !isDeepStrictEqual(game.detailSheets, detailSheets)) throw new Error('Complete base changes the optional detail pose layouts.');
   if (game.fighters.filter(fighter => fighter?.boss === true).length > 1) throw new Error('Complete base can include at most one final boss.');
-  const layouts = { ...standardSheets, ...extraSheets, ...motionSheets };
+  const layouts = { ...standardSheets, ...extraSheets, ...motionSheets, ...detailSheets };
   for (const group of ['fighters', 'stages']) {
     const ids = new Set();
     for (const entry of game[group]) {
@@ -70,6 +71,7 @@ function applyMetadata(game, original, patchGame, changes) {
   if (patchGame.sheets && !isDeepStrictEqual(patchGame.sheets, original.sheets)) throw new Error('Patch changes the configured pose layouts.');
   if (patchGame.extraSheets && original.extraSheets && !isDeepStrictEqual(patchGame.extraSheets, original.extraSheets)) throw new Error('Patch changes the optional arcade pose layouts.');
   if (patchGame.motionSheets && original.motionSheets && !isDeepStrictEqual(patchGame.motionSheets, original.motionSheets)) throw new Error('Patch changes the optional motion pose layouts.');
+  if (patchGame.detailSheets && original.detailSheets && !isDeepStrictEqual(patchGame.detailSheets, original.detailSheets)) throw new Error('Patch changes the optional detail pose layouts.');
   const update = (target, base, fields, incoming, prefix) => {
     for (const field of fields) if (Object.hasOwn(incoming, field) && !isDeepStrictEqual(incoming[field], base[field])) {
       const key = `${prefix}.${field}`;

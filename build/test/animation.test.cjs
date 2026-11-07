@@ -299,3 +299,47 @@ test('a super jump trails afterimages from takeoff to landing, air attacks inclu
   E.tick(s, [{ down: true }, {}]); for (let t = 0; t < 5; t++) E.tick(s, [{ jump: true }, {}]);
   assert.ok(f.y > 0 && f.superJump); assert.equal(A.sample(f, s).trail, true);
 });
+
+// The optional detail sheets (sheetH/sheetI): drawn walk cycles, crouch transitions, a five-frame roll and a four-frame sweep.
+const DETAIL = Object.fromEntries([...require('../../comfyui/config/game.json').detailSheets.sheetH, ...require('../../comfyui/config/game.json').detailSheets.sheetI].map(p => [p, {}]));
+const runsOf = list => list.reduce((out, pose) => { if (out.at(-1)?.pose === pose) out.at(-1).n++; else out.push({ pose, n: 1 }); return out; }, []);
+
+test('drawn walk cycles play six frames a cel, forward and backward on their own drawings', () => {
+  const { state, fighter } = scene(); fighter.facing = 1;
+  for (const [vx, cycle] of [[4.6, ['walkf1', 'walkf2', 'walkf3', 'walkf4']], [-3.8, ['walkb1', 'walkb2', 'walkb3', 'walkb4']]]) {
+    fighter.vx = vx; const poses = [];
+    for (let frame = 0; frame < 24; frame++) { state.motionFrame = frame; poses.push(A.sample(fighter, state, { poses: DETAIL }).pose); }
+    assert.deepEqual(runsOf(poses).map(r => [r.pose, r.n]), cycle.map(p => [p, 6]));
+  }
+  // A left-facing fighter walking toward the right walks forward.
+  fighter.facing = -1; fighter.vx = -4.6; state.motionFrame = 0;
+  assert.equal(A.sample(fighter, state, { poses: DETAIL }).pose, 'walkf1');
+  // Without the detail cels the old stride stays.
+  fighter.facing = 1; fighter.vx = 4.6; assert.equal(A.sample(fighter, state).pose, 'walk');
+});
+
+test('a drawn roll dives, tumbles twice, kneels and rises across the whole roll', () => {
+  const { state, fighter } = scene(); fighter.move = 'roll';
+  const { startup, recovery } = E.MOVES.roll, poses = [];
+  for (let frame = 0; frame < startup + recovery; frame++) { fighter.moveFrame = frame; poses.push(A.sample(fighter, state, { poses: DETAIL })); }
+  assert.deepEqual(runsOf(poses.map(s => s.pose)).map(r => r.pose), ['roll1', 'roll2', 'roll3', 'roll4', 'rollrise']);
+  assert.ok(poses.every(s => !s.spin), 'Drawn roll frames are not spun');
+});
+
+test('a drawn sweep chambers, extends through contact, follows through and draws the leg back', () => {
+  const { state, fighter } = scene(); Object.assign(fighter, { move: 'kick', moveVariant: 'crouch', crouching: true });
+  const { startup, active, recovery } = E.VARIANTS.crouch.kick, poses = [];
+  for (let frame = 0; frame < startup + active + recovery; frame++) { fighter.moveFrame = frame; poses.push(A.sample(fighter, state, { poses: DETAIL }).pose); }
+  const runs = runsOf(poses);
+  assert.deepEqual(runs.map(r => r.pose), ['sweepwind', 'sweepfull', 'sweepthrough', 'sweepback', 'crouch']);
+  assert.equal(runs[0].n, startup); assert.equal(runs[1].n, active + 3, 'The extension holds three frames past the active frames');
+});
+
+test('crouching starts and ends on the half crouch when the fighter has it', () => {
+  const s = E.create(['a', 'b'], { cpu: false }); s.phase = 'fight'; const f = s.fighters[0], seen = [];
+  for (let i = 0; i < 12; i++) { E.tick(s, [{ down: i < 8 }, {}]); seen.push(A.sample(f, s, { poses: DETAIL }).pose); }
+  assert.deepEqual(seen.slice(0, 4), ['crouchdown', 'crouchdown', 'crouchdown', 'crouch'], 'three frames of the half crouch, then the crouch');
+  assert.ok(seen.slice(8, 11).every(p => p === 'crouchdown'), 'standing up passes through the half crouch');
+  assert.ok(seen[11] !== 'crouchdown');
+  assert.equal(JSON.parse(JSON.stringify(s)).fighters[0].uncrouch, f.uncrouch, 'the counters stay JSON state');
+});

@@ -33,20 +33,22 @@ async function verifyBundle(directory, { packaged = true } = {}) {
   const audio = validateAudioManifest(read(sourceFile(directory, 'audio.json')), manifest.game);
   const contract = contractFor(manifest.game);
   // The generated menu frame (ui/frame) is a later addition; a release may carry it on top of its contract.
-  const motionSheets = manifest.assets.filter(asset => asset.kind === 'sprites' && Object.hasOwn(manifest.game.motionSheets || {}, asset.sheet)).length;
+  const motionSheets = manifest.assets.filter(asset => asset.kind === 'sprites' && (Object.hasOwn(manifest.game.motionSheets || {}, asset.sheet) || Object.hasOwn(manifest.game.detailSheets || {}, asset.sheet))).length;
   const images = manifest.assets.length - (manifest.assets.some(asset => asset.kind === 'ui' && asset.id === 'frame') ? 1 : 0) - motionSheets;
   if (manifest.cloudOnly !== true || manifest.game.fighters.length !== contract.fighters || manifest.game.stages.length !== contract.stages || images !== contract.images || audio.assets.length !== contract.audio)
     throw new Error(`The complete ${contract.name} example requires ${contract.fighters} fictional fighters, ${contract.stages} arena(s), ${contract.images} generated images and ${contract.audio} audio clips.`);
   if (manifest.game.fighters.filter(fighter => fighter.boss).length !== contract.bosses) throw new Error(`The complete ${contract.name} example requires ${contract.bosses} final boss(es).`);
   // Motion sheets (sheetF/sheetG) are a later optional addition on top of either contract.
-  const required = Object.values(manifest.game.sheets || {}).flat(), motion = Object.values(manifest.game.motionSheets || {}).flat();
-  const poses = [...required, ...Object.values(manifest.game.extraSheets || {}).flat(), ...motion];
-  if (required.length !== 27 || poses.length - motion.length !== contract.poses || new Set(poses).size !== poses.length) throw new Error(`Example needs the complete ${contract.poses}-pose ${contract.name} layout.`);
-  const base = poses.filter(pose => !motion.includes(pose));
+  // Detail sheets (sheetH/sheetI) are optional per sheet and per fighter; each carried sheet is complete by layout.
+  const required = Object.values(manifest.game.sheets || {}).flat(), motion = Object.values(manifest.game.motionSheets || {}).flat(), detail = Object.values(manifest.game.detailSheets || {}).flat();
+  const poses = [...required, ...Object.values(manifest.game.extraSheets || {}).flat(), ...motion, ...detail];
+  if (required.length !== 27 || poses.length - motion.length - detail.length !== contract.poses || new Set(poses).size !== poses.length) throw new Error(`Example needs the complete ${contract.poses}-pose ${contract.name} layout.`);
+  const base = poses.filter(pose => !motion.includes(pose) && !detail.includes(pose));
   for (const fighter of manifest.game.fighters) {
     const mapped = manifest.assets.filter(asset => asset.kind === 'sprites' && asset.fighter === fighter.id).flatMap(asset => asset.poses);
     // A fighter carries either every motion cel or none; the contract poses are always complete.
-    const motionMapped = mapped.filter(pose => motion.includes(pose)), core = mapped.filter(pose => !motion.includes(pose));
+    const motionMapped = mapped.filter(pose => motion.includes(pose)), core = mapped.filter(pose => !motion.includes(pose) && !detail.includes(pose));
+    for (const [sheet, list] of Object.entries(manifest.game.detailSheets || {})) { const carried = list.filter(pose => mapped.includes(pose)); if (carried.length && carried.length !== list.length) throw new Error(`Incomplete ${sheet} pose map: ${fighter.id}`); }
     if (motionMapped.length && (motionMapped.length !== motion.length || new Set(motionMapped).size !== motion.length)) throw new Error(`Incomplete motion pose map: ${fighter.id}`);
     if (core.length !== base.length || new Set(core).size !== base.length || base.some(pose => !core.includes(pose))) throw new Error(`Incomplete pose map: ${fighter.id}`);
     for (const kind of contract.art) if (!manifest.assets.some(asset => asset.kind === kind && asset.fighter === fighter.id)) throw new Error(`Missing ${kind} for ${fighter.id}`);

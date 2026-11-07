@@ -1195,6 +1195,28 @@
       "height": 2048,
       "pixelsIdentical": true,
       "rgbaSha256": "65dd6000cb18e5d562ba38bca0f32a87c9029002afe6e560a4f878f1ac21dec1"
+    },
+    {
+      "id": "griddle_sheetH",
+      "sourceSha256": "72168ef1d4f3dbb4374278a5834450f5bf1b56f44ae621a68029edc9f417092a",
+      "packagedSha256": "1c007d0cd49a8af8734f888f1cf8e1c011671375715cf8dd19878b157f31e984",
+      "sourceBytes": 4668087,
+      "bytes": 3478260,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "2e1cba0ccfea0657e1cba69538d5d58e505724cf01457bc183d3855ea8cd652c"
+    },
+    {
+      "id": "griddle_sheetI",
+      "sourceSha256": "e35bf3c086b5339526d0e1bc03394acb34cd3b60407370186eae9c082059ffcb",
+      "packagedSha256": "7ed8c865200deeb1a6285e16a578dae550478f03c3058cca755a701342f840f7",
+      "sourceBytes": 4685567,
+      "bytes": 3493142,
+      "width": 2048,
+      "height": 2048,
+      "pixelsIdentical": true,
+      "rgbaSha256": "6460c84aa765c9300ca21d24167321be50236a37f4934bf9db62829b35a72e9f"
     }
   ],
   "audio": [
@@ -3320,5 +3342,24 @@
     "model": "Gemini Nano Banana 2.1 (2K)",
     "estimatedUSD": 1.009008,
     "note": "sheetF/sheetG generated with each fighter's accepted reference and sheet A; the 89 earlier images are unchanged."
-  }
+  },
+  "detailSheets": [
+    {
+      "addedAt": "2026-11-07",
+      "ids": [
+        "griddle_sheetH",
+        "griddle_sheetI"
+      ],
+      "run": "output/test-runs/canonical-motion-20261106",
+      "model": "Gemini Nano Banana 2.1 (2K)"
+    },
+    {
+      "addedAt": "2026-11-07",
+      "ids": [
+        "griddle_sheetH"
+      ],
+      "run": "output/test-runs/canonical-motion-20261106",
+      "model": "Gemini Nano Banana 2.1 (2K)"
+    }
+  ]
 }

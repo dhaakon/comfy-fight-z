@@ -33,7 +33,9 @@
     hitlow: 'hit', hitheavy: 'hit', punchwind: 'stance2', kickwind: 'lkick', heavywind: 'block', roll: 'tumble', blowback: 'hpunch',
     super: 'special', dizzy: 'hit', win2: 'win', lose: 'getup',
     load: 'stance2', punchwhip: 'punch', kickwhip: 'lkick', recoil: 'hpunch', settle: 'stance2', stepin: 'walk3', stepout: 'walk4', dashload: 'crouch', dashpass: 'dash',
-    idle1: 'idle', idle2: 'idle', idle3: 'idle', idle4: 'idle', idle5: 'idle', apex: 'entrance', land: 'crouch', kickrecoil: 'kick', guardhit: 'block' };
+    idle1: 'idle', idle2: 'idle', idle3: 'idle', idle4: 'idle', idle5: 'idle', apex: 'entrance', land: 'crouch', kickrecoil: 'kick', guardhit: 'block',
+    walkf1: 'walk', walkf2: 'stepin', walkf3: 'walk2', walkf4: 'stepout', walkb1: 'walk2', walkb2: 'stepout', walkb3: 'walk', walkb4: 'stepin', crouchdown: 'crouch',
+    roll1: 'roll', roll2: 'roll', roll3: 'roll', roll4: 'crouch', rollrise: 'stance2', sweepwind: 'crouch', sweepfull: 'sweep', sweepthrough: 'sweep', sweepback: 'crouch' };
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   function sample(f, state = {}, options = {}) {
     state = state || {};
@@ -61,9 +63,16 @@
       result.rotation = Math.sin(beat / 7) * .06; result.dx = Math.sin(beat / 9) * 5;
     } else if (rolling) {
       const t = f.move ? f.moveFrame / 17 : 1 - f.dash / 8;
-      result.phase = 'roll'; result.pose = pick('roll', 'tumble'); result.trail = true;
-      if (!has('roll')) result.spin = clamp(t, 0, 1);
-      result.dy = has('roll') ? 0 : -40;
+      result.phase = 'roll'; result.trail = true;
+      if (has('roll1') && has('roll2') && has('roll3') && has('roll4')) {
+        // A drawn roll across its whole length: dive, two tucked frames, kneel, then rise while the body has stopped.
+        const move = f.move && E.moveData(f), k = move ? f.moveFrame / Math.max(1, move.startup + move.recovery) : 1 - f.dash / 8;
+        result.pose = k < .14 ? 'roll1' : k < .36 ? 'roll2' : k < .58 ? 'roll3' : k < .8 ? 'roll4' : pick('rollrise', 'roll4');
+      } else {
+        result.pose = pick('roll', 'tumble');
+        if (!has('roll')) result.spin = clamp(t, 0, 1);
+        result.dy = has('roll') ? 0 : -40;
+      }
     } else if (f.stun > 0) {
       result.phase = f.pose === 'block' ? 'guard' : 'hit';
       // A hit reaction keeps the posture the hit found (the engine's hitCrouch); a guard follows the stick.
@@ -86,6 +95,14 @@
       const t = f.moveFrame, move = E.moveData(f);
       result.phase = 'teleport'; result.pose = t < move.startup ? 'dash' : 'stance2'; result.trail = true;
       result.sx = t < move.startup ? clamp(1 - t / move.startup, .15, 1) : 1;
+    } else if (f.move === 'kick' && f.moveVariant === 'crouch' && has('sweepwind') && has('sweepfull') && has('sweepthrough') && has('sweepback')) {
+      // A drawn sweep: the chamber through startup, full extension through the active frames and a short hold, the
+      // follow-through spin, then the leg drawn back into the crouch.
+      const move = E.moveData(f), t = f.moveFrame, activeEnd = move.startup + move.active;
+      const recovery = clamp((t - activeEnd) / Math.max(1, move.recovery), 0, 1);
+      result.phase = t < move.startup ? 'anticipation' : t < activeEnd ? 'contact' : 'recovery';
+      result.pose = t < move.startup ? 'sweepwind' : t < activeEnd + 3 ? 'sweepfull' : recovery < .45 ? 'sweepthrough' : recovery < .85 ? 'sweepback' : 'crouch';
+      result.trail = result.phase === 'contact';
     } else if (f.move && E.moveData(f)) {
       const move = E.moveData(f), t = f.moveFrame, activeEnd = move.startup + move.active;
       const base = SEQUENCES[f.moveVariant]?.[f.move] || SEQUENCES.standing[f.move] || ['stance2', 'powerup', 'special'];
@@ -146,19 +163,31 @@
       result.phase = 'landing'; result.pose = f.landFrames > 3 || f.landLag > 0 ? pick('land', 'crouch') : pick('settle', 'stance2');
       result.sx = 1 + .1 * f.landFrames / 6; result.sy = 1 - .13 * f.landFrames / 6;
     } else if (f.crouching || f.pose === 'crouch') {
-      result.phase = 'crouch'; result.pose = f.guard ? pick('crouchblock', 'crouch') : 'crouch'; result.sy = 1 + Math.sin(beat / 15) * .005;
+      // The first frames of a crouch pass through the half crouch when the fighter has it.
+      const entering = has('crouchdown') && f.crouchFrames > 0 && f.crouchFrames <= 3 && !f.guard;
+      result.phase = 'crouch'; result.pose = entering ? 'crouchdown' : f.guard ? pick('crouchblock', 'crouch') : 'crouch'; result.sy = 1 + Math.sin(beat / 15) * .005;
     } else if (f.guard) {
       // Moving backwards can still be a guard. Render the defensive pose when
       // the simulation says a hit will be blocked, even if velocity is nonzero.
       result.phase = 'guard'; result.pose = 'block'; result.sy = .99;
     } else if (Math.abs(f.vx || 0) > .1) {
-      // A 24-frame stride: stride, passing step, opposite stride, passing step; walking backwards runs it in reverse.
-      const w = f.vx * (f.facing || 1) < 0 ? 23 - beat % 24 : beat % 24;
-      result.phase = 'walk'; result.pose = w < 8 ? 'walk' : w < 12 ? pick('stepin', pick('walk3', 'walk')) : w < 20 ? 'walk2' : pick('stepout', pick('walk4', 'walk2'));
+      const back = f.vx * (f.facing || 1) < 0, drawn = back ? ['walkb1', 'walkb2', 'walkb3', 'walkb4'] : ['walkf1', 'walkf2', 'walkf3', 'walkf4'];
+      result.phase = 'walk';
+      if (drawn.every(has)) {
+        // A drawn cycle (contact, passing, contact, passing) at six frames a cel; walking back has its own drawings.
+        result.pose = drawn[Math.floor((beat % 24) / 6)];
+      } else {
+        // A 24-frame stride: stride, passing step, opposite stride, passing step; walking backwards runs it in reverse.
+        const w = back ? 23 - beat % 24 : beat % 24;
+        result.pose = w < 8 ? 'walk' : w < 12 ? pick('stepin', pick('walk3', 'walk')) : w < 20 ? 'walk2' : pick('stepout', pick('walk4', 'walk2'));
+      }
       // The walk poses have individual foot anchors. Translating the entire
       // sprite upward on every step made both feet visibly float off the floor.
       result.dy = 0;
       result.rotation = .024 * Math.sign(f.vx * f.facing); result.sy = 1 + Math.sin(beat * Math.PI / 6) * .01;
+    } else if (has('crouchdown') && f.uncrouch > 0) {
+      // Standing back up passes through the half crouch.
+      result.phase = 'crouch'; result.pose = 'crouchdown';
     } else if (has('idle1') && has('idle2') && has('idle3') && has('idle4') && has('idle5')) {
       // The breathing loop restarts from the neutral drawing whenever the fighter returns to neutral.
       let phase = (Number.isFinite(f.standFrames) ? f.standFrames + (f.slot || 0) * 9 : beat) % 90, cel = 0;

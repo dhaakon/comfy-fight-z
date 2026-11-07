@@ -396,7 +396,9 @@
       "switchback_sheetF",
       "switchback_sheetG",
       "tempo_sheetF",
-      "tempo_sheetG"
+      "tempo_sheetG",
+      "griddle_sheetH",
+      "griddle_sheetI"
     ],
     "expectedAudio": [
       "menu_music",
@@ -521,6 +523,30 @@
         "land",
         "kickrecoil",
         "guardhit"
+      ]
+    },
+    "detailSheets": {
+      "sheetH": [
+        "walkf1",
+        "walkf2",
+        "walkf3",
+        "walkf4",
+        "walkb1",
+        "walkb2",
+        "walkb3",
+        "walkb4",
+        "crouchdown"
+      ],
+      "sheetI": [
+        "roll1",
+        "roll2",
+        "roll3",
+        "roll4",
+        "rollrise",
+        "sweepwind",
+        "sweepfull",
+        "sweepthrough",
+        "sweepback"
       ]
     }
   },
@@ -2250,6 +2276,52 @@
       "width": 2048,
       "height": 2048,
       "bytes": 3170422
+    },
+    {
+      "id": "griddle_sheetH",
+      "kind": "sprites",
+      "fighter": "griddle",
+      "key": true,
+      "poses": [
+        "walkf1",
+        "walkf2",
+        "walkf3",
+        "walkf4",
+        "walkb1",
+        "walkb2",
+        "walkb3",
+        "walkb4",
+        "crouchdown"
+      ],
+      "sheet": "sheetH",
+      "src": "raw/griddle_sheetH.webp",
+      "sha256": "1c007d0cd49a8af8734f888f1cf8e1c011671375715cf8dd19878b157f31e984",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3478260
+    },
+    {
+      "id": "griddle_sheetI",
+      "kind": "sprites",
+      "fighter": "griddle",
+      "key": true,
+      "poses": [
+        "roll1",
+        "roll2",
+        "roll3",
+        "roll4",
+        "rollrise",
+        "sweepwind",
+        "sweepfull",
+        "sweepthrough",
+        "sweepback"
+      ],
+      "sheet": "sheetI",
+      "src": "raw/griddle_sheetI.webp",
+      "sha256": "7ed8c865200deeb1a6285e16a578dae550478f03c3058cca755a701342f840f7",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3493142
     }
   ]
 }

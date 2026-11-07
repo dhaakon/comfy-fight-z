@@ -9,10 +9,10 @@
   "openingVideo": null,
   "fighters": 7,
   "stages": 3,
-  "poses": 441,
+  "poses": 459,
   "audio": 99,
-  "files": 595,
-  "sourceBytes": 126195545,
-  "outputBytes": 31672296,
+  "files": 613,
+  "sourceBytes": 128678636,
+  "outputBytes": 32160264,
   "formats": "WebP quality 94, MP3 VBR quality 2, accepted MP4 copied unchanged; source reference previews limited to 1200px"
 }

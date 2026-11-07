@@ -11,7 +11,7 @@ from PIL import Image
 from comfy_api.latest import Types, io, ui
 from comfy_execution.graph_utils import GraphBuilder
 
-from . import SHEETS, EXTRA_SHEETS, MOTION_SHEETS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
+from . import SHEETS, EXTRA_SHEETS, MOTION_SHEETS, DETAIL_SHEETS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
 
 Project = io.Custom("CFZ_PROJECT")
 Character = io.Custom("CFZ_CHARACTER")
@@ -55,6 +55,24 @@ POSE_HINTS = {
     "apex": "compact jump apex, knees tucked up, body curled, arms close to the chest, the highest point of the jump",
     "land": "landing compression, knees deeply bent, feet planted wide, torso low, arms out for balance",
     "kickrecoil": "follow-through after the roundhouse, the kicking leg sweeping down and across past the body, torso turned, arms counterbalancing",
+    "walkf1": "walking forward to the RIGHT, contact frame: the leading leg reaching ahead with its heel just touching the floor, the rear leg straight behind on the ball of the foot, torso upright, fists in a loose guard",
+    "walkf2": "walking forward to the right, passing frame: the rear foot swinging forward past the planted front foot, knees close together under the hips, body at its highest point, both fists held up in the same fighting guard as the other walking frames",
+    "walkf3": "walking forward to the right, second contact frame: the OTHER leg now leads with its heel touching the floor ahead and the first leg straight behind, guard up",
+    "walkf4": "walking forward to the right, second passing frame: the trailing foot swinging forward past the planted foot, knees together under the hips, both fists held up in the same fighting guard",
+    "walkb1": "walking BACKWARD while still facing RIGHT: the rear foot reaching back and landing on its toes behind the body, weight on the front leg, torso leaning slightly back, both forearms raised in a cautious guard",
+    "walkb2": "walking backward while facing right, passing frame: the front foot sliding back past the planted rear foot, knees together under the hips, cautious high guard",
+    "walkb3": "walking backward while facing right, second step: the other foot reaching back and landing on its toes, torso leaning slightly back, cautious guard",
+    "walkb4": "walking backward while facing right, second passing frame: the feet passing under the hips, cautious guard",
+    "crouchdown": "halfway down into the crouch: knees deeply bent and hips dropped so the whole body is clearly lower than standing (about four fifths of the standing height), guard held up, facing right",
+    "roll1": "starting an evasive forward roll toward the RIGHT: diving low, head ducking toward the floor, both hands reaching to the ground, back rounded",
+    "roll2": "mid forward roll toward the right: curled on the upper back and shoulders, knees tucked to the chest, legs over the body, compact and low",
+    "roll3": "later in the forward roll: body rotated further, sitting up out of the tuck with knees still to the chest, feet coming down to the floor",
+    "roll4": "finishing the roll: on one knee in a low crouch, coming up, facing right",
+    "rollrise": "standing back up into the upright fighting guard after the roll, facing right",
+    "sweepwind": "starting a low sweep kick: dropping into a deep crouch with one hand on the floor, the attacking leg beginning to swing outward to the RIGHT",
+    "sweepfull": "low sweep kick at full extension: crouched on the planted leg with both hands on the floor, the attacking leg straight out along the floor to the RIGHT",
+    "sweepthrough": "sweep follow-through: the sweeping leg carried past its furthest point, body spinning low over the planted leg, hands on the floor",
+    "sweepback": "recovering from the sweep: drawing the leg back under the body into the low crouching guard, facing right",
     "guardhit": "absorbing a blocked hit, forearms crossed and jolted back, weight pushed onto the rear foot, feet sliding, head tucked",
 }
 # Arcade art beyond the 27 required poses: two optional in-between sheets and an ending illustration.
@@ -183,7 +201,7 @@ def _image_hash(filename):
 
 
 def _members(character=None, stage=None):
-    return {"fighters": [character] if character else [], "stages": [stage] if stage else [], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS, "motionSheets": MOTION_SHEETS}
+    return {"fighters": [character] if character else [], "stages": [stage] if stage else [], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS, "motionSheets": MOTION_SHEETS, "detailSheets": DETAIL_SHEETS}
 
 
 def _artwork(graph, project, character, identity, kind, offset):
@@ -378,6 +396,14 @@ def _sheet_note(sheet):
     if sheet == "sheetG":
         return ("Cells 1 to 5 are five consecutive breathing frames of the neutral idle stance: the identical silhouette, stance width, foot placement, head size and outfit, "
                 "changing only the chest, shoulders, elbows and fists by a few pixels, progressively deeper from cell 1 to cell 5. Cells 6 to 9 are transition frames at the same scale. ")
+    if sheet == "sheetH":
+        return ("Cells 1 to 4 are one walking cycle moving to the RIGHT (contact, passing, opposite contact, passing) and cells 5 to 8 one walking cycle moving backward "
+                "to the LEFT while the character keeps facing RIGHT with a cautious guard. Keep the identical scale, outfit, line weight and head size in every cell; only the legs, "
+                "hips and arms change between cells, and the fists stay up in the same fighting guard in all eight walking cells (never swinging down). Cell 9 is a half crouch, clearly lower than standing, at the same scale. Exactly nine figures, one per cell. ")
+    if sheet == "sheetI":
+        return ("Cells 1 to 5 are one continuous evasive forward roll toward the RIGHT (dive, tucked roll, later tucked roll, kneeling, upright guard) and cells 6 to 9 one "
+                "continuous low sweep kick toward the RIGHT (chamber, full extension, follow-through, recovery). Keep the identical scale, outfit and line weight; the roll "
+                "frames are compact and low to the floor. Exactly nine figures, one per cell. ")
     if sheet == "sheetF":
         return "These nine cells are transition frames between this character's existing key poses: match the key-pose scale, line weight and stance exactly. "
     return "These are named key poses, not a nine-frame animation loop. "
@@ -840,7 +866,7 @@ def _export(project, bundles, complete):
         raise ValueError("Connect at least one generated asset bundle")
     if complete and (len(bundle["fighters"]) < 2 or not bundle["stages"]):
         raise ValueError("A complete game requires at least two fighters and one enabled environment")
-    config = {"title": project["title"], "subtitle": project["subtitle"], "fighters": bundle["fighters"], "stages": bundle["stages"], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS, "motionSheets": MOTION_SHEETS}
+    config = {"title": project["title"], "subtitle": project["subtitle"], "fighters": bundle["fighters"], "stages": bundle["stages"], "sheets": SHEETS, "extraSheets": EXTRA_SHEETS, "motionSheets": MOTION_SHEETS, "detailSheets": DETAIL_SHEETS}
     if sum(1 for fighter in config["fighters"] if fighter.get("boss")) > 1:
         raise ValueError("A game can include at most one final boss")
     records = []
@@ -871,7 +897,7 @@ def _export(project, bundles, complete):
                 if suffix in ALL_SHEETS:
                     expected_mapping.update(sheet=suffix, poses=ALL_SHEETS[suffix], key=True)
                 mappings[f"{fighter['id']}_{suffix}"] = expected_mapping
-                if suffix in EXTRA_SHEETS or suffix in MOTION_SHEETS or suffix == "ending":
+                if suffix in EXTRA_SHEETS or suffix in MOTION_SHEETS or suffix in DETAIL_SHEETS or suffix == "ending":
                     optional.add(f"{fighter['id']}_{suffix}")
         for stage in config["stages"]:
             mappings[stage["id"]] = {"kind": "stage", "stage": stage["id"]}

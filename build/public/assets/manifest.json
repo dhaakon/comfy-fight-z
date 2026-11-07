@@ -587,6 +587,168 @@
           "ay": 401,
           "top": 1,
           "bh": 400
+        },
+        "walkf1": {
+          "src": "assets/fighters/griddle_walkf1.webp",
+          "w": 274,
+          "h": 403,
+          "ax": 133,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf2": {
+          "src": "assets/fighters/griddle_walkf2.webp",
+          "w": 251,
+          "h": 403,
+          "ax": 123,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf3": {
+          "src": "assets/fighters/griddle_walkf3.webp",
+          "w": 288,
+          "h": 403,
+          "ax": 137,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkf4": {
+          "src": "assets/fighters/griddle_walkf4.webp",
+          "w": 259,
+          "h": 403,
+          "ax": 131,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb1": {
+          "src": "assets/fighters/griddle_walkb1.webp",
+          "w": 295,
+          "h": 403,
+          "ax": 142,
+          "ay": 400,
+          "top": 1,
+          "bh": 399
+        },
+        "walkb2": {
+          "src": "assets/fighters/griddle_walkb2.webp",
+          "w": 252,
+          "h": 403,
+          "ax": 112,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb3": {
+          "src": "assets/fighters/griddle_walkb3.webp",
+          "w": 293,
+          "h": 403,
+          "ax": 136,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "walkb4": {
+          "src": "assets/fighters/griddle_walkb4.webp",
+          "w": 296,
+          "h": 403,
+          "ax": 137,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "crouchdown": {
+          "src": "assets/fighters/griddle_crouchdown.webp",
+          "w": 286,
+          "h": 390,
+          "ax": 136,
+          "ay": 388,
+          "top": 1,
+          "bh": 387
+        },
+        "roll1": {
+          "src": "assets/fighters/griddle_roll1.webp",
+          "w": 395,
+          "h": 291,
+          "ax": 142,
+          "ay": 288,
+          "top": 1,
+          "bh": 287
+        },
+        "roll2": {
+          "src": "assets/fighters/griddle_roll2.webp",
+          "w": 230,
+          "h": 247,
+          "ax": 108,
+          "ay": 245,
+          "top": 1,
+          "bh": 244
+        },
+        "roll3": {
+          "src": "assets/fighters/griddle_roll3.webp",
+          "w": 254,
+          "h": 299,
+          "ax": 179,
+          "ay": 297,
+          "top": 1,
+          "bh": 296
+        },
+        "roll4": {
+          "src": "assets/fighters/griddle_roll4.webp",
+          "w": 314,
+          "h": 346,
+          "ax": 140,
+          "ay": 344,
+          "top": 1,
+          "bh": 343
+        },
+        "rollrise": {
+          "src": "assets/fighters/griddle_rollrise.webp",
+          "w": 288,
+          "h": 403,
+          "ax": 138,
+          "ay": 401,
+          "top": 1,
+          "bh": 400
+        },
+        "sweepwind": {
+          "src": "assets/fighters/griddle_sweepwind.webp",
+          "w": 420,
+          "h": 315,
+          "ax": 107,
+          "ay": 313,
+          "top": 1,
+          "bh": 312
+        },
+        "sweepfull": {
+          "src": "assets/fighters/griddle_sweepfull.webp",
+          "w": 422,
+          "h": 345,
+          "ax": 163,
+          "ay": 343,
+          "top": 1,
+          "bh": 342
+        },
+        "sweepthrough": {
+          "src": "assets/fighters/griddle_sweepthrough.webp",
+          "w": 413,
+          "h": 298,
+          "ax": 282,
+          "ay": 296,
+          "top": 1,
+          "bh": 295
+        },
+        "sweepback": {
+          "src": "assets/fighters/griddle_sweepback.webp",
+          "w": 299,
+          "h": 407,
+          "ax": 142,
+          "ay": 405,
+          "top": 1,
+          "bh": 404
         }
       },
       "sourceImage": "assets/references/griddle_source.webp",

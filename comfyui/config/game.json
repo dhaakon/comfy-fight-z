@@ -313,5 +313,29 @@
       "kickrecoil",
       "guardhit"
     ]
+  },
+  "detailSheets": {
+    "sheetH": [
+      "walkf1",
+      "walkf2",
+      "walkf3",
+      "walkf4",
+      "walkb1",
+      "walkb2",
+      "walkb3",
+      "walkb4",
+      "crouchdown"
+    ],
+    "sheetI": [
+      "roll1",
+      "roll2",
+      "roll3",
+      "roll4",
+      "rollrise",
+      "sweepwind",
+      "sweepfull",
+      "sweepthrough",
+      "sweepback"
+    ]
   }
 }

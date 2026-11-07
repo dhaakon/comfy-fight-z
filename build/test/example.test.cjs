@@ -77,8 +77,10 @@ test('the shipped generated example is complete, portable and contains no unmapp
   const motion = result.manifest.game.motionSheets || {}, motionIds = new Set(Object.keys(motion));
   const withMotion = result.manifest.game.fighters.filter(f => result.manifest.assets.some(a => a.fighter === f.id && motionIds.has(a.sheet))).length;
   assert.equal(withMotion, contract.fighters, 'Every fighter carries the motion sheets');
-  assert.equal(result.entries.length, contract.images + withMotion * motionIds.size + contract.audio);
-  assert.equal(result.poseCount, contract.fighters * contract.poses + withMotion * Object.values(motion).flat().length);
+  // Detail sheets (sheetH/sheetI) are optional per fighter and per sheet; each carried sheet adds nine cels.
+  const detailIds = new Set(Object.keys(result.manifest.game.detailSheets || {})), detailSheets = result.manifest.assets.filter(a => a.kind === 'sprites' && detailIds.has(a.sheet)).length;
+  assert.equal(result.entries.length, contract.images + withMotion * motionIds.size + detailSheets + contract.audio);
+  assert.equal(result.poseCount, contract.fighters * contract.poses + withMotion * Object.values(motion).flat().length + detailSheets * 9);
   for (const filename of ['assets.json', 'audio.json', 'provenance.json']) {
     const json = fs.readFileSync(path.join(bundle, filename), 'utf8');
     assert.doesNotMatch(json, /[A-Za-z]:[\\/]|\/(?:Users|home)\/|private-archive/);
