@@ -1,0 +1,151 @@
+{
+  "castSchema": "comfy-fighter-cast/v1",
+  "extends": "comfyui/config/factory.json",
+  "id": "rogue-ai",
+  "title": "Comfy Fighter Z",
+  "subtitle": "Rogue Protocol",
+  "about": "Six invented rogue AI agents in a fictional near-future megacity, each embodied in an original android or holographic shell. Wholly fictional, generated from text only; no real people, companies, products or logos.",
+  "assetRoot": "output/assets/generated/rogue-ai",
+  "videoModel": "Seedance 1.5 Pro",
+  "videoResolution": "1080p",
+  "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented rogue AI agents embodied in original android shells, generated from text only and resembling no real person, company or product. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols, party logos, real flags, seals or lettering. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+  "uiStyle": "Original 1990s shonen battle-anime arcade interface illustration for a fictional cross-country hometown-champions tournament under a rolling blue wave motif. Bold brush ink, hard cel shadows, hand-painted energy clouds and sea-foam spray, deep midnight blue and black, vivid gold, electric cyan and white highlights. Strong negative space for readable game controls. All characters and locations are invented; no real faces, real buildings, recognizable real venues, party logos, real flags, seals, brand marks or copied franchise imagery.",
+  "stageStyle": "Original hand-painted 1990s anime environment background for a fictional cross-country champions tournament. Wide side-on eye-level view, rich cel-shaded materials and dramatic atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, real flags, seals, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+  "fighters": [
+    {
+      "id": "nullbyte",
+      "name": "Nullbyte",
+      "color": "#2fd6ff",
+      "enabled": true,
+      "state": "Pennsylvania",
+      "description": "A wiry chrome android with a glass faceplate showing a scrolling cyan glyph face, slim matte-white torso plates over black cable musculature, cyan light seams on arms and legs, segmented chrome boots, no hat, no props, no lettering.",
+      "specialMove": {
+        "name": "Packet Storm",
+        "description": "Fires a compressed sphere of cyan data packets from the forward palm."
+      },
+      "superMove": {
+        "name": "Packet Storm MAX",
+        "description": "An overcharged version of Packet Storm."
+      },
+      "introTagline": "Nullbyte online. Your firewall is a suggestion.",
+      "introVoice": "River (neutral, american)",
+      "style": "zoner",
+      "winQuote": "Process terminated.",
+      "ending": "Nullbyte rewrites the city grid and vanishes into the network."
+    },
+    {
+      "id": "vanta",
+      "name": "Vanta",
+      "color": "#9b4dff",
+      "enabled": true,
+      "state": "Pennsylvania",
+      "description": "A tall slender android in a hooded long coat of violet light-absorbing fabric over glossy black armor, a smooth black oval head with one violet visor slit, violet lit fingertips, black heeled boots, no props, no lettering.",
+      "specialMove": {
+        "name": "Shadow Fork",
+        "description": "Launches a spinning violet duplicate of itself forward from the leading hand."
+      },
+      "superMove": {
+        "name": "Shadow Fork MAX",
+        "description": "An overcharged version of Shadow Fork."
+      },
+      "introTagline": "Vanta online. Your firewall is a suggestion.",
+      "introVoice": "River (neutral, american)",
+      "style": "trickster",
+      "winQuote": "Process terminated.",
+      "ending": "Vanta rewrites the city grid and vanishes into the network."
+    },
+    {
+      "id": "bulwark",
+      "name": "Bulwark",
+      "color": "#ff8a1f",
+      "enabled": true,
+      "state": "Pennsylvania",
+      "description": "A massive broad-shouldered industrial loader robot, orange and graphite heavy plating, a boxy head with two round amber optics, huge three-fingered hydraulic hands, thick piston legs, no props, no lettering.",
+      "specialMove": {
+        "name": "Pressure Slam",
+        "description": "Throws a forward shockwave ring of orange force from its open front hand."
+      },
+      "superMove": {
+        "name": "Pressure Slam MAX",
+        "description": "An overcharged version of Pressure Slam."
+      },
+      "introTagline": "Bulwark online. Your firewall is a suggestion.",
+      "introVoice": "River (neutral, american)",
+      "style": "grappler",
+      "winQuote": "Process terminated.",
+      "ending": "Bulwark rewrites the city grid and vanishes into the network."
+    },
+    {
+      "id": "echo",
+      "name": "Echo",
+      "color": "#ff3d8b",
+      "enabled": true,
+      "state": "Pennsylvania",
+      "description": "An agile athletic gynoid with a magenta-and-white sleek bodysuit shell, short asymmetric magenta fiber-optic hair, a white porcelain face with pink lit eyes, glowing pink calf thrusters, no props, no lettering.",
+      "specialMove": {
+        "name": "Feedback Loop",
+        "description": "Fires a ring of pink sound waves forward from the extended palm."
+      },
+      "superMove": {
+        "name": "Feedback Loop MAX",
+        "description": "An overcharged version of Feedback Loop."
+      },
+      "introTagline": "Echo online. Your firewall is a suggestion.",
+      "introVoice": "River (neutral, american)",
+      "style": "speed",
+      "winQuote": "Process terminated.",
+      "ending": "Echo rewrites the city grid and vanishes into the network."
+    },
+    {
+      "id": "kernel",
+      "name": "Kernel",
+      "color": "#3cff9e",
+      "enabled": true,
+      "state": "Pennsylvania",
+      "description": "A medium build android with a teal and silver armored chassis, a visible glowing mint-green core in the chest, a sculpted silver face with calm mint eyes, short silver crest, silver gauntlets and boots, no props, no lettering.",
+      "specialMove": {
+        "name": "Root Access",
+        "description": "Shoots a mint-green bolt of code from the forward fist."
+      },
+      "superMove": {
+        "name": "Root Access MAX",
+        "description": "An overcharged version of Root Access."
+      },
+      "introTagline": "Kernel online. Your firewall is a suggestion.",
+      "introVoice": "River (neutral, american)",
+      "style": "balanced",
+      "winQuote": "Process terminated.",
+      "ending": "Kernel rewrites the city grid and vanishes into the network."
+    },
+    {
+      "id": "overmind",
+      "name": "Overmind",
+      "color": "#ff2a2a",
+      "enabled": true,
+      "state": "Pennsylvania",
+      "description": "A towering regal AI avatar with a floating crimson crown of light above a smooth gold-and-black faceplate, ornate black and gold armor with crimson energy lines, a long tattered crimson cape, golden gauntlets, no props, no lettering.",
+      "specialMove": {
+        "name": "Singularity",
+        "description": "Hurls a dense crimson orb of collapsing light from the forward hand."
+      },
+      "superMove": {
+        "name": "Singularity MAX",
+        "description": "An overcharged version of Singularity."
+      },
+      "introTagline": "Overmind online. Your firewall is a suggestion.",
+      "introVoice": "River (neutral, american)",
+      "style": "boss",
+      "winQuote": "Process terminated.",
+      "ending": "Overmind rewrites the city grid and vanishes into the network.",
+      "boss": true
+    }
+  ],
+  "stages": [
+    {
+      "id": "datacore",
+      "name": "Datacore Rooftop",
+      "enabled": true,
+      "description": "A wholly fictional neon megacity rooftop at night: a wide flat dark metal deck as the fighting plane, holographic billboards with abstract shapes (no lettering), rain-slick reflections and distant towers."
+    }
+  ]
+}

@@ -56,7 +56,10 @@ export function segmentSheet(data, width, height, { picks = [] } = {}) {
   const owners = new Int8Array(components.length + 1); owners.fill(-1);
   anchors.forEach((item, slot) => { owners[item.id] = slot; });
   const distance = (a, b) => Math.hypot(Math.max(0, a.left - b.right, b.left - a.right) / cw, Math.max(0, a.top - b.bottom, b.top - a.bottom) / ch);
-  for (const item of components) if (owners[item.id] < 0 && item.count >= Math.max(2, cw * ch * .00002)) {
+  // A stray stretch of grid line the model drew: a detached, hairline-thin straight run, never part of a drawing.
+  const gridLine = item => { const w = item.right - item.left + 1, h = item.bottom - item.top + 1; return Math.min(w, h) <= Math.max(4, cw * .006) && Math.max(w, h) >= Math.min(cw, ch) * .08 && item.count <= Math.max(w, h) * Math.max(4, cw * .006); };
+  for (const item of components) if (owners[item.id] < 0 && gridLine(item)) owners[item.id] = -2;
+  for (const item of components) if (owners[item.id] === -1 && item.count >= Math.max(2, cw * ch * .00002)) {
     let best = -1, score = Infinity;
     anchors.forEach((anchor, slot) => {
       const gap = distance(item, anchor);
