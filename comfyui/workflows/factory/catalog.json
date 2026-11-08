@@ -30,10 +30,20 @@
     "mappedAssets": 33,
     "estimatedUSD": 2.090088
   },
+  "scenery": {
+    "stages": 1,
+    "paidImages": 2,
+    "twoK": 2,
+    "directorCalls": 1,
+    "directorModel": "Gemini 3.8 Flash",
+    "directorMaxUSD": 0.188588,
+    "estimatedUSD": 0.332732
+  },
   "templates": [
     "comfyui/workflows/factory/character-factory.json",
     "comfyui/workflows/factory/sprite-sheet.json",
     "comfyui/workflows/factory/environment-factory.json",
-    "comfyui/workflows/factory/arcade-expansion.json"
+    "comfyui/workflows/factory/arcade-expansion.json",
+    "comfyui/workflows/factory/stage-scenery.json"
   ]
 }

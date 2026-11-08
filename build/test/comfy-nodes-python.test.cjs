@@ -12,3 +12,8 @@ test('custom node pack validates arcade metadata, optional sheets and complete e
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
   assert.match(result.stdout, /0 failure\(s\)/);
 });
+test('living-scenery nodes plan, paint, separate and extract placed layers', { skip: !python || !comfyRoot ? 'Set COMFYUI_PYTHON and COMFYUI_ROOT to run the node-pack checks' : false }, () => {
+  const result = spawnSync(python, [path.join(root, 'comfyui/tools/test_scenery_nodes.py')], { cwd: root, env: { ...process.env, COMFYUI_ROOT: comfyRoot }, encoding: 'utf8', timeout: 300000, windowsHide: true });
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  assert.match(result.stdout, /0 failure\(s\)/);
+});

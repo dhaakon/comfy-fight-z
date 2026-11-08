@@ -1,9 +1,8 @@
 // Browser-only asset compiler. It consumes accepted local images and never calls a model.
 import { segmentSheet, poseScales } from './sheet-layout.mjs';
+import { validateScenery, validateLayer } from './scenery-schema.mjs';
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
 const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending', 'stage', 'ui', 'effects', 'scene', 'layer']);
-// Living-stage layers: cut from a populated scene at their exact place, as fractions of the stage image.
-const LAYER_MOTIONS = new Set(['still', 'idle', 'cheer', 'hover', 'sway', 'flicker', 'pulse']);
 const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending'];
 const STYLES = new Set(['balanced', 'power', 'speed', 'zoner', 'grappler', 'trickster', 'boss']);
 // A complete arcade cast (seven fighters, three arenas, PNG/WAV sources) exports at roughly 550 MB.
@@ -62,6 +61,8 @@ export function validateManifest(input) {
       if (item.winQuote !== undefined && item.winQuote !== '') text(item.winQuote, `${item.id} win quote`, 200);
       if (item.ending !== undefined && item.ending !== '') text(item.ending, `${item.id} ending`, 800);
       if (item.boss !== undefined && typeof item.boss !== 'boolean') throw new Error(`Invalid boss flag for ${item.id}`);
+      // Living scenery: the stage's weather and its ambient effects (scenery-schema.mjs).
+      if (label === 'stage' && item.scenery !== undefined) validateScenery(item.scenery, item.id);
     }
   }
   if (game.fighters.filter(fighter => fighter.boss === true).length > 1) throw new Error('A game can include at most one final boss.');
@@ -87,10 +88,7 @@ export function validateManifest(input) {
     if (asset.kind === 'source' && Boolean(asset.fighter) === Boolean(asset.stage)) throw new Error(`${asset.id} source needs exactly one fighter or stage mapping.`);
     for (const dimension of ['width', 'height']) if (asset[dimension] !== undefined && (!Number.isInteger(asset[dimension]) || asset[dimension] < 1 || asset[dimension] > 16384)) throw new Error(`Invalid ${dimension} for ${asset.id}`);
     const claims = [];
-    if (asset.kind === 'layer') {
-      if (!asset.place || ['x', 'y', 'w', 'h'].some(k => !Number.isFinite(asset.place[k]) || asset.place[k] < -1 || asset.place[k] > 2) || asset.place.w <= 0 || asset.place.h <= 0) throw new Error(`${asset.id} needs a place {x, y, w, h} in stage fractions.`);
-      if (!LAYER_MOTIONS.has(asset.motion || 'idle')) throw new Error(`${asset.id} has an unknown motion: ${asset.motion}`);
-    }
+    if (asset.kind === 'layer') validateLayer(asset);
     if (asset.kind === 'sprites' || asset.kind === 'effects') {
       if (!Array.isArray(asset.poses) || asset.poses.length !== 9 || new Set(asset.poses).size !== 9 || asset.poses.some(p => !ID.test(p))) throw new Error(`${asset.id} needs exactly nine unique pose names.`);
       if (asset.kind === 'sprites' && asset.sheet && layouts[asset.sheet] && JSON.stringify(asset.poses) !== JSON.stringify(layouts[asset.sheet])) throw new Error(`${asset.id} pose order disagrees with the ${asset.sheet} layout.`);
@@ -288,6 +286,7 @@ function customize(items, edits, label) {
     if (item.superMove) value.superMove = { name: text(item.superMove.name, 'Super move name', 100), description: text(item.superMove.description, 'Super move description', 4000) };
     for (const field of ['style', 'winQuote', 'ending']) if (item[field]) value[field] = item[field];
     if (item.boss === true) value.boss = true;
+    if (label === 'stage' && item.scenery) value.scenery = validateScenery(item.scenery, item.id);
     if (label === 'fighter') {
       value.color = update.color ?? item.color ?? '#ff824f';
       if (!/^#[0-9a-f]{6}$/i.test(value.color)) throw new Error(`Invalid color for ${item.id}`);
@@ -377,9 +376,10 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
       } else if (job.kind === 'layer') {
         // A cut-out stage element keeps its alpha and its native pixels; place says where it sits on the stage painting.
         const src = `assets/scenery/${job.id}.png`; output.set(src, blob);
-        const stage = selectedStages.get(job.stage); stage.scenery = stage.scenery || { layers: [] };
-        stage.scenery.layers.push({ id: job.id, src, place: job.place, motion: job.motion || 'idle', ...(job.depth ? { depth: job.depth } : {}), ...(job.order !== undefined ? { order: job.order } : {}) });
-        stage.scenery.layers.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        const stage = selectedStages.get(job.stage), layer = validateLayer(job);
+        stage.scenery ||= { weather: 'none', effects: [] }; stage.scenery.layers ||= [];
+        stage.scenery.layers.push({ id: job.id, src, ...layer });
+        stage.scenery.layers.sort((a, b) => a.order - b.order);
       } else if (job.kind === 'scene') {
         // The populated composition the layers were cut from: kept as a source for review, not shipped to the runtime.
       } else if (job.kind !== 'reference') {
@@ -451,7 +451,8 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   output.set('assets/manifest.json', jsonBlob(runtime));
   const sourceGame = { ...source.game, title: runtime.title,
     fighters: runtime.fighters.map(({ poses, portrait, hero, cutin, endingArt, introVideo, selectVideo, ...f }) => ({ ...source.game.fighters.find(item => item.id === f.id), ...f })),
-    stages: runtime.stages.map(({ src, ...s }) => ({ ...source.game.stages.find(item => item.id === s.id), ...s })) };
+    // The runtime scenery carries built layer paths; the source manifest keeps its own stage scenery.
+    stages: runtime.stages.map(({ src, scenery, ...s }) => ({ ...source.game.stages.find(item => item.id === s.id), ...s })) };
   if (sourceGame.expectedAssets) sourceGame.expectedAssets = jobs.map(job => job.id);
   output.set('sources/assets.json', jsonBlob({ ...source, root: '.', game: sourceGame, assets: jobs }));
   if (audioSource) output.set('sources/audio.json', jsonBlob({ ...audioSource, assets: audioJobs }));

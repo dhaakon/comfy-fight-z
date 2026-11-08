@@ -22,7 +22,18 @@ from comfy_api.latest import ComfyExtension, io, ui
 
 SCHEMA = "comfy-fighter-assets/v1"
 ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
-KINDS = {"source", "reference", "sprites", "portrait", "hero", "cutin", "ending", "stage", "ui", "effects", "scene"}
+KINDS = {"source", "reference", "sprites", "portrait", "hero", "cutin", "ending", "stage", "ui", "effects", "scene", "layer"}
+# Living stage scenery (scenery.py): what falls in front of the fight, how a cut-out element moves, and the ambient
+# effects the game draws on features of the painting, each with the geometry it is anchored by. The builder
+# (build/public/builder/scenery-schema.mjs) and the renderer (build/public/render/scenery.js) use the same names.
+SCENERY_WEATHER = ("none", "rain", "storm", "snow", "leaves", "petals", "dust", "embers", "ash")
+LAYER_MOTIONS = ("still", "idle", "cheer", "hover", "sway", "flicker", "pulse", "drift", "bob", "spin")
+EFFECT_TYPES = {
+    "blink": "points", "glow": "box", "screen": "box", "hologram": "box", "steam": "point", "smoke": "point",
+    "sparks": "point", "torch": "point", "drip": "points", "searchlight": "point", "traffic": "box", "birds": "box",
+    "clouds": "box", "fog": "box", "lightning": "box", "ripples": "box", "shimmer": "box", "wave": "box",
+    "spin": "box", "flash": "box", "embers": "box", "fireflies": "box",
+}
 FIGHTER_KINDS = {"reference", "sprites", "portrait", "hero", "cutin", "ending"}
 STYLES = ("balanced", "power", "speed", "zoner", "grappler", "trickster", "boss")
 AssetRoot = io.Custom("CFZ_ROOT")
@@ -196,7 +207,7 @@ def _metadata(value, config):
             result[key] = identity_ref
     if kind in FIGHTER_KINDS and "fighter" not in result:
         raise ValueError(f"{kind} requires fighter metadata")
-    if kind in {"stage", "scene"} and "stage" not in result:
+    if kind in {"stage", "scene", "layer"} and "stage" not in result:
         raise ValueError(f"{kind} requires stage metadata")
     if kind == "source" and ("fighter" in result) == ("stage" in result):
         raise ValueError("source requires exactly one fighter or stage mapping")
@@ -204,6 +215,8 @@ def _metadata(value, config):
         if not isinstance(value["key"], bool):
             raise ValueError("key must be a boolean")
         result["key"] = value["key"]
+    if kind == "layer":
+        result.update(_layer_fields(value))
     if kind in {"sprites", "effects"}:
         poses = value.get("poses")
         if not isinstance(poses, list) or len(poses) != 9:
@@ -219,6 +232,82 @@ def _metadata(value, config):
                 raise ValueError("Sprite sheet metadata must match its configured pose order")
             result["sheet"] = sheet
     return result
+
+
+def _fraction(value, label, low=-1.0, high=2.0):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not low <= float(value) <= high:
+        raise ValueError(f"{label} must be a number between {low} and {high}")
+    return round(float(value), 5)
+
+
+def _layer_fields(value):
+    """A cut-out stage element: where it sits on the painting (fractions) and how it moves."""
+    place = value.get("place")
+    if not isinstance(place, dict):
+        raise ValueError("layer requires a place {x, y, w, h} in fractions of the stage painting")
+    place = {key: _fraction(place.get(key), f"layer place.{key}") for key in ("x", "y", "w", "h")}
+    if place["w"] <= 0 or place["h"] <= 0:
+        raise ValueError("layer place needs a positive width and height")
+    motion = value.get("motion", "idle")
+    if motion not in LAYER_MOTIONS:
+        raise ValueError(f"Unknown layer motion: {motion}")
+    order = value.get("order", 0)
+    if isinstance(order, bool) or not isinstance(order, int) or not 0 <= order <= 999:
+        raise ValueError("layer order must be an integer from 0 to 999")
+    fields = {"place": place, "motion": motion, "order": order}
+    if value.get("label") not in (None, ""):
+        if not isinstance(value["label"], str) or len(value["label"]) > 120:
+            raise ValueError("layer label must be text of at most 120 characters")
+        fields["label"] = value["label"].strip()
+    return fields
+
+
+def _scenery_definition(value):
+    """A stage's weather and ambient effects, validated for assets.json."""
+    if not isinstance(value, dict):
+        raise ValueError("Stage scenery must be an object")
+    weather = value.get("weather", "none")
+    if weather not in SCENERY_WEATHER:
+        raise ValueError(f"Unknown scenery weather: {weather}")
+    effects = value.get("effects", [])
+    if not isinstance(effects, list) or len(effects) > 64:
+        raise ValueError("Stage scenery effects must be a list of at most 64 effects")
+    checked, ids = [], set()
+    for index, effect in enumerate(effects):
+        if not isinstance(effect, dict) or effect.get("type") not in EFFECT_TYPES:
+            raise ValueError(f"Unknown scenery effect: {effect.get('type') if isinstance(effect, dict) else effect}")
+        identity = effect.get("id", f"fx{index + 1}")
+        _slug(identity, "Effect id")
+        if identity in ids:
+            raise ValueError(f"Duplicate scenery effect id: {identity}")
+        ids.add(identity)
+        item, geometry = {"id": identity, "type": effect["type"]}, EFFECT_TYPES[effect["type"]]
+        point = lambda p: {"x": _fraction(p.get("x") if isinstance(p, dict) else None, "effect point x", 0, 1),
+                           "y": _fraction(p.get("y") if isinstance(p, dict) else None, "effect point y", 0, 1)}
+        if geometry == "box":
+            box = effect.get("box")
+            if not isinstance(box, dict):
+                raise ValueError(f"Effect {identity} needs a box")
+            item["box"] = {key: _fraction(box.get(key), f"effect box.{key}", 0, 1) for key in ("x", "y", "w", "h")}
+            if item["box"]["w"] <= 0 or item["box"]["h"] <= 0:
+                raise ValueError(f"Effect {identity} needs a box with a positive size")
+        elif geometry == "point":
+            item["point"] = point(effect.get("point"))
+        else:
+            points = effect.get("points")
+            if not isinstance(points, list) or not 1 <= len(points) <= 16:
+                raise ValueError(f"Effect {identity} needs between 1 and 16 points")
+            item["points"] = [point(p) for p in points]
+        if effect.get("color") is not None:
+            if not isinstance(effect["color"], str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", effect["color"]):
+                raise ValueError(f"Effect {identity} color must be #RRGGBB")
+            item["color"] = effect["color"].lower()
+        if effect.get("label") not in (None, ""):
+            if not isinstance(effect["label"], str) or len(effect["label"]) > 120:
+                raise ValueError(f"Effect {identity} label must be text of at most 120 characters")
+            item["label"] = effect["label"].strip()
+        checked.append(item)
+    return {"weather": weather, "effects": checked}
 
 
 def _atomic_write(destination, content):
@@ -538,11 +627,12 @@ LEGACY_NODES = [_legacy_alias(base, identity) for base, identity in zip(ASSET_NO
     ["DFZAssetRoot", "DFZSaveAsset", "DFZExportManifest", "DFZSaveAudio", "DFZExportAudioManifest"])]
 
 from .factories import FACTORY_NODES
+from .scenery import SCENERY_NODES
 
 
 class ComfyFighterAssetsExtension(ComfyExtension):
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
-        return [*ASSET_NODES, *FACTORY_NODES, *LEGACY_NODES]
+        return [*ASSET_NODES, *FACTORY_NODES, *SCENERY_NODES, *LEGACY_NODES]
 
 
 async def comfy_entrypoint() -> ComfyFighterAssetsExtension:

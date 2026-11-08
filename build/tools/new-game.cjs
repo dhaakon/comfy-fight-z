@@ -22,7 +22,7 @@ const now = () => new Date().toISOString();
 
 function parse(argv) {
   const [command, ...rest] = argv, options = {};
-  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters', '--reference-sheet', '--stages', '--crowd', '--reroll'];
+  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters', '--reference-sheet', '--stages', '--direction', '--elements', '--director-model', '--reroll'];
   for (let i = 0; i < rest.length; i++) {
     if (rest[i] === '--no-media') options.media = false;
     else if (rest[i] === '--no-audio') options.audio = false;
@@ -413,58 +413,51 @@ async function addSheets(options) {
   console.log(`Added ${saves.length} sheet(s): ${saves.map(save => save.id).join(', ')}. Review again, then export to a fresh folder.`);
 }
 
-// Background characters for a stage: one paid 2K CFZStageScenery sheet per stage, drawn against the accepted stage painting
-// (uploaded from the bundle, so the server's cache does not matter), recorded as the stage's `scenery` asset.
+// Living stage scenery: per stage, the same graph as comfyui/workflows/factory/stage-scenery.json (scene director,
+// populated scene, separation, local extraction, patch export) runs one paid node at a time into a patch folder under
+// <run>/scenery/, which build/tools/stage-scenery.cjs then applies to the run's bundle.
 async function addScenery(options) {
+  const { makeSceneryGraph, sceneryCounts, apiPrompt } = require('../../comfyui/tools/prepare-factory-workflows.cjs');
   const directory = runDirectory(options), bundle = path.join(directory, 'bundle'), workflow = read(path.join(directory, 'workflow.api.json'));
   const assetsFile = path.join(bundle, 'assets.json');
   if (!fs.existsSync(assetsFile)) throw new Error('No bundle/assets.json yet; run the generation first.');
   const assets = read(assetsFile), stages = options.stages ? options.stages.split(',').map(s => s.trim()) : assets.game.stages.map(s => s.id);
   for (const id of stages) {
     if (!assets.game.stages.some(s => s.id === id)) throw new Error(`Unknown stage ${id}.`);
-    if (assets.assets.some(a => a.id === `${id}_isolated`) && !options.reroll) throw new Error(`Already in the bundle: ${id}_isolated (pass --reroll 1 to repaint the scene).`);
     if (!assets.assets.some(a => a.id === id && a.kind === 'stage')) throw new Error(`The bundle lacks the stage painting for ${id}.`);
   }
-  // A stage whose populated scene is already accepted only needs the separation edit; otherwise the scene is painted too.
-  const isolateOnly = new Set(stages.filter(id => !options.reroll && assets.assets.some(a => a.id === `${id}_scene`)));
-  const estimatedUSD = Number(((stages.length * 2 - isolateOnly.size) * RATES.image2K).toFixed(6)), approved = Number(options.approveUsd);
-  if (!Number.isFinite(approved) || approved < estimatedUSD) throw new Error(`Living scenery for ${stages.length} stage(s) costs about $${estimatedUSD}; pass --approve-usd ${Math.ceil(estimatedUSD * 100) / 100} (or more) once authorized.`);
+  const elementCount = options.elements === undefined ? 12 : Number(options.elements), model = options.directorModel || 'Gemini 3.8 Flash';
+  if (!Number.isInteger(elementCount) || elementCount < 4 || elementCount > 16) throw new Error('--elements must be a whole number from 4 to 16.');
+  const counts = sceneryCounts(stages.length, model), approved = Number(options.approveUsd);
+  if (!Number.isFinite(approved) || approved < counts.estimatedUSD) throw new Error(`Living scenery for ${stages.length} stage(s) costs at most about $${counts.estimatedUSD} (${counts.twoK} 2K edits and a scene director bounded at $${counts.directorMaxUSD}); pass --approve-usd ${Math.ceil(counts.estimatedUSD * 100) / 100} (or more) once authorized.`);
   const server = (options.server || 'http://127.0.0.1:8188').replace(/\/$/, '');
-  const missing = await missingNodes({ probe: { class_type: 'CFZStageScenery' }, isolate: { class_type: 'CFZSceneIsolate' }, load: { class_type: 'LoadImage' } }, server);
+  const missing = await missingNodes(Object.fromEntries(['CFZSceneDirector', 'CFZScenePlan', 'CFZStageScenery', 'CFZSceneIsolate', 'CFZExtractScenery', 'GeminiNodeV3', 'LoadImage'].map((type, i) => [i, { class_type: type }])), server);
   if (missing.length) throw new Error(`The running ComfyUI lacks ${missing.join(', ')}; install the node pack and restart it.`);
-  const project = Object.values(workflow).find(node => node.class_type === 'CFZProjectSettings');
-  const prompt = { project: { class_type: 'CFZProjectSettings', inputs: { ...project.inputs, root_directory: bundle }, _meta: { title: 'Project settings | scenery' } } };
+  const projectNode = Object.values(workflow).find(node => node.class_type === 'CFZProjectSettings');
+  const state = pipeline(directory); state.addedScenery = state.addedScenery || [];
+  const entry = { at: now(), stages, elementCount, directorModel: model, estimatedUSD: counts.estimatedUSD, approvedUSD: approved, patches: [] }; state.addedScenery.push(entry);
+  const save = () => fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
+  save();
   for (const id of stages) {
-    const stage = assets.game.stages.find(s => s.id === id), record = isolateOnly.has(id) ? assets.assets.find(a => a.id === `${id}_scene`) : assets.assets.find(a => a.id === id && a.kind === 'stage');
-    const form = new FormData(); form.append('image', new Blob([fs.readFileSync(path.join(bundle, record.src))], { type: 'image/png' }), path.basename(record.src)); form.append('subfolder', 'cfz-redraw'); form.append('overwrite', 'true');
+    const stage = assets.game.stages.find(s => s.id === id), painting = assets.assets.find(a => a.id === id && a.kind === 'stage');
+    // The accepted painting is uploaded from the bundle, so the server's cache and input folder do not matter.
+    const form = new FormData(); form.append('image', new Blob([fs.readFileSync(path.join(bundle, painting.src))], { type: 'image/png' }), `cfz-accepted-${id}-stage.png`);
+    form.append('subfolder', 'cfz-scenery'); form.append('overwrite', 'true');
     const response = await fetch(`${server}/upload/image`, { method: 'POST', body: form });
     if (!response.ok) throw new Error(`ComfyUI refused the stage upload (${response.status}).`);
-    const uploaded = await response.json();
-    prompt[`${id}_stage`] = { class_type: 'LoadImage', inputs: { image: `${uploaded.subfolder ? uploaded.subfolder + '/' : ''}${uploaded.name}` }, _meta: { title: `Accepted stage | ${id}` } };
-    if (isolateOnly.has(id)) prompt[`${id}_scene`] = { class_type: 'CFZSceneIsolate', inputs: { project: ['project', 0], scene: [`${id}_stage`, 0], stage_id: id, name: stage.name, description: stage.description || '', reroll: Number(options.reroll || 0) }, _meta: { title: `Isolate | ${id}` } };
-    else prompt[`${id}_scene`] = { class_type: 'CFZStageScenery', inputs: { project: ['project', 0], stage_reference: [`${id}_stage`, 0], stage_id: id, name: stage.name, description: stage.description || '', crowd: options.crowd || '', reroll: Number(options.reroll || 0) }, _meta: { title: `Scenery | ${id}` } };
-    prompt[`keep_${id}_scene`] = { class_type: 'PreviewAny', inputs: { source: [`${id}_scene`, 0] }, _meta: { title: `keep ${id}_scene` } };
+    const uploaded = await response.json(), patch = path.join(directory, 'scenery', `${id}-${Date.now()}`);
+    const graph = makeSceneryGraph({ title: assets.game.title, stages: [stage] }, { stage, stageImage: `${uploaded.subfolder ? uploaded.subfolder + '/' : ''}${uploaded.name}`,
+      project: { ...projectNode.inputs }, rootDirectory: patch, direction: options.direction || '', elementCount, model, reroll: Number(options.reroll || 0), muted: false });
+    fs.mkdirSync(patch, { recursive: true });
+    fs.writeFileSync(path.join(patch, 'stage-scenery.workflow.json'), JSON.stringify(graph, null, 2) + '\n');
+    const file = path.join(patch, 'stage-scenery.api.json'); fs.writeFileSync(file, JSON.stringify(apiPrompt(graph), null, 2) + '\n');
+    entry.patches.push(path.relative(ROOT, patch)); save();
+    console.log(`Living scenery for ${id}: scene director, populated scene and separation, one paid node at a time, then the local extraction.`);
+    if (node([path.join(ROOT, 'comfyui/tools/run-sequential.cjs'), '--workflow', file, '--server', server]) !== 0) { entry.ok = false; save(); throw new Error(`The sequential run for ${id} did not finish; rerun add-scenery to resume from the cache.`); }
+    if (node([path.join(ROOT, 'build/tools/stage-scenery.cjs'), 'apply', '--patch', patch, '--bundle', bundle, '--stage', id]) !== 0) { entry.ok = false; save(); throw new Error(`Applying the scenery patch for ${id} failed.`); }
   }
-  const file = path.join(directory, `add-scenery-${Date.now()}.api.json`); fs.writeFileSync(file, JSON.stringify(prompt, null, 2) + '\n');
-  const state = pipeline(directory); state.addedScenery = state.addedScenery || [];
-  const entry = { at: now(), stages, estimatedUSD, approvedUSD: approved, prompt: path.basename(file) }; state.addedScenery.push(entry);
-  fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
-  console.log(`Generating background characters for ${stages.join(', ')} (about $${estimatedUSD}), one paid node at a time.`);
-  const status = node([path.join(ROOT, 'comfyui/tools/run-sequential.cjs'), '--workflow', file, '--server', server]);
-  if (status !== 0) { entry.ok = false; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n'); throw new Error('The sequential run did not finish; rerun add-scenery with the same arguments to resume from the cache.'); }
-  const { loadImage } = require('@napi-rs/canvas'), crypto = require('node:crypto'), raw = fs.readdirSync(path.join(bundle, 'raw'));
-  for (const id of stages) for (const suffix of isolateOnly.has(id) ? ['isolated'] : ['scene', 'isolated']) {
-    const name = `${id}_${suffix}`, files = raw.filter(file => file.startsWith(`${name}-`) && file.endsWith('.png')).map(file => ({ file, time: fs.statSync(path.join(bundle, 'raw', file)).mtimeMs })).sort((a, b) => b.time - a.time);
-    if (!files.length) throw new Error(`No saved image for ${name} in bundle/raw.`);
-    const bytes = fs.readFileSync(path.join(bundle, 'raw', files[0].file)), image = await loadImage(bytes);
-    if (Array.isArray(assets.game.expectedAssets) && !assets.game.expectedAssets.includes(name)) assets.game.expectedAssets.push(name);
-    assets.assets = assets.assets.filter(a => a.id !== name);
-    assets.assets.push({ id: name, kind: 'scene', stage: id, key: suffix === 'isolated', src: `raw/${files[0].file}`, sha256: crypto.createHash('sha256').update(bytes).digest('hex'), width: image.width, height: image.height });
-  }
-  fs.writeFileSync(assetsFile, JSON.stringify(assets, null, 2) + '\n');
-  entry.ok = true; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
-  for (const id of stages) if (node([path.join(ROOT, 'build/tools/extract-scenery.cjs'), '--bundle', bundle, '--stage', id]) !== 0) throw new Error(`Extraction failed for ${id}.`);
-  console.log(`Added living scenery for ${stages.join(', ')}. Review bundle/scenery/<stage>.json and its contact sheet, then export to a fresh folder.`);
+  entry.ok = true; save();
+  console.log(`Added living scenery for ${stages.join(', ')}. Review bundle/scenery/<stage>-review.png, edit motions in bundle/scenery/<stage>.json and run build/tools/stage-scenery.cjs sync if needed, then export to a fresh folder.`);
 }
 
 async function main(argv) {

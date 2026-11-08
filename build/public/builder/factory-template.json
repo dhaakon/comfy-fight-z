@@ -107,6 +107,11 @@
       "id": "environment",
       "label": "One environment",
       "url": "/builder/templates/environment-factory.json"
+    },
+    {
+      "id": "scenery",
+      "label": "Living scenery for an accepted stage",
+      "url": "/builder/templates/stage-scenery.json"
     }
   ],
   "nodePack": {

@@ -105,7 +105,18 @@ function graphBuilder(title) {
     return node('CFZFictionalReference','Invent a fresh fictional reference | no image inputs',{
       prompt:fighter.referencePrompt||`${config.style}\nInvent this adult fictional fighter from text only: ${fighter.description}. Full-body right-facing neutral guard, complete hands and shoes, green chroma background, no external image or real person.`,aspect:'2:3',resolution:'1K'},pos,[440,470]);
   }
-  return { graph, node, connect, note, group, loadImage, fictionalReference };
+  // Free preview nodes so a person can review each stage of a run inside ComfyUI.
+  function preview(from, outputIndex, type, title, pos, size = [420, 360]) {
+    const image = type === 'PreviewImage', input = { name: image ? 'images' : 'source', type: image ? 'IMAGE' : '*', link: null };
+    const item = { id: ++graph.last_node_id, type, title, pos, size, flags: {}, order: graph.nodes.length, mode: 0, inputs: [input], outputs: [],
+      properties: { 'Node name for S&R': type }, widgets_values: [] };
+    graph.nodes.push(item);
+    const output = from.outputs[outputIndex], link = ++graph.last_link_id;
+    if (image && output.type !== 'IMAGE') throw new Error(`Socket type mismatch: ${output.type} -> IMAGE`);
+    output.links.push(link); input.link = link; graph.links.push([link, from.id, outputIndex, item.id, 0, input.type]);
+    return item;
+  }
+  return { graph, node, connect, note, group, loadImage, fictionalReference, preview };
 }
 
 function projectValues(config, suffix = '') {
@@ -293,6 +304,74 @@ function makeExpansionGraph(config, { rootDirectory } = {}) {
   return b.graph;
 }
 
+// Living stage scenery for one ACCEPTED stage painting, all inside ComfyUI: the scene director (Gemini vision, priced
+// per token and bounded by its output cap) plans the background additions and the effects on painted features; two 2K
+// edits paint the additions in place and separate them onto chroma green; the local extractor cuts placed layers and
+// writes scenery/<stage>.json; a PARTIAL assets.json maps them for a reviewed apply into the bundle.
+const DIRECTOR_MODEL = 'Gemini 3.8 Flash';
+const DIRECTOR_RATES = Object.freeze({ 'Gemini 3.8 Flash': { input: .002145, output: .010725 }, 'Gemini 3.1 Pro': { input: .002, output: .012 } });
+const DIRECTOR_TOKENS = Object.freeze({ input: 6000, maxOutput: 16384 });
+function sceneryCounts(stages = 1, model = DIRECTOR_MODEL) {
+  const rate = DIRECTOR_RATES[model];
+  if (!rate) throw new Error(`Unsupported scene director model: ${model}`);
+  const director = Number((DIRECTOR_TOKENS.input / 1000 * rate.input + DIRECTOR_TOKENS.maxOutput / 1000 * rate.output).toFixed(6)), twoK = stages * 2;
+  return { stages, paidImages: twoK, twoK, directorCalls: stages, directorModel: model, directorMaxUSD: Number((director * stages).toFixed(6)),
+    estimatedUSD: Number((twoK * 0.072072 + director * stages).toFixed(6)) };
+}
+function makeSceneryGraph(config, { stage = config.stages[0], stageImage, rootDirectory, project: projectInputs, direction = '', elementCount = 12, model = DIRECTOR_MODEL, reroll = 0, muted = true } = {}) {
+  const b = graphBuilder(`${config.title}: living scenery for ${stage.name}`);
+  const values = projectInputs ? { ...projectInputs } : projectValues(config, `scenery-${stage.id}`);
+  if (rootDirectory) values.root_directory = rootDirectory;
+  const project = b.node('CFZProjectSettings', 'Scenery patch folder', values, [-510, 120], [440, 470]);
+  const painting = b.loadImage(stageImage || `cfz-accepted-${stage.id}-stage.png`, [0, 120]);
+  painting.title = `Accepted stage painting | ${stage.name}`;
+  const identity = { stage_id: stage.id, name: stage.name, description: stage.description || '' };
+  const director = b.node('CFZSceneDirector', 'Scene director | plan additions, effects and weather', { ...identity, direction, element_count: elementCount, director_model: model, reroll },
+    [480, 120], [440, 560]);
+  b.connect(project, 0, director, 'project'); b.connect(painting, 0, director, 'stage');
+  const painter = b.node('CFZStageScenery', 'Populated scene | the additions painted in place (2K)', { ...identity, reroll }, [960, 120], [440, 360]);
+  b.connect(project, 0, painter, 'project'); b.connect(painting, 0, painter, 'stage_reference'); b.connect(director, 0, painter, 'plan');
+  const isolate = b.node('CFZSceneIsolate', 'Separation | the additions alone on chroma green (2K)', { ...identity, reroll }, [960, 540], [440, 320]);
+  b.connect(project, 0, isolate, 'project'); b.connect(painter, 1, isolate, 'scene'); b.connect(director, 0, isolate, 'plan');
+  const extract = b.node('CFZExtractScenery', 'Extract | placed layers, effects + review sheet', identity, [1440, 120], [440, 420]);
+  b.connect(project, 0, extract, 'project'); b.connect(painting, 0, extract, 'stage'); b.connect(painter, 1, extract, 'scene');
+  b.connect(isolate, 1, extract, 'isolated'); b.connect(director, 0, extract, 'plan');
+  b.preview(director, 0, 'PreviewAny', 'Plan (JSON)', [480, 720], [440, 300]);
+  b.preview(painter, 1, 'PreviewImage', 'Populated scene', [960, 900]);
+  b.preview(isolate, 1, 'PreviewImage', 'Isolated additions', [960, 1300]);
+  b.preview(extract, 1, 'PreviewImage', 'Review sheet: elements over the scene, effects over the plate', [1440, 600], [520, 560]);
+  attachExporter(b, project, [painter, isolate, extract], [1920, 120], false);
+  const count = sceneryCounts(1, model);
+  b.note(`# Living scenery for ${stage.name}\n\nAnimated background characters, props and scene effects for an ACCEPTED stage painting, Street Fighter style. MUTED BY DEFAULT: nothing runs until you unmute it (select all, Ctrl+M). Upload the accepted painting (default name \`${stageImage || `cfz-accepted-${stage.id}-stage.png`}\`) into ComfyUI's input folder and select it in the image node; set the stage ID, name and description to the accepted stage; optionally steer the director with a direction.\n\n1. **Scene director** (Gemini vision, priced per token, at most about $${count.directorMaxUSD.toFixed(2)}): reads the painting and plans ${elementCount} additions (what, where, how each moves), the effects on features already painted (beacons, billboards, vents, puddles, sky, foliage...) and the weather.\n2. **Populated scene** (one 2K edit, $0.07): the painting repainted with exactly those additions.\n3. **Separation** (one 2K edit, $0.07): the additions alone, in place, on chroma green.\n4. **Extract** (local, free): cuts every addition out at its exact position and scale, keeps the scene's other changes as still layers, and writes \`scenery/${stage.id}.json\` plus a review sheet.\n5. **Export** writes a PARTIAL assets.json in this patch folder.\n\nAbout $${count.estimatedUSD.toFixed(2)} at most. Review the sheet, edit motions in \`scenery/${stage.id}.json\` if needed, then fold it into the accepted bundle:\n\n    node build/tools/stage-scenery.cjs apply --patch <this folder> --bundle <accepted bundle>\n\nCloud image models do not promise identical pixels on a rerun: the patch folder keeps the plan, the scene, the isolated layer and every cut-out.`,
+    [-510, 650], [440, 760]);
+  b.group('Plan, paint, separate, extract and export', [-25, 45, 2390, 1700], '#3f6b7f');
+  b.graph.extra.ds = { scale: 0.5, offset: [620, 300] };
+  // The accepted painting is an explicit upload: the shipped template stays muted until the reviewer selects it.
+  if (muted) b.graph.nodes.forEach(node => { if (node.type !== 'MarkdownNote') node.mode = 2; });
+  b.graph.extra.cfzStageScenery = { mutedByDefault: muted, stage: stage.id, stageImage: stageImage || `cfz-accepted-${stage.id}-stage.png`, ...count };
+  return b.graph;
+}
+
+// UI graph -> API prompt. Named widgets carry values; a few local nodes only have positional widgets.
+const POSITIONAL = { LoadImage: ['image'], CFZAssetRoot: ['root_directory', 'config_json'], CFZSaveAudio: ['asset_json'] };
+function apiPrompt(workflow) {
+  const links = new Map(workflow.links.map(link => [link[0], link])), prompt = {};
+  for (const node of workflow.nodes) {
+    if (node.type === 'MarkdownNote' || node.mode === 2 || node.mode === 4) continue;
+    const inputs = node.widgets_values_named ? { ...node.widgets_values_named }
+      : Object.fromEntries((POSITIONAL[node.type] || []).map((name, index) => [name, node.widgets_values[index]]));
+    if (!node.widgets_values_named && node.widgets_values?.length && !POSITIONAL[node.type]) throw new Error(`No widget mapping for ${node.type}.`);
+    delete inputs.control_after_generate;
+    for (const input of node.inputs || []) if (input.link !== null && input.link !== undefined) {
+      const link = links.get(input.link);
+      if (!link) throw new Error(`Missing link ${input.link} on ${node.type}.`);
+      inputs[input.name] = [String(link[1]), link[2]];
+    }
+    prompt[node.id] = { class_type: node.type, inputs, _meta: { title: node.title || node.type } };
+  }
+  return prompt;
+}
+
 function builderMetadata(config) {
   const slots = items => items.map(item => ({ id: item.id, name: item.name, enabled: item.enabled !== false,
     sourceMode:item.sourceMode||'Upload reference', reference: item.sourceMode==='Invent fictional reference'?'':item.sourceInput || '', sourceInput:item.sourceMode==='Invent fictional reference'?'':item.sourceInput || '' }));
@@ -301,7 +380,8 @@ function builderMetadata(config) {
     templates: [{id:'character',label:'One complete character pack',url:'/builder/templates/character-factory.json'},
       {id:'sheet',label:'One sprite sheet',url:'/builder/templates/sprite-sheet.json'},
       {id:'expansion',label:'Arcade expansion for an accepted cast',url:'/builder/templates/arcade-expansion.json'},
-      {id:'environment',label:'One environment',url:'/builder/templates/environment-factory.json'}],
+      {id:'environment',label:'One environment',url:'/builder/templates/environment-factory.json'},
+      {id:'scenery',label:'Living scenery for an accepted stage',url:'/builder/templates/stage-scenery.json'}],
     nodePack: { name:'Comfy Fighter Z Asset Factory',
       installInstructions:'Copy comfyui/custom_nodes/comfy_fighter_assets into your ComfyUI custom_nodes folder and restart ComfyUI. Then open the downloaded workflow.' } };
 }
@@ -310,16 +390,17 @@ function prepareFactory() {
   const config = read('comfyui/config/factory.json');
   const main = makeFactoryGraph(config);
   write('comfyui/workflows/comfy-hackathon.json', main); write('build/public/builder/templates/comfy-hackathon.json', main);
-  const templates = { 'character-factory': makeCharacterTemplate(config), 'sprite-sheet': makeSheetTemplate(config), 'environment-factory': makeEnvironmentTemplate(config), 'arcade-expansion': makeExpansionGraph(config) };
+  const templates = { 'character-factory': makeCharacterTemplate(config), 'sprite-sheet': makeSheetTemplate(config), 'environment-factory': makeEnvironmentTemplate(config), 'arcade-expansion': makeExpansionGraph(config),
+    'stage-scenery': makeSceneryGraph(config) };
   for (const [name, workflow] of Object.entries(templates)) {
     write(`comfyui/workflows/factory/${name}.json`, workflow); write(`build/public/builder/templates/${name}.json`, workflow);
   }
   write('build/public/builder/factory-template.json', builderMetadata(config));
   write('comfyui/workflows/factory/catalog.json', { schema:'comfy-fighter-factory/v1', cloudOnly:true, config:'comfyui/config/factory.json',
     workflow:'comfyui/workflows/comfy-hackathon.json', advancedWorkflow:'comfyui/workflows/advanced/full-image-graph.json',
-    characterSlots:7, bossSlots:1, environmentSlots:3, defaults:factoryCounts(config), allEnvironments:factoryCounts(config,true), expansion:expansionCounts(config),
+    characterSlots:7, bossSlots:1, environmentSlots:3, defaults:factoryCounts(config), allEnvironments:factoryCounts(config,true), expansion:expansionCounts(config), scenery:sceneryCounts(1),
     templates:Object.keys(templates).map(name=>`comfyui/workflows/factory/${name}.json`) });
-  console.log(`Prepared compact ${main.nodes.filter(node => node.type !== 'MarkdownNote').length}-node factory (six fighters, final boss, three environments, startup image and videos), four focused templates and matching builder downloads. No generation submitted.`);
+  console.log(`Prepared compact ${main.nodes.filter(node => node.type !== 'MarkdownNote').length}-node factory (six fighters, final boss, three environments, startup image and videos), ${Object.keys(templates).length} focused templates and matching builder downloads. No generation submitted.`);
 }
 if (require.main === module) prepareFactory();
-module.exports = { factoryCounts, mediaCounts, motion, videoRate, VIDEO_RATES, expansionCounts, attachMedia, graphBuilder, characterValues, environmentValues, projectValues, attachExporter, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };
+module.exports = { sceneryCounts, makeSceneryGraph, apiPrompt, DIRECTOR_RATES, factoryCounts, mediaCounts, motion, videoRate, VIDEO_RATES, expansionCounts, attachMedia, graphBuilder, characterValues, environmentValues, projectValues, attachExporter, makeFactoryGraph, makeCharacterTemplate, makeSheetTemplate, makeEnvironmentTemplate, makeExpansionGraph, builderMetadata, prepareFactory };

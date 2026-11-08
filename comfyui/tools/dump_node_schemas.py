@@ -17,12 +17,13 @@ sys.path.insert(0, os.path.join(REPO, "comfyui", "custom_nodes"))
 os.chdir(COMFY)
 
 from comfy_fighter_assets.factories import FACTORY_NODES  # noqa: E402
+from comfy_fighter_assets.scenery import SCENERY_NODES  # noqa: E402
 
 target = os.path.join(REPO, "comfyui", "workflows", "templates", "compact-factory-schema.json")
 with open(target, encoding="utf-8") as file:
     schemas = json.load(file)
 refresh, added = set(sys.argv[1:]), []
-for node in FACTORY_NODES:
+for node in [*FACTORY_NODES, *SCENERY_NODES]:
     node_id = node.define_schema().node_id
     if node_id in schemas and node_id not in refresh:
         continue

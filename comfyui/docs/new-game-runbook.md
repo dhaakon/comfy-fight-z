@@ -89,20 +89,27 @@ It uploads each fighter's identity and accepted sheet A (as `reference_sheet`), 
 
 ### Living stage scenery (optional)
 
-Background characters and animated props that sit in the stage painting, Street Fighter style:
+Background characters, props and scene effects that live in the stage painting, Street Fighter style. It is one reproducible ComfyUI workflow per stage, `comfyui/workflows/factory/stage-scenery.json` (shipped muted: upload the accepted painting as `cfz-accepted-<stage>-stage.png`, select it, unmute). `add-scenery` runs the same graph for a run's bundle:
 
 ```
-node build/tools/new-game.cjs add-scenery --run output/test-runs/<name>-<date> [--stages <id>] [--crowd "<who and what to add>"] --approve-usd 0.15
+node build/tools/new-game.cjs add-scenery --run output/test-runs/<name>-<date> [--stages <id>] [--elements 12] [--direction "<what belongs in the background>"] --approve-usd 0.34
 ```
 
-Per stage, two paid 2K edits ($0.072 each; only the second when `<stage>_scene` is already accepted):
+Per stage, at most about $0.33:
 
-1. `CFZStageScenery` repaints the accepted stage painting with the additions in place, keeping everything else identical (`<stage>_scene`).
-2. `CFZSceneIsolate` keeps only the additions, in place, on chroma green (`<stage>_isolated`).
+1. `CFZSceneDirector` (Gemini 3.8 Flash vision, priced per token, bounded at about $0.19 by its output cap) reads the accepted painting and plans the additions (what, where, how each moves), 10-24 effects on features already painted and the weather.
+2. `CFZStageScenery` (one 2K edit, $0.072) repaints the painting with exactly those additions in place (`<stage>_scene`).
+3. `CFZSceneIsolate` (one 2K edit, $0.072) keeps only the additions, in place, on chroma green (`<stage>_isolated`).
+4. `CFZExtractScenery` (local, free) cuts every addition out at its exact position and scale. It keys the isolated layer where the scene really changed, groups the pieces by the plan's boxes (touching additions stay separate; one addition's pieces join; a piece the painter drew off its box takes the nearest unclaimed addition). It keeps the scene's other changes as still layers, drops scraps around a figure so nothing ghosts, and writes `scenery/<stage>.json` (elements with `place` fractions, `motion`, `order`, `label`; the effects; the weather; the full plan) and `scenery/<stage>-review.png`.
+5. `CFZExportAssetPatch` writes a partial `assets.json` into the patch folder (`<run>/scenery/<stage>-<time>/` for `add-scenery`).
 
-`build/tools/extract-scenery.cjs` then compares the scene with the clean painting. Keyed figures that the scene really added become animated elements cut at their exact position and scale. The scene's other changes (glows, reflections) become `still` layers, and scraps touching a figure are dropped so nothing ghosts when it moves. It writes `bundle/scenery/<stage>.json` (the placement file: each element's `src`, `place` as fractions of the painting, `motion`, `order`) and `bundle/scenery/<stage>-review.png`, and maps one `layer` record per element into `assets.json`.
+`node build/tools/stage-scenery.cjs apply --patch <patch> --bundle <bundle>` folds a patch into an accepted bundle (`add-scenery` does this): it verifies and copies the files, replaces the stage's `scene` and `layer` records and sets `game.stages[].scenery` ({weather, effects}).
 
-Review the sheet, then edit the JSON: set each element's `motion` (`still`, `idle`, `cheer`, `hover`, `sway`, `flicker`, `pulse`) or delete false elements, and run `node build/tools/extract-scenery.cjs --bundle <run>/bundle --stage <id> --sync`. A full re-extraction keeps reviewed motions on overlapping elements. In the game, `render/scenery.js` draws the clean painting as the plate and animates the elements in the painting's own space, so they keep its parallax and scale; `cheer` elements bounce when hits, supers and K.O.s land. Rain, dust, leaves or snow over the fighters come from the stage description or `ambience`.
+Review `bundle/scenery/<stage>-review.png`. Then edit `bundle/scenery/<stage>.json` if needed: set an element's `motion` (`still`, `idle`, `cheer`, `hover`, `sway`, `flicker`, `pulse`, `drift`, `bob`, `spin`), delete a false element, change the weather or the effects (`blink`, `glow`, `screen`, `hologram`, `steam`, `smoke`, `sparks`, `torch`, `drip`, `searchlight`, `traffic`, `birds`, `clouds`, `fog`, `lightning`, `ripples`, `shimmer`, `wave`, `spin`, `flash`, `embers`, `fireflies`). Run `node build/tools/stage-scenery.cjs sync --bundle <bundle> --stage <id>` to map the edits back and redraw the review sheet.
+
+To replay the free extraction from a saved patch, for example after the extractor improves (no ComfyUI server or cloud call), run `COMFYUI_ROOT=<ComfyUI> <ComfyUI python> comfyui/tools/scenery_extract.py --patch <patch> --stage <id> --plate <accepted painting> [--fresh]` and apply the patch again.
+
+In the game, `build/public/render/scenery.js` draws the clean painting as the plate and animates the elements and effects in the painting's own space, so they keep its parallax and scale. `cheer` elements bounce and `flash` effects fire more often when hits, supers and K.O.s land. Weather falls over the fighters. A stage without scenery still gets weather from its description.
 
 ## 5. Export and install
 

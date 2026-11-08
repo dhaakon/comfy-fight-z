@@ -1,0 +1,774 @@
+{
+  "id": "15e6ba11-1053-48e0-a8d6-dc1b155bbdb5",
+  "revision": 0,
+  "last_node_id": 12,
+  "last_link_id": 21,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CFZProjectSettings",
+      "title": "Scenery patch folder",
+      "pos": [
+        -510,
+        120
+      ],
+      "size": [
+        440,
+        470
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "links": [
+            1,
+            3,
+            6,
+            9,
+            18
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZProjectSettings"
+      },
+      "widgets_values": [
+        "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\output\\assets\\generated\\comfy-fighter-z\\scenery-yard",
+        "Comfy Fighter Z",
+        "Higgsfield Open Source Saga",
+        "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+        "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+        "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+        "Gemini Nano Banana 2.1",
+        42,
+        "LTX-2.5 (Fast)",
+        "720p"
+      ],
+      "widgets_values_named": {
+        "root_directory": "C:\\Users\\dhaak\\Development\\comfyui-hackathon\\output\\assets\\generated\\comfy-fighter-z\\scenery-yard",
+        "title": "Comfy Fighter Z",
+        "subtitle": "Higgsfield Open Source Saga",
+        "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are wholly invented adult parent heroes, generated from text without any real-person photo or likeness reference. Preserve the supplied fictional character design across all derived images. Use clear distinct silhouettes, practical comic-book workwear, complete shoes and readable fighting poses. No existing franchise characters, costumes, symbols or logos. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+        "ui_style": "Original 1990s shonen battle-anime arcade interface illustration for a playful neighborhood parent-hero tournament. Bold brush ink, hard cel shadows, hand-painted energy clouds, deep midnight blue and black, vivid gold, electric cyan and hot magenta. Strong negative space for readable game controls. All characters and locations are invented; no real faces, recognizable real venues, brand marks or copied franchise imagery.",
+        "stage_style": "Original hand-painted 1990s anime environment background for a fictional neighborhood fighting tournament. Wide side-on eye-level view, rich cel-shaded materials and warm atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, signage, logos, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+        "model": "Gemini Nano Banana 2.1",
+        "seed": 42,
+        "video_model": "LTX-2.5 (Fast)",
+        "video_resolution": "720p"
+      }
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "title": "Accepted stage painting | The Yard",
+      "pos": [
+        0,
+        120
+      ],
+      "size": [
+        420,
+        480
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 2,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            4,
+            10
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "cfz-accepted-yard-stage.png",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "cfz-accepted-yard-stage.png"
+      }
+    },
+    {
+      "id": 3,
+      "type": "CFZSceneDirector",
+      "title": "Scene director | plan additions, effects and weather",
+      "pos": [
+        480,
+        120
+      ],
+      "size": [
+        440,
+        560
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 1
+        },
+        {
+          "name": "stage",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "plan",
+          "type": "STRING",
+          "links": [
+            5,
+            8,
+            13,
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSceneDirector"
+      },
+      "widgets_values": [
+        "yard",
+        "The Yard",
+        "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        "",
+        12,
+        "Gemini 3.8 Flash",
+        0
+      ],
+      "widgets_values_named": {
+        "stage_id": "yard",
+        "name": "The Yard",
+        "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        "direction": "",
+        "element_count": 12,
+        "director_model": "Gemini 3.8 Flash",
+        "reroll": 0
+      }
+    },
+    {
+      "id": 4,
+      "type": "CFZStageScenery",
+      "title": "Populated scene | the additions painted in place (2K)",
+      "pos": [
+        960,
+        120
+      ],
+      "size": [
+        440,
+        360
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 3
+        },
+        {
+          "name": "stage_reference",
+          "type": "IMAGE",
+          "link": 4
+        },
+        {
+          "name": "plan",
+          "type": "STRING",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "scene",
+          "type": "IMAGE",
+          "links": [
+            7,
+            11,
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZStageScenery"
+      },
+      "widgets_values": [
+        "yard",
+        "The Yard",
+        "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        "",
+        0
+      ],
+      "widgets_values_named": {
+        "stage_id": "yard",
+        "name": "The Yard",
+        "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        "crowd": "",
+        "reroll": 0
+      }
+    },
+    {
+      "id": 5,
+      "type": "CFZSceneIsolate",
+      "title": "Separation | the additions alone on chroma green (2K)",
+      "pos": [
+        960,
+        540
+      ],
+      "size": [
+        440,
+        320
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 6
+        },
+        {
+          "name": "scene",
+          "type": "IMAGE",
+          "link": 7
+        },
+        {
+          "name": "plan",
+          "type": "STRING",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            20
+          ]
+        },
+        {
+          "name": "isolated",
+          "type": "IMAGE",
+          "links": [
+            12,
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZSceneIsolate"
+      },
+      "widgets_values": [
+        "yard",
+        "The Yard",
+        "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        0
+      ],
+      "widgets_values_named": {
+        "stage_id": "yard",
+        "name": "The Yard",
+        "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        "reroll": 0
+      }
+    },
+    {
+      "id": 6,
+      "type": "CFZExtractScenery",
+      "title": "Extract | placed layers, effects + review sheet",
+      "pos": [
+        1440,
+        120
+      ],
+      "size": [
+        440,
+        420
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 9
+        },
+        {
+          "name": "stage",
+          "type": "IMAGE",
+          "link": 10
+        },
+        {
+          "name": "scene",
+          "type": "IMAGE",
+          "link": 11
+        },
+        {
+          "name": "isolated",
+          "type": "IMAGE",
+          "link": 12
+        },
+        {
+          "name": "plan",
+          "type": "STRING",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bundle",
+          "type": "CFZ_BUNDLE",
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "review",
+          "type": "IMAGE",
+          "links": [
+            17
+          ]
+        },
+        {
+          "name": "layout_path",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZExtractScenery"
+      },
+      "widgets_values": [
+        "yard",
+        "The Yard",
+        "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        24,
+        0.00012
+      ],
+      "widgets_values_named": {
+        "stage_id": "yard",
+        "name": "The Yard",
+        "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+        "threshold": 24,
+        "min_area": 0.00012
+      }
+    },
+    {
+      "id": 7,
+      "type": "PreviewAny",
+      "title": "Plan (JSON)",
+      "pos": [
+        480,
+        720
+      ],
+      "size": [
+        440,
+        300
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 14
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "title": "Populated scene",
+      "pos": [
+        960,
+        900
+      ],
+      "size": [
+        420,
+        360
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "PreviewImage",
+      "title": "Isolated additions",
+      "pos": [
+        960,
+        1300
+      ],
+      "size": [
+        420,
+        360
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "PreviewImage",
+      "title": "Review sheet: elements over the scene, effects over the plate",
+      "pos": [
+        1440,
+        600
+      ],
+      "size": [
+        520,
+        560
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 17
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "CFZExportAssetPatch",
+      "title": "Export PARTIAL assets.json",
+      "pos": [
+        1920,
+        120
+      ],
+      "size": [
+        440,
+        340
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "project",
+          "type": "CFZ_PROJECT",
+          "link": 18
+        },
+        {
+          "name": "bundles.bundle_0",
+          "type": "CFZ_BUNDLE",
+          "link": 19
+        },
+        {
+          "name": "bundles.bundle_1",
+          "type": "CFZ_BUNDLE",
+          "link": 20
+        },
+        {
+          "name": "bundles.bundle_2",
+          "type": "CFZ_BUNDLE",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "manifest_path",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFZExportAssetPatch"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 12,
+      "type": "MarkdownNote",
+      "pos": [
+        -510,
+        650
+      ],
+      "size": [
+        440,
+        760
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# Living scenery for The Yard\n\nAnimated background characters, props and scene effects for an ACCEPTED stage painting, Street Fighter style. MUTED BY DEFAULT: nothing runs until you unmute it (select all, Ctrl+M). Upload the accepted painting (default name `cfz-accepted-yard-stage.png`) into ComfyUI's input folder and select it in the image node; set the stage ID, name and description to the accepted stage; optionally steer the director with a direction.\n\n1. **Scene director** (Gemini vision, priced per token, at most about $0.19): reads the painting and plans 12 additions (what, where, how each moves), the effects on features already painted (beacons, billboards, vents, puddles, sky, foliage...) and the weather.\n2. **Populated scene** (one 2K edit, $0.07): the painting repainted with exactly those additions.\n3. **Separation** (one 2K edit, $0.07): the additions alone, in place, on chroma green.\n4. **Extract** (local, free): cuts every addition out at its exact position and scale, keeps the scene's other changes as still layers, and writes `scenery/yard.json` plus a review sheet.\n5. **Export** writes a PARTIAL assets.json in this patch folder.\n\nAbout $0.33 at most. Review the sheet, edit motions in `scenery/yard.json` if needed, then fold it into the accepted bundle:\n\n    node build/tools/stage-scenery.cjs apply --patch <this folder> --bundle <accepted bundle>\n\nCloud image models do not promise identical pixels on a rerun: the patch folder keeps the plan, the scene, the isolated layer and every cut-out."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      3,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      1,
+      0,
+      4,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      4,
+      2,
+      0,
+      4,
+      1,
+      "IMAGE"
+    ],
+    [
+      5,
+      3,
+      0,
+      4,
+      2,
+      "STRING"
+    ],
+    [
+      6,
+      1,
+      0,
+      5,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      7,
+      4,
+      1,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      8,
+      3,
+      0,
+      5,
+      2,
+      "STRING"
+    ],
+    [
+      9,
+      1,
+      0,
+      6,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      10,
+      2,
+      0,
+      6,
+      1,
+      "IMAGE"
+    ],
+    [
+      11,
+      4,
+      1,
+      6,
+      2,
+      "IMAGE"
+    ],
+    [
+      12,
+      5,
+      1,
+      6,
+      3,
+      "IMAGE"
+    ],
+    [
+      13,
+      3,
+      0,
+      6,
+      4,
+      "STRING"
+    ],
+    [
+      14,
+      3,
+      0,
+      7,
+      0,
+      "*"
+    ],
+    [
+      15,
+      4,
+      1,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      5,
+      1,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      6,
+      1,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      1,
+      0,
+      11,
+      0,
+      "CFZ_PROJECT"
+    ],
+    [
+      19,
+      4,
+      0,
+      11,
+      1,
+      "CFZ_BUNDLE"
+    ],
+    [
+      20,
+      5,
+      0,
+      11,
+      2,
+      "CFZ_BUNDLE"
+    ],
+    [
+      21,
+      6,
+      0,
+      11,
+      3,
+      "CFZ_BUNDLE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Plan, paint, separate, extract and export",
+      "bounding": [
+        -25,
+        45,
+        2390,
+        1700
+      ],
+      "color": "#3f6b7f",
+      "font_size": 26,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5,
+      "offset": [
+        620,
+        300
+      ]
+    },
+    "cfzStageScenery": {
+      "mutedByDefault": true,
+      "stage": "yard",
+      "stageImage": "cfz-accepted-yard-stage.png",
+      "stages": 1,
+      "paidImages": 2,
+      "twoK": 2,
+      "directorCalls": 1,
+      "directorModel": "Gemini 3.8 Flash",
+      "directorMaxUSD": 0.188588,
+      "estimatedUSD": 0.332732
+    }
+  },
+  "version": 0.4
+}

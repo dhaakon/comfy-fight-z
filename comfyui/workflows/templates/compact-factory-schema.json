@@ -1998,5 +1998,591 @@
     "search_aliases": null,
     "essentials_category": null,
     "has_intermediate_output": false
+  },
+  "CFZSceneDirector": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "stage": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "stage_id": [
+          "STRING",
+          {
+            "default": "environment",
+            "multiline": false
+          }
+        ],
+        "name": [
+          "STRING",
+          {
+            "default": "New Environment",
+            "multiline": false
+          }
+        ],
+        "description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ]
+      },
+      "optional": {
+        "direction": [
+          "STRING",
+          {
+            "tooltip": "Optional: what you want in the background. Empty lets the director decide from the painting.",
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "element_count": [
+          "INT",
+          {
+            "tooltip": "How many characters and props to add.",
+            "default": 12,
+            "min": 4,
+            "max": 16
+          }
+        ],
+        "director_model": [
+          "COMBO",
+          {
+            "advanced": true,
+            "default": "Gemini 3.8 Flash",
+            "multiselect": false,
+            "options": [
+              "Gemini 3.8 Flash",
+              "Gemini 3.1 Pro"
+            ]
+          }
+        ],
+        "reroll": [
+          "INT",
+          {
+            "tooltip": "Raise to redraw this node's images and clips with fresh seeds; every other node stays cached and unbilled.",
+            "advanced": true,
+            "default": 0,
+            "min": 0,
+            "max": 99
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "stage",
+        "stage_id",
+        "name",
+        "description"
+      ],
+      "optional": [
+        "direction",
+        "element_count",
+        "director_model",
+        "reroll"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "STRING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "plan"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZSceneDirector",
+    "display_name": "CFZ Scene Director (plan living scenery)",
+    "description": "PAID, priced per token (Gemini vision, about $0.02-0.19 a plan): reads the accepted stage painting and plans the background characters and props to add (what, where, how each moves), the ambient effects on features already in the painting (beacons, billboards, vents, puddles, sky, foliage...) and the weather. Its plan drives the painter, the separation and the extraction.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZScenePlan": {
+    "input": {
+      "required": {
+        "text": [
+          "STRING",
+          {
+            "forceInput": true,
+            "multiline": true
+          }
+        ],
+        "stage_id": [
+          "STRING",
+          {
+            "default": "environment",
+            "multiline": false
+          }
+        ],
+        "name": [
+          "STRING",
+          {
+            "default": "New Environment",
+            "multiline": false
+          }
+        ],
+        "description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "element_count": [
+          "INT",
+          {
+            "default": 12,
+            "min": 4,
+            "max": 16
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "text",
+        "stage_id",
+        "name",
+        "description",
+        "element_count"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "STRING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "plan"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZScenePlan",
+    "display_name": "CFZ Scene Plan (internal)",
+    "description": "Parses and validates the scene director's answer into a scenery plan.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z/internal",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZStageScenery": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "stage_reference": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "stage_id": [
+          "STRING",
+          {
+            "default": "environment",
+            "multiline": false
+          }
+        ],
+        "name": [
+          "STRING",
+          {
+            "default": "New Environment",
+            "multiline": false
+          }
+        ],
+        "description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ]
+      },
+      "optional": {
+        "plan": [
+          "STRING",
+          {
+            "tooltip": "The CFZ Scene Director's plan.",
+            "forceInput": true,
+            "multiline": true
+          }
+        ],
+        "crowd": [
+          "STRING",
+          {
+            "tooltip": "Without a plan: who and what to add.",
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "reroll": [
+          "INT",
+          {
+            "tooltip": "Raise to redraw this node's images and clips with fresh seeds; every other node stays cached and unbilled.",
+            "advanced": true,
+            "default": 0,
+            "min": 0,
+            "max": 99
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "stage_reference",
+        "stage_id",
+        "name",
+        "description"
+      ],
+      "optional": [
+        "plan",
+        "crowd",
+        "reroll"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "bundle",
+      "scene"
+    ],
+    "output_tooltips": [
+      null,
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZStageScenery",
+    "display_name": "CFZ Stage Scenery (populated scene)",
+    "description": "PAID cloud generation: exactly one 2K image edit. Repaints the accepted stage painting with the scene director's additions in place, keeping everything else identical. Saved as the stage's populated scene.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZSceneIsolate": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "scene": [
+          "IMAGE",
+          {
+            "rawLink": true
+          }
+        ],
+        "stage_id": [
+          "STRING",
+          {
+            "default": "environment",
+            "multiline": false
+          }
+        ],
+        "name": [
+          "STRING",
+          {
+            "default": "New Environment",
+            "multiline": false
+          }
+        ],
+        "description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ]
+      },
+      "optional": {
+        "plan": [
+          "STRING",
+          {
+            "tooltip": "The CFZ Scene Director's plan: names what to keep.",
+            "forceInput": true,
+            "multiline": true
+          }
+        ],
+        "reroll": [
+          "INT",
+          {
+            "tooltip": "Raise to redraw this node's images and clips with fresh seeds; every other node stays cached and unbilled.",
+            "advanced": true,
+            "default": 0,
+            "min": 0,
+            "max": 99
+          }
+        ]
+      },
+      "hidden": {
+        "auth_token_comfy_org": [
+          "AUTH_TOKEN_COMFY_ORG"
+        ],
+        "api_key_comfy_org": [
+          "API_KEY_COMFY_ORG"
+        ],
+        "comfy_usage_source": [
+          "COMFY_USAGE_SOURCE"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "scene",
+        "stage_id",
+        "name",
+        "description"
+      ],
+      "optional": [
+        "plan",
+        "reroll"
+      ],
+      "hidden": [
+        "auth_token_comfy_org",
+        "api_key_comfy_org",
+        "comfy_usage_source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "bundle",
+      "isolated"
+    ],
+    "output_tooltips": [
+      null,
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZSceneIsolate",
+    "display_name": "CFZ Scene Isolate (separate background characters)",
+    "description": "PAID cloud generation: exactly one 2K image edit. Keeps only the characters and props the populated scene added, in place, on chroma green, so CFZ Extract Scenery can key clean, exactly placed cut-outs.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": true,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "CFZExtractScenery": {
+    "input": {
+      "required": {
+        "project": [
+          "CFZ_PROJECT",
+          {}
+        ],
+        "stage": [
+          "IMAGE",
+          {}
+        ],
+        "scene": [
+          "IMAGE",
+          {}
+        ],
+        "isolated": [
+          "IMAGE",
+          {}
+        ],
+        "plan": [
+          "STRING",
+          {
+            "forceInput": true,
+            "multiline": true
+          }
+        ],
+        "stage_id": [
+          "STRING",
+          {
+            "default": "environment",
+            "multiline": false
+          }
+        ],
+        "name": [
+          "STRING",
+          {
+            "default": "New Environment",
+            "multiline": false
+          }
+        ],
+        "description": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ]
+      },
+      "optional": {
+        "threshold": [
+          "INT",
+          {
+            "tooltip": "Colour difference that counts as a change.",
+            "advanced": true,
+            "default": 24,
+            "min": 4,
+            "max": 128
+          }
+        ],
+        "min_area": [
+          "FLOAT",
+          {
+            "tooltip": "Smallest element, as a fraction of the image.",
+            "advanced": true,
+            "default": 0.00012,
+            "min": 1e-05,
+            "max": 0.01,
+            "step": 1e-05
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "project",
+        "stage",
+        "scene",
+        "isolated",
+        "plan",
+        "stage_id",
+        "name",
+        "description"
+      ],
+      "optional": [
+        "threshold",
+        "min_area"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CFZ_BUNDLE",
+      "IMAGE",
+      "STRING"
+    ],
+    "output_is_list": [
+      false,
+      false,
+      false
+    ],
+    "output_name": [
+      "bundle",
+      "review",
+      "layout_path"
+    ],
+    "output_tooltips": [
+      null,
+      null,
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "CFZExtractScenery",
+    "display_name": "CFZ Extract Scenery (placed layers + effects)",
+    "description": "Local, no cloud calls. Compares the populated scene with the clean painting and cuts every addition out at its exact position and scale, using the isolated layer's key for clean edges. The scene's other changes stay as still layers. Writes scenery/<stage>.json (placed elements, effects, weather) and a review sheet; reviewed motions on a re-run are kept.",
+    "python_module": "custom_nodes.comfy_fighter_assets",
+    "category": "Comfy Fighter Z",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
   }
 }

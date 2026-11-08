@@ -27,7 +27,7 @@ if(fs.existsSync(previous)){
   if(path.dirname(path.resolve(backup))!==fs.realpathSync(disabled)||fs.existsSync(backup))throw new Error('Unexpected legacy-pack backup path');
 }
 fs.mkdirSync(target,{recursive:true});
-for(const file of ['__init__.py','factories.py'])fs.copyFileSync(path.resolve(__dirname,'../custom_nodes/comfy_fighter_assets',file),path.join(target,file));
+for(const file of ['__init__.py','factories.py','scenery.py'])fs.copyFileSync(path.resolve(__dirname,'../custom_nodes/comfy_fighter_assets',file),path.join(target,file));
 if(backup){
   fs.renameSync(previous,backup);
   console.log(`Preserved the previous project pack in ${backup}.`);

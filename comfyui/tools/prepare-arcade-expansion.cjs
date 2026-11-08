@@ -6,33 +6,13 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
-const { makeExpansionGraph, expansionCounts } = require('./prepare-factory-workflows.cjs');
+const { makeExpansionGraph, expansionCounts, apiPrompt } = require('./prepare-factory-workflows.cjs');
 const { makeAudioJobs, makeAudioGraph } = require('./prepare-audio-workflows.cjs');
 const { directoryTarget } = require('../../build/tools/lib/runtime-validation.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const RATES = Object.freeze({ image1K: .048048, image2K: .072072, musicSecond: .0025, effectMinute: .14, speechThousandCharacters: .1144 });
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
-
-// UI graph -> API prompt. Named widgets carry values; a few local nodes only have positional widgets.
-const POSITIONAL = { LoadImage: ['image'], CFZAssetRoot: ['root_directory', 'config_json'], CFZSaveAudio: ['asset_json'] };
-function apiPrompt(workflow) {
-  const links = new Map(workflow.links.map(link => [link[0], link])), prompt = {};
-  for (const node of workflow.nodes) {
-    if (node.type === 'MarkdownNote' || node.mode === 2 || node.mode === 4) continue;
-    const inputs = node.widgets_values_named ? { ...node.widgets_values_named }
-      : Object.fromEntries((POSITIONAL[node.type] || []).map((name, index) => [name, node.widgets_values[index]]));
-    if (!node.widgets_values_named && node.widgets_values?.length && !POSITIONAL[node.type]) throw new Error(`No widget mapping for ${node.type}.`);
-    delete inputs.control_after_generate;
-    for (const input of node.inputs || []) if (input.link !== null && input.link !== undefined) {
-      const link = links.get(input.link);
-      if (!link) throw new Error(`Missing link ${input.link} on ${node.type}.`);
-      inputs[input.name] = [String(link[1]), link[2]];
-    }
-    prompt[node.id] = { class_type: node.type, inputs, _meta: { title: node.title || node.type } };
-  }
-  return prompt;
-}
 
 function freshDirectory(out) {
   const directory = path.resolve(ROOT, out), runs = path.join(ROOT, 'output/test-runs') + path.sep;

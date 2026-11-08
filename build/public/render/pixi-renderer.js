@@ -41,6 +41,7 @@
     const sceneryCanvas = [0, 1].map(() => { const c = document.createElement('canvas'); c.width = 1920; c.height = 1080; return c; });
     const sceneryTextures = sceneryCanvas.map(c => PIXI.Texture.from(c)), scenerySprites = sceneryTextures.map(t => { const sprite = new PIXI.Sprite(t); sprite.scale.set(.5); return sprite; });
     stageLayer.addChild(scenerySprites[0]);
+    let sceneryFrame = 0; const sceneryDrawn = [false, false];
     app.stage.addChild(stageLayer, titleTint, shaker, scenerySprites[1], flash);
     // Impact shader on the world: chromatic aberration, radial blur, a shockwave ring and a negative flash,
     // driven per frame and attached only while something is happening. Filter space is the full screen.
@@ -307,7 +308,14 @@ void main() {
       else { if (!fallbackDrawn) { drawFallbackStage(); fallbackDrawn = true; } stageFallback.visible = true; stageSprite.visible = false; lastStage = null; }
       if (screen.scenery) {
         const info = screen.sceneryInfo(), live = !!state;
-        sceneryCanvas.forEach((c, i) => { const g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, 1920, 1080); g.setTransform(2, 0, 0, 2, 0, 0); if (live) (i ? screen.scenery.drawFront : screen.scenery.drawLayers)(g, info); sceneryTextures[i].source.update(); scenerySprites[i].visible = live; });
+        // Background life redraws at 30 frames a second, as arcade stages animated; an empty canvas is not re-uploaded.
+        if (live && (sceneryFrame++ & 1) === 0) sceneryCanvas.forEach((c, i) => {
+          const g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, 1920, 1080); g.setTransform(2, 0, 0, 2, 0, 0);
+          const drawn = (i ? screen.scenery.drawFront : screen.scenery.drawStage)(g, info);
+          if (drawn || sceneryDrawn[i]) sceneryTextures[i].source.update();
+          sceneryDrawn[i] = drawn;
+        });
+        scenerySprites.forEach(sprite => { sprite.visible = live; });
       }
       const title = !state && ui('title'); titleTint.visible = !!title; if (title) coverSprite(titleTint, title, 0, 0, 960, 540);
       world.position.set(-view.x * view.zoom + (view.shakeX || 0), FLOOR * (1 - view.zoom) + view.lift + (view.shakeY || 0)); world.scale.set(view.zoom);

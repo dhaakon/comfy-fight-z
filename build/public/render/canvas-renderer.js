@@ -7,7 +7,7 @@
     const { art, assetSource, ui, fighterData, portraitSource } = deps;
     // Life points per fighter (engines before the 1000-point scale used 100).
     const LIFE = E.MAX_HP || 100;
-    // Living scenery (render/scenery.js): animated stage elements in the painting's space, and front weather.
+    // Living scenery (render/scenery.js): placed elements and effects in the painting's space, weather over the fighters.
     const scenery = root.CFZScenery ? root.CFZScenery.create() : null;
     const sceneryInfo = () => ({ view, stage: manifest?.stages?.[stageIndex], getImage: art, state, time: performance.now() / 1000, floor: FLOOR, horizonDrop: 150, worldWidth: E.WIDTH });
     const reducedMotion = { matches: false };
@@ -221,8 +221,9 @@
     const span = 960 / view.zoom, travel = Math.max(1, E.WIDTH - span), scale = (1 + (E.WIDTH - 960) * PARALLAX / 960) * (1 + (view.zoom - 1) * .5);
     const offset = (view.x / travel) * (960 * scale - 960);
     ctx.save(); ctx.translate(-offset, FLOOR * (1 - scale) + view.lift * .5); ctx.scale(scale, scale); stageDraw();
-    // Stage elements cut from the populated scene animate in the painting's own space, so they keep its parallax and scale.
-    if (scenery && state) scenery.drawLayers(ctx, sceneryInfo());
+    // Living scenery (placed elements and effects on painted features) animates in the painting's own space,
+    // so it keeps the painting's parallax and scale.
+    if (scenery && state) scenery.drawStage(ctx, sceneryInfo());
     ctx.restore();
   }
   // Spark tiers by the damage a hit dealt, on the 1000-point life scale: light under 45, medium under 75, heavy from 75.

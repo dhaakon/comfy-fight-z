@@ -165,6 +165,13 @@ test('shipped recipes use text-only fictional art or explicitly muted upload tem
     const ltxTitle=file.replaceAll('\\','/')==='comfyui/workflows/ltx-title-animation.json';
     const ltxOpening=file.replaceAll('\\','/')==='comfyui/workflows/ltx-opening-animation.json';
     const expansion=/(^|\/)arcade-expansion\.json$/.test(file.replaceAll('\\','/'));
+    const scenery=/(^|\/)stage-scenery\.json$/.test(file.replaceAll('\\','/'));
+    if(scenery) {
+      assert.equal(workflow.extra.cfzStageScenery.mutedByDefault,true);
+      assert.ok(functional(workflow).every(node=>node.mode===2),`${file} must stay muted until the accepted stage painting is uploaded`);
+      const uploads=workflow.nodes.filter(node=>node.type==='LoadImage');
+      assert.equal(uploads.length,1); assert.match(uploads[0].widgets_values[0],/^cfz-accepted-[a-z0-9-]+-stage\.png$/);
+    }
     if(expansion) {
       assert.equal(workflow.extra.cfzArcadeExpansion.mutedByDefault,true);
       assert.ok(functional(workflow).every(node=>node.mode===2),`${file} must stay muted until accepted identities are uploaded`);
@@ -211,12 +218,12 @@ test('shipped recipes use text-only fictional art or explicitly muted upload tem
       assert.equal(lastFrame.link !== null,ltxTitle,`${file} title loop uses the same start/end frame`);
     }
     for (const node of workflow.nodes || []) {
-      if(!ensembleUpload && !ltxSingle && !ltxBatch && !ltxTitle && !ltxOpening && !expansion) assert.notEqual(node.type,'LoadImage',`${file} must not load a previous session image`);
+      if(!ensembleUpload && !ltxSingle && !ltxBatch && !ltxTitle && !ltxOpening && !expansion && !scenery) assert.notEqual(node.type,'LoadImage',`${file} must not load a previous session image`);
       if(phoneUpload && node.widgets_values_named?.image) {
         assert.ok(['CFZCharacterFactory','CFZEnvironmentFactory'].includes(node.type));
         assert.equal(node.widgets_values_named.source_mode,'Upload reference');
         assert.match(node.widgets_values_named.image,/^cfz-phone-NEW_RUN-(griddle|rivet|tempo|nimbus|switchback|brick|yard)\.png$/);
-      } else if(!(expansion && node.type==='LoadImage')) assert.ok(!node.widgets_values_named?.image,`${file} must not preselect an external image`);
+      } else if(!((expansion || scenery) && node.type==='LoadImage')) assert.ok(!node.widgets_values_named?.image,`${file} must not preselect an external image`);
       if (['CFZProjectSettings','CFZAssetRoot'].includes(node.type)) {
         const outputRoot=node.widgets_values_named?.root_directory || node.widgets_values[0];
         if(phoneUpload) assert.equal(outputRoot,'__PHONE_PHOTO_DEMO_BUNDLE_ROOT__');

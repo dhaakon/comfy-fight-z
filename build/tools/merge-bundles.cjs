@@ -15,8 +15,10 @@ const ID = /^[a-z0-9][a-z0-9_-]*$/i;
 const IMAGE_SCHEMA = 'comfy-fighter-assets/v1', AUDIO_SCHEMA = 'comfy-fighter-audio/v1';
 const LEGACY_SCHEMAS = { [IMAGE_SCHEMA]: 'dad-fighter-assets/v1', [AUDIO_SCHEMA]: 'dad-fighter-audio/v1' };
 const MAPPING_FIELDS = ['kind', 'fighter', 'stage', 'sheet', 'poses', 'category', 'key'];
+// A patch may replace a scenery layer's pixels and placement; its kind and stage still match the base.
 const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending'];
-const IMAGE_KINDS = ['source', ...FIGHTER_KINDS, 'stage', 'ui', 'effects'];
+// Living stage scenery (a populated scene, its isolated layer and placed cut-outs) belongs to one stage.
+const IMAGE_KINDS = ['source', ...FIGHTER_KINDS, 'stage', 'ui', 'effects', 'scene', 'layer'];
 const STYLES = ['balanced', 'power', 'speed', 'zoner', 'grappler', 'trickster', 'boss'];
 const canonical = () => require('../../comfyui/config/game.json');
 function readMap(folder, filename, schema) {
@@ -61,7 +63,7 @@ function baseContract(manifest) {
   for (const item of manifest.assets) {
     if (!IMAGE_KINDS.includes(item.kind)) throw new Error(`Invalid base asset kind: ${item.id}`);
     if (item.fighter && !game.fighters.some(f => f.id === item.fighter) || item.stage && !game.stages.some(s => s.id === item.stage)) throw new Error(`Unknown owner on base asset: ${item.id}`);
-    if (FIGHTER_KINDS.includes(item.kind) && (!item.fighter || item.stage) || item.kind === 'stage' && (!item.stage || item.fighter) || ['ui', 'effects'].includes(item.kind) && (item.fighter || item.stage) || item.kind === 'source' && Boolean(item.fighter) === Boolean(item.stage)) throw new Error(`Invalid owner mapping on base asset: ${item.id}`);
+    if (FIGHTER_KINDS.includes(item.kind) && (!item.fighter || item.stage) || ['stage', 'scene', 'layer'].includes(item.kind) && (!item.stage || item.fighter) || ['ui', 'effects'].includes(item.kind) && (item.fighter || item.stage) || item.kind === 'source' && Boolean(item.fighter) === Boolean(item.stage)) throw new Error(`Invalid owner mapping on base asset: ${item.id}`);
     if (item.kind === 'sprites' && !isDeepStrictEqual(item.poses, layouts[item.sheet])) throw new Error(`Invalid pose layout on base asset: ${item.id}`);
   }
   return assets;
