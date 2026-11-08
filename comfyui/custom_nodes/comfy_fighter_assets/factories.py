@@ -69,8 +69,10 @@ POSE_HINTS = {
     "roll3": "later in the forward roll: body rotated further, sitting up out of the tuck with knees still to the chest, feet coming down to the floor",
     "roll4": "finishing the roll: on one knee in a low crouch, coming up, facing right",
     "rollrise": "standing back up into the upright fighting guard after the roll, facing right",
-    "sweepwind": "starting a low sweep kick: dropping into a deep crouch with one hand on the floor, the attacking leg beginning to swing outward to the RIGHT just above the floor",
-    "sweepfull": "low sweep kick at full extension: crouched low on the bent planted leg with both hands on the floor, the attacking leg straight out ALONG THE FLOOR to the RIGHT with the foot at ankle height, never raised to the knee or hip",
+    # The chamber keeps the leg tucked: told the leg was already swinging out, the model drew the full sweep here and
+    # then a standing kick for the next cell.
+    "sweepwind": "chambering a low sweep kick: dropping into a deep crouch with one hand planted on the floor, the attacking leg still bent and tucked beside the body with its knee low, NOT yet extended, about to swing out to the RIGHT",
+    "sweepfull": "low sweep kick at full extension: crouched low on the bent planted leg with both hands on the floor, the attacking leg straight out ALONG THE FLOOR to the RIGHT with the foot at ankle height, never raised to the knee or hip, the body never standing",
     "sweepthrough": "sweep follow-through: the sweeping leg carried past its furthest point along the floor, body spinning low over the planted leg, hands on the floor, the whole body still close to the ground",
     "sweepback": "recovering from the sweep: drawing the leg back under the body into the low crouching guard, still crouched low (not standing), facing right",
     "guardhit": "absorbing a blocked hit, forearms crossed and jolted back, weight pushed onto the rear foot, feet sliding, head tucked",
@@ -79,7 +81,9 @@ POSE_HINTS = {
 ARTWORK = {
     "portrait": ("1:1", False, "Close-up face and shoulders for character selection. Expressive confident anime fighter portrait, uncluttered dark background, no text."),
     "hero": ("2:3", True, "One complete full-body hero fighter in their signature special-move stance, facing RIGHT. Keep the energy close to the body, and include complete shoes and hands with safe padding. "),
-    "cutin": ("16:9", False, "Dramatic horizontal special-move cut-in: face and upper torso, fast energy streaks, strong negative space, no text."),
+    # Cut-ins are shown unkeyed over the fight, so the background must be painted: with "negative space" and a
+    # chroma-green identity reference the model sometimes kept the green screen, or drew a whole game screen.
+    "cutin": ("16:9", False, "Dramatic horizontal special-move cut-in: face and upper torso, fast energy streaks across a full-bleed painted background of speed lines and color (never a flat green screen or a blank backdrop). A single illustration, not a game screenshot: no text, life bars, interface or crowd."),
     "ending": ("16:9", False, "Arcade ending illustration for this fighter after winning the neighborhood tournament: one calm cinematic epilogue scene with the same character, warm evening light, a fictional suburban setting, readable expression and pose. No other recognizable people, no text, captions, logos, borders or panels."),
 }
 EFFECTS = ["hit", "block", "projectile", "dust", "ko", "powerup", "dash", "launch", "spark"]

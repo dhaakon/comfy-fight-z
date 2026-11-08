@@ -1,0 +1,188 @@
+{
+  "castSchema": "comfy-fighter-cast/v1",
+  "extends": "comfyui/config/factory.json",
+  "id": "billionaires-brawl",
+  "title": "Comfy Fighter Z",
+  "subtitle": "Billionaires Brawl",
+  "publicFigures": true,
+  "about": "Economic satire: the six richest people in the world in November 2026 as arcade fighters. Ranking: Bloomberg Billionaires Index, July 13, 2026 (Musk $876B, Larry Page $301B, Sergey Brin $280B, Jeff Bezos $269B, Mark Zuckerberg $233B, Michael Dell $223B) and the Forbes real-time update reported on November 5, 2026 (Musk $869B, Bezos $361B, Page $233B, Dell $229B, Brin $214B, Zuckerberg $211B): the same six names. Public record behind the jokes: Musk became the first trillionaire at the SpaceX listing on June 12, 2026 and lost the title within two weeks when SpaceX shares fell (Bloomberg); his 2018 'funding secured' post and the 2018 launch of a car into space. Bezos rose about $122 billion in 2026 to second place (Forbes, Nairametrics). Page and Brin moved family offices and dozens of California LLCs, including those managing Brin's superyacht, to Delaware and Nevada ahead of California's proposed billionaire tax (Business Insider, New York Times, January 2026); that tax, Proposition 40, was heading for defeat after $316.7 million was spent against it (CalMatters, November 2026); Brin's 2025 memo called sixty-hour weeks the sweet spot. Meta guided $115-135 billion of 2026 capital spending toward 'personal superintelligence'. Dell started in a university dorm room in 1984 and became the largest maker of AI servers as its stock rose about 225% in 2026. The fighters are cartoon caricatures of these public figures drawn from short text descriptions in the game's anime style; no photographs, voices or other media of the real people are used, the voices are stock synthetic arcade voices, and every line is either public record or obvious arcade banter. The final boss and all three arenas are invented.",
+  "assetRoot": "output/assets/generated/billionaires-brawl",
+  "videoModel": "Seedance 1.5 Pro",
+  "videoResolution": "1080p",
+  "style": "Original 1990s shonen battle-anime fighting-game artwork: bold economical black ink, angular expressive faces, pronounced but believable athletic anatomy, sculpted two-tone cel shading, sharp cloth folds, energetic foreshortening and vivid compact energy effects. These are pointed satirical caricatures of adult public figures, the richest people in the world, drawn only from the written description (age, hair, build, attire); no photograph is used. The exaggeration targets wealth, ego and corporate persona, never ethnicity, religion, disability or body shame. Preserve the supplied character design across all derived images. Use clear distinct silhouettes, complete shoes and readable fighting poses. No existing franchise characters, costumes, company logos, brand marks, currency symbols, real flags or lettering. No green clothing or accessories, duplicated props, extra fingers, lettering or watermarks.",
+  "uiStyle": "Original 1990s shonen battle-anime arcade interface illustration for a satirical billionaires' tournament: stacked gold bullion, a crashing stock chart drawn only as abstract red and gold bars, rocket exhaust, champagne spray and scattered blank gold coins, bold brush ink, hard cel shadows, hand-painted energy clouds, deep black and midnight blue, vivid gold, crimson, electric cyan and white highlights. Strong negative space for readable game controls. No real faces, real buildings, recognizable real venues, company logos, brand marks, currency symbols, real flags, numbers or copied franchise imagery.",
+  "stageStyle": "Original hand-painted 1990s anime environment background for a satirical billionaires' tournament. Wide side-on eye-level view, rich cel-shaded materials and dramatic atmospheric light. An unobstructed horizontal fighting floor sits at 82 percent of the image height. Keep all furniture behind the fighting plane. Natural surfaces continue to all four image edges. No people, real venue details, real flags, signage, logos, brand marks, lettering, numbers, floor emblems, decorative borders, directional speed lines, radial rays, graphic vignette or letterboxing.",
+  "fighters": [
+    {
+      "id": "musk",
+      "name": "Musk",
+      "fullName": "Elon Musk",
+      "color": "#e31937",
+      "enabled": true,
+      "description": "A pointed satirical anime caricature of a tall, broad-shouldered rocket-and-car mogul in his mid fifties: short swept-back dark-brown hair, a heavy jaw, a restless smirk and wide showman eyes. Wears a plain black t-shirt, an open black bomber jacket with the sleeves pushed up, black jeans and black high-top sneakers. No hat, badge, chain, glasses, props, lettering or loose accessories. His forward-leaning brawler guard, chin up, gives him a big top-heavy silhouette that looks ready to announce something.",
+      "specialMove": {
+        "name": "Rapid Unscheduled Disassembly",
+        "description": "Musk thrusts one palm forward toward the right and hurls a compact silver toy rocket that tumbles end over end and bursts into a small cartoon fireball. Keep the rocket close to his hand so the game can launch it as a separate projectile; preserve the entire body and both sneakers inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Trillionaire For A Week",
+        "description": "Musk rockets upward on a column of fire toward a floating golden crown that cracks apart as a wall of falling red market bars crashes down on the opponent. In sprite art show him launching upward with compact flame at his feet."
+      },
+      "introTagline": "The first trillionaire. For about two weeks.",
+      "introVoice": "Brian (male, american)",
+      "style": "trickster",
+      "winQuote": "Funding secured.",
+      "ending": "Arcade ending: Musk wins the tournament, announces that the prize money will arrive next year, probably, and launches the trophy into space, where it drifts past a red sports car. The fans are told it will land itself."
+    },
+    {
+      "id": "bezos",
+      "name": "Bezos",
+      "fullName": "Jeff Bezos",
+      "color": "#ff9900",
+      "enabled": true,
+      "description": "A pointed satirical anime caricature of a compact, very muscular retail-and-rocket mogul in his early sixties: a completely shaved gleaming bald head, a booming open-mouthed laugh, thick neck and sculpted gym arms. Wears dark mirrored aviator sunglasses, a tight black t-shirt under a fitted charcoal quilted vest, dark slim jeans and spotless white sneakers. No hat, badge, chain, props, lettering or loose accessories. His low wide boxer stance and bulky shoulders make a short, powerful silhouette.",
+      "specialMove": {
+        "name": "Same-Day Delivery",
+        "description": "Bezos snaps his arm forward toward the right and hurls a compact brown cardboard parcel wrapped in plain tape, trailing orange speed streaks. Keep the parcel close to his hand so the game can launch it as a separate projectile; preserve the entire body and both sneakers inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Suborbital Joyride",
+        "description": "Bezos rides a stubby white rocket straight up off the screen and comes back down feet first in a ring of flame and dust. In sprite art show him crouched on a compact rocket burst at his feet."
+      },
+      "introTagline": "Second-richest man on Earth. Your package is still out for delivery.",
+      "introVoice": "Adam (male, american)",
+      "style": "speed",
+      "winQuote": "Your victory has been canceled. No refunds.",
+      "ending": "Arcade ending: Bezos buys the arena, converts it into a fulfillment center and gives every spectator a ten-minute break, per shift. The trophy ships separately and arrives in a box four times its size."
+    },
+    {
+      "id": "page",
+      "name": "Page",
+      "fullName": "Larry Page",
+      "color": "#4285f4",
+      "enabled": true,
+      "description": "A pointed satirical anime caricature of a reserved, quietly calculating search-engine founder in his early fifties: short dark-brown hair going gray at the temples, a short trimmed graying beard, a deadpan poker face and narrowed thoughtful eyes. Wears a navy quarter-zip pullover over a white t-shirt, slim gray chinos and gray running shoes. No hat, glasses, badge, props, lettering or loose accessories. His tidy, upright counter-puncher guard gives him a lean, composed silhouette.",
+      "specialMove": {
+        "name": "PageRank",
+        "description": "Page flicks two fingers forward toward the right and releases a compact spinning ring of pale-blue light shaped like a magnifying lens. Keep the ring close to his hand so the game can launch it as a separate projectile; preserve the entire body and both shoes inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Forty-Five LLCs",
+        "description": "Page summons a whirling storm of forty-five sealed manila envelopes that swarm across the screen and slam the opponent. In sprite art show him with one arm raised and a compact swirl of envelopes around his hand."
+      },
+      "introTagline": "Forty-five California LLCs, closed or moved out of state. Just in case.",
+      "introVoice": "River (neutral, american)",
+      "style": "zoner",
+      "winQuote": "I'm feeling lucky.",
+      "ending": "Arcade ending: Page takes the trophy to Miami, files it under a Delaware holding company and is never seen again. Rumor says he is building a flying car to avoid the traffic and the tax collector."
+    },
+    {
+      "id": "brin",
+      "name": "Brin",
+      "fullName": "Sergey Brin",
+      "color": "#f4b400",
+      "enabled": true,
+      "description": "A pointed satirical anime caricature of a wiry, restless search-engine founder in his early fifties: a shaved head with dark stubble, sharp eyebrows, an intense grin and lean acrobatic limbs. Wears thin wraparound silver smart-glasses, a black long-sleeve athletic top, slim black cargo trousers with zip pockets and bright white trainers. No hat, badge, chain, props, lettering or loose accessories. His springy, low acrobat's stance makes a light, agile silhouette.",
+      "specialMove": {
+        "name": "Sixty-Hour Week",
+        "description": "Brin snaps his fingers forward toward the right and a compact spinning clock face of white light with no numbers flies out, its hands whirling. Keep the clock close to his hand so the game can launch it as a separate projectile; preserve the entire body and both trainers inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Landlocked Yacht",
+        "description": "A gleaming white superyacht surfs across the screen on a towering desert sandstorm wave and flattens the opponent while Brin rides the bow. In sprite art show him leaping forward with a compact swirl of sand around his feet."
+      },
+      "introTagline": "Moved his superyacht's paperwork to Nevada. Nevada has no sea.",
+      "introVoice": "Charlie (male, australian)",
+      "style": "balanced",
+      "winQuote": "Sixty hours a week. Minimum.",
+      "ending": "Arcade ending: Brin moors the trophy on his superyacht, registers the yacht in the desert and sails into a sea of paperwork. His AI writes the victory speech; it runs for sixty hours."
+    },
+    {
+      "id": "zuckerberg",
+      "name": "Zuckerberg",
+      "fullName": "Mark Zuckerberg",
+      "color": "#00b2ff",
+      "enabled": true,
+      "description": "A pointed satirical anime caricature of a compact, wiry social-media founder in his early forties who trains in jiu-jitsu: short tousled curly brown hair, wide unblinking eyes and a fixed, polite smile. Wears a fitted black t-shirt, a heavy gold chain necklace, loose black cargo trousers and black grappling shoes. No hat, glasses, badge, props, lettering or loose accessories. His low, hunched grappler's stance with open reaching hands makes a compact, coiled silhouette.",
+      "specialMove": {
+        "name": "Move Fast, Break Things",
+        "description": "Zuckerberg pushes both palms forward toward the right and fires a compact cube of glowing blue pixels that shatters into fragments on impact. Keep the cube close to his hands so the game can launch it as a separate projectile; preserve the entire body and both shoes inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Superintelligence Capex",
+        "description": "Zuckerberg summons a colossal glowing data-center tower that slams down from the sky and rains blue light on the opponent. In sprite art show him with both arms raised and a compact blue glow around his hands."
+      },
+      "introTagline": "Betting over a hundred billion on superintelligence this year. You are the training data.",
+      "introVoice": "Daniel (male, british)",
+      "style": "grappler",
+      "winQuote": "Thanks for the data.",
+      "ending": "Arcade ending: Zuckerberg moves the whole tournament into a virtual arena that nobody visits, trains an AI on the replays and sells the spectators' attention back to them. The trophy is a pair of smart glasses that watch you back."
+    },
+    {
+      "id": "dell",
+      "name": "Dell",
+      "fullName": "Michael Dell",
+      "color": "#7b5cff",
+      "enabled": true,
+      "description": "A pointed satirical anime caricature of a tall, lean computer-hardware mogul in his early sixties: neatly combed short silver-gray hair, a confident salesman's grin and steady blue eyes. Wears a crisp light-blue dress shirt with the sleeves rolled to the elbows, an open navy blazer, gray slacks and polished black oxford shoes. No tie, hat, glasses, badge, props, lettering or loose accessories. His upright, long-armed boxing guard gives him a tall, rangy silhouette.",
+      "specialMove": {
+        "name": "Built To Order",
+        "description": "Dell thrusts one hand forward toward the right and launches a compact glowing server blade, a thin dark metal slab edged with blue light, spinning like a throwing star. Keep the blade close to his hand so the game can launch it as a separate projectile; preserve the entire body and both shoes inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Shovels For The Gold Rush",
+        "description": "Dell plants a giant glowing server rack into the ground like a shovel and a gold rush of blank coins and sparks erupts beneath the opponent. In sprite art show him driving a compact glowing slab downward with both hands."
+      },
+      "introTagline": "Started in a dorm room. Now sells the shovels for the AI gold rush.",
+      "introVoice": "Adam (male, american)",
+      "style": "power",
+      "winQuote": "Configure your defeat. Ships in three to five business days.",
+      "ending": "Arcade ending: Dell builds the trophy to order, ships it in a box five times its size and sells the AI gold rush another truckload of shovels. The miners are still digging."
+    },
+    {
+      "id": "margincall",
+      "name": "Margin Call",
+      "fullName": "Margin Call, an invented market crash",
+      "color": "#c40d1e",
+      "enabled": true,
+      "boss": true,
+      "description": "An invented final boss: a towering faceless titan of a stock-market crash. A tall figure in an immaculate black pinstripe suit with white gloves; where the head should be, a glowing crimson visor shaped like a downward arrow. Abstract red candlestick bars, plain shapes with no numbers or lettering, cascade down its chest and arms like falling light, and long coat tails of shredded white ticker tape whip behind it. No props, logos or lettering. Its looming, arms-wide stance makes a huge, ominous silhouette.",
+      "specialMove": {
+        "name": "Closing Bell",
+        "description": "Margin Call swings one gloved fist forward toward the right and a compact ring of crimson shockwave light rolls out like the toll of a bell. Keep the ring close to its hand so the game can launch it as a separate projectile; preserve the entire body and both shoes inside the sprite cell."
+      },
+      "superMove": {
+        "name": "Black Monday",
+        "description": "The floor drops away as a waterfall of red candlestick bars crashes down across the screen and buries the opponent in paper. In sprite art show the titan with both arms thrown wide and a compact crimson glow."
+      },
+      "introTagline": "Your wealth is on paper. I am the shredder.",
+      "introVoice": "Jessica (female, american)",
+      "style": "boss",
+      "winQuote": "Market closed.",
+      "ending": "Arcade ending: Margin Call liquidates every fortune in the tournament and wires it to the people who did the actual work. Then the opening bell rings, and the market carries on as if nothing happened."
+    }
+  ],
+  "stages": [
+    {
+      "id": "taxhaven",
+      "name": "Tax Haven Marina",
+      "enabled": true,
+      "description": "A wholly fictional private-island marina at golden hour. A wide polished teak superyacht deck with a low chrome rail forms an empty level fighting plane; behind it gleaming white superyachts with gold trim are moored along a turquoise lagoon, a sleek black helicopter rests on a rooftop helipad, a white limestone cliff holds three round gold bank-vault doors, tall palms lean in the warm breeze, champagne buckets stand on a far terrace and a small silver rocket waits on a distant launch tower across the bay under a peach-and-violet sky. The island is an invented place, unrelated to any actual island, marina or photograph. No people, flags, signs, logos, lettering or floor emblems.",
+      "sourceMode": "Invent fictional reference"
+    },
+    {
+      "id": "spaceport",
+      "name": "Private Spaceport",
+      "enabled": true,
+      "description": "A wholly fictional private spaceport in a red desert at dusk. A wide scorched concrete launch apron forms an empty level fighting plane; behind it a gleaming steel rocket stands in a towering launch gantry venting white steam, red warning lights blink along the gantry, a second rocket lies toppled in smoking charred pieces beside a scorched landing pad, floodlights cross the darkening purple sky and jagged mesas line the horizon. The spaceport is an invented place, unrelated to any actual launch site, company or photograph. No people, flags, signs, logos, lettering, numbers or floor emblems.",
+      "sourceMode": "Invent fictional reference"
+    },
+    {
+      "id": "serverfarm",
+      "name": "The AI Server Farm",
+      "enabled": true,
+      "description": "A wholly fictional hyperscale AI data hall at night. A wide polished dark concrete aisle forms an empty level fighting plane; behind it endless rows of tall black server racks glow with blinking blue and white lights, thick bundles of cables run along overhead trays, silver cooling pipes drip condensation and vent soft steam, and a tall window wall at the back shows a vast power station with glowing cooling towers under a hazy orange sky. The building is an invented place, unrelated to any actual data center, company or photograph. No people, signs, logos, lettering, numbers or floor emblems.",
+      "sourceMode": "Invent fictional reference"
+    }
+  ]
+}

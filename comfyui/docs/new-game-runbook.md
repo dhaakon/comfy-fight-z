@@ -114,10 +114,13 @@ In the game, `build/public/render/scenery.js` draws the clean painting as the pl
 ## 5. Export and install
 
 ```
+node build/tools/new-game.cjs pack-media --run output/test-runs/<name>-<date>         # only when export asks for it (free, local)
 node build/tools/new-game.cjs export  --run output/test-runs/<name>-<date>            # strict build + gameplay checks → output/exports/<name>-<date>
 node build/tools/new-game.cjs install --run output/test-runs/<name>-<date> --slot <id> # → output/games/<id>, served at /<id>/
 npm start                                                                             # main game at /, every slot beside it, GAME SELECT on each title screen
 ```
+
+The package carries every source and a runtime copy of each clip and sound, and the builder caps it at 1 GiB. Seedance 1080p clips arrive at 17–33 Mbit/s, so a full cast on Seedance can pass the cap (Billionaires Brawl came to about 1.15 GiB). `export` adds up that floor before building and, when it cannot fit, refuses and names `pack-media`. That step re-encodes every clip above 12 Mbit/s as H.264 CRF 18 (visually lossless, SSIM 0.986–0.994 on the reference run; size, frame rate, frame count and duration verified) and every WAV as MP3 VBR q2 like the shipped example. The originals move to `<run>/originals/` and `pipeline.json` lists each conversion. Billionaires Brawl went from 322.6 to 130.2 MiB of media and an 827 MB package. If you stop the `npm start` server before `install` (a running server can lock the slot folder on Windows), stop its `node build/tools/serve.cjs` process too, not just the npm wrapper.
 
 Omit `--slot` to make the new game the main one (`output/game`). `node build/tools/new-game.cjs status --run <run>` prints the step log. The exported `game/` folder is self-contained (`npm start` inside it serves one game; `GAME_MOUNTS='{"/":".","/other/":"../other/game"}'` serves several).
 

@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createCanvas } = require('@napi-rs/canvas');
-const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, exportGame, install, pipeline } = require('../tools/new-game.cjs');
+const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, packMedia, packageFloor, exportGame, install, pipeline } = require('../tools/new-game.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const CAST = 'comfyui/casts/blue-wave-2026.json';
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -110,4 +110,38 @@ test('adding motion sheets to an existing run prices two 2K sheets per fighter a
   fs.writeFileSync(path.join(directory, 'bundle/assets.json'), JSON.stringify({ schema: 'comfy-fighter-assets/v1', root: '.', game: cast, assets: [] }));
   await assert.rejects(addSheets({ run: out, approveUsd: '0.5' }), /about \$0\.864864; pass --approve-usd 0\.87/);
   assert.equal(pipeline(directory).addedSheets, undefined, 'a refused request records nothing');
+});
+
+test('pack-media web-encodes heavy clips and WAV sounds, keeps the originals, and the export floor counts both copies', async t => {
+  const { spawnSync } = require('node:child_process'), crypto = require('node:crypto');
+  if (spawnSync('ffmpeg', ['-version'], { windowsHide: true }).status !== 0 || spawnSync('ffprobe', ['-version'], { windowsHide: true }).status !== 0) return t.skip('ffmpeg and ffprobe required');
+  const out = freshRun(t), { directory } = prepare({ cast: CAST, out, media: false, audio: false }), bundle = path.join(directory, 'bundle'), raw = path.join(bundle, 'raw');
+  fs.mkdirSync(raw, { recursive: true });
+  const ffmpeg = args => assert.equal(spawnSync('ffmpeg', ['-v', 'error', ...args, '-y'], { windowsHide: true, encoding: 'utf8' }).status, 0);
+  const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  const frames = file => Number(JSON.parse(spawnSync('ffprobe', ['-v', 'error', '-count_packets', '-select_streams', 'v:0', '-show_streams', '-of', 'json', file], { encoding: 'utf8', windowsHide: true }).stdout).streams[0].nb_read_packets);
+  // A lossless 720p test pattern stands in for a Seedance clip (far above 12 Mbit/s); the light clip must be left alone.
+  ffmpeg(['-f', 'lavfi', '-i', 'testsrc2=s=1280x720:r=24', '-t', '1', '-c:v', 'libx264', '-preset', 'ultrafast', '-qp', '0', '-pix_fmt', 'yuv420p', '-an', path.join(raw, 'title-0123456789abcdef.mp4')]);
+  ffmpeg(['-f', 'lavfi', '-i', 'color=c=black:s=320x180:r=24', '-t', '1', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '35', '-pix_fmt', 'yuv420p', '-an', path.join(raw, 'select-fedcba9876543210.mp4')]);
+  ffmpeg(['-f', 'lavfi', '-i', 'sine=frequency=440:duration=1', '-ac', '2', '-ar', '44100', path.join(raw, 'menu_music-00112233445566aa.wav')]);
+  const titleSha = sha(path.join(raw, 'title-0123456789abcdef.mp4')), titleFrames = frames(path.join(raw, 'title-0123456789abcdef.mp4'));
+  fs.writeFileSync(path.join(bundle, 'video.json'), JSON.stringify({ titleVideo: { id: 'title', src: 'raw/title-0123456789abcdef.mp4', sha256: titleSha, duration: 1 },
+    selectVideo: { id: 'select', src: 'raw/select-fedcba9876543210.mp4', sha256: sha(path.join(raw, 'select-fedcba9876543210.mp4')), duration: 1 } }));
+  fs.writeFileSync(path.join(bundle, 'audio.json'), JSON.stringify({ schema: 'comfy-fighter-audio/v1', root: '.', assets: [{ id: 'menu_music', kind: 'audio', category: 'music', loop: true, src: 'raw/menu_music-00112233445566aa.wav', sha256: sha(path.join(raw, 'menu_music-00112233445566aa.wav')) }] }));
+  fs.writeFileSync(path.join(bundle, 'assets.json'), JSON.stringify({ schema: 'comfy-fighter-assets/v1', root: '.', assets: [] }));
+  const before = packageFloor(bundle);
+  assert.equal(before.clips, 2); assert.equal(before.sounds, 1);
+  assert.equal(before.bytes, 2 * ['title-0123456789abcdef.mp4', 'select-fedcba9876543210.mp4', 'menu_music-00112233445566aa.wav'].reduce((sum, name) => sum + fs.statSync(path.join(raw, name)).size, 0), 'runtime and sources each carry every clip and sound');
+  await packMedia({ run: out });
+  const video = read(path.join(bundle, 'video.json')), audio = read(path.join(bundle, 'audio.json')), state = pipeline(directory);
+  assert.match(video.titleVideo.src, /^raw\/title-[0-9a-f]{16}\.mp4$/); assert.notEqual(video.titleVideo.sha256, titleSha);
+  assert.equal(sha(path.join(bundle, video.titleVideo.src)), video.titleVideo.sha256);
+  assert.equal(frames(path.join(bundle, video.titleVideo.src)), titleFrames, 'the web encode keeps every frame');
+  assert.equal(video.selectVideo.src, 'raw/select-fedcba9876543210.mp4', 'a light clip is left alone');
+  assert.match(audio.assets[0].src, /^raw\/menu_music-[0-9a-f]{16}\.mp3$/); assert.equal(audio.assets[0].codec, 'mp3'); assert.equal(audio.assets[0].sampleRate, 44100);
+  assert.ok(fs.existsSync(path.join(directory, 'originals/title-0123456789abcdef.mp4')) && fs.existsSync(path.join(directory, 'originals/menu_music-00112233445566aa.wav')), 'originals are kept');
+  assert.deepEqual(state.packedMedia[0].conversions.map(c => [c.id, c.kind]), [['title', 'video'], ['menu_music', 'audio']]);
+  assert.ok(packageFloor(bundle).bytes < before.bytes);
+  await packMedia({ run: out });
+  assert.equal(pipeline(directory).packedMedia.length, 1, 'a second pass finds nothing left to pack');
 });

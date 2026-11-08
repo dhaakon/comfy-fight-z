@@ -6,6 +6,9 @@
 //   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle>|title_video|select_video --approve-usd <amount> [--video-model <name>] [--video-resolution 720p|1080p]
 //   node build/tools/new-game.cjs add-sheets --run output/test-runs/<name> --approve-usd <amount> [--sheets sheetF,sheetG] [--fighters a,b] [--reference-sheet sheetF]
 //     (--reference-sheet picks the accepted sheet sent as the style reference, default sheet A; use a clean one when sheet A has an extra figure)
+//   node build/tools/new-game.cjs pack-media --run output/test-runs/<name>
+//     (free and local: re-encodes clips above 12 Mbit/s as H.264 CRF 18 and WAV sounds as MP3 VBR q2, originals kept in
+//     <run>/originals/; export asks for it when the package could not fit the 1 GiB browser limit)
 //   node build/tools/new-game.cjs export  --run output/test-runs/<name> [--out output/exports/<name>]
 //   node build/tools/new-game.cjs install --run output/test-runs/<name> [--slot <id>]
 //   node build/tools/new-game.cjs status  --run output/test-runs/<name>
@@ -32,7 +35,7 @@ function parse(argv) {
   }
   return { command, options };
 }
-const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|add-sheets|add-scenery|export|install|status> ... (see the header of this file).';
+const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|add-sheets|add-scenery|pack-media|export|install|status> ... (see the header of this file).';
 
 function runDirectory(options) {
   if (!options.run) throw new Error('Supply --run output/test-runs/<name>.');
@@ -159,17 +162,95 @@ async function review(options) {
   return report;
 }
 
+// The media records of a bundle: every clip in video.json and every sound in audio.json.
+function mediaRecords(bundle) {
+  const video = fs.existsSync(path.join(bundle, 'video.json')) ? read(path.join(bundle, 'video.json')) : {};
+  const audio = fs.existsSync(path.join(bundle, 'audio.json')) ? read(path.join(bundle, 'audio.json')) : { assets: [] };
+  const clips = [video.openingVideo, video.titleVideo, video.selectVideo, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean);
+  return { video, audio, clips, sounds: audio.assets || [] };
+}
+const PACKAGE_LIMIT = 1024 * 1024 * 1024;
+// The package holds every referenced source plus a byte-identical runtime copy of each clip and sound, so that sum is a
+// floor on its size: past the builder's 1 GiB limit the export cannot pass.
+function packageFloor(bundle) {
+  const { clips, sounds } = mediaRecords(bundle), size = src => { try { return fs.statSync(path.join(bundle, src)).size; } catch { return 0; } };
+  const media = [...clips, ...sounds].reduce((sum, item) => sum + size(item.src), 0);
+  return { bytes: read(path.join(bundle, 'assets.json')).assets.reduce((sum, item) => sum + size(item.src), 0) + 2 * media, clips: clips.length, sounds: sounds.length };
+}
 function exportGame(options) {
   const directory = runDirectory(options), bundle = path.join(directory, 'bundle');
   if (!fs.existsSync(path.join(bundle, 'assets.json'))) throw new Error('No bundle/assets.json yet; run the generation first.');
   const out = path.resolve(ROOT, options.out || path.join('output/exports', path.basename(directory)));
   if (!out.startsWith(path.join(ROOT, 'output/exports') + path.sep)) throw new Error('--out must be a fresh folder under output/exports/.');
   if (fs.existsSync(out)) throw new Error(`${path.relative(ROOT, out)} exists; exports are never overwritten.`);
+  // Say so before minutes of building when the package cannot fit.
+  const floor = packageFloor(bundle);
+  if (floor.bytes > PACKAGE_LIMIT) throw new Error(`The package would be at least ${Math.round(floor.bytes / 1048576)} MiB (the sources plus runtime copies of ${floor.clips} clips and ${floor.sounds} sounds), over the 1 GiB browser package limit. Run node build/tools/new-game.cjs pack-media --run ${path.relative(ROOT, directory).replace(/\\/g, '/')} (free and local: web-encodes heavy clips, MP3 audio, originals kept), then export.`);
   const status = node([path.join(ROOT, 'build/tools/build-bundle.cjs'), '--bundle', bundle, '--out', out]);
   const receiptFile = path.join(out, 'build-test.json'), receipt = fs.existsSync(receiptFile) ? read(receiptFile) : null;
   record(directory, 'exported', { exitCode: status, out: path.relative(ROOT, out).replace(/\\/g, '/'), status: receipt?.status || 'missing', checks: receipt?.checks?.length || 0 });
   if (status !== 0 || receipt?.status !== 'passed') throw new Error(`Strict export failed (exit ${status}, ${receipt?.status || 'no receipt'}). Fix the bundle (re-roll or review) and export to a fresh folder.`);
   console.log(`Export passed: ${path.relative(ROOT, out)}. Next: node build/tools/new-game.cjs install --run ${path.relative(ROOT, directory).replace(/\\/g, '/')} --slot <id>`);
+}
+
+// Web-ready media before export, free and local. Seedance 1080p clips arrive at 17-33 Mbit/s and the package ships
+// each clip and sound twice (runtime and sources), which pushed a seven-fighter cast past the 1 GiB browser limit.
+// Clips above WEB_VIDEO_BITRATE become H.264 CRF 18 (visually lossless, +faststart, same size, rate and frame count)
+// and WAV sounds become MP3 VBR q2 like the shipped example. Originals move to <run>/originals/; pipeline.json lists
+// every conversion. Running it again skips what is already packed.
+const WEB_VIDEO_BITRATE = 12e6;
+function probeMedia(file) {
+  const result = spawnSync('ffprobe', ['-v', 'error', '-count_packets', '-show_streams', '-show_format', '-of', 'json', file], { windowsHide: true, encoding: 'utf8' });
+  if (result.status !== 0) throw new Error(`Cannot inspect ${path.basename(file)}: ${result.stderr || result.error?.message}`);
+  const data = JSON.parse(result.stdout), video = data.streams.find(s => s.codec_type === 'video');
+  return { video, audio: data.streams.find(s => s.codec_type === 'audio'), duration: Number(data.format.duration), bitRate: Number(data.format.bit_rate), frames: Number(video?.nb_read_packets) };
+}
+async function packMedia(options) {
+  const directory = runDirectory(options), bundle = path.join(directory, 'bundle'), originals = path.join(directory, 'originals');
+  const { compactAudio } = require('./package-example.cjs'), crypto = require('node:crypto');
+  const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  const stem = src => path.basename(src).replace(/-[0-9a-f]{16}(?=\.[a-z0-9]+$)/i, '').replace(/\.[a-z0-9]+$/i, '');
+  const { video, audio, clips, sounds } = mediaRecords(bundle), conversions = [];
+  fs.mkdirSync(originals, { recursive: true });
+  // The converted file takes a content-addressed name in raw/ and the original moves out of the bundle.
+  const adopt = (temp, record, extension) => {
+    const sha256 = digest(temp), name = `${stem(record.src)}-${sha256.slice(0, 16)}.${extension}`, before = fs.statSync(path.join(bundle, record.src)).size;
+    fs.renameSync(temp, path.join(bundle, 'raw', name));
+    fs.renameSync(path.join(bundle, record.src), path.join(originals, path.basename(record.src)));
+    const entry = { id: record.id || stem(record.src), from: record.src, fromSha256: record.sha256 || null, to: `raw/${name}`, sha256, bytesBefore: before, bytesAfter: fs.statSync(path.join(bundle, 'raw', name)).size };
+    conversions.push(entry); Object.assign(record, { src: entry.to, sha256 });
+    return entry;
+  };
+  for (const record of clips) {
+    const input = path.join(bundle, record.src), source = probeMedia(input);
+    if (!(source.bitRate > WEB_VIDEO_BITRATE)) continue;
+    const temp = path.join(bundle, 'raw', `.packing-${stem(record.src)}.mp4`);
+    const result = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-i', input, '-map', '0:v:0', ...(source.audio ? ['-map', '0:a:0', '-c:a', 'copy'] : ['-an']),
+      '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-map_metadata', '-1', '-y', temp], { windowsHide: true, encoding: 'utf8' });
+    if (result.status !== 0) throw new Error(`FFmpeg failed on ${record.src}: ${result.stderr || result.error?.message}`);
+    const encoded = probeMedia(temp);
+    if (encoded.video.width !== source.video.width || encoded.video.height !== source.video.height || encoded.video.r_frame_rate !== source.video.r_frame_rate
+      || encoded.frames !== source.frames || Math.abs(encoded.duration - source.duration) > .05 || !!encoded.audio !== !!source.audio) {
+      fs.rmSync(temp, { force: true }); throw new Error(`The web encode of ${record.src} changed its size, rate, frames or duration; nothing was replaced.`);
+    }
+    Object.assign(adopt(temp, record, 'mp4'), { kind: 'video', crf: 18, bitRateBefore: source.bitRate, bitRateAfter: encoded.bitRate });
+    record.duration = Number(encoded.duration.toFixed(3));
+  }
+  for (const record of sounds) {
+    if (!/\.wav$/i.test(record.src)) continue;
+    const temp = path.join(bundle, 'raw', `.packing-${stem(record.src)}.mp3`), verified = await compactAudio(path.join(bundle, record.src), temp);
+    const entry = adopt(temp, record, 'mp3'); entry.kind = 'audio';
+    Object.assign(record, { duration: verified.duration, sampleRate: verified.sampleRate, channels: verified.channels, codec: 'mp3', bytes: entry.bytesAfter });
+  }
+  if (!conversions.length) { console.log('Nothing to pack: every clip is at most 12 Mbit/s and every sound is already compressed.'); return; }
+  if (conversions.some(entry => entry.kind === 'video')) fs.writeFileSync(path.join(bundle, 'video.json'), JSON.stringify(video, null, 2) + '\n');
+  if (conversions.some(entry => entry.kind === 'audio')) fs.writeFileSync(path.join(bundle, 'audio.json'), JSON.stringify(audio, null, 2) + '\n');
+  const before = conversions.reduce((sum, entry) => sum + entry.bytesBefore, 0), after = conversions.reduce((sum, entry) => sum + entry.bytesAfter, 0);
+  const state = pipeline(directory);
+  state.packedMedia = [...(state.packedMedia || []), { at: now(), video: 'H.264 CRF 18, preset slow, yuv420p, +faststart; size, frame rate, frame count and duration verified', audio: 'MP3 VBR quality 2; sample rate, channels and duration verified', originals: path.relative(ROOT, originals).replace(/\\/g, '/'), bytesBefore: before, bytesAfter: after, conversions }];
+  fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
+  const mib = bytes => `${(bytes / 1048576).toFixed(1)} MiB`;
+  console.log(`Packed ${conversions.filter(e => e.kind === 'video').length} clip(s) and ${conversions.filter(e => e.kind === 'audio').length} sound(s): ${mib(before)} -> ${mib(after)}. Originals in ${path.relative(ROOT, originals)}. Next: export to a fresh folder.`);
 }
 
 function install(options) {
@@ -462,10 +543,10 @@ async function addScenery(options) {
 
 async function main(argv) {
   const { command, options } = parse(argv);
-  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, 'add-sheets': addSheets, 'add-scenery': addScenery, review, export: exportGame, install, status };
+  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, 'add-sheets': addSheets, 'add-scenery': addScenery, review, 'pack-media': packMedia, export: exportGame, install, status };
   if (!commands[command]) throw new Error(USAGE);
   await commands[command](options);
 }
 
 if (require.main === module) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
-module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, exportGame, install, pipeline, missingNodes };
+module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, packMedia, packageFloor, exportGame, install, pipeline, missingNodes };
