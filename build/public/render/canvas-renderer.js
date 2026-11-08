@@ -7,6 +7,9 @@
     const { art, assetSource, ui, fighterData, portraitSource } = deps;
     // Life points per fighter (engines before the 1000-point scale used 100).
     const LIFE = E.MAX_HP || 100;
+    // Living scenery (render/scenery.js): far lights, the background crowd and front weather, each at its own parallax.
+    const scenery = root.CFZScenery ? root.CFZScenery.create() : null;
+    const sceneryInfo = () => ({ view, stage: manifest?.stages?.[stageIndex], getImage: art, state, time: performance.now() / 1000, floor: FLOOR, horizonDrop: 150, worldWidth: E.WIDTH });
     const reducedMotion = { matches: false };
     let state = null, manifest = null, stageIndex = 0, selected = [0, 1], mode = 'arcade', arcade = null, training = {}, cutin = null, goFrames = 0, fighterRenderer = null, bestScore = 0, debugBoxes = false;
   function cover(image, x, y, w, h) {
@@ -387,6 +390,7 @@
   }
   function drawWorld(fighters) {
     stageLayer();
+    if (scenery && state) scenery.drawBack(ctx, sceneryInfo());
     if (!state && ui('title')) { ctx.globalAlpha = .6; cover(ui('title'), 0, 0, 960, 540); ctx.globalAlpha = 1; }
     ctx.save(); worldTransform();
     fighters.forEach(drawFighter);
@@ -414,6 +418,7 @@
       hitboxes();
     }
     ctx.restore();
+    if (scenery && state) scenery.drawFront(ctx, sceneryInfo());
   }
   // Training hitboxes in world space, for a renderer that draws the world elsewhere.
   function drawHitboxes() { ctx.save(); worldTransform(); hitboxes(); ctx.restore(); }
@@ -466,7 +471,7 @@
       const k = canvas.width / 960, d = ctx.getImageData(Math.round(x * k), Math.round(y * k), 1, 1).data;
       return [d[0], d[1], d[2]];
     }
-    return { kind: 'canvas', draw, reset: resetView, pixel, view, beginFrame, updateCamera, observeEffects, stepParticles, drawScreen, drawHitboxes, hitShake, sparkTier, clear: () => ctx.clearRect(0, 0, 960, 540) };
+    return { kind: 'canvas', draw, sceneryInfo, scenery, reset: resetView, pixel, view, beginFrame, updateCamera, observeEffects, stepParticles, drawScreen, drawHitboxes, hitShake, sparkTier, clear: () => ctx.clearRect(0, 0, 960, 540) };
   }
   root.CFZCanvasRenderer = { create: createCanvasRenderer };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

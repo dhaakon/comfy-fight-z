@@ -11,7 +11,7 @@ from PIL import Image
 from comfy_api.latest import Types, io, ui
 from comfy_execution.graph_utils import GraphBuilder
 
-from . import SHEETS, EXTRA_SHEETS, MOTION_SHEETS, DETAIL_SHEETS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
+from . import SHEETS, EXTRA_SHEETS, MOTION_SHEETS, DETAIL_SHEETS, SCENERY_CELS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
 
 Project = io.Custom("CFZ_PROJECT")
 Character = io.Custom("CFZ_CHARACTER")
@@ -516,6 +516,34 @@ class CFZEnvironmentFactory(io.ComfyNode):
         return io.NodeOutput(_collect(graph, project, members, [source, asset]), generated.out(0), expand=graph.finalize())
 
 
+class CFZStageScenery(io.ComfyNode):
+    """One 2K 3x3 sheet of background characters for a stage, drawn against the accepted stage painting."""
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZStageScenery", display_name="CFZ Stage Scenery (background crowd)", category="Comfy Fighter Z",
+            description="PAID cloud generation: exactly one 2K 3x3 chroma-key sheet of three invented background characters that belong in the stage, each drawn idle, cheering and cheering again, mapped as the stage's scenery cels. The game animates them behind the fighters at their own parallax depth.",
+            inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True), io.String.Input("stage_id", default="environment"),
+                    io.String.Input("name", default="New Environment"), io.String.Input("description", default="", multiline=True),
+                    io.String.Input("crowd", default="", multiline=True, optional=True, tooltip="Optional: who the three background characters are. Empty lets the venue decide."), _reroll_input()],
+            outputs=[Bundle.Output(display_name="bundle")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, stage_reference, stage_id, name, description, crowd="", reroll=0):
+        project = _rerolled(project, reroll)
+        _project(project)
+        stage = {"id": _slug(stage_id, "Stage ID"), "name": _text(name, "Stage name", True), "description": _text(description, "Stage description")}
+        members = _members(stage=stage); graph = GraphBuilder()
+        who = _text(crowd, "Crowd") or "three different invented spectators who naturally belong in this venue"
+        prompt = (project["style"] + f"\nVENUE: {stage['description']}\nUse the supplied stage painting only for the setting, palette and lighting. "
+                  f"Square 3x3 sheet of nine separate full-body background characters: {who}. No fighters from the game, no real people, no logos or lettering. "
+                  "Each ROW is one character drawn three times at the identical size and design: column 1 standing and watching calmly, "
+                  "column 2 cheering with one arm raised, column 3 cheering with both arms raised. All nine stand on their feet, facing the viewer at three-quarter angle, "
+                  "full body from head to shoes inside the cell with clear empty padding, the same scale in every cell. Exactly nine figures, one per cell. " + KEY)
+        generated = _cloud(graph, project, prompt, stage_reference, "1:1", "2K", 150)
+        asset = _save(graph, project, generated.out(0), {"id": f"{stage['id']}_crowd", "kind": "scenery", "stage": stage["id"], "poses": SCENERY_CELS, "key": True}, members)
+        return io.NodeOutput(_collect(graph, project, members, [asset]), expand=graph.finalize())
+
+
 class CFZSharedArtFactory(io.ComfyNode):
     @classmethod
     def define_schema(cls):
@@ -962,5 +990,5 @@ class CFZExportAssetPatch(io.ComfyNode):
         return _export(project, bundles, False)
 
 
-FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZCharacterArt, CFZEnvironmentFactory,
+FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZCharacterArt, CFZEnvironmentFactory, CFZStageScenery,
                  CFZSharedArtFactory, CFZTitleArt, CFZTitleVideo, CFZSelectVideo, CFZSelectIdleVideo, CFZIntroVideo, CFZSaveVideo, CFZExportVideos, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]

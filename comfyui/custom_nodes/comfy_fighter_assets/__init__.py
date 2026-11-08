@@ -22,7 +22,9 @@ from comfy_api.latest import ComfyExtension, io, ui
 
 SCHEMA = "comfy-fighter-assets/v1"
 ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
-KINDS = {"source", "reference", "sprites", "portrait", "hero", "cutin", "ending", "stage", "ui", "effects"}
+KINDS = {"source", "reference", "sprites", "portrait", "hero", "cutin", "ending", "stage", "ui", "effects", "scenery"}
+# Background characters for a stage: three bystanders (rows a, b, c), each idle, cheer and second cheer frame.
+SCENERY_CELS = ["a1", "a2", "a3", "b1", "b2", "b3", "c1", "c2", "c3"]
 FIGHTER_KINDS = {"reference", "sprites", "portrait", "hero", "cutin", "ending"}
 STYLES = ("balanced", "power", "speed", "zoner", "grappler", "trickster", "boss")
 AssetRoot = io.Custom("CFZ_ROOT")
@@ -196,15 +198,15 @@ def _metadata(value, config):
             result[key] = identity_ref
     if kind in FIGHTER_KINDS and "fighter" not in result:
         raise ValueError(f"{kind} requires fighter metadata")
-    if kind == "stage" and "stage" not in result:
-        raise ValueError("stage requires stage metadata")
+    if kind in {"stage", "scenery"} and "stage" not in result:
+        raise ValueError(f"{kind} requires stage metadata")
     if kind == "source" and ("fighter" in result) == ("stage" in result):
         raise ValueError("source requires exactly one fighter or stage mapping")
     if "key" in value:
         if not isinstance(value["key"], bool):
             raise ValueError("key must be a boolean")
         result["key"] = value["key"]
-    if kind in {"sprites", "effects"}:
+    if kind in {"sprites", "effects", "scenery"}:
         poses = value.get("poses")
         if not isinstance(poses, list) or len(poses) != 9:
             raise ValueError(f"{kind} requires nine row-major pose names")

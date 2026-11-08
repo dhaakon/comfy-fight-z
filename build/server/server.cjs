@@ -15,7 +15,7 @@ const STEP = 1000 / 60;
 const INPUTS = ['left', 'right', 'jump', 'down', 'punch', 'kick', 'heavy', 'special', 'taunt'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.cjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8', '.ttf': 'font/ttf', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.flac': 'audio/flac', '.ogg': 'audio/ogg', '.m4a': 'audio/mp4', '.mp4': 'video/mp4', '.webm': 'video/webm', '.woff2': 'font/woff2' };
-const PUBLIC_FILES = new Set(['index.html', 'game.js', 'engine.js', 'anim.js', 'render/arena.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'style.css', 'session-client.js', 'multiplayer.js', 'network.css', 'controller.html', 'controller.js', 'favicon.ico', 'LICENSE', 'THIRD-PARTY-NOTICES.txt', 'fonts/PressStart2P-Regular.ttf', 'fonts/OFL-PressStart2P.txt']);
+const PUBLIC_FILES = new Set(['index.html', 'game.js', 'engine.js', 'anim.js', 'render/arena.js', 'render/scenery.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'style.css', 'session-client.js', 'multiplayer.js', 'network.css', 'controller.html', 'controller.js', 'favicon.ico', 'LICENSE', 'THIRD-PARTY-NOTICES.txt', 'fonts/PressStart2P-Regular.ttf', 'fonts/OFL-PressStart2P.txt']);
 
 function browserURL(value) {
   const url = new URL(value);

@@ -1,12 +1,12 @@
 // Browser-only asset compiler. It consumes accepted local images and never calls a model.
 import { segmentSheet, poseScales } from './sheet-layout.mjs';
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
-const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending', 'stage', 'ui', 'effects']);
+const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending', 'stage', 'ui', 'effects', 'scenery']);
 const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending'];
 const STYLES = new Set(['balanced', 'power', 'speed', 'zoner', 'grappler', 'trickster', 'boss']);
 // A complete arcade cast (seven fighters, three arenas, PNG/WAV sources) exports at roughly 550 MB.
 const MAX_BYTES = 1024 * 1024 * 1024;
-const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'render/arena.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'fonts/PressStart2P-Regular.ttf', 'fonts/OFL-PressStart2P.txt', 'style.css', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
+const TEMPLATE_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'render/arena.js', 'render/scenery.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'fonts/PressStart2P-Regular.ttf', 'fonts/OFL-PressStart2P.txt', 'style.css', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt'];
 const ARCADE_ART = ['arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp', 'arcade/title-logo.webp'];
 const REQUIRED_POSES = ['idle', 'walk', 'punch', 'kick', 'block', 'hit', 'special', 'down', 'win', 'stance2', 'crouch', 'sweep', 'launcher', 'jump', 'airkick', 'hpunch', 'dash', 'tumble', 'walk2', 'lkick', 'cjab', 'airpunch', 'throw', 'taunt', 'getup', 'powerup', 'entrance'];
 const encoder = new TextEncoder();
@@ -79,20 +79,20 @@ export function validateManifest(input) {
     if (asset.fighter && !game.fighters.some(f => f.id === asset.fighter)) throw new Error(`Unknown fighter on ${asset.id}: ${asset.fighter}`);
     if (asset.stage && !game.stages.some(s => s.id === asset.stage)) throw new Error(`Unknown stage on ${asset.id}: ${asset.stage}`);
     if (FIGHTER_KINDS.includes(asset.kind) && !asset.fighter) throw new Error(`${asset.id} needs a fighter mapping.`);
-    if (asset.kind === 'stage' && !asset.stage) throw new Error(`${asset.id} needs a stage mapping.`);
+    if (['stage', 'scenery'].includes(asset.kind) && !asset.stage) throw new Error(`${asset.id} needs a stage mapping.`);
     if (['ui', 'effects', 'stage'].includes(asset.kind) && asset.fighter) throw new Error(`${asset.id} has an unexpected fighter mapping.`);
-    if (!['stage', 'source'].includes(asset.kind) && asset.stage) throw new Error(`${asset.id} has an unexpected stage mapping.`);
+    if (!['stage', 'source', 'scenery'].includes(asset.kind) && asset.stage) throw new Error(`${asset.id} has an unexpected stage mapping.`);
     if (asset.kind === 'source' && Boolean(asset.fighter) === Boolean(asset.stage)) throw new Error(`${asset.id} source needs exactly one fighter or stage mapping.`);
     for (const dimension of ['width', 'height']) if (asset[dimension] !== undefined && (!Number.isInteger(asset[dimension]) || asset[dimension] < 1 || asset[dimension] > 16384)) throw new Error(`Invalid ${dimension} for ${asset.id}`);
     const claims = [];
-    if (asset.kind === 'sprites' || asset.kind === 'effects') {
+    if (asset.kind === 'sprites' || asset.kind === 'effects' || asset.kind === 'scenery') {
       if (!Array.isArray(asset.poses) || asset.poses.length !== 9 || new Set(asset.poses).size !== 9 || asset.poses.some(p => !ID.test(p))) throw new Error(`${asset.id} needs exactly nine unique pose names.`);
       if (asset.kind === 'sprites' && asset.sheet && layouts[asset.sheet] && JSON.stringify(asset.poses) !== JSON.stringify(layouts[asset.sheet])) throw new Error(`${asset.id} pose order disagrees with the ${asset.sheet} layout.`);
       // Reviewed correction: cells drawn facing the wrong way are flipped at build time.
       if (asset.mirror !== undefined && (!Array.isArray(asset.mirror) || asset.mirror.some(p => !asset.poses.includes(p)))) throw new Error(`${asset.id} mirror must list poses from that sheet.`);
       // Reviewed correction: where the model drew an extra figure or shifted a row, `figures` picks each pose's figure.
       if (asset.figures !== undefined && (!asset.figures || typeof asset.figures !== 'object' || Array.isArray(asset.figures) || Object.entries(asset.figures).some(([p, v]) => !asset.poses.includes(p) || !Array.isArray(v) || v.length !== 2 || v.some(n => typeof n !== 'number' || !(n >= 0 && n <= 1))))) throw new Error(`${asset.id} figures must map poses from that sheet to [x, y] fractions.`);
-      claims.push(...asset.poses.map(p => asset.kind === 'sprites' ? `assets/fighters/${asset.fighter}_${p}.png` : `assets/effects/${p}.png`));
+      claims.push(...asset.poses.map(p => asset.kind === 'sprites' ? `assets/fighters/${asset.fighter}_${p}.png` : asset.kind === 'scenery' ? `assets/scenery/${asset.stage}_${p}.png` : `assets/effects/${p}.png`));
     } else claims.push(`${asset.kind}/${asset.fighter || asset.stage || asset.id}`);
     for (const claim of claims) {
       const normalized = claim.toLowerCase();
@@ -368,6 +368,10 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
           pending.push({ pose, src, ...result });
         }
         for (const result of pending) { output.set(result.src, result.blob); runtime.effects[result.pose] = { src: result.src, ...result.meta }; }
+      } else if (job.kind === 'scenery') {
+        const cels = {};
+        for (const [pose, cell] of sheetCells(image, job)) { const result = await exportCell(cell, 1), src = `assets/scenery/${job.stage}_${pose}.png`; output.set(src, result.blob); cels[pose] = { src, ...result.meta }; }
+        selectedStages.get(job.stage).scenery = { cels };
       } else if (job.kind !== 'reference') {
         const dirs = { portrait: 'portraits', hero: 'heroes', cutin: 'cutins', ending: 'endings', stage: 'stages', ui: 'ui' }, src = `assets/${dirs[job.kind]}/${job.id}.png`;
         output.set(src, await exportImage(image, job));

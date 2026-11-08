@@ -412,7 +412,8 @@
       Object.entries(f.poses || {}).forEach(([pose, meta]) => entries.push({ group: 'fighters', name: `${f.name} / ${pose}`, src: meta.src, info: `${meta.w} × ${meta.h} · anchor ${meta.ax}, ${meta.ay}` }));
       ['portrait', 'hero', 'cutin', 'endingArt'].forEach(kind => { if (f[kind]) entries.push({ group: 'portraits', name: `${f.name} / ${kind}`, src: assetSource(f[kind]), info: 'Character artwork' }); });
     });
-    manifest.stages.forEach(s => { if (s.src) entries.push({ group: 'stages', name: s.name, src: s.src, info: 'Stage background' }); });
+    manifest.stages.forEach(s => { if (s.src) entries.push({ group: 'stages', name: s.name, src: s.src, info: 'Stage background' });
+      Object.entries(s.scenery?.cels || {}).forEach(([cel, meta]) => entries.push({ group: 'stages', name: `${s.name} / crowd ${cel}`, src: meta.src, info: 'Background character' })); });
     Object.entries(manifest.ui || {}).forEach(([name, src]) => entries.push({ group: 'ui', name, src: assetSource(src), info: 'Interface artwork' }));
     Object.entries(manifest.effects || {}).forEach(([name, meta]) => entries.push({ group: 'effects', name, src: assetSource(meta), info: 'Combat effect' }));
     Object.entries(manifest.audio || {}).forEach(([name, item]) => entries.push({ group: 'audio', name: name.replaceAll('_', ' '), src: assetSource(item), info: item.category || 'Generated audio' }));
