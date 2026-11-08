@@ -255,10 +255,19 @@ async function main(options) {
     game.on('pageerror', error => report.browserErrors.push(error.message));
     const failedRequests = [];
     game.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('/favicon.ico')) failedRequests.push(`${response.status()} ${response.url()}`); });
+    // The original game's static arcade art must never load in a custom game, not even for a frame.
+    const arcadeRequests = [];
+    game.on('request', request => { if (/\/arcade\//.test(new URL(request.url()).pathname)) arcadeRequests.push(new URL(request.url()).pathname); });
     await game.goto(gameServer.url);
     const expectedLoaded = runtime.fighters.reduce((count, fighter) => count + Object.keys(fighter.poses).length + ['portrait', 'hero', 'cutin', 'endingArt'].filter(kind => fighter[kind]).length, 0)
       + runtime.stages.filter(stage => stage.src).length + runtime.stages.reduce((n, stage) => n + (stage.scenery?.layers || []).length, 0) + Object.keys(runtime.ui).length + Object.keys(runtime.effects).length;
     await game.waitForFunction(count => Number(document.querySelector('#asset-count').textContent) === count, expectedLoaded, { timeout: 60000 });
+    // NOW LOADING covers the page until the art is ready, then lifts onto this game's own title.
+    await game.waitForFunction(() => document.getElementById('boot-screen')?.hidden === true, null, { timeout: 15000 });
+    if (!(await game.evaluate(() => document.body.classList.contains('cfz-arcade-art')))) {
+      assert.deepEqual(arcadeRequests, [], 'A custom game never loads the original arcade art');
+      report.checks.push('boot screen lifts onto the game title art; no original arcade art requested');
+    } else report.checks.push('boot screen lifts onto the original arcade title art');
     assert.equal(await game.title(), report.title); assert.equal(await game.locator('#placeholder-label').isVisible(), false);
     assert.equal(await game.locator('#fighter-one option').count(), runtime.fighters.length);
     if (video?.fighterIntros?.length) {

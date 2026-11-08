@@ -1029,6 +1029,33 @@
     if (selectedTab === 'arena' && !$('fight-screen').hidden) render();
     requestAnimationFrame(frame);
   }
+  // Boot screen: NOW LOADING with progress over every image and the menu loop's first frames.
+  function bootProgress(done, total) {
+    const percent = total ? Math.min(100, Math.round(done / total * 100)) : 100;
+    $('boot-fill').style.width = `${percent}%`; $('boot-count').textContent = `${percent}%`;
+  }
+  // Downloads the menu loop during the boot so the title opens on moving art. Resolves on its first frames, on an
+  // error, or after four seconds; the still art underneath is this game's own either way.
+  function bootClip() {
+    const video = $('title-video'), src = assetSource(manifest.titleVideo);
+    if (!src || !/^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(src) || !video.canPlayType('video/mp4')) return null;
+    return new Promise(resolve => {
+      const finish = () => { clearTimeout(timer); video.removeEventListener('loadeddata', finish); video.removeEventListener('error', finish); resolve(); };
+      const timer = setTimeout(finish, 4000);
+      video.addEventListener('loadeddata', finish); video.addEventListener('error', finish);
+      video.muted = true; video.playsInline = true; video.loop = true; video.preload = 'auto'; video.src = src; video.load();
+    });
+  }
+  // Lifts the boot screen once the title is ready: as the menu loop starts playing (at most 0.8 s more), else at once.
+  function bootDone() {
+    const boot = $('boot-screen');
+    if (!boot || boot.hidden || boot.classList.contains('boot-out')) return;
+    const screen = $('title-screen'), started = performance.now();
+    const reveal = () => { boot.classList.add('boot-out'); setTimeout(() => { boot.hidden = true; }, 320); };
+    const check = () => !openingActive && assetSource(manifest.titleVideo) && !screen.hidden && !screen.classList.contains('title-video-ready') && performance.now() - started < 800
+      ? requestAnimationFrame(check) : reveal();
+    check();
+  }
   async function init() {
     try {
       const response = await fetch('assets/manifest.json', { cache: 'no-store' });
@@ -1052,12 +1079,13 @@
     const includedCast = heroes.length === 6 && heroes.every(f => demoCast[f.id] && f.description?.startsWith(demoCast[f.id]));
     const heroCount = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT'][heroes.length] || String(heroes.length);
     $('title-eyebrow').textContent = `${heroCount} ${heroes.length === 1 ? 'CHALLENGER' : 'CHALLENGERS'}. ONE OPEN SOURCE SHOWDOWN.`;
-    const generatedUi = !!(ui('select') && ui('title'));
-    document.body.classList.toggle('cfz-arcade-art', document.title.trim().toLowerCase() === 'comfy fighter z' && !generatedUi);
-    if (ui('logo')) { $('arcade-logo').src = ui('logo').src; $('arcade-logo').hidden = false; }
-    if (ui('frame')) { document.body.style.setProperty('--menu-frame', `url("${ui('frame').src}")`); document.body.classList.add('cfz-frame'); }
-    document.body.classList.toggle('cfz-ensemble', includedCast && document.body.classList.contains('cfz-arcade-art'));
-    if (!ui('logo')) $('arcade-logo').hidden = !document.body.classList.contains('cfz-arcade-art');
+    // The static arcade/ set is the original cast's own title art (its backyard backdrops, first logo and six-hero
+    // ensemble); every other game shows only its own generated art. This is decided from the manifest, before any art
+    // paints, and the boot screen stays up until that art has loaded, so a game never flashes another game's art.
+    const originalArt = includedCast && document.title.trim().toLowerCase() === 'comfy fighter z';
+    document.body.classList.toggle('cfz-arcade-art', originalArt);
+    document.body.classList.toggle('cfz-ensemble', originalArt);
+    $('boot-game').textContent = (manifest.subtitle || manifest.title || '').toUpperCase();
     const titleWords = document.title.split(' '), lastWord = titleWords.pop(); $('game-title').textContent = titleWords.join(' ').toUpperCase() + ' ';
     const emph = document.createElement('em'); emph.textContent = lastWord.toUpperCase(); $('game-title').append(emph);
     $('title-wordmark').textContent = titleWords.join(' ').toUpperCase() + ' ';
@@ -1069,8 +1097,21 @@
     document.body.classList.toggle('multiple-stages', manifest.stages.length > 1);
     galleryEntries = findEntries();
     const references = [...manifest.fighters.filter(f => !f.hero && !f.portrait), ...manifest.stages.filter(s => !s.src)].map(item => assetSource(item.sourceImage)).filter(Boolean);
-    await Promise.all([...galleryEntries.filter(e => !['audio', 'video'].includes(e.group)).map(e => e.src), ...references].map(imageLoad));
+    const staticArt = originalArt ? ['arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/title-logo.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp'] : [];
+    const sources = [...new Set([...galleryEntries.filter(e => !['audio', 'video'].includes(e.group)).map(e => e.src), ...references, ...staticArt])];
+    const clip = bootClip(), steps = sources.length + (clip ? 1 : 0);
+    let loaded = 0; const counted = promise => promise.then(() => bootProgress(++loaded, steps));
+    bootProgress(0, steps);
+    await Promise.all([...sources.map(src => counted(imageLoad(src))), ...(clip ? [counted(clip)] : [])]);
     $('asset-count').textContent = galleryEntries.filter(e => !['audio', 'video'].includes(e.group) && art(e.src)).length;
+    // Interface art, now that it has loaded: the original logo for the original cast, else this game's own.
+    const logo = $('arcade-logo');
+    if (originalArt) { logo.src = 'arcade/title-logo.webp'; logo.hidden = false; }
+    else if (ui('logo')) { logo.src = ui('logo').src; logo.hidden = false; }
+    else logo.hidden = true;
+    // A logo image replaces the text wordmark, which stays for screen readers.
+    document.body.classList.toggle('cfz-logo', !logo.hidden);
+    if (ui('frame')) { document.body.style.setProperty('--menu-frame', `url("${ui('frame').src}")`); document.body.classList.add('cfz-frame'); }
     setBackground($('selection-screen'), ui('select'));
     setBackground($('select-heading'), ui('title'));
     if (ui('logo')) { $('generated-logo').src = ui('logo').src; $('generated-logo').hidden = false; $('edition-stamp').hidden = true; }
@@ -1245,6 +1286,7 @@
     }
     if (!network?.autoConnect() && assetSource(manifest.openingVideo)) playOpening(false);
     requestAnimationFrame(frame);
+    bootDone();
   }
-  init();
+  init().catch(error => { console.error('Boot failed:', error); bootDone(); });
 })();

@@ -190,7 +190,7 @@ kbd { color: var(--paper); background: #303536; border-color: #62675f; }
 .settings-actions,.settings-dialog nav { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }.settings-dialog nav button,.settings-dialog nav a { color:#ece8dc; background:#292d2f; padding:10px; border:1px solid #656961; font-size:11px; font-weight:bold; cursor:pointer; }.settings-dialog h3 { color:#c4a25e; font-size:11px; letter-spacing:2px; }.settings-credit { color:#a9a79e; font-size:10px; letter-spacing:1px; }
 .cfz-arcade-art .title-backdrop { background-image:url('arcade/title-backdrop.webp') !important; filter:none; opacity:.9; }
 .cfz-arcade-art .selection-screen { background-image:url('arcade/select-backdrop.webp') !important; background-blend-mode:normal; }
-.cfz-arcade-art .title-copy h1 { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.cfz-arcade-art .title-copy h1, .cfz-logo .title-copy h1 { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 .arcade-logo:not([hidden]) { display:block; position:relative; width:min(74vw,900px); max-height:34vh; object-fit:contain; margin:0 auto; filter:drop-shadow(4px 6px 0 #101314); }
 .title-copy .eyebrow,.title-pitch,.title-rule,.title-bottom,.title-hint { display:none; }
 .title-copy .saga-subtitle { margin:0 0 18px; font-size:clamp(13px,1.6vw,24px); letter-spacing:2px; }
@@ -670,3 +670,16 @@ body:has(.canvas-wrap.filter-scanlines) .crt-overlay,body:has(.canvas-wrap.filte
 .fighter-tile .tile-name{font-size:clamp(6px,.7vw,9px);left:4px;right:4px;bottom:9px;white-space:nowrap;overflow:hidden;text-align:center}
 .fighter-tile .tile-number{font-size:28px}
 #fighter-grid .fighter-tile .tile-name{font-size:clamp(6px,calc(84cqw / var(--name-chars,8)),11px);left:4px;right:4px;text-align:center;overflow:hidden}
+
+/* Boot: NOW LOADING covers the page from the first paint until this game's own art is loaded, so a game never shows
+   another game's art first. Pixel type, a segmented bar and a blink, like a 1990s arcade board booting. */
+.boot-screen { position:fixed; inset:0; z-index:2147483000; display:grid; place-items:center; background:#000; text-align:center; font-family:'Press Start 2P', monospace; transition:opacity .28s steps(4); }
+.boot-screen[hidden] { display:none; }
+.boot-screen.boot-out { opacity:0; pointer-events:none; }
+.boot-inner { display:grid; justify-items:center; gap:22px; padding:24px; }
+.boot-game { margin:0; min-height:1.3em; color:#3df2ff; font-size:clamp(11px, 2vw, 20px); letter-spacing:.08em; text-shadow:3px 3px 0 #000, -1px -1px 0 #000; }
+.boot-now { margin:0; color:#ffe14a; font-size:clamp(18px, 4vw, 40px); letter-spacing:.06em; text-shadow:4px 4px 0 #c4102b, 7px 7px 0 #000; animation:boot-blink 1s steps(2, jump-none) infinite; }
+.boot-bar { width:min(70vw, 520px); height:24px; padding:3px; border:3px solid #fff; background:#260008; box-shadow:4px 4px 0 #c4102b, 7px 7px 0 #000; }
+.boot-bar span { display:block; width:0; height:100%; background:repeating-linear-gradient(90deg, #ffe14a 0 14px, #ff9a1f 14px 18px); transition:width .12s steps(3); }
+.boot-count { margin:0; color:#fff; font-size:clamp(10px, 1.6vw, 14px); text-shadow:2px 2px 0 #000; }
+@keyframes boot-blink { 50% { opacity:.15; } }
