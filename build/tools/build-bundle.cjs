@@ -257,7 +257,7 @@ async function main(options) {
     game.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('/favicon.ico')) failedRequests.push(`${response.status()} ${response.url()}`); });
     await game.goto(gameServer.url);
     const expectedLoaded = runtime.fighters.reduce((count, fighter) => count + Object.keys(fighter.poses).length + ['portrait', 'hero', 'cutin', 'endingArt'].filter(kind => fighter[kind]).length, 0)
-      + runtime.stages.filter(stage => stage.src).length + runtime.stages.reduce((n, stage) => n + Object.keys(stage.scenery?.cels || {}).length, 0) + Object.keys(runtime.ui).length + Object.keys(runtime.effects).length;
+      + runtime.stages.filter(stage => stage.src).length + runtime.stages.reduce((n, stage) => n + (stage.scenery?.layers || []).length, 0) + Object.keys(runtime.ui).length + Object.keys(runtime.effects).length;
     await game.waitForFunction(count => Number(document.querySelector('#asset-count').textContent) === count, expectedLoaded, { timeout: 60000 });
     assert.equal(await game.title(), report.title); assert.equal(await game.locator('#placeholder-label').isVisible(), false);
     assert.equal(await game.locator('#fighter-one option').count(), runtime.fighters.length);

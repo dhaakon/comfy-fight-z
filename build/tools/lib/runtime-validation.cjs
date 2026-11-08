@@ -35,7 +35,7 @@ function runtimeSources(manifest, { config, plan, strict = false } = {}) {
     for (const kind of ['portrait', 'hero', 'cutin', 'endingArt', 'sourceImage']) if (fighter[kind]) add(fighter[kind]);
     if (fighter.introVideo) { if (!Number.isFinite(fighter.introVideo.duration) || fighter.introVideo.duration <= 0 || fighter.introVideo.duration > 30 || !/\.mp4$/i.test(fighter.introVideo.src)) throw new Error(`Invalid introduction video mapping: ${fighter.id}`); add(fighter.introVideo); }
   }
-  for (const stage of manifest.stages) { if (stage.src) add(stage.src); if (stage.sourceImage) add(stage.sourceImage); Object.values(stage.scenery?.cels || {}).forEach(add); }
+  for (const stage of manifest.stages) { if (stage.src) add(stage.src); if (stage.sourceImage) add(stage.sourceImage); (stage.scenery?.layers || []).forEach(add); }
   for (const group of ['ui', 'effects', 'audio']) Object.values(manifest[group] || {}).forEach(add);
   if (manifest.openingVideo) {
     if (!Number.isFinite(manifest.openingVideo.duration) || manifest.openingVideo.duration <= 0 || !/\.mp4$/i.test(manifest.openingVideo.src)) throw new Error('Invalid opening video mapping.');

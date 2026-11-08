@@ -11,7 +11,7 @@ from PIL import Image
 from comfy_api.latest import Types, io, ui
 from comfy_execution.graph_utils import GraphBuilder
 
-from . import SHEETS, EXTRA_SHEETS, MOTION_SHEETS, DETAIL_SHEETS, SCENERY_CELS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
+from . import SHEETS, EXTRA_SHEETS, MOTION_SHEETS, DETAIL_SHEETS, ALL_SHEETS, STYLES, SCHEMA, AssetRecord, AssetRoot, CFZAssetRoot, _atomic_write, _inside, _json_object, _metadata, _reject_links, _root_path, _save_image, _slug
 
 Project = io.Custom("CFZ_PROJECT")
 Character = io.Custom("CFZ_CHARACTER")
@@ -517,15 +517,16 @@ class CFZEnvironmentFactory(io.ComfyNode):
 
 
 class CFZStageScenery(io.ComfyNode):
-    """One 2K 3x3 sheet of background characters for a stage, drawn against the accepted stage painting."""
+    """The stage painting repainted once with its background life added in place; build/tools/extract-scenery.cjs cuts the additions out."""
     @classmethod
     def define_schema(cls):
-        return io.Schema(node_id="CFZStageScenery", display_name="CFZ Stage Scenery (background crowd)", category="Comfy Fighter Z",
-            description="PAID cloud generation: exactly one 2K 3x3 chroma-key sheet of three invented background characters that belong in the stage, each drawn idle, cheering and cheering again, mapped as the stage's scenery cels. The game animates them behind the fighters at their own parallax depth.",
+        return io.Schema(node_id="CFZStageScenery", display_name="CFZ Stage Scenery (populated scene)", category="Comfy Fighter Z",
+            description="PAID cloud generation: two 2K image edits. Repaints the accepted stage painting with background characters and animatable props added in place, keeping everything else identical, then separates the additions onto chroma green in place. "
+                        "Saved as the stage's scene and isolated layer; extract-scenery compares it with the clean painting, cuts each addition out at its exact position and scale, and writes the placement JSON the game animates.",
             inputs=[Project.Input("project"), io.Image.Input("stage_reference", raw_link=True), io.String.Input("stage_id", default="environment"),
                     io.String.Input("name", default="New Environment"), io.String.Input("description", default="", multiline=True),
-                    io.String.Input("crowd", default="", multiline=True, optional=True, tooltip="Optional: who the three background characters are. Empty lets the venue decide."), _reroll_input()],
-            outputs=[Bundle.Output(display_name="bundle")], enable_expand=True, is_api_node=True)
+                    io.String.Input("crowd", default="", multiline=True, optional=True, tooltip="Optional: who and what to add. Empty lets the venue decide."), _reroll_input()],
+            outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="scene")], enable_expand=True, is_api_node=True)
 
     @classmethod
     def execute(cls, project, stage_reference, stage_id, name, description, crowd="", reroll=0):
@@ -533,15 +534,42 @@ class CFZStageScenery(io.ComfyNode):
         _project(project)
         stage = {"id": _slug(stage_id, "Stage ID"), "name": _text(name, "Stage name", True), "description": _text(description, "Stage description")}
         members = _members(stage=stage); graph = GraphBuilder()
-        who = _text(crowd, "Crowd") or "three different invented spectators who naturally belong in this venue"
-        prompt = (project["style"] + f"\nVENUE: {stage['description']}\nUse the supplied stage painting only for the setting, palette and lighting. "
-                  f"Square 3x3 sheet of nine separate full-body background characters: {who}. No fighters from the game, no real people, no logos or lettering. "
-                  "Each ROW is one character drawn three times at the identical size and design: column 1 standing and watching calmly, "
-                  "column 2 cheering with one arm raised, column 3 cheering with both arms raised. All nine stand on their feet, facing the viewer at three-quarter angle, "
-                  "full body from head to shoes inside the cell with clear empty padding, the same scale in every cell. Exactly nine figures, one per cell. " + KEY)
-        generated = _cloud(graph, project, prompt, stage_reference, "1:1", "2K", 150)
-        asset = _save(graph, project, generated.out(0), {"id": f"{stage['id']}_crowd", "kind": "scenery", "stage": stage["id"], "poses": SCENERY_CELS, "key": True}, members)
-        return io.NodeOutput(_collect(graph, project, members, [asset]), expand=graph.finalize())
+        who = _text(crowd, "Crowd") or "three or four invented background spectators and one or two small moving props that naturally belong in this venue"
+        prompt = ("Edit the supplied stage painting. Return the SAME image: identical framing, camera, perspective, horizon, lighting, palette, line art and every existing object in exactly the same place and size. "
+                  f"Only ADD: {who}. Put the additions in the background and on the far edges, standing on existing surfaces behind the playable floor, small and at the correct perspective scale for where they stand, "
+                  "each one separate and not overlapping another, fully visible, painted in the same illustration style and lighting as the scene so they belong in it. "
+                  "Keep the central and lower playable floor completely empty. No fighters, no real people, no text, logos or lettering. Do not crop, zoom, shift, recolor or redraw anything else.")
+        generated = _cloud(graph, project, prompt, stage_reference, "16:9", "2K", 150)
+        asset = _save(graph, project, generated.out(0), {"id": f"{stage['id']}_scene", "kind": "scene", "stage": stage["id"], "key": False}, members)
+        isolated = _isolate(graph, project, stage["id"], generated.out(0), members)
+        return io.NodeOutput(_collect(graph, project, members, [asset, isolated]), generated.out(0), expand=graph.finalize())
+
+def _isolate(graph, project, stage_id, scene, members):
+    """Edit the populated scene into its additions alone on chroma green, in place, so their outlines can be keyed."""
+    prompt = ("Edit the supplied image. Keep ONLY the background characters, creatures, drones, robots, holograms and other small props that stand apart from the architecture, "
+              "each exactly where it is, at exactly the same size, pose and pixels. Replace EVERYTHING else (sky, buildings, billboards, railings, machinery, floor, reflections, glows and shadows) "
+              "with flat uniform chroma green RGB(0,255,0). Do not move, resize, redraw, add or remove any kept figure. No text. " + KEY)
+    isolated = _cloud(graph, project, prompt, scene, "16:9", "2K", 151)
+    return _save(graph, project, isolated.out(0), {"id": f"{stage_id}_isolated", "kind": "scene", "stage": stage_id, "key": True}, members)
+
+
+class CFZSceneIsolate(io.ComfyNode):
+    """The separation step on its own, for a populated scene that already exists."""
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZSceneIsolate", display_name="CFZ Scene Isolate (separate background characters)", category="Comfy Fighter Z",
+            description="PAID cloud generation: exactly one 2K image edit. Keeps only the characters and props a populated stage scene added, in place, on chroma green; extract-scenery keys it for clean, exactly placed cut-outs.",
+            inputs=[Project.Input("project"), io.Image.Input("scene", raw_link=True), io.String.Input("stage_id", default="environment"),
+                    io.String.Input("name", default="New Environment"), io.String.Input("description", default="", multiline=True), _reroll_input()],
+            outputs=[Bundle.Output(display_name="bundle")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, scene, stage_id, name, description, reroll=0):
+        project = _rerolled(project, reroll)
+        _project(project)
+        stage = {"id": _slug(stage_id, "Stage ID"), "name": _text(name, "Stage name", True), "description": _text(description, "Stage description")}
+        members = _members(stage=stage); graph = GraphBuilder()
+        return io.NodeOutput(_collect(graph, project, members, [_isolate(graph, project, stage["id"], scene, members)]), expand=graph.finalize())
 
 
 class CFZSharedArtFactory(io.ComfyNode):
@@ -990,5 +1018,5 @@ class CFZExportAssetPatch(io.ComfyNode):
         return _export(project, bundles, False)
 
 
-FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZCharacterArt, CFZEnvironmentFactory, CFZStageScenery,
+FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZCharacterArt, CFZEnvironmentFactory, CFZStageScenery, CFZSceneIsolate,
                  CFZSharedArtFactory, CFZTitleArt, CFZTitleVideo, CFZSelectVideo, CFZSelectIdleVideo, CFZIntroVideo, CFZSaveVideo, CFZExportVideos, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]

@@ -36,10 +36,12 @@
     world.addChild(auraLayer, trailLayer, fighterLayer, dustLayer, motionLines, projectileLayer, effectLayer, fxLines, burstLines, sparks);
     const flash = new PIXI.Graphics(); flash.rect(0, 0, 960, 540).fill(0xffffff); flash.alpha = 0; flash.blendMode = 'add';
     const sparkLayer = new PIXI.Container(); world.addChild(sparkLayer);
-    // Living scenery: the Canvas path's scenery module paints two offscreen canvases (behind and over the fighters).
-    const sceneryCanvas = [0, 1].map(() => { const c = document.createElement('canvas'); c.width = 960; c.height = 540; return c; });
-    const sceneryTextures = sceneryCanvas.map(c => PIXI.Texture.from(c)), scenerySprites = sceneryTextures.map(t => new PIXI.Sprite(t));
-    app.stage.addChild(stageLayer, scenerySprites[0], titleTint, shaker, scenerySprites[1], flash);
+    // Living scenery: the shared scenery module paints two offscreen canvases. The first holds the stage elements in the
+    // painting's 960x540 space and lives inside stageLayer (same parallax and scale); the second is front weather.
+    const sceneryCanvas = [0, 1].map(() => { const c = document.createElement('canvas'); c.width = 1920; c.height = 1080; return c; });
+    const sceneryTextures = sceneryCanvas.map(c => PIXI.Texture.from(c)), scenerySprites = sceneryTextures.map(t => { const sprite = new PIXI.Sprite(t); sprite.scale.set(.5); return sprite; });
+    stageLayer.addChild(scenerySprites[0]);
+    app.stage.addChild(stageLayer, titleTint, shaker, scenerySprites[1], flash);
     // Impact shader on the world: chromatic aberration, radial blur, a shockwave ring and a negative flash,
     // driven per frame and attached only while something is happening. Filter space is the full screen.
     shaker.filterArea = new PIXI.Rectangle(0, 0, 960, 540);
@@ -305,7 +307,7 @@ void main() {
       else { if (!fallbackDrawn) { drawFallbackStage(); fallbackDrawn = true; } stageFallback.visible = true; stageSprite.visible = false; lastStage = null; }
       if (screen.scenery) {
         const info = screen.sceneryInfo(), live = !!state;
-        sceneryCanvas.forEach((c, i) => { const g = c.getContext('2d'); g.clearRect(0, 0, 960, 540); if (live) (i ? screen.scenery.drawFront : screen.scenery.drawBack)(g, info); sceneryTextures[i].source.update(); scenerySprites[i].visible = live; });
+        sceneryCanvas.forEach((c, i) => { const g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, 1920, 1080); g.setTransform(2, 0, 0, 2, 0, 0); if (live) (i ? screen.scenery.drawFront : screen.scenery.drawLayers)(g, info); sceneryTextures[i].source.update(); scenerySprites[i].visible = live; });
       }
       const title = !state && ui('title'); titleTint.visible = !!title; if (title) coverSprite(titleTint, title, 0, 0, 960, 540);
       world.position.set(-view.x * view.zoom + (view.shakeX || 0), FLOOR * (1 - view.zoom) + view.lift + (view.shakeY || 0)); world.scale.set(view.zoom);

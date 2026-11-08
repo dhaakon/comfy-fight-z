@@ -87,6 +87,23 @@ node build/tools/new-game.cjs add-sheets --run output/test-runs/<name>-<date> --
 
 It uploads each fighter's identity and accepted sheet A (as `reference_sheet`), generates the two sheets one node at a time, appends their records and `game.motionSheets` to `assets.json`, and leaves everything else untouched. `--asset title_video` and `--asset select_video` redraw the menu loops from the accepted ensemble and select art the same way. `--video-model` / `--video-resolution` override the run's project settings for that clip (this is how a run made on LTX moves its clips to Seedance). Do these after any whole-workflow re-roll, because the whole-workflow exporters rewrite the manifests from their own cached records.
 
+### Living stage scenery (optional)
+
+Background characters and animated props that sit in the stage painting, Street Fighter style:
+
+```
+node build/tools/new-game.cjs add-scenery --run output/test-runs/<name>-<date> [--stages <id>] [--crowd "<who and what to add>"] --approve-usd 0.15
+```
+
+Per stage, two paid 2K edits ($0.072 each; only the second when `<stage>_scene` is already accepted):
+
+1. `CFZStageScenery` repaints the accepted stage painting with the additions in place, keeping everything else identical (`<stage>_scene`).
+2. `CFZSceneIsolate` keeps only the additions, in place, on chroma green (`<stage>_isolated`).
+
+`build/tools/extract-scenery.cjs` then compares the scene with the clean painting. Keyed figures that the scene really added become animated elements cut at their exact position and scale. The scene's other changes (glows, reflections) become `still` layers, and scraps touching a figure are dropped so nothing ghosts when it moves. It writes `bundle/scenery/<stage>.json` (the placement file: each element's `src`, `place` as fractions of the painting, `motion`, `order`) and `bundle/scenery/<stage>-review.png`, and maps one `layer` record per element into `assets.json`.
+
+Review the sheet, then edit the JSON: set each element's `motion` (`still`, `idle`, `cheer`, `hover`, `sway`, `flicker`, `pulse`) or delete false elements, and run `node build/tools/extract-scenery.cjs --bundle <run>/bundle --stage <id> --sync`. A full re-extraction keeps reviewed motions on overlapping elements. In the game, `render/scenery.js` draws the clean painting as the plate and animates the elements in the painting's own space, so they keep its parallax and scale; `cheer` elements bounce when hits, supers and K.O.s land. Rain, dust, leaves or snow over the fighters come from the stage description or `ambience`.
+
 ## 5. Export and install
 
 ```

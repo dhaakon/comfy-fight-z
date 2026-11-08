@@ -1,7 +1,9 @@
 // Browser-only asset compiler. It consumes accepted local images and never calls a model.
 import { segmentSheet, poseScales } from './sheet-layout.mjs';
 const ID = /^[a-z0-9][a-z0-9_-]*$/i;
-const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending', 'stage', 'ui', 'effects', 'scenery']);
+const KINDS = new Set(['source', 'reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending', 'stage', 'ui', 'effects', 'scene', 'layer']);
+// Living-stage layers: cut from a populated scene at their exact place, as fractions of the stage image.
+const LAYER_MOTIONS = new Set(['still', 'idle', 'cheer', 'hover', 'sway', 'flicker', 'pulse']);
 const FIGHTER_KINDS = ['reference', 'sprites', 'portrait', 'hero', 'cutin', 'ending'];
 const STYLES = new Set(['balanced', 'power', 'speed', 'zoner', 'grappler', 'trickster', 'boss']);
 // A complete arcade cast (seven fighters, three arenas, PNG/WAV sources) exports at roughly 550 MB.
@@ -79,21 +81,25 @@ export function validateManifest(input) {
     if (asset.fighter && !game.fighters.some(f => f.id === asset.fighter)) throw new Error(`Unknown fighter on ${asset.id}: ${asset.fighter}`);
     if (asset.stage && !game.stages.some(s => s.id === asset.stage)) throw new Error(`Unknown stage on ${asset.id}: ${asset.stage}`);
     if (FIGHTER_KINDS.includes(asset.kind) && !asset.fighter) throw new Error(`${asset.id} needs a fighter mapping.`);
-    if (['stage', 'scenery'].includes(asset.kind) && !asset.stage) throw new Error(`${asset.id} needs a stage mapping.`);
+    if (['stage', 'scene', 'layer'].includes(asset.kind) && !asset.stage) throw new Error(`${asset.id} needs a stage mapping.`);
     if (['ui', 'effects', 'stage'].includes(asset.kind) && asset.fighter) throw new Error(`${asset.id} has an unexpected fighter mapping.`);
-    if (!['stage', 'source', 'scenery'].includes(asset.kind) && asset.stage) throw new Error(`${asset.id} has an unexpected stage mapping.`);
+    if (!['stage', 'source', 'scene', 'layer'].includes(asset.kind) && asset.stage) throw new Error(`${asset.id} has an unexpected stage mapping.`);
     if (asset.kind === 'source' && Boolean(asset.fighter) === Boolean(asset.stage)) throw new Error(`${asset.id} source needs exactly one fighter or stage mapping.`);
     for (const dimension of ['width', 'height']) if (asset[dimension] !== undefined && (!Number.isInteger(asset[dimension]) || asset[dimension] < 1 || asset[dimension] > 16384)) throw new Error(`Invalid ${dimension} for ${asset.id}`);
     const claims = [];
-    if (asset.kind === 'sprites' || asset.kind === 'effects' || asset.kind === 'scenery') {
+    if (asset.kind === 'layer') {
+      if (!asset.place || ['x', 'y', 'w', 'h'].some(k => !Number.isFinite(asset.place[k]) || asset.place[k] < -1 || asset.place[k] > 2) || asset.place.w <= 0 || asset.place.h <= 0) throw new Error(`${asset.id} needs a place {x, y, w, h} in stage fractions.`);
+      if (!LAYER_MOTIONS.has(asset.motion || 'idle')) throw new Error(`${asset.id} has an unknown motion: ${asset.motion}`);
+    }
+    if (asset.kind === 'sprites' || asset.kind === 'effects') {
       if (!Array.isArray(asset.poses) || asset.poses.length !== 9 || new Set(asset.poses).size !== 9 || asset.poses.some(p => !ID.test(p))) throw new Error(`${asset.id} needs exactly nine unique pose names.`);
       if (asset.kind === 'sprites' && asset.sheet && layouts[asset.sheet] && JSON.stringify(asset.poses) !== JSON.stringify(layouts[asset.sheet])) throw new Error(`${asset.id} pose order disagrees with the ${asset.sheet} layout.`);
       // Reviewed correction: cells drawn facing the wrong way are flipped at build time.
       if (asset.mirror !== undefined && (!Array.isArray(asset.mirror) || asset.mirror.some(p => !asset.poses.includes(p)))) throw new Error(`${asset.id} mirror must list poses from that sheet.`);
       // Reviewed correction: where the model drew an extra figure or shifted a row, `figures` picks each pose's figure.
       if (asset.figures !== undefined && (!asset.figures || typeof asset.figures !== 'object' || Array.isArray(asset.figures) || Object.entries(asset.figures).some(([p, v]) => !asset.poses.includes(p) || !Array.isArray(v) || v.length !== 2 || v.some(n => typeof n !== 'number' || !(n >= 0 && n <= 1))))) throw new Error(`${asset.id} figures must map poses from that sheet to [x, y] fractions.`);
-      claims.push(...asset.poses.map(p => asset.kind === 'sprites' ? `assets/fighters/${asset.fighter}_${p}.png` : asset.kind === 'scenery' ? `assets/scenery/${asset.stage}_${p}.png` : `assets/effects/${p}.png`));
-    } else claims.push(`${asset.kind}/${asset.fighter || asset.stage || asset.id}`);
+      claims.push(...asset.poses.map(p => asset.kind === 'sprites' ? `assets/fighters/${asset.fighter}_${p}.png` : `assets/effects/${p}.png`));
+    } else claims.push(['layer', 'scene'].includes(asset.kind) ? `${asset.kind}/${asset.id}` : `${asset.kind}/${asset.fighter || asset.stage || asset.id}`);
     for (const claim of claims) {
       const normalized = claim.toLowerCase();
       if (outputs.has(normalized)) throw new Error(`Duplicate runtime asset mapping: ${claim}`);
@@ -368,10 +374,14 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
           pending.push({ pose, src, ...result });
         }
         for (const result of pending) { output.set(result.src, result.blob); runtime.effects[result.pose] = { src: result.src, ...result.meta }; }
-      } else if (job.kind === 'scenery') {
-        const cels = {};
-        for (const [pose, cell] of sheetCells(image, job)) { const result = await exportCell(cell, 1), src = `assets/scenery/${job.stage}_${pose}.png`; output.set(src, result.blob); cels[pose] = { src, ...result.meta }; }
-        selectedStages.get(job.stage).scenery = { cels };
+      } else if (job.kind === 'layer') {
+        // A cut-out stage element keeps its alpha and its native pixels; place says where it sits on the stage painting.
+        const src = `assets/scenery/${job.id}.png`; output.set(src, blob);
+        const stage = selectedStages.get(job.stage); stage.scenery = stage.scenery || { layers: [] };
+        stage.scenery.layers.push({ id: job.id, src, place: job.place, motion: job.motion || 'idle', ...(job.depth ? { depth: job.depth } : {}), ...(job.order !== undefined ? { order: job.order } : {}) });
+        stage.scenery.layers.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      } else if (job.kind === 'scene') {
+        // The populated composition the layers were cut from: kept as a source for review, not shipped to the runtime.
       } else if (job.kind !== 'reference') {
         const dirs = { portrait: 'portraits', hero: 'heroes', cutin: 'cutins', ending: 'endings', stage: 'stages', ui: 'ui' }, src = `assets/${dirs[job.kind]}/${job.id}.png`;
         output.set(src, await exportImage(image, job));

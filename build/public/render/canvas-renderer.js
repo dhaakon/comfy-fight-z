@@ -7,7 +7,7 @@
     const { art, assetSource, ui, fighterData, portraitSource } = deps;
     // Life points per fighter (engines before the 1000-point scale used 100).
     const LIFE = E.MAX_HP || 100;
-    // Living scenery (render/scenery.js): far lights, the background crowd and front weather, each at its own parallax.
+    // Living scenery (render/scenery.js): animated stage elements in the painting's space, and front weather.
     const scenery = root.CFZScenery ? root.CFZScenery.create() : null;
     const sceneryInfo = () => ({ view, stage: manifest?.stages?.[stageIndex], getImage: art, state, time: performance.now() / 1000, floor: FLOOR, horizonDrop: 150, worldWidth: E.WIDTH });
     const reducedMotion = { matches: false };
@@ -220,7 +220,10 @@
     // scaled about the floor line so the ground stays under their feet.
     const span = 960 / view.zoom, travel = Math.max(1, E.WIDTH - span), scale = (1 + (E.WIDTH - 960) * PARALLAX / 960) * (1 + (view.zoom - 1) * .5);
     const offset = (view.x / travel) * (960 * scale - 960);
-    ctx.save(); ctx.translate(-offset, FLOOR * (1 - scale) + view.lift * .5); ctx.scale(scale, scale); stageDraw(); ctx.restore();
+    ctx.save(); ctx.translate(-offset, FLOOR * (1 - scale) + view.lift * .5); ctx.scale(scale, scale); stageDraw();
+    // Stage elements cut from the populated scene animate in the painting's own space, so they keep its parallax and scale.
+    if (scenery && state) scenery.drawLayers(ctx, sceneryInfo());
+    ctx.restore();
   }
   // Spark tiers by the damage a hit dealt, on the 1000-point life scale: light under 45, medium under 75, heavy from 75.
   // Each tier sets the sparks, the camera shake and the impact flash (both renderers); a block throws cool sparks and a ring.
@@ -390,7 +393,6 @@
   }
   function drawWorld(fighters) {
     stageLayer();
-    if (scenery && state) scenery.drawBack(ctx, sceneryInfo());
     if (!state && ui('title')) { ctx.globalAlpha = .6; cover(ui('title'), 0, 0, 960, 540); ctx.globalAlpha = 1; }
     ctx.save(); worldTransform();
     fighters.forEach(drawFighter);

@@ -1,22 +1,21 @@
-// Living stage scenery, shared by both arena renderers (pure Canvas 2D drawing; the Pixi path draws it onto
-// offscreen canvases used as textures). Visual only: nothing here reads or changes the simulation.
+// Living stage scenery, shared by both arena renderers (pure Canvas 2D drawing; the Pixi path paints offscreen canvases
+// used as textures). Visual only: nothing here reads or changes the simulation.
 //
-// Layers, back to front, each with its own parallax depth (1 = moves with the fighters):
-//   far   0.35  ambient lights drifting across the sky (drones, birds, embers), by stage mood
-//   crowd 0.70  the stage's generated background characters (stage.scenery.cels: a1-a3, b1-b3, c1-c3 —
-//               three bystanders, three frames each), idling and cheering when the fight heats up
-//   front 1.25  rain, falling leaves or dust motes over the fighters, by stage mood
-// Mood comes from stage.ambience (an array of 'rain', 'neon', 'drones', 'dust', 'embers', 'leaves', 'snow'),
-// else from keywords in the stage description.
+// Layers:
+//   stage elements  cut from the stage's populated scene at their exact place and scale (stage.scenery.layers, written by
+//                   build/tools/extract-scenery.cjs). They are drawn over the clean painting in the painting's own space,
+//                   so they share its parallax and scale exactly, and each animates in place by its reviewed motion:
+//                   still, idle (breathing), cheer (idle, bouncing when the fight heats up), hover, sway, flicker, pulse.
+//   front weather   rain, leaves, snow or dust motes over the fighters (parallax 1.25), by stage mood.
+// Mood comes from stage.ambience (an array of 'rain', 'dust', 'leaves', 'snow'), else from the stage description.
 (function (root) {
   'use strict';
-  const MOODS = ['rain', 'neon', 'drones', 'dust', 'embers', 'leaves', 'snow'];
-  const KEYWORDS = { rain: /\brain/i, neon: /neon|hologra|billboard|arcade|cyber/i, drones: /drone|megacity|futur|cyber|tower|rooftop/i,
-    dust: /dust|desert|yard|patio|sunset|golden hour/i, embers: /fire|lava|forge|ember|torch/i, leaves: /garden|park|forest|autumn|leaves/i, snow: /snow|winter|frost/i };
+  const MOODS = ['rain', 'dust', 'leaves', 'snow'];
+  const KEYWORDS = { rain: /rain/i, dust: /dust|desert|yard|patio|sunset|golden hour/i, leaves: /garden|park|forest|autumn|leaves/i, snow: /snow|winter|frost/i };
   function ambience(stage) {
     if (Array.isArray(stage?.ambience)) return stage.ambience.filter(m => MOODS.includes(m));
     const text = `${stage?.name || ''} ${stage?.description || ''}`;
-    return MOODS.filter(m => KEYWORDS[m].test(text)).slice(0, 3);
+    return MOODS.filter(m => KEYWORDS[m].test(text)).slice(0, 2);
   }
   // A cheap deterministic hash so placements are stable per stage and per index.
   const hash = (n, seed = 1) => { let x = (Math.imul(n | 0, 374761393) + Math.imul(seed | 0, 668265263)) >>> 0; x = Math.imul(x ^ (x >>> 13), 1274126177) >>> 0; return ((x ^ (x >>> 16)) >>> 0) / 4294967296; };
@@ -24,62 +23,43 @@
 
   function create() {
     let excitement = 0, seenEffects = new WeakSet(), lastTime = null;
-    // Camera mapping for a layer at depth p: screen x of a world x, and the layer's ground line on screen.
-    const mapper = (view, p, world) => {
-      const zoom = view.zoom || 1, centre = (view.x || 0) + 480 / zoom;
-      return { x: wx => 480 + (wx - centre) * zoom * p, scale: zoom * p, ground: world.floor - (1 - p) * world.horizonDrop + (view.lift || 0) * p };
-    };
     function heat(state) {
       // Hits, supers and K.O.s excite the crowd; it calms down over about two seconds.
       for (const e of state?.effects || []) if (!seenEffects.has(e)) {
         seenEffects.add(e);
-        excitement = Math.min(1, excitement + (e.type === 'ko' ? 1 : e.type === 'super' ? .8 : e.type === 'hit' ? (e.heavy ? .35 : .18) : 0));
+        excitement = Math.min(1, excitement + (e.type === 'ko' ? 1 : e.type === 'super' ? .8 : e.type === 'hit' ? (e.heavy ? .35 : .2) : 0));
       }
       if (state?.phase === 'roundover') excitement = Math.max(excitement, .9);
     }
-    function crowd(ctx, frame, info, t) {
-      const cels = info.stage?.scenery?.cels; if (!cels) return;
-      const people = ['a', 'b', 'c'].filter(r => cels[`${r}1`]), seed = stageSeed(info.stage);
-      if (!people.length) return;
-      const m = mapper(info.view, .7, info), count = info.crowdCount || 7, span = info.worldWidth + 400;
-      for (let i = 0; i < count; i++) {
-        const who = people[Math.floor(hash(i, seed) * people.length)], wx = -200 + (i + .5) * span / count + (hash(i, seed + 3) - .5) * span / count * .6;
-        const x = m.x(wx); if (x < -120 || x > 1080) continue;
-        const phase = hash(i, seed + 5) * 6.28, cheering = excitement > .25 && hash(Math.floor(t * 3) + i * 17, seed) < excitement;
-        const cel = cheering ? `${who}${Math.floor(t * 8 + i) % 2 ? 2 : 3}` : `${who}${Math.sin(t * 1.3 + phase) > .92 ? 2 : 1}`;
-        const meta = cels[cel] || cels[`${who}1`], img = info.getImage(meta.src); if (!img) continue;
-        const height = 118 * m.scale * (.9 + hash(i, seed + 9) * .2), k = height / (meta.bh || meta.h || img.height);
-        const bob = cheering ? Math.abs(Math.sin(t * 9 + phase)) * 6 * m.scale : Math.sin(t * 2 + phase) * 1.2;
-        const flip = hash(i, seed + 11) < .5 ? -1 : 1;
-        ctx.save(); ctx.translate(x, m.ground - bob); ctx.scale(flip * k, k);
-        ctx.globalAlpha = .92; ctx.filter = 'brightness(.62) saturate(.8)';
-        ctx.drawImage(img, -(meta.ax ?? img.width / 2), -(meta.ay ?? img.height), img.width, img.height);
-        ctx.restore();
-      }
-      ctx.filter = 'none'; ctx.globalAlpha = 1;
+    function tick(info) {
+      const t = info.time; if (lastTime !== null && t < lastTime) { excitement = 0; seenEffects = new WeakSet(); }
+      excitement = Math.max(0, excitement - Math.max(0, t - (lastTime ?? t)) * .45); lastTime = t; heat(info.state);
     }
-    function far(ctx, moods, info, t) {
-      const m = mapper(info.view, .35, info), seed = stageSeed(info.stage);
-      if (moods.includes('drones')) for (let i = 0; i < 6; i++) {
-        const speed = 18 + hash(i, seed) * 30, wx = ((t * speed * (i % 2 ? 1 : -1) + hash(i, seed + 1) * 2400) % 2400 + 2400) % 2400 - 480;
-        const x = m.x(wx), y = 70 + hash(i, seed + 2) * 140 + Math.sin(t * .8 + i) * 6, blink = (Math.floor(t * 2 + i) % 3) === 0;
-        ctx.fillStyle = 'rgba(20,24,40,.85)'; ctx.fillRect(x - 7, y - 2, 14, 4);
-        ctx.fillStyle = blink ? '#ff3d6e' : '#3df2ff'; ctx.globalAlpha = .9; ctx.beginPath(); ctx.arc(x + (i % 2 ? 7 : -7), y, 2.2, 0, 6.29); ctx.fill(); ctx.globalAlpha = 1;
-      }
-      if (moods.includes('neon')) {
-        // Two signs flicker: a soft additive glow over parts of the painting.
-        for (let i = 0; i < 2; i++) {
-          const on = Math.sin(t * (5 + i * 3)) + Math.sin(t * (13 + i)) > -1.2, x = m.x(300 + i * 700 + hash(i, seed) * 200), y = 110 + hash(i, seed + 4) * 90;
-          if (!on) continue; const g = ctx.createRadialGradient(x, y, 4, x, y, 120);
-          g.addColorStop(0, i ? 'rgba(255,61,139,.22)' : 'rgba(61,242,255,.2)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = g; ctx.fillRect(x - 120, y - 120, 240, 240); ctx.globalCompositeOperation = 'source-over';
-        }
-      }
-      if (moods.includes('embers')) for (let i = 0; i < 24; i++) {
-        const life = (t * (.15 + hash(i, seed) * .2) + hash(i, seed + 1)) % 1, x = (hash(i, seed + 2) * 1100 - 70) + Math.sin(t + i) * 12, y = 540 - life * 480;
-        ctx.globalAlpha = (1 - life) * .8; ctx.fillStyle = '#ff9a3c'; ctx.fillRect(x, y, 2, 2);
-      }
-      ctx.globalAlpha = 1;
+    // Stage elements, drawn in the painting's 960x540 cover space (the caller has already applied the stage transform).
+    function drawLayers(ctx, info) {
+      const layers = info.stage?.scenery?.layers, plate = info.stage && info.getImage(info.stage.src);
+      if (!layers?.length || !plate) return;
+      tick(info);
+      const t = info.time, s = Math.max(960 / plate.width, 540 / plate.height), ox = (960 - plate.width * s) / 2, oy = (540 - plate.height * s) / 2;
+      layers.forEach((layer, i) => {
+        const img = info.getImage(layer.src); if (!img) return;
+        const x = ox + layer.place.x * plate.width * s, y = oy + layer.place.y * plate.height * s, w = layer.place.w * plate.width * s, h = layer.place.h * plate.height * s;
+        const phase = hash(i, stageSeed(info.stage)) * 6.283, motion = layer.motion || 'idle';
+        if (motion === 'still') { ctx.drawImage(img, x, y, w, h); return; }
+        // Every motion pivots on the element's bottom centre, where it stands, so feet stay planted on the painting.
+        let dx = 0, dy = 0, sx = 1, sy = 1, skew = 0, rot = 0, alpha = 1, glow = 0;
+        if (motion === 'idle' || motion === 'cheer') {
+          sy = 1 + .014 * Math.sin(t * 1.9 + phase); sx = 1 - .005 * Math.sin(t * 1.9 + phase); skew = .012 * Math.sin(t * .8 + phase);
+          if (motion === 'cheer' && excitement > .15) { const k = Math.min(1, excitement * 1.3); dy = -Math.abs(Math.sin(t * 8.5 + phase)) * h * .05 * k; skew += .03 * k * Math.sin(t * 4.2 + phase); sy += .02 * k; }
+        } else if (motion === 'hover') { dx = Math.sin(t * .45 + phase) * w * .35; dy = Math.sin(t * 1.7 + phase) * h * .08; rot = .05 * Math.sin(t * .9 + phase); }
+        else if (motion === 'sway') skew = .035 * Math.sin(t * 1.1 + phase);
+        else if (motion === 'pulse') { const k = 1 + .03 * Math.sin(t * 2.4 + phase); sx = sy = k; }
+        else if (motion === 'flicker') { const n = Math.sin(t * 11 + phase) + Math.sin(t * 23.7) + Math.sin(t * 3.1 + phase); alpha = n < -1.8 ? .25 : .8 + .2 * Math.sin(t * 7 + phase); glow = .35 + .25 * Math.sin(t * 3 + phase); dy = Math.sin(t * 1.3 + phase) * h * .03; }
+        ctx.save(); ctx.translate(x + w / 2 + dx, y + h + dy); ctx.rotate(rot); ctx.transform(sx, 0, skew, sy, 0, 0);
+        ctx.globalAlpha = alpha; ctx.drawImage(img, -w / 2, -h, w, h);
+        if (glow > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = glow * alpha; ctx.drawImage(img, -w / 2, -h, w, h); }
+        ctx.restore();
+      });
     }
     function front(ctx, moods, info, t) {
       const view = info.view, drift = -(view.x || 0) * 1.25 * (view.zoom || 1), seed = stageSeed(info.stage);
@@ -103,15 +83,8 @@
       }
       ctx.globalAlpha = 1;
     }
-    // info: { view, stage, getImage, state, time (seconds), floor, horizonDrop, worldWidth, reducedMotion }
-    function drawBack(ctx, info) {
-      const t = info.time; if (lastTime !== null && t < lastTime) { excitement = 0; seenEffects = new WeakSet(); }
-      excitement = Math.max(0, excitement - Math.max(0, t - (lastTime ?? t)) * .45); lastTime = t; heat(info.state);
-      const moods = ambience(info.stage);
-      far(ctx, moods, info, t); crowd(ctx, null, info, t);
-    }
     function drawFront(ctx, info) { front(ctx, ambience(info.stage), info, info.time); }
-    return { drawBack, drawFront, ambience, get excitement() { return excitement; } };
+    return { drawLayers, drawFront, ambience, get excitement() { return excitement; } };
   }
   const api = { create, ambience, MOODS };
   if (typeof module === 'object' && module.exports) module.exports = api; else root.CFZScenery = api;
