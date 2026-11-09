@@ -2,13 +2,15 @@
 
 This example starts with **six fictional adults and one fictional backyard**, rendered as ordinary phone photographs. ComfyUI invents every photograph from text, then uses those new images to generate a complete anime fighting game. No real-person photos, real venue inputs, or artwork from the earlier example are used.
 
-**Verified game:** all seven source photos and the game artwork passed visual review, including five targeted image repairs and all 162 poses. The complete bundle contains 56 mapped images and 22 game-audio clips. Strict export and keyboard-control checks passed; the public game was checked on desktop and mobile, and all deployed media files match the reviewed export.
+**Verified game:** all seven source photos and the game artwork passed visual review, including five targeted image repairs and all 162 poses. The complete bundle contains 56 mapped images and 22 game-audio clips. Strict export and keyboard-control checks passed; the public game was checked on desktop and mobile while it was hosted, and all deployed media files matched the reviewed export. The public site was reduced to the original game and Rogue Protocol on November 9, 2026, so this demo now plays locally from its ZIP.
 
 The original [included example](../README.md), its `example/bundle/` assets, and `npm run example` stay separate. This folder holds the new example's guide and reviewed reference photos. Its downloadable game ZIP includes the reusable source bundle under `sources/`; a second complete asset bundle is not stored in Git.
 
 ## Watch, play, or download
 
-**[Watch the 2:00 narrated walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)** · **[Play the new game](https://comfy-fight-z.dhaakon.com/phone-photo-demo/)** · **[Download the game ZIP](https://github.com/dhaakon/comfy-fight-z/releases/download/arcade-multiplayer-v1/comfy-fighter-z-phone-photo-arcade-game.zip)**
+**[Watch the 2:00 narrated walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.mp4)** · **[Download the game ZIP](https://github.com/dhaakon/comfy-fight-z/releases/download/arcade-multiplayer-v1/comfy-fighter-z-phone-photo-arcade-game.zip)**
+
+The game is no longer served on the public site (its `/phone-photo-demo/` mount was retired on November 9, 2026); run the ZIP locally as described below.
 
 [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.srt) · [Video poster](https://github.com/dhaakon/comfy-fight-z/releases/download/phone-photo-demo-v1/comfy-fighter-z-phone-photo-demo.poster.jpg) · [Release page](https://github.com/dhaakon/comfy-fight-z/releases/tag/phone-photo-demo-v1)
 

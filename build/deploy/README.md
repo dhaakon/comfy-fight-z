@@ -52,7 +52,7 @@ The supplied systemd unit runs the bundled backend as `www-data`, bound only to 
 | Setting | Purpose in this deployment |
 | --- | --- |
 | `GAME_ROOT=/var/www/comfy-fight-z.dhaakon.com/current` | Reads the active static release's game manifests and engine. |
-| `GAME_MOUNTS={"/":".","/phone-photo-demo/":"phone-photo-demo","/billionaires-brawl/":"billionaires-brawl",…}` | Loads separate game definitions and room pools for every mounted URL; `games.json` lists them all for GAME SELECT. |
+| `GAME_MOUNTS={"/":".","/rogue-ai/":"rogue-ai"}` | Loads separate game definitions and room pools for every mounted URL; `games.json` lists them all for GAME SELECT. A new mount needs its folder here and its name in the nginx proxy pattern. |
 | `PUBLIC_URL=https://comfy-fight-z.dhaakon.com/` | Produces public invitation and QR addresses. |
 | `PUBLIC_ORIGINS=https://comfy-fight-z.dhaakon.com` | Allows browser connections from the game's own origin. |
 | `SERVE_STATIC=0` | Leaves media and other static files to Nginx. |

@@ -18,7 +18,7 @@ These PNGs were captured from running local interfaces on November 3, 2026 (UTC)
 | [12-example-gameplay.png](12-example-gameplay.png) | Griddle versus CPU Rivet using the included sprites and fictional Yard. |
 | [13-example-builder.png](13-example-builder.png) | The included bundle loaded in the builder: six fighters, 18 sheets, 56/56 images, 22/22 audio clips and a completed export with placeholders disabled. |
 
-[`14-explainer-poster.jpg`](14-explainer-poster.jpg) is copied unchanged from the finished explainer's poster. It links to the narrated [workflow walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/tag/explainer-v1), which shows the earlier two-fighter example. It is separate from the direct browser screenshots above.
+[`14-explainer-poster.jpg`](14-explainer-poster.jpg) is copied unchanged from the finished explainer's poster. It links to the narrated [workflow walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/tag/explainer-v1), which shows the earlier two-fighter example. [`15-phone-photo-explainer.jpg`](15-phone-photo-explainer.jpg) is the poster of the [phone-photo walkthrough](https://github.com/dhaakon/comfy-fight-z/releases/tag/phone-photo-demo-v1), and [`16-teaser-poster.jpg`](16-teaser-poster.jpg) is the logo frame of the 90-second teaser's second cut (release `teaser-v2`), taken from the composed video at 8.6 seconds. These three are frames of generated or recorded video, separate from the direct browser screenshots above.
 
 ## Complete included example provenance
 

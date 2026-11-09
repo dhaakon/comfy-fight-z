@@ -2,7 +2,7 @@
 
 Build a complete browser fighting game from the included generated assets, then customize it or generate your own cast.
 
-**Verified example:** the complete generated bundle is included in `example/bundle/`. A fresh checkout passed dependency installation, strict export, and browser gameplay checks: **seven fighters (six plus the final boss), three arenas, 315 poses, and 99 audio clips**. Building this example never generates missing assets or spends cloud credits.
+**Verified example:** the complete generated bundle is included in `example/bundle/`. A fresh checkout passed dependency installation, strict export, and browser gameplay checks: **seven fighters (six plus the final boss), three arenas, 567 poses, 99 audio clips, 18 silent clips and living scenery on every arena**. Building this example never generates missing assets or spends cloud credits.
 
 ## Build and play
 
@@ -23,15 +23,15 @@ New builds also offer **ONLINE VERSUS** for an invited opponent and **PHONE / TV
 The example contains:
 
 - Six fictional fighters (Griddle, Rivet, Tempo, Nimbus, Switchback and Brick) and the final boss, Baron Bylaw.
-- Five 3×3 sheets per fighter: **315 named poses** in total (27 key poses and 18 arcade in-betweens each). Each fighter also has a portrait, a selection hero, a super-move cut-in and an ending illustration.
-- Three arenas: **The Yard**, **Sunset Rooftop** and **Midnight Arcade**, with title, selection, HUD, logo, and effects artwork.
-- **89 mapped images and 99 audio clips:** ten music tracks, twenty announcer calls, twenty effects, and seven voice lines per fighter.
+- Nine 3×3 sheets per fighter: **81 named poses each, 567 in all** (27 key poses, 18 arcade in-betweens, 18 motion cels for strike anticipation, breathing, strides, jumps and guard reactions, and 18 drawn walk, roll and sweep frames). Each fighter also has a portrait, a selection hero, a super-move cut-in and an ending illustration.
+- Three arenas: **The Yard**, **Sunset Rooftop** and **Midnight Arcade**, with title, selection, HUD, logo and effects artwork, a generated GAME SELECT title card, and **36 living-scenery layers** (crowds, drones, neon, weather) that the game animates behind the fight.
+- **154 mapped images, 99 audio clips and 18 silent clips:** 118 game images and the 36 scenery layers; ten music tracks, twenty announcer calls, twenty effects and seven voice lines per fighter; a four-second fight introduction and a six-second select-screen idle loop per fighter, the eight-second title and select loops and their portrait cuts for phones (Seedance 1.5 Pro, 1080p).
 
-The arcade material was added to the earlier six-fighter release on November 4, 2026 with the [arcade expansion](../README.md#optional-expand-a-classic-bundle-to-the-arcade-cast). That run made 33 images and 99 clips, then three single-sheet repairs, for **$4.57** of cloud generation. The earlier release remains in Git history. `npm run example` accepts either release, but each must be complete.
+The arcade material was added to the earlier six-fighter release on November 4, 2026 with the [arcade expansion](../README.md#optional-expand-a-classic-bundle-to-the-arcade-cast). That run made 33 images and 99 clips, then three single-sheet repairs, for **$4.57** of cloud generation. The motion sheets (November 6), the walk, roll and sweep sheets (November 7), and the title card, the clips and the living scenery (November 9) were added afterwards with `node build/tools/new-game.cjs` steps on runs prepared over the accepted bundle and folded back with `build/tools/merge-into-example.cjs`; `bundle/provenance.json` records each addition. The earlier releases remain in Git history. `npm run example` accepts the classic or the arcade release, with these additions on top, but each must be complete.
 
 All character and environment sources are invented from text. No real-person photos, earlier private media, or opening film are included. The generation template's three environment slots are all used.
 
-For a separate demonstration that first invents realistic phone snapshots and then uses them as uploaded game references, see [Phone snapshots → Comfy Fighter Z](phone-photos/README.md). That new demonstration is under review; it does not replace this included example or change `npm run example`.
+For a separate demonstration that first invents realistic phone snapshots and then uses them as uploaded game references, see [Phone snapshots → Comfy Fighter Z](phone-photos/README.md). That demonstration is separate and no longer on the public site; it does not replace this included example or change `npm run example`.
 
 ## Find your game and customize it
 
@@ -78,13 +78,13 @@ Preparation writes a plan and workflow files; it does **not** submit generation.
 
 Open **`output/example/my-run/workflow.json`** in ComfyUI. The shipped [workflow.json](workflow.json) is a muted review template with a portable placeholder; use the prepared copy to run it. One Project Settings node supplies the output folder to both image and audio exporters.
 
-Review `plan.json`, validate the prepared graph, and approve the exact cloud spend before queueing through the MCP. The default batch is **89 image calls plus 99 audio calls, approximately $7.05** at the checked rates. Actual provider billing may vary. No automatic paid retries or video generation are included.
+Review `plan.json`, validate the prepared graph, and approve the exact cloud spend before queueing through the MCP. The default batch is **105 image calls, 16 silent LTX clips and 99 audio calls, approximately $18.91** at the recorded rates; the plan's `total` has the exact counts. Actual provider billing may vary. No automatic paid retries are included. The shipped bundle's Seedance clips, walk, roll and sweep sheets, title card and living scenery come from separate `new-game.cjs` steps on a prepared run, not from this batch.
 
 The run creates `output/example/my-run/bundle/assets.json`, `audio.json`, and their `raw/` media. Review every sprite sheet and listen to the audio, then load the complete bundle in the builder to export your custom game. Fighter descriptions guide the art; the existing combat rules remain shared across the cast.
 
 ## What the bundle verifies
 
-The included `bundle/assets.json` and `bundle/audio.json` map every source file by asset ID and SHA-256 hash. `bundle/provenance.json` records original and packaged hashes, confirms pixel-identical lossless WebP images, and records the audio conversion metadata. Audio is packaged as MP3; original cloud outputs stay in the maintainer's separate generation run.
+The included `bundle/assets.json`, `bundle/audio.json` and `bundle/video.json` map every source file and clip by asset ID and SHA-256 hash. `bundle/provenance.json` records original and packaged hashes, confirms pixel-identical lossless WebP images, records the audio conversion metadata and lists every later addition (motion and detail sheets, the title card, the scenery layers and the clips) with its run. Audio is packaged as MP3; original cloud outputs stay in the maintainer's separate generation run.
 
 `npm run example` checks the bundled records, hashes, and required roster/media before building, then runs strict export and browser gameplay checks. Read the resulting `build-test.json` for that build's outcome. Additional workflows are in the [advanced guide](../comfyui/docs/advanced.md).
 
