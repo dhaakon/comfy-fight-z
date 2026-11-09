@@ -112,7 +112,8 @@ function planScenes(config, root, selected, silentPreview = false) {
     const spokenDuration = audioDuration / narrationTempo;
     // Preserve every demonstrated click/result in captured UI footage. Cards may trim their quiet tail.
     const speed = fixed && scene.id === '10-play' ? 1 : scene.visual.startsWith('captures/') ? Math.min(1.12, duration / videoDuration) : Math.max(1, Math.min(1.12, duration / videoDuration));
-    const result = { ...scene, index: config.scenes.indexOf(scene), silentPreview, fixedTimeline: fixed, video, audio, backgroundAudio, videoDuration, audioDuration, narrationTempo, spokenDuration, duration, start, end: start + duration, slowFactor: speed, holdLastFrame: Math.max(0, duration - videoDuration * speed), captions: captions(scene.narration, spokenDuration), sourceSha256: { audio: audio ? hash(audio) : null, backgroundAudio: backgroundAudio ? hash(backgroundAudio) : null, video: hash(video) } };
+    // Captions show the spoken text, or a scene's captionText where the voice spells something out (an address).
+    const result = { ...scene, index: config.scenes.indexOf(scene), silentPreview, fixedTimeline: fixed, video, audio, backgroundAudio, videoDuration, audioDuration, narrationTempo, spokenDuration, duration, start, end: start + duration, slowFactor: speed, holdLastFrame: Math.max(0, duration - videoDuration * speed), captions: captions(scene.captionText || scene.narration, spokenDuration), sourceSha256: { audio: audio ? hash(audio) : null, backgroundAudio: backgroundAudio ? hash(backgroundAudio) : null, video: hash(video) } };
     start += duration; return result;
   });
   if (!scenes.length) throw new Error(`Unknown scene: ${selected}`);
@@ -166,8 +167,16 @@ async function compose({ root = path.join(PROJECT, 'output/explainer/20261103'),
     const movie = path.join(root, stem + '.mp4');
     // AAC priming adds 1024 samples to the MP4 movie header in this encoder.
     // Trim only the padded silent tail so fixed-duration containers remain exact.
-    const fixedAudioTail = config.durationMode === 'fixed' ? ['-af', `atrim=duration=${(plan.duration - 1024 / 48000).toFixed(6)}`] : [];
-    await run('ffmpeg', ['-hide_banner', '-loglevel', 'warning', '-f', 'concat', '-safe', '0', '-i', 'concat.txt', '-i', 'chapters.ffmetadata', '-map', '0:v:0', '-map', '0:a:0', '-map_metadata', '1', '-map_chapters', '1', '-c:v', 'copy', ...fixedAudioTail, '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2', '-t', plan.duration.toFixed(6), '-movflags', '+faststart', '-y', movie], work);
+    const tail = config.durationMode === 'fixed' ? `atrim=duration=${(plan.duration - 1024 / 48000).toFixed(6)}` : null;
+    // An optional continuous music bed (config.music, under the run) plays under the whole piece, looped if it is
+    // shorter, ducked under the narration by a sidechain compressor and faded at both ends.
+    const music = config.music ? sourceFile(root, config.music) : null;
+    const musicInput = music ? ['-stream_loop', '-1', '-i', music] : [];
+    const audioMap = music ? ['-filter_complex',
+      `[0:a:0]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo,asplit=2[speech][key];[2:a]atrim=duration=${plan.duration.toFixed(6)},asetpts=PTS-STARTPTS,aresample=48000,loudnorm=I=${Number(config.musicLUFS) || -25}:TP=-6:LRA=9,afade=t=in:st=0:d=1.5,afade=t=out:st=${(plan.duration - 2.5).toFixed(6)}:d=2.5,aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[raw];[raw][key]sidechaincompress=threshold=0.03:ratio=5:attack=15:release=350[bed];[speech][bed]amix=inputs=2:duration=first:dropout_transition=0,volume=2,alimiter=limit=0.93:level=0${tail ? ',' + tail : ''}[mixed]`, '-map', '[mixed]']
+      : ['-map', '0:a:0', ...(tail ? ['-af', tail] : [])];
+    report.music = music ? { file: path.relative(root, music).split(path.sep).join('/'), sha256: hash(music), lufs: Number(config.musicLUFS) || -25, ducking: 'sidechain compressor keyed by the narration' } : null;
+    await run('ffmpeg', ['-hide_banner', '-loglevel', 'warning', '-f', 'concat', '-safe', '0', '-i', 'concat.txt', '-i', 'chapters.ffmetadata', ...musicInput, '-map', '0:v:0', ...audioMap, '-map_metadata', '1', '-map_chapters', '1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2', '-t', plan.duration.toFixed(6), '-movflags', '+faststart', '-y', movie], work);
     const result = probe(movie), v = result.streams.find(stream => stream.codec_type === 'video'), a = result.streams.find(stream => stream.codec_type === 'audio');
     if (v?.codec_name !== 'h264' || v.width !== WIDTH || v.height !== HEIGHT || v.avg_frame_rate !== '30/1' || v.pix_fmt !== 'yuv420p' || a?.codec_name !== 'aac' || Math.abs(Number(result.format.duration) - plan.duration) > .6) throw new Error('Final media verification failed. Inspect intermediate scene files.');
     if (config.durationMode === 'fixed' && (Number(v.nb_frames) !== Math.round(plan.duration * FPS) || Math.abs(Number(result.format.duration) - plan.duration) > .04)) throw new Error('Fixed timeline must match its exact frame count and duration.');

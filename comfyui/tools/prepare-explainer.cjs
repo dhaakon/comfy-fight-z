@@ -51,9 +51,12 @@ function validateCatalog(schemas, config) {
 
 function validateConfig(config) {
   if (config.schema !== 'comfy-fighter-explainer/v1' || config.width !== 1920 || config.height !== 1080 || config.fps !== 30) throw new Error('Expected a 1920x1080, 30fps Comfy Fighter Z explainer.');
-  const fixedShort = config.durationMode === 'fixed' && config.targetDurationSeconds === 120;
-  if (!Array.isArray(config.scenes) || config.scenes.length !== (fixedShort ? 10 : 12)) throw new Error(fixedShort ? 'The short explainer requires ten separately narrated scenes.' : 'The explainer requires twelve separately narrated scenes.');
-  if (fixedShort && config.scenes.reduce((sum, scene) => sum + scene.targetSeconds, 0) !== 120) throw new Error('The short explainer scene timings must total exactly 120 seconds.');
+  // A teaser (kind: teaser) declares its own fixed length and spoken-word bounds; the explainers keep their contracts.
+  const teaser = config.kind === 'teaser';
+  if (teaser && (config.durationMode !== 'fixed' || !(config.targetDurationSeconds >= 30 && config.targetDurationSeconds <= 180) || !(config.minWords > 0 && config.maxWords > config.minWords))) throw new Error('A teaser is a fixed 30-180 second timeline with minWords and maxWords.');
+  const fixedShort = !teaser && config.durationMode === 'fixed' && config.targetDurationSeconds === 120;
+  if (!Array.isArray(config.scenes) || (teaser ? config.scenes.length < 3 : config.scenes.length !== (fixedShort ? 10 : 12))) throw new Error(teaser ? 'A teaser needs at least three separately narrated scenes.' : fixedShort ? 'The short explainer requires ten separately narrated scenes.' : 'The explainer requires twelve separately narrated scenes.');
+  if ((teaser || fixedShort) && config.scenes.reduce((sum, scene) => sum + scene.targetSeconds, 0) !== config.targetDurationSeconds) throw new Error(`The fixed scene timings must total exactly ${config.targetDurationSeconds} seconds.`);
   if (config.voice.model !== 'eleven_v4' || config.voice.saveFormat !== 'flac') throw new Error('This estimate and workflow require Eleven v4 with FLAC saves.');
   const ids = new Set();
   for (const [index, scene] of config.scenes.entries()) {
@@ -64,7 +67,7 @@ function validateConfig(config) {
     if (requestText(config, scene).length > 10000) throw new Error(`Scene ${scene.id} exceeds the provider text limit.`);
   }
   const count = config.scenes.reduce((sum, scene) => sum + words(scene.narration), 0);
-  const minimum = fixedShort ? 230 : 350, maximum = fixedShort ? 250 : 420;
+  const minimum = teaser ? config.minWords : fixedShort ? 230 : 350, maximum = teaser ? config.maxWords : fixedShort ? 250 : 420;
   if (count < minimum || count > maximum) throw new Error(`Expected ${minimum}–${maximum} spoken words; found ${count}.`);
   return count;
 }
