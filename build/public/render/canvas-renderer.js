@@ -74,6 +74,50 @@
     ctx.restore();
   }
   const PIXEL = "'Press Start 2P', Impact, sans-serif";
+  // Text is drawn from cached bitmaps: stroking a pixel-font outline is the slowest thing a phone's 2D canvas does, and
+  // the HUD would stroke a dozen labels a frame (more in a combo). A label is rasterized once per text, font, colours
+  // and device density, then drawn as an image; the cache is bounded, so a changing score costs one raster per change.
+  const labels = new Map(); let labelDensity = 1, thumbnails = new WeakMap();
+  function label(value, font, fill, stroke, lineWidth) {
+    const key = `${font}|${fill}|${stroke}|${lineWidth}|${value}`;
+    let entry = labels.get(key);
+    if (entry) return entry;
+    const scratch = root.document.createElement('canvas'), g = scratch.getContext('2d');
+    g.font = font; const metrics = g.measureText(value);
+    const pad = Math.ceil((lineWidth || 0) / 2) + 2, ascent = Math.ceil(metrics.actualBoundingBoxAscent || parseInt(font, 10) || 10), descent = Math.ceil(metrics.actualBoundingBoxDescent || 4);
+    const width = Math.ceil(metrics.width) + pad * 2, height = ascent + descent + pad * 2;
+    scratch.width = Math.max(1, Math.ceil(width * labelDensity)); scratch.height = Math.max(1, Math.ceil(height * labelDensity));
+    g.setTransform(labelDensity, 0, 0, labelDensity, 0, 0); g.font = font; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+    if (stroke && lineWidth) { g.lineWidth = lineWidth; g.strokeStyle = stroke; g.strokeText(value, pad, pad + ascent); }
+    if (fill) { g.fillStyle = fill; g.fillText(value, pad, pad + ascent); }
+    entry = { image: scratch, width, height, pad, ascent, textWidth: metrics.width };
+    if (labels.size >= 96) labels.delete(labels.keys().next().value);
+    labels.set(key, entry); return entry;
+  }
+  // Draws a label where fillText would have put it, honouring the alignment; alpha and transforms come from ctx.
+  function text(value, x, y, { font, fill, stroke = null, lineWidth = 0, align = 'left' }) {
+    if (!root.document?.createElement) {
+      // No DOM (tests): draw the text directly.
+      ctx.save(); ctx.font = font; ctx.textAlign = align;
+      if (stroke && lineWidth) { ctx.lineWidth = lineWidth; ctx.strokeStyle = stroke; ctx.strokeText(value, x, y); }
+      if (fill) { ctx.fillStyle = fill; ctx.fillText(value, x, y); }
+      ctx.restore(); return;
+    }
+    const entry = label(value, font, fill, stroke, lineWidth);
+    const left = align === 'center' ? x - entry.textWidth / 2 : align === 'right' ? x - entry.textWidth : x;
+    ctx.drawImage(entry.image, left - entry.pad, y - entry.ascent - entry.pad, entry.width, entry.height);
+  }
+  // The two HUD portraits, cropped (and mirrored on the right) once at the current density rather than every frame.
+  function thumbnail(image, slot) {
+    if (!root.document?.createElement) return null;
+    let pair = thumbnails.get(image); if (!pair) { pair = []; thumbnails.set(image, pair); }
+    if (pair[slot]) return pair[slot];
+    const size = Math.max(1, Math.round(50 * labelDensity)), scratch = root.document.createElement('canvas'); scratch.width = scratch.height = size;
+    const g = scratch.getContext('2d'); if (slot) { g.translate(size, 0); g.scale(-1, 1); }
+    const s = Math.max(size / image.width, size / image.height), sw = size / s, sh = size / s;
+    g.drawImage(image, (image.width - sw) / 2, (image.height - sh) / 2, sw, sh, 0, 0, size, size);
+    pair[slot] = scratch; return scratch;
+  }
   function effect(name, x, y, facing = 1, opacity = 1, size = 120) {
     const meta = manifest.effects?.[name], img = art(assetSource(meta));
     if (img) { ctx.save(); ctx.globalAlpha = opacity; ctx.translate(x, y); ctx.scale(facing, 1); const ratio = size / Math.max(img.width, img.height); ctx.drawImage(img, -img.width * ratio / 2, -img.height * ratio / 2, img.width * ratio, img.height * ratio); ctx.restore(); return true; }
@@ -89,7 +133,11 @@
       const data = fighterData(slot), width = 360, x = slot ? 530 : 70, color = colors[slot];
       const portrait = art(portraitSource(data)), px = slot ? 898 : 8;
       ctx.fillStyle = '#15191c'; ctx.fillRect(px, 10, 54, 54); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.strokeRect(px, 10, 54, 54);
-      if (portrait) { ctx.save(); ctx.beginPath(); ctx.rect(px + 2, 12, 50, 50); ctx.clip(); if (slot) { ctx.translate(px * 2 + 54, 0); ctx.scale(-1, 1); } cover(portrait, px + 2, 12, 50, 50); ctx.restore(); }
+      if (portrait) {
+        const cropped = thumbnail(portrait, slot);
+        if (cropped) ctx.drawImage(cropped, px + 2, 12, 50, 50);
+        else { ctx.save(); ctx.beginPath(); ctx.rect(px + 2, 12, 50, 50); ctx.clip(); if (slot) { ctx.translate(px * 2 + 54, 0); ctx.scale(-1, 1); } cover(portrait, px + 2, 12, 50, 50); ctx.restore(); }
+      }
       // Life bar drains toward the portrait; low health flashes oxblood (desperation, a quarter of the bar).
       const hp = Math.max(0, f.hp) / LIFE, danger = f.hp > 0 && f.hp <= LIFE / 4;
       ctx.save(); ctx.beginPath(); ctx.moveTo(x + 10, 30); ctx.lineTo(x + width, 30); ctx.lineTo(x + width - 10, 52); ctx.lineTo(x, 52); ctx.closePath(); ctx.clip();
@@ -100,8 +148,7 @@
       ctx.fillStyle = '#d41f1f'; ctx.fillRect(slot ? x + 2 : x + 2 + (width - 4) - tw, 32, tw, 18);
       ctx.fillStyle = fill; ctx.fillRect(slot ? x + 2 : x + 2 + (width - 4) - w, 32, w, 18);
       ctx.fillStyle = '#ffffff40'; ctx.fillRect(slot ? x + 2 : x + 2 + (width - 4) - w, 32, w, 4); ctx.restore();
-      ctx.textAlign = slot ? 'right' : 'left'; ctx.font = `14px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000';
-      const nameX = slot ? x + width - 4 : x + 4; ctx.strokeText(data.name.toUpperCase(), nameX, 72); ctx.fillStyle = '#fff'; ctx.fillText(data.name.toUpperCase(), nameX, 72);
+      text(data.name.toUpperCase(), slot ? x + width - 4 : x + 4, 72, { font: `14px ${PIXEL}`, fill: '#fff', stroke: '#000', lineWidth: 4, align: slot ? 'right' : 'left' });
       // Round wins as brass victory marks beside the timer.
       const target = state?.options?.roundsToWin ?? 2;
       for (let i = 0; i < target; i++) {
@@ -114,24 +161,20 @@
       ctx.fillStyle = '#1b2024'; ctx.fillRect(gx, gy, gw, 9);
       const full = stocks >= (E.STOCK_MAX || 3);
       ctx.fillStyle = full ? (flash ? '#ffe600' : '#ff9a00') : '#2f6bff'; ctx.fillRect(slot ? gx + gw * (1 - bar) : gx, gy, gw * (full ? 1 : bar), 9);
-      ctx.fillStyle = '#fff'; ctx.font = `7px ${PIXEL}`; ctx.textAlign = slot ? 'right' : 'left'; ctx.fillText('POWER', slot ? gx + gw : gx, gy - 4);
-      ctx.textAlign = 'center'; ctx.font = `14px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000';
-      const label = full ? 'MAX' : String(stocks), lx = slot ? gx - 30 + 0 : gx + gw + 32;
-      ctx.strokeText(label, slot ? gx - 22 : lx, gy + 10); ctx.fillStyle = full ? (flash ? '#ffe600' : '#fff') : stocks ? '#fff' : '#555'; ctx.fillText(label, slot ? gx - 22 : lx, gy + 10);
+      text('POWER', slot ? gx + gw : gx, gy - 4, { font: `7px ${PIXEL}`, fill: '#fff', align: slot ? 'right' : 'left' });
+      text(full ? 'MAX' : String(stocks), slot ? gx - 22 : gx + gw + 32, gy + 10, { font: `14px ${PIXEL}`, fill: full ? (flash ? '#ffe600' : '#fff') : stocks ? '#fff' : '#555', stroke: '#000', lineWidth: 4, align: 'center' });
     });
     // Timer plate; training and endless rounds show infinity.
     ctx.fillStyle = '#000'; ctx.fillRect(448, 12, 64, 60); ctx.strokeStyle = '#ffe600'; ctx.lineWidth = 3; ctx.strokeRect(448, 12, 64, 60);
     const endless = mode === 'training' || state?.options?.roundTime === 0;
     const seconds = Math.ceil((state?.time ?? 5940) / 60), time = endless ? '∞' : String(seconds).padStart(2, '0');
-    ctx.textAlign = 'center'; ctx.font = `${endless ? 36 : 28}px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000'; ctx.strokeText(time, 480, 56);
-    ctx.fillStyle = !endless && seconds <= 10 && state?.phase === 'fight' && flash ? '#ff2a2a' : '#ffe600'; ctx.fillText(time, 480, 56);
-    ctx.font = `7px ${PIXEL}`; ctx.fillStyle = '#fff'; ctx.fillText(mode === 'training' ? 'TRAINING' : 'ROUND ' + (state?.round || 1), 480, 90);
+    text(time, 480, 56, { font: `${endless ? 36 : 28}px ${PIXEL}`, fill: !endless && seconds <= 10 && state?.phase === 'fight' && flash ? '#ff2a2a' : '#ffe600', stroke: '#000', lineWidth: 4, align: 'center' });
+    text(mode === 'training' ? 'TRAINING' : 'ROUND ' + (state?.round || 1), 480, 90, { font: `7px ${PIXEL}`, fill: '#fff', align: 'center' });
     // Arcade score line.
     if (arcade && mode === 'arcade') {
-      const best = bestScore;
-      ctx.font = `9px ${PIXEL}`; ctx.lineWidth = 3; ctx.strokeStyle = '#000';
-      ctx.textAlign = 'right'; ctx.strokeText('1UP ' + String(arcade.score).padStart(8, '0'), 420, 20); ctx.fillStyle = '#fff'; ctx.fillText('1UP ' + String(arcade.score).padStart(8, '0'), 420, 20);
-      ctx.textAlign = 'left'; ctx.strokeText('HI-SCORE ' + String(Math.max(best, arcade.score)).padStart(8, '0'), 540, 20); ctx.fillStyle = '#ff2a2a'; ctx.fillText('HI-SCORE ' + String(Math.max(best, arcade.score)).padStart(8, '0'), 540, 20);
+      const score = { font: `9px ${PIXEL}`, stroke: '#000', lineWidth: 3 };
+      text('1UP ' + String(arcade.score).padStart(8, '0'), 420, 20, { ...score, fill: '#fff', align: 'right' });
+      text('HI-SCORE ' + String(Math.max(bestScore, arcade.score)).padStart(8, '0'), 540, 20, { ...score, fill: '#ff2a2a', align: 'left' });
     }
     if (mode === 'training' && state) trainingHud();
     ctx.restore();
@@ -295,15 +338,16 @@
     }
     ctx.globalAlpha = 1;
   }
-  function screenText(text, x, y, size, fill, align = 'center', alpha = 1) {
-    ctx.save(); ctx.globalAlpha = alpha; ctx.textAlign = align; ctx.font = `${Math.round(size * .8)}px ${PIXEL}`; ctx.lineWidth = Math.max(3, size / 8); ctx.strokeStyle = '#000';
-    ctx.strokeText(text, x, y); ctx.fillStyle = fill; ctx.fillText(text, x, y); ctx.restore();
+  function screenText(value, x, y, size, fill, align = 'center', alpha = 1) {
+    ctx.save(); ctx.globalAlpha = alpha;
+    text(value, x, y, { font: `${Math.round(size * .8)}px ${PIXEL}`, fill, stroke: '#000', lineWidth: Math.max(3, size / 8), align });
+    ctx.restore();
   }
   // Arcade callout: the text slams in from a larger scale (pop 1 → 0) and can carry a second colour outline.
-  function slam(text, x, y, size, fill, pop, alpha = 1, edge = null) {
+  function slam(value, x, y, size, fill, pop, alpha = 1, edge = null) {
     ctx.save(); ctx.translate(x, y); const k = 1 + pop * 2.2; ctx.scale(k, k);
-    if (edge) { ctx.globalAlpha = alpha; ctx.textAlign = 'center'; ctx.font = `${Math.round(size * .8)}px ${PIXEL}`; ctx.lineWidth = Math.max(6, size / 4); ctx.strokeStyle = edge; ctx.strokeText(text, 0, 0); }
-    screenText(text, 0, 0, size, fill, 'center', alpha); ctx.restore();
+    if (edge) { ctx.globalAlpha = alpha; text(value, 0, 0, { font: `${Math.round(size * .8)}px ${PIXEL}`, fill: null, stroke: edge, lineWidth: Math.max(6, size / 4), align: 'center' }); }
+    screenText(value, 0, 0, size, fill, 'center', alpha); ctx.restore();
   }
   function overlays() {
     // Combo counters sit on the attacker's side and linger after the combo ends, which is when the defender recovers
@@ -344,6 +388,7 @@
     const density = Math.min(root.CFZ_LITE ? 1.25 : 3, Math.max(1, (canvas.clientWidth || 960) * Math.min(root.devicePixelRatio || 1, 3) / 960));
     const backing = Math.round(960 * density);
     if (canvas.width !== backing) { canvas.width = backing; canvas.height = Math.round(540 * density); }
+    if (labelDensity !== density) { labelDensity = density; labels.clear(); thumbnails = new WeakMap(); }
     ctx.setTransform(density, 0, 0, density, 0, 0); ctx.imageSmoothingQuality = 'high';
     ctx.clearRect(0, 0, 960, 540);
     return state?.fighters || E.create(selected.map(i => manifest.fighters[i].id)).fighters;
@@ -434,7 +479,7 @@
         const img = art(assetSource(fighterData(cutin.slot).cutin));
         if (img) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#101b20cc'; ctx.fillRect(0, 125, 960, 110); cover(img, cutin.slot ? 480 : 0, 125, 480, 110); ctx.restore(); }
         const special = fighterData(cutin.slot).specialMove?.name;
-        if (special) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#151719eb'; ctx.fillRect(0, 220, 960, 42); ctx.textAlign = 'center'; ctx.font = `18px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000'; ctx.strokeText(special.toUpperCase() + '!', 480, 250); ctx.fillStyle = cutin.slot ? '#3df2ff' : '#ffe600'; ctx.fillText(special.toUpperCase() + '!', 480, 250); ctx.restore(); }
+        if (special) { ctx.save(); ctx.globalAlpha = Math.min(1, cutin.life / 10); ctx.fillStyle = '#151719eb'; ctx.fillRect(0, 220, 960, 42); text(special.toUpperCase() + '!', 480, 250, { font: `18px ${PIXEL}`, fill: cutin.slot ? '#3df2ff' : '#ffe600', stroke: '#000', lineWidth: 4, align: 'center' }); ctx.restore(); }
       }
       overlays();
     }
@@ -450,9 +495,7 @@
       const size = headline === 'K.O.' ? 110 : headline.length > 8 ? 40 : 64;
       slam(headline, 480, 262, size, hot ? '#ff2a2a' : '#ffe600', pop, 1, hot ? '#ffe600' : '#ff2a2a');
       if (state.phase === 'roundover' && state.phaseFrames < 110 && state.winner !== null && state.winner !== undefined) {
-        ctx.textAlign = 'center'; ctx.font = `10px ${PIXEL}`; ctx.lineWidth = 4; ctx.strokeStyle = '#000';
-        const sub = fighterData(state.winner).name.toUpperCase() + ' TAKES THE ROUND';
-        ctx.strokeText(sub, 480, 302); ctx.fillStyle = '#fff'; ctx.fillText(sub, 480, 302);
+        text(fighterData(state.winner).name.toUpperCase() + ' TAKES THE ROUND', 480, 302, { font: `10px ${PIXEL}`, fill: '#fff', stroke: '#000', lineWidth: 4, align: 'center' });
       }
     }
   }

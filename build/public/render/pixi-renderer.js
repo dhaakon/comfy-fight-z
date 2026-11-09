@@ -31,11 +31,11 @@
     const shaker = new PIXI.Container(); shaker.pivot.set(480, 270); shaker.position.set(480, 270);
     const world = new PIXI.Container(); shaker.addChild(world);
     const fighterLayer = new PIXI.Container(), projectileLayer = new PIXI.Container(), effectLayer = new PIXI.Container(), sparks = new PIXI.Graphics(), fxLines = new PIXI.Graphics();
-    const auraLayer = new PIXI.Container(), motionLines = new PIXI.Graphics(), trailLayer = new PIXI.Container(), burstLines = new PIXI.Graphics();
+    const auraLayer = new PIXI.Container(), motionLines = new PIXI.Graphics(), trailLayer = new PIXI.Container(), burstLines = new PIXI.Graphics(), burstLayer = new PIXI.Container();
     // Slide, wall and super-jump dust (the shared view.dust) draws over the fighters' feet with normal blending.
     const dustLayer = new PIXI.Container();
     motionLines.blendMode = 'add'; burstLines.blendMode = 'add';
-    world.addChild(auraLayer, trailLayer, fighterLayer, dustLayer, motionLines, projectileLayer, effectLayer, fxLines, burstLines, sparks);
+    world.addChild(auraLayer, trailLayer, fighterLayer, dustLayer, motionLines, projectileLayer, effectLayer, fxLines, burstLayer, burstLines, sparks);
     const flash = new PIXI.Graphics(); flash.rect(0, 0, 960, 540).fill(0xffffff); flash.alpha = 0; flash.blendMode = 'add';
     const sparkLayer = new PIXI.Container(); world.addChild(sparkLayer);
     // Living scenery, from the shared scenery module's poses and particles. The placed elements are sprites inside
@@ -47,7 +47,7 @@
     const effectsTexture = PIXI.Texture.from(effectsCanvas), effectsSprite = new PIXI.Sprite(effectsTexture); effectsSprite.scale.set(1 / sceneryScale);
     const layerLayer = new PIXI.Container(), weather = new PIXI.Graphics(), layerPool = [];
     stageLayer.addChild(effectsSprite, layerLayer);
-    let sceneryFrame = 0, effectsDrawn = false, layerStage = null;
+    let sceneryFrame = 0, weatherFrame = 0, effectsDrawn = false, layerStage = null;
     app.stage.addChild(stageLayer, titleTint, shaker, weather, flash);
     function drawLayers(scenery, info, stageData, plate) {
       const S = screen.scenery, m = S.mapper(plate), seed = S.stageSeed(stageData), layers = scenery.layers || [];
@@ -120,6 +120,16 @@ void main() {
     gradient.addColorStop(0, 'rgba(255,255,255,1)'); gradient.addColorStop(.35, 'rgba(255,255,255,.55)'); gradient.addColorStop(1, 'rgba(255,255,255,0)');
     glowContext.fillStyle = gradient; glowContext.fillRect(0, 0, 128, 128);
     const glowTexture = PIXI.Texture.from(glowCanvas);
+    // Shapes drawn every frame are sprites of textures painted once (no geometry to rebuild or upload per frame):
+    // the fighters' ground shadows and the radial lines of an impact burst.
+    const shadowCanvas = root.document.createElement('canvas'); shadowCanvas.width = 128; shadowCanvas.height = 64;
+    const shadowContext = shadowCanvas.getContext('2d'); shadowContext.fillStyle = '#ffffff'; shadowContext.beginPath(); shadowContext.ellipse(64, 32, 63, 31, 0, 0, Math.PI * 2); shadowContext.fill();
+    const shadowTexture = PIXI.Texture.from(shadowCanvas);
+    const burstCanvas = root.document.createElement('canvas'); burstCanvas.width = burstCanvas.height = 256;
+    const burstContext = burstCanvas.getContext('2d'); burstContext.strokeStyle = '#ffffff'; burstContext.lineWidth = 4; burstContext.lineCap = 'round'; burstContext.beginPath();
+    for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; burstContext.moveTo(128 + Math.cos(a) * 42, 128 + Math.sin(a) * 42); burstContext.lineTo(128 + Math.cos(a) * 122, 128 + Math.sin(a) * 122); }
+    burstContext.stroke();
+    const burstTexture = PIXI.Texture.from(burstCanvas);
     const colorOf = value => PIXI.Color.shared.setValue(value || '#ffd27a').toNumber();
     let fallbackDrawn = false, lastStage = null, resizes = 0;
 
@@ -151,7 +161,8 @@ void main() {
 
     // Fighters: one holder per slot; afterimages are pooled sprites drawn behind the body.
     const slots = [0, 1].map(() => {
-      const holder = new PIXI.Container(), trails = new PIXI.Container(), shadow = new PIXI.Graphics(), stick = new PIXI.Graphics();
+      const holder = new PIXI.Container(), trails = new PIXI.Container(), shadow = new PIXI.Sprite(shadowTexture), stick = new PIXI.Graphics();
+      shadow.anchor.set(.5); shadow.tint = 0x07101e; shadow.alpha = .33;
       const spinner = new PIXI.Container(), body = new PIXI.Container(), sprite = new PIXI.Sprite(), glow = new PIXI.Sprite();
       // Lite devices brighten a hit cel with an additive copy of itself instead of a colour-matrix filter pass.
       glow.blendMode = 'add'; glow.visible = false;
@@ -177,7 +188,7 @@ void main() {
       const palette = slot === 1 && selected[0] === selected[1] ? 155 : 0;
       const current = A.sample(f, state, { reducedMotion, poses });
       const pose = A.resolvePose(current.pose, poses, f.pose), meta = poses[pose], image = meta && art(meta.src);
-      entry.shadow.clear().ellipse(f.x, E.GROUND + 3, Math.max(22, 52 - f.y / 9), Math.max(4, 10 - f.y / 40)).fill({ color: 0x07101e, alpha: .33 });
+      entry.shadow.position.set(f.x, E.GROUND + 3); entry.shadow.scale.set(Math.max(22, 52 - f.y / 9) / 64, Math.max(4, 10 - f.y / 40) / 32);
       const shake = screen.hitShake ? screen.hitShake(f) : 0;
       if (!image) { entry.holder.visible = false; entry.trails.visible = false; drawStickFighter(entry.stick, f, data, state); entry.stick.x += shake; entry.stick.visible = true; return; }
       entry.stick.visible = false;
@@ -257,7 +268,7 @@ void main() {
     function burst(x, y, color, lines, radius, life) { motion.bursts.push({ x, y, color, lines, radius, life, max: life, angle: Math.random() * Math.PI }); }
     function motionFrame(state, fighters, manifest, reducedMotion) {
       motionLines.clear(); burstLines.clear();
-      if (reducedMotion || !state) { motion.particles.length = 0; motion.bursts.length = 0; motion.flashAlpha = 0; flash.alpha = 0; shaker.rotation = 0; for (const sprite of motion.pool) sprite.visible = false; for (const child of trailLayer.children) child.visible = false; return; }
+      if (reducedMotion || !state) { motion.particles.length = 0; motion.bursts.length = 0; motion.flashAlpha = 0; flash.alpha = 0; shaker.rotation = 0; for (const sprite of motion.pool) sprite.visible = false; for (const child of trailLayer.children) child.visible = false; for (const child of burstLayer.children) child.visible = false; return; }
       fighters.forEach((f, slot) => {
         const data = fighterData(slot), color = colorOf(data.color), charging = f.pose === 'powerup' || f.move === 'super' || (SHOT_MOVES.has(f.move) && f.moveFrame < (E.moveData(f)?.startup || 0));
         // Charging and supers wrap the body in rising energy; full power keeps a faint idle aura.
@@ -321,14 +332,18 @@ void main() {
       motion.particles = motion.particles.filter(pt => pt.life > 0);
       motion.particles.forEach((pt, i) => { pt.x += pt.vx; pt.y += pt.vy; pt.life--; const sprite = glow(i); sprite.position.set(pt.x, pt.y); sprite.tint = pt.color; sprite.alpha = .8 * Math.max(0, pt.life / pt.max); sprite.scale.set(pt.size / 128); });
       for (let i = motion.particles.length; i < motion.pool.length; i++) motion.pool[i].visible = false;
-      // Bursts: radial lines and an expanding ring.
+      // Bursts: a sprite of radial lines (scaled and spun) and an expanding ring.
       motion.bursts = motion.bursts.filter(b => b.life > 0);
+      let burstIndex = 0;
       for (const b of motion.bursts) {
         const t = 1 - b.life / b.max, r = b.radius * (.3 + t * .7), alpha = (1 - t) * .9;
-        for (let i = 0; i < b.lines; i++) { const a = b.angle + i * Math.PI * 2 / b.lines; burstLines.moveTo(b.x + Math.cos(a) * r * .35, b.y + Math.sin(a) * r * .35).lineTo(b.x + Math.cos(a) * r, b.y + Math.sin(a) * r); }
-        burstLines.stroke({ width: 3, color: b.color, alpha }); burstLines.circle(b.x, b.y, r * .8).stroke({ width: 2 + 4 * (1 - t), color: b.color, alpha: alpha * .7 });
+        let sprite = burstLayer.children[burstIndex++];
+        if (!sprite) { sprite = new PIXI.Sprite(burstTexture); sprite.anchor.set(.5); sprite.blendMode = 'add'; burstLayer.addChild(sprite); }
+        sprite.visible = true; sprite.position.set(b.x, b.y); sprite.rotation = b.angle; sprite.scale.set(r / 122); sprite.tint = b.color; sprite.alpha = alpha;
+        burstLines.circle(b.x, b.y, r * .8).stroke({ width: 2 + 4 * (1 - t), color: b.color, alpha: alpha * .7 });
         b.life--;
       }
+      for (let i = burstIndex; i < burstLayer.children.length; i++) burstLayer.children[i].visible = false;
       // Impact frame and rotational shake.
       flash.alpha = motion.flashAlpha; motion.flashAlpha *= .62; if (motion.flashAlpha < .02) motion.flashAlpha = 0;
       shaker.rotation = view.shake > .5 ? (Math.random() - .5) * view.shake * .0035 : 0;
@@ -367,7 +382,8 @@ void main() {
             }
             drawLayers(stage.scenery, info, stage, plate);
           }
-          drawWeather(info);
+          // Weather shapes are rebuilt every drawn frame, every other one on lite devices.
+          if (!root.CFZ_LITE || (weatherFrame++ % 2) === 0) drawWeather(info);
         } else weather.clear();
       }
       const title = !state && ui('title'); titleTint.visible = !!title; if (title) coverSprite(titleTint, title, 0, 0, 960, 540);

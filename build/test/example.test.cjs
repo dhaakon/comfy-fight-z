@@ -106,7 +106,10 @@ test('the shipped generated example is complete, portable and contains no unmapp
   // Living-scenery layers and the startup and select clips ride on top of the contract too.
   const sceneryLayers = result.manifest.assets.filter(a => ['scene', 'layer'].includes(a.kind)).length;
   assert.deepEqual(result.manifest.game.stages.filter(stage => stage.scenery).map(stage => stage.id), ['yard', 'rooftop', 'arcade'], 'Every arena carries living scenery');
-  assert.equal(result.videos.length, 2 + result.manifest.game.fighters.length * 2, 'A title loop, a select loop and an intro and idle loop per fighter');
+  // The phone cuts of both menu loops (title-portrait, select-portrait) ride on top of the wide loops.
+  const phoneCuts = ['titleVideoPortrait', 'selectVideoPortrait'].filter(key => result.video?.[key]).length;
+  assert.equal(phoneCuts, 2, 'The example carries the portrait cuts of its title and select loops');
+  assert.equal(result.videos.length, 2 + phoneCuts + result.manifest.game.fighters.length * 2, 'A title loop, a select loop, their phone cuts and an intro and idle loop per fighter');
   assert.equal(result.entries.length, contract.images + laterUi + withMotion * motionIds.size + detailSheets + sceneryLayers + contract.audio);
   assert.equal(result.poseCount, contract.fighters * contract.poses + withMotion * Object.values(motion).flat().length + detailSheets * 9);
   for (const filename of ['assets.json', 'audio.json', 'provenance.json']) {

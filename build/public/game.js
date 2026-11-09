@@ -49,6 +49,8 @@
   // Draw pacing on lite devices: a phone that cannot hold sixty drawn frames a second settles at thirty (a steady half
   // rate beats a jittery full one) and tries sixty again later, at most twice a match.
   const pace = { gap: 15.5, ema: 16.7, since: 0, drops: 0 };
+  // The HI-SCORE the HUD shows, read from storage once a match rather than every frame.
+  let bestScore = 0;
   // Options and high scores persist per browser; the game works when storage is unavailable.
   const storage = {
     get(key, fallbackValue) { try { const value = JSON.parse(localStorage.getItem(key)); return value ?? fallbackValue; } catch (_) { return fallbackValue; } },
@@ -125,7 +127,7 @@
   function assetSource(value) { return typeof value === 'string' ? value : value?.src; }
   // Phones held upright play the portrait (9:16) cut of a menu loop when the game has one (titleVideoPortrait,
   // selectVideoPortrait: phone-encoded clips made for them); everything else plays the wide loop.
-  const portraitViewport = () => matchMedia('(orientation: portrait)').matches;
+  const portraitQuery = matchMedia('(orientation: portrait)'), portraitViewport = () => portraitQuery.matches;
   const menuClip = key => lite && portraitViewport() && manifest[`${key}Portrait`] || manifest[key];
   // Lite devices decode one video at a time: the select screen's wide loop and idle loops stay stills there, but its
   // phone cut plays.
@@ -184,16 +186,57 @@
   // Separate music, effects and voice buses; voices duck the music while they speak.
   const musicLevel = () => .35 * options.music / 100;
   let ducks = 0;
-  function playSound(id, volume = .6) {
+  // One-shot sounds (hits, whiffs, calls, fighter lines) play through Web Audio: each clip is decoded once and every
+  // play is a buffer source, which costs nothing on a phone. A new media element per hit, which the fallback below
+  // still uses for a clip that is not decoded yet, stalls iOS for a frame or more on every hit of a combo. Music
+  // stays a media element (long streaming loops), and so does the introduction voice, which is sought and resumed.
+  const sfx = { context: null, buffers: new Map(), decoding: new Map(), unlocked: false };
+  function audioContext() {
+    if (sfx.context === false) return null;
+    if (!sfx.context) { try { sfx.context = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) { sfx.context = false; return null; } }
+    return sfx.context;
+  }
+  // Inside a user gesture: start (or resume) the context and play one silent buffer, which is what unlocks it on iOS.
+  function unlockAudio() {
+    const context = audioContext(); if (!context) return;
+    if (context.state !== 'running') context.resume().catch(() => {});
+    if (!sfx.unlocked) {
+      sfx.unlocked = true;
+      try { const source = context.createBufferSource(); source.buffer = context.createBuffer(1, 1, 22050); source.connect(context.destination); source.start(0); } catch (_) { /* Decoded clips still play once the context runs. */ }
+    }
+  }
+  function prepareSounds(ids) {
+    const context = audioContext(); if (!context) return;
+    for (const id of ids) {
+      const src = assetSource(manifest.audio?.[id]);
+      if (!src || sfx.buffers.has(id) || sfx.decoding.has(id)) continue;
+      const task = fetch(src).then(response => { if (!response.ok) throw new Error(String(response.status)); return response.arrayBuffer(); })
+        .then(bytes => new Promise((resolve, reject) => { const result = context.decodeAudioData(bytes, resolve, reject); if (result && typeof result.then === 'function') result.then(resolve, reject); }))
+        .then(buffer => { sfx.buffers.set(id, buffer); }).catch(() => { /* The media-element path plays it instead. */ }).finally(() => sfx.decoding.delete(id));
+      sfx.decoding.set(id, task);
+    }
+  }
+  // Every one-shot a fight can play: effects, announcer calls and the two fighters' short lines (not their introductions).
+  const fightSoundIds = () => Object.keys(manifest.audio || {}).filter(id => /^(sfx_|ann_)/.test(id) || [0, 1].some(slot => id.startsWith(`fighter_${fighterData(slot).id}_`) && !id.endsWith('_intro')));
+  function playSound(id, volume = .6, { element = false } = {}) {
     const src = assetSource(manifest.audio?.[id]); if (!audioEnabled || !src) return;
     const bus = id.startsWith('sfx_') ? 'sfx' : 'voice', level = volume * options[bus] / 100;
     if (level <= 0) return;
+    const ducking = bus === 'voice' && !!music;
+    if (ducking) { ducks++; music.volume = musicLevel() * .45; }
+    const unduck = () => { if (ducking && --ducks <= 0) { ducks = 0; if (music && !introScene) music.volume = musicLevel(); } };
+    const buffer = !element && sfx.buffers.get(id), context = buffer && audioContext();
+    if (buffer && context && context.state === 'running') {
+      try {
+        const source = context.createBufferSource(), gain = context.createGain();
+        source.buffer = buffer; gain.gain.value = Math.min(1, level); source.connect(gain); gain.connect(context.destination);
+        source.onended = () => { source.disconnect(); gain.disconnect(); unduck(); };
+        source.start(0);
+        return { pause: () => { try { source.stop(); } catch (_) { /* Already ended. */ } } };
+      } catch (_) { /* Fall back to a media element. */ }
+    }
     const sound = new Audio(src); sound.volume = Math.min(1, level); activeSounds.add(sound);
-    if (bus === 'voice' && music) { ducks++; music.volume = musicLevel() * .45; }
-    const done = () => {
-      if (!activeSounds.delete(sound)) return;
-      if (bus === 'voice' && --ducks <= 0) { ducks = 0; if (music && !introScene) music.volume = musicLevel(); }
-    };
+    const done = () => { if (activeSounds.delete(sound)) unduck(); };
     sound.addEventListener('ended', done, { once: true }); sound.addEventListener('error', done, { once: true });
     sound.play().catch(done);
     return sound;
@@ -216,13 +259,14 @@
   function refreshAudio() {
     $('audio-button').textContent = audioEnabled ? 'SOUND ON' : 'SOUND OFF'; $('audio-button').setAttribute('aria-pressed', String(audioEnabled));
     if (openingActive) { music?.pause(); $('opening-video').muted = manifest.openingVideo?.hasAudio === false || !audioEnabled; return; }
-    if (!audioEnabled) { music?.pause(); introVoice?.pause(); activeSounds.forEach(sound => sound.pause()); activeSounds.clear(); }
+    if (!audioEnabled) { music?.pause(); introVoice?.pause(); activeSounds.forEach(sound => sound.pause()); activeSounds.clear(); sfx.context?.suspend?.().catch?.(() => {}); }
     else if (!paused) {
       music?.play().catch(() => {});
+      if (sfx.context && sfx.context.state !== 'running') sfx.context.resume().catch(() => {});
       if (introScene && introMedia() !== 'loading') {
         // Resume the voice that should be speaking at this point of the scene.
         const line = currentVoiceLine();
-        if (line && !introVoice) { introVoice = playSound(line.id, .85); introScene.spoken = line; }
+        if (line && !introVoice) { introVoice = playSound(line.id, .85, { element: true }); introScene.spoken = line; }
         if (line && introVoice) {
           const voice = introVoice;
           try { voice.currentTime = (introScene.elapsed - line.start) / 1000; } catch (_) { /* A stream may not be seekable yet. */ }
@@ -231,7 +275,11 @@
       }
     }
   }
-  function engageAudio() { if (!audioInteracted) { audioEnabled = true; audioInteracted = true; refreshAudio(); } }
+  function engageAudio() {
+    if (!audioInteracted) { audioEnabled = true; audioInteracted = true; refreshAudio(); }
+    // Each call arrives inside a gesture: keep the one-shot context running and decode the menu sounds and calls.
+    if (audioEnabled) { unlockAudio(); prepareSounds(Object.keys(manifest.audio || {}).filter(id => /^(sfx_|ann_)/.test(id))); }
+  }
   const introHalves = () => [...$('intro-screen').querySelectorAll('.intro-half')];
   const introVideo = slot => $(slot ? 'intro-video-2' : 'intro-video');
   function clearIntroVideo(slot) {
@@ -397,7 +445,7 @@
     if (music) music.volume = musicLevel() * .3;
     // Sprite-only scenes speak at once; clips start the voice when they begin playing.
     const first = currentVoiceLine();
-    if (first && introMedia() !== 'loading') { introVoice = playSound(first.id, .85); scene.spoken = first; }
+    if (first && introMedia() !== 'loading') { introVoice = playSound(first.id, .85, { element: true }); scene.spoken = first; }
     panel.querySelectorAll('.intro-progress span').forEach(mark => mark.classList.add('active'));
   }
   function finishIntroduction(skip = true) {
@@ -433,7 +481,7 @@
     scene.elapsed += milliseconds;
     // Voices take turns: start the next line when the timeline reaches it.
     const line = currentVoiceLine();
-    if (line && line !== scene.spoken) { introVoice?.pause(); if (introVoice) activeSounds.delete(introVoice); introVoice = playSound(line.id, .85); scene.spoken = line; }
+    if (line && line !== scene.spoken) { introVoice?.pause(); if (introVoice) activeSounds.delete(introVoice); introVoice = playSound(line.id, .85, { element: true }); scene.spoken = line; }
     for (const half of scene.halves) {
       const actor = $(half.slot ? 'intro-portrait-2' : 'intro-portrait').querySelector('canvas');
       if (!actor) continue;
@@ -665,8 +713,10 @@
     state = nextState; lastIntroCall = null; goFrames = 0;
     paused = false; keys.clear(); pendingKeys.clear(); clearTouch(); cutin = null; accumulator = 0; resetView();
     Object.assign(pace, { gap: 15.5, ema: 16.7, since: performance.now(), drops: 0 });
-    // Upload every texture and compile every filter this match can use while the introduction plays.
+    // Upload every texture, compile every filter and decode every sound this match can use while the introduction plays.
     arena.prepare({ manifest, stageIndex });
+    if (audioEnabled) prepareSounds(fightSoundIds());
+    bestScore = storage.get(SCORES_KEY, [])[0]?.score || 0;
     $('title-screen').hidden = true; $('selection-screen').hidden = true; $('fight-screen').hidden = false; $('touch-panel').hidden = true;
     $('match-overlay').hidden = true; $('pause-overlay').hidden = true; $('pause-button').hidden = true;
     $('versus-overlay').hidden = true; $('versus-one').textContent = fighterData(0).name; $('versus-two').textContent = fighterData(1).name;
@@ -957,7 +1007,7 @@
   const arena = window.CFZArena.create({ canvas, hud: $('arena-hud'), engine: E, deps: { art, assetSource, ui, fighterData, portraitSource } });
   function resetView() { arena.reset(); }
   function render() {
-    arena.draw({ state, manifest, stageIndex, selected, mode, arcade, training, cutin, goFrames, fighterRenderer, reducedMotion: reducedMotion.matches, debugBoxes: options.debug === 'boxes', bestScore: storage.get(SCORES_KEY, [])[0]?.score || 0 });
+    arena.draw({ state, manifest, stageIndex, selected, mode, arcade, training, cutin, goFrames, fighterRenderer, reducedMotion: reducedMotion.matches, debugBoxes: options.debug === 'boxes', bestScore });
     // The last ten seconds tick once per second; the renderer itself makes no sound.
     if (state && mode !== 'training' && state.options?.roundTime !== 0 && state.phase === 'fight' && state.time % 60 === 59 && Math.ceil(state.time / 60) <= 10) playSound('sfx_timer', .35);
   }
@@ -1029,7 +1079,7 @@
       if (state.message === 'PERFECT') cue('ann_perfect', .95, 0);
       else if (state.message === 'DRAW GAME') cue('ann_draw', .95, 0);
     }
-    if (state.frame > 50) $('versus-overlay').hidden = true;
+    if (state.frame > 50 && !$('versus-overlay').hidden) $('versus-overlay').hidden = true;
     state.fighters.forEach((f, slot) => {
       if (f.move && f.move !== previousMoves[slot]) {
         const move = f.move;
@@ -1398,7 +1448,11 @@
     window.addEventListener('blur', () => { clearInput(); if (!network?.active) pause(true); });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) { clearInput(); if (!network?.active) pause(true); titleMotion.stop(); selectMotion.stop(); if (openingActive) $('opening-video').pause(); }
-      else if (openingActive) $('opening-video').play().catch(() => { if (openingActive) $('opening-gate').hidden = false; });
+      else {
+        if (openingActive) $('opening-video').play().catch(() => { if (openingActive) $('opening-gate').hidden = false; });
+        // A phone suspends the one-shot context in the background; resume it (the next tap does, if this is refused).
+        if (audioEnabled && sfx.context && sfx.context.state !== 'running') sfx.context.resume().catch(() => {});
+      }
     });
     // Touch controls. The button cluster is one touch surface: a finger presses the button it lands on (a control, or
     // a combo pressed together), slides onto another to chain without lifting, and releases on lift; several fingers
@@ -1417,15 +1471,23 @@
       for (const each of buttons.querySelectorAll('button')) each.classList.toggle('held', down.has(each));
     };
     if (buttons) {
-      buttons.addEventListener('pointerdown', event => { event.preventDefault(); buttons.setPointerCapture(event.pointerId); holdButton(event.pointerId, event.target.closest?.('button') || buttonAt(event.clientX, event.clientY)); });
-      buttons.addEventListener('pointermove', event => { if (!heldButtons.has(event.pointerId) && !buttons.hasPointerCapture?.(event.pointerId)) return; const button = buttonAt(event.clientX, event.clientY); if (button) holdButton(event.pointerId, button); });
-      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => buttons.addEventListener(type, event => holdButton(event.pointerId, null)));
+      // A finger wiggling on one button reports moves at the touch rate; the hit test (a forced layout) runs only once
+      // it has travelled a few pixels.
+      const lastChecked = new Map();
+      buttons.addEventListener('pointerdown', event => { event.preventDefault(); buttons.setPointerCapture(event.pointerId); lastChecked.set(event.pointerId, [event.clientX, event.clientY]); holdButton(event.pointerId, event.target.closest?.('button') || buttonAt(event.clientX, event.clientY)); });
+      buttons.addEventListener('pointermove', event => {
+        if (!heldButtons.has(event.pointerId) && !buttons.hasPointerCapture?.(event.pointerId)) return;
+        const last = lastChecked.get(event.pointerId); if (last && Math.hypot(event.clientX - last[0], event.clientY - last[1]) < 8) return;
+        lastChecked.set(event.pointerId, [event.clientX, event.clientY]);
+        const button = buttonAt(event.clientX, event.clientY); if (button) holdButton(event.pointerId, button);
+      });
+      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => buttons.addEventListener(type, event => { lastChecked.delete(event.pointerId); holdButton(event.pointerId, null); }));
     }
     // The stick: the whole left side of the screen. A drag from where the thumb landed (the ring appears there); past a
     // dead zone left and right walk, a clear push up jumps, down crouches, and diagonals combine, so down-forward and
     // a button give the crouching normals.
-    const stick = $('touch-stick'), ring = $('touch-stick-ring'), knob = $('touch-knob'); let stickPointer = null, stickOrigin = null; const stickHeld = new Set();
-    const placeRing = () => { if (!ring) return; const box = stick.getBoundingClientRect(); ring.style.left = `${Math.round(stickOrigin[0] - box.left)}px`; ring.style.top = `${Math.round(stickOrigin[1] - box.top)}px`; };
+    const stick = $('touch-stick'), ring = $('touch-stick-ring'), knob = $('touch-knob'); let stickPointer = null, stickOrigin = null, stickBox = null; const stickHeld = new Set();
+    const placeRing = () => { if (!ring || !stickBox) return; ring.style.left = `${Math.round(stickOrigin[0] - stickBox.left)}px`; ring.style.top = `${Math.round(stickOrigin[1] - stickBox.top)}px`; };
     const stickSet = (x, y) => {
       // The origin follows a thumb that travels past the ring, so reversing direction registers at once instead of
       // after sliding all the way back.
@@ -1441,7 +1503,7 @@
     if (stick) {
       stick.addEventListener('pointerdown', event => {
         event.preventDefault(); if (stickPointer !== null) return;
-        stickPointer = event.pointerId; stick.setPointerCapture(event.pointerId); stickOrigin = [event.clientX, event.clientY]; stick.classList.add('held');
+        stickPointer = event.pointerId; stick.setPointerCapture(event.pointerId); stickOrigin = [event.clientX, event.clientY]; stickBox = stick.getBoundingClientRect(); stick.classList.add('held');
         placeRing(); stickSet(event.clientX, event.clientY);
       });
       stick.addEventListener('pointermove', event => { if (event.pointerId !== stickPointer) return; event.preventDefault(); stickSet(event.clientX, event.clientY); });

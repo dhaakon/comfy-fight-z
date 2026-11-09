@@ -748,5 +748,5 @@ body:has(.canvas-wrap.filter-scanlines) .crt-overlay,body:has(.canvas-wrap.filte
 /* Phones skip the full-screen blur behind overlays and the rotating ray layer: both re-composite the whole screen
    every frame. The portrait cuts of the menu loops fill the upright screen edge to edge. */
 .cfz-lite .versus-overlay, .cfz-lite .pause-overlay, .cfz-lite .match-overlay { backdrop-filter:none; -webkit-backdrop-filter:none; }
-.cfz-lite .title-speed-lines { display:none; }
+.cfz-lite .title-speed-lines, .cfz-lite .crt-overlay { display:none; }
 .title-video.portrait-clip, .select-video.portrait-clip { inset:0; top:0; bottom:0; width:100%; height:100%; aspect-ratio:auto; object-fit:cover; object-position:center; }
