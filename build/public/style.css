@@ -708,3 +708,37 @@ body:has(.canvas-wrap.filter-scanlines) .crt-overlay,body:has(.canvas-wrap.filte
 }
 /* A generated title card carries the game's name in its lower third: keep that part in view when the plate crops. */
 .game-art.title-card { background-position:center 80%; }
+
+/* Phones (body.cfz-lite): an ENTER gate on the boot screen, and the touch controls as a thumb stick on the left and a
+   button cluster on the right, over the arena in landscape and under it in portrait. */
+.boot-enter { font:inherit; font-size:clamp(12px,2.6vw,22px); color:#10091e; background:#ffe14a; border:3px solid #fff; box-shadow:4px 4px 0 #c4102b,7px 7px 0 #000; padding:16px 28px; letter-spacing:.06em; cursor:pointer; animation:boot-blink 1.2s steps(2, jump-none) infinite; }
+.boot-enter:active { transform:translate(2px,2px); box-shadow:2px 2px 0 #c4102b,5px 5px 0 #000; }
+#touch-panel { display:none; }
+.cfz-lite #touch-panel:not([hidden]) { display:flex; position:fixed; left:0; right:0; bottom:0; top:auto; z-index:32; justify-content:space-between; align-items:flex-end; margin:0; padding:0 max(14px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left)); gap:0; border:0; background:none; pointer-events:none; }
+#touch-panel .touch-stick { pointer-events:auto; display:grid; place-items:center; width:170px; height:170px; border-radius:50%; background:#0c0718a6; border:2px solid #ffffff2e; touch-action:none; }
+#touch-panel .touch-stick-ring { display:grid; place-items:center; width:118px; height:118px; border-radius:50%; border:2px dashed #ffffff4d; }
+#touch-panel .touch-knob { display:block; width:64px; height:64px; border-radius:50%; background:#ffd23fd9; box-shadow:0 0 0 3px #000, 0 6px 0 #c4102b; transition:transform .04s linear; }
+#touch-panel .touch-stick.held .touch-knob { background:#2edbc8; }
+#touch-panel .touch-buttons { pointer-events:auto; display:grid; grid-template-columns:repeat(3,68px); grid-template-rows:44px 68px 68px; gap:8px; align-items:end; touch-action:none; }
+#touch-panel .touch-buttons button { touch-action:none; width:68px; height:68px; min-width:0; min-height:0; border-radius:50%; border:3px solid #000; background:#1b1230e6; color:#fff; font:700 22px/1 Impact,'Arial Black',sans-serif; display:grid; place-content:center; padding:0; box-shadow:0 5px 0 #000; }
+#touch-panel .touch-buttons button small { display:block; font:8px Arial,sans-serif; letter-spacing:.5px; margin-top:4px; color:#d5deec; }
+#touch-panel .touch-buttons button.held { background:var(--pink); transform:translateY(3px); box-shadow:0 2px 0 #000; }
+#touch-panel .tb-s { grid-column:2; grid-row:1; align-self:end; }
+#touch-panel .tb-a { grid-column:1; grid-row:2; } #touch-panel .tb-d { grid-column:3; grid-row:2; }
+#touch-panel .tb-f { grid-column:2; grid-row:3; background:#ffca26e6; color:#10091e; }
+#touch-panel .tb-f small { color:#10091e; }
+#touch-panel .tb-roll, #touch-panel .tb-super { width:68px; height:40px; border-radius:14px; font:700 11px/1 Impact,'Arial Black',sans-serif; letter-spacing:1px; background:#0c0718cc; color:#8de9e6; grid-row:1; }
+#touch-panel .tb-roll { grid-column:1; } #touch-panel .tb-super { grid-column:3; color:#ffd23f; }
+.cfz-lite[data-scene=fight] { touch-action:none; }
+@media (max-width:800px) and (orientation:portrait) {
+  #touch-panel .touch-stick { width:150px; height:150px; }
+  #touch-panel .touch-buttons { grid-template-columns:repeat(3,60px); grid-template-rows:40px 60px 60px; gap:7px; }
+  #touch-panel .touch-buttons button { width:60px; height:60px; font-size:20px; }
+  #touch-panel .tb-roll, #touch-panel .tb-super { width:60px; height:36px; }
+}
+/* The controls sit above the docked top bar; in portrait that bar (with the settings gear) moves to the top-right
+   corner, out from under the button cluster. */
+.cfz-lite #touch-panel:not([hidden]) { z-index:41; }
+@media (max-width:800px) and (orientation:portrait) {
+  .cfz-lite[data-scene=fight] .topbar, .cfz-lite[data-scene=intro] .topbar { top:max(8px,env(safe-area-inset-top)); bottom:auto; left:auto; right:max(8px,env(safe-area-inset-right)); transform:none; }
+}

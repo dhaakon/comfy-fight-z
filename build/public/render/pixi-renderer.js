@@ -10,7 +10,9 @@
     if (!PIXI || !A) throw new Error('PixiJS or the animation layer is missing');
     const { art, assetSource, ui, fighterData } = deps;
     const app = new PIXI.Application();
-    await app.init({ canvas, width: 960, height: 540, backgroundAlpha: 0, antialias: false, autoStart: false, preference: 'webgl', resolution: 1, autoDensity: false });
+    // Lite presentation (window.CFZ_LITE, set by the game for phones and small devices): low-power GPU, fewer device
+    // pixels, no full-screen impact shader and a quarter-size scenery texture refreshed at 15 frames a second.
+    await app.init({ canvas, width: 960, height: 540, backgroundAlpha: 0, antialias: false, autoStart: false, preference: 'webgl', resolution: 1, autoDensity: false, ...(root.CFZ_LITE ? { powerPreference: 'low-power' } : {}) });
     app.ticker.stop();
     const view = screen.view, FLOOR = E.GROUND, PARALLAX = .5;
     const textures = new Map();
@@ -38,8 +40,9 @@
     const sparkLayer = new PIXI.Container(); world.addChild(sparkLayer);
     // Living scenery: the shared scenery module paints two offscreen canvases. The first holds the stage elements in the
     // painting's 960x540 space and lives inside stageLayer (same parallax and scale); the second is front weather.
-    const sceneryCanvas = [0, 1].map(() => { const c = document.createElement('canvas'); c.width = 1920; c.height = 1080; return c; });
-    const sceneryTextures = sceneryCanvas.map(c => PIXI.Texture.from(c)), scenerySprites = sceneryTextures.map(t => { const sprite = new PIXI.Sprite(t); sprite.scale.set(.5); return sprite; });
+    const sceneryScale = root.CFZ_LITE ? 1 : 2, sceneryEvery = root.CFZ_LITE ? 4 : 2;
+    const sceneryCanvas = [0, 1].map(() => { const c = document.createElement('canvas'); c.width = 960 * sceneryScale; c.height = 540 * sceneryScale; return c; });
+    const sceneryTextures = sceneryCanvas.map(c => PIXI.Texture.from(c)), scenerySprites = sceneryTextures.map(t => { const sprite = new PIXI.Sprite(t); sprite.scale.set(1 / sceneryScale); return sprite; });
     stageLayer.addChild(scenerySprites[0]);
     let sceneryFrame = 0; const sceneryDrawn = [false, false];
     app.stage.addChild(stageLayer, titleTint, shaker, scenerySprites[1], flash);
@@ -254,7 +257,7 @@ void main() {
       // Shader parameters decay; the ring keeps expanding until it fades.
       impact.aberration *= .78; impact.blur *= .78; impact.ringStrength *= .86; impact.invert = impact.invert > .5 ? impact.invert - .5 : 0; impact.desaturate *= .97;
       if (impact.ring >= 0) impact.ring += .045; if (impact.ringStrength < .0008) { impact.ring = -1; impact.ringStrength = 0; }
-      const shockActive = shock && (impact.aberration > .0005 || impact.blur > .002 || impact.ringStrength > 0 || impact.invert > 0);
+      const shockActive = !root.CFZ_LITE && shock && (impact.aberration > .0005 || impact.blur > .002 || impact.ringStrength > 0 || impact.invert > 0);
       if (shock) {
         const u = shock.resources.shockUniforms.uniforms;
         u.uAberration = impact.aberration; u.uBlur = impact.blur; u.uCenter = impact.center; u.uRing = Math.max(0, impact.ring); u.uRingStrength = impact.ringStrength; u.uInvert = impact.invert;
@@ -297,8 +300,8 @@ void main() {
     function draw(frame) {
       const fighters = screen.beginFrame(frame), state = frame.state, manifest = frame.manifest, reducedMotion = !!frame.reducedMotion;
       screen.updateCamera(fighters, !state); screen.observeEffects(); screen.stepParticles();
-      // Device-resolution backing store behind the CSS-sized canvas.
-      const density = Math.min(3, Math.max(1, (canvas.clientWidth || 960) * Math.min(root.devicePixelRatio || 1, 3) / 960));
+      // Device-resolution backing store behind the CSS-sized canvas; lite devices stop at 1.25 device pixels per unit.
+      const density = Math.min(root.CFZ_LITE ? 1.25 : 3, Math.max(1, (canvas.clientWidth || 960) * Math.min(root.devicePixelRatio || 1, 3) / 960));
       if (Math.abs(app.renderer.resolution - density) > .01) { app.renderer.resize(960, 540, density); resizes++; }
       // Stage: the painting scrolls at half speed and scales about the floor line, as in the Canvas path.
       const stage = manifest.stages[frame.stageIndex], background = art(stage.src) || art(assetSource(stage.sourceImage));
@@ -309,8 +312,8 @@ void main() {
       if (screen.scenery) {
         const info = screen.sceneryInfo(), live = !!state;
         // Background life redraws at 30 frames a second, as arcade stages animated; an empty canvas is not re-uploaded.
-        if (live && (sceneryFrame++ & 1) === 0) sceneryCanvas.forEach((c, i) => {
-          const g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, 1920, 1080); g.setTransform(2, 0, 0, 2, 0, 0);
+        if (live && (sceneryFrame++ % sceneryEvery) === 0) sceneryCanvas.forEach((c, i) => {
+          const g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, c.width, c.height); g.setTransform(sceneryScale, 0, 0, sceneryScale, 0, 0);
           const drawn = (i ? screen.scenery.drawFront : screen.scenery.drawStage)(g, info);
           if (drawn || sceneryDrawn[i]) sceneryTextures[i].source.update();
           sceneryDrawn[i] = drawn;

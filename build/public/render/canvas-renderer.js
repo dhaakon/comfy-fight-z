@@ -340,7 +340,8 @@
     ({ state, manifest, stageIndex, selected, mode, arcade, training, cutin, goFrames, fighterRenderer, bestScore } = frame);
     reducedMotion.matches = !!frame.reducedMotion; debugBoxes = !!frame.debugBoxes; view.beat++;
     if (state && state.frame !== view.frameSeen) { view.frameSeen = state.frame; view.ticks++; }
-    const density = Math.min(3, Math.max(1, (canvas.clientWidth || 960) * Math.min(root.devicePixelRatio || 1, 3) / 960));
+    // Lite devices (window.CFZ_LITE) stop at 1.25 device pixels per unit; a phone at 3x would otherwise fill 2500x1400.
+    const density = Math.min(root.CFZ_LITE ? 1.25 : 3, Math.max(1, (canvas.clientWidth || 960) * Math.min(root.devicePixelRatio || 1, 3) / 960));
     const backing = Math.round(960 * density);
     if (canvas.width !== backing) { canvas.width = backing; canvas.height = Math.round(540 * density); }
     ctx.setTransform(density, 0, 0, density, 0, 0); ctx.imageSmoothingQuality = 'high';
