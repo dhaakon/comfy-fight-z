@@ -13,11 +13,11 @@ const { chromium } = require('playwright');
 const { sourceFile } = require('./lib/runtime-validation.cjs');
 
 const ROOT = path.resolve(__dirname, '../..');
-const settings = { config: 'comfyui/config/teaser.json', out: 'output/explainer/teaser-20261109', scene: null, gameUrl: 'http://127.0.0.1:8096', comfyUrl: 'http://127.0.0.1:8188',
+const settings = { config: 'comfyui/config/teaser.json', out: 'output/explainer/teaser-v2-20261109', scene: null, gameUrl: 'http://127.0.0.1:8096', comfyUrl: 'http://127.0.0.1:8188',
   run: 'output/test-runs/billionaires-brawl-20261108', cast: 'comfyui/casts/billionaires-brawl.json', export: 'output/exports/billionaires-brawl-card', sceneryRun: 'output/test-runs/canonical-20261109' };
 for (let i = 2; i < process.argv.length; i += 2) {
-  const key = { '--config': 'config', '--out': 'out', '--scene': 'scene', '--game-url': 'gameUrl', '--comfy-url': 'comfyUrl', '--run': 'run', '--cast': 'cast', '--export': 'export', '--scenery-run': 'sceneryRun' }[process.argv[i]];
-  if (!key || !process.argv[i + 1]) throw new Error('Usage: node build/tools/capture-teaser.cjs [--config <json>] [--out <run>] [--scene <id>] [--game-url URL] [--comfy-url URL] [--run <cast run>]');
+  const key = { '--config': 'config', '--out': 'out', '--scene': 'scene', '--game-url': 'gameUrl', '--comfy-url': 'comfyUrl', '--run': 'run', '--cast': 'cast', '--export': 'export', '--scenery-run': 'sceneryRun', '--card': 'card', '--png': 'png' }[process.argv[i]];
+  if (!key || !process.argv[i + 1]) throw new Error('Usage: node build/tools/capture-teaser.cjs [--config <json>] [--out <run>] [--scene <id>] [--game-url URL] [--comfy-url URL] [--run <cast run>] | --card <name> --png <file>');
   settings[key] = process.argv[i + 1];
 }
 for (const key of ['gameUrl', 'comfyUrl']) {
@@ -121,8 +121,43 @@ function endCard() {
     <div class="url line" style="animation-delay:1.6s"><small>BUILD</small>${escape(String(config.repositoryURL || '').replace(/^https?:\/\//, ''))}</div></div>`;
 }
 
+// The pipeline as a diagram: five stages light up left to right with their arrows, the review loop curls back from the
+// bundle to the run, and the last stage fans out to where the game plays. Every label names a real file or command.
+function pipelineCard() {
+  const cast = path.basename(settings.cast);
+  const stages = [
+    { title: 'CAST FILE', lines: [`casts/${cast}`, 'fighters · special moves · arenas', 'text only: no photos, no venues'] },
+    { title: 'COMFYUI RUN', lines: ['one graph: comfy-hackathon.json', 'factories → 3×3 sprite sheets → arenas', 'menus · clips · voices · music', 'cloud models, one paid node at a time'] },
+    { title: 'MAPPED BUNDLE', lines: ['assets.json · audio.json · video.json', 'raw/ images, clips and sounds', 'review → reroll one node'] },
+    { title: 'BROWSER BUILDER', lines: ['cuts each sheet into cels', 'keys chroma, maps 45+ poses', 'strict export: every file checked'] },
+    { title: 'PLAYABLE GAME', lines: ['npm start · GAME SELECT', 'online 1v1 · phone & TV', 'comfy-fight-z.dhaakon.com'] }
+  ];
+  const at = index => 0.4 + index * 1.4, delay = seconds => `animation-delay:${seconds.toFixed(2)}s`;
+  const boxes = stages.map((stage, index) => `<div class="stage line" style="grid-column:${index * 2 + 1} / ${index * 2 + 2};grid-row:1;${delay(at(index))}"><div class="stage-title">${escape(stage.title)}</div>${stage.lines.map(line => `<div class="stage-line">${escape(line)}</div>`).join('')}</div>`);
+  const arrows = stages.slice(1).map((_, index) => `<div class="arrow line" style="grid-column:${index * 2 + 2} / ${index * 2 + 3};grid-row:1;${delay(at(index) + 0.95)}">▶</div>`);
+  return `<style>
+    .flow{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr) 56px minmax(0,1fr) 56px minmax(0,1fr) 56px minmax(0,1fr);align-items:start;gap:0;margin-top:150px;height:400px}
+    .stage{background:#0f1730;border:3px solid #23334c;box-shadow:12px 12px 0 #000;padding:24px 20px;display:flex;flex-direction:column;gap:12px;min-height:300px;min-width:0}
+    .stage-title{font-family:'Press Start 2P',monospace;font-size:17px;color:#ffd23f;line-height:1.5;text-shadow:3px 3px 0 #000;margin-bottom:8px;overflow-wrap:anywhere}
+    .stage-line{font-family:Consolas,'Cascadia Mono',monospace;font-size:18px;line-height:1.35;color:#d5deec;white-space:normal;overflow-wrap:anywhere}
+    .stage:nth-child(2) .stage-title{color:#8de9e6}.stage:nth-child(5) .stage-title{color:#2edbc8}
+    .arrow{align-self:center;text-align:center;font-size:40px;color:#ffd23f;text-shadow:3px 3px 0 #000;margin-top:130px}
+    .loop{position:absolute;left:0;top:-130px;width:1700px;height:140px;pointer-events:none}
+    .loop path{fill:none;stroke:#ff8ba7;stroke-width:5;stroke-dasharray:14 10}
+    .loop text{font-family:'Press Start 2P',monospace;font-size:15px;fill:#ff8ba7;text-anchor:middle}
+    .targets{display:flex;gap:18px;justify-content:center;margin-top:40px}
+    .chip{font-family:'Press Start 2P',monospace;font-size:14px;color:#fff;background:#000c;border:2px solid #2edbc8;padding:12px 16px;letter-spacing:1px}
+  </style>
+  <div class="card"><div class="eyebrow">05 · THE PIPELINE</div><h1>ComfyUI <em>generation</em> → build → playable game</h1>
+    <div class="flow">${boxes.join('')}${arrows.join('')}
+      <svg class="loop line" viewBox="0 0 1700 140" style="${delay(at(3))}"><path d="M 850 134 C 850 50, 497 50, 497 126" marker-end="url(#tip)"/><defs><marker id="tip" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="9" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#ff8ba7"/></marker></defs><text x="673" y="30">REVIEW · REROLL ONE NODE · THE CACHE KEEPS THE REST</text></svg>
+    </div>
+    <div class="targets">${['browser', 'phone', 'shared TV + phones', 'online 1v1', 'static site'].map((target, index) => `<div class="chip line" style="${delay(at(4) + 0.6 + index * 0.25)}">${escape(target.toUpperCase())}</div>`).join('')}</div>
+  </div>`;
+}
+
 const CARDS = {
-  cast: castCard, prepare: prepareCard, export: exportCard, end: endCard,
+  cast: castCard, prepare: prepareCard, export: exportCard, end: endCard, pipeline: pipelineCard,
   // The sweep comparison is eight rows of four cells (wind-up, full, through, back; the full cell is the one that went
   // wrong); fitted to the width, two rows fill the frame, and the camera crawls down from the first pair.
   sweeps: () => panCard(path.join(OUT, 'stills/sweeps-compare.png'), { fit: 'width', from: { zoom: 1, x: .5, y: .125 }, to: { zoom: 1, x: .5, y: .5 }, seconds: 5, eyebrow: '04 · REVIEW', label: 'sweepfull: a standing kick, redrawn until it connected low' }),
@@ -139,8 +174,10 @@ function serveCards() {
         if (url.pathname.startsWith('/card/')) {
           const card = CARDS[url.pathname.slice(6)];
           if (!card) { response.writeHead(404); return response.end(); }
+          // Render before writing headers, so a card that throws is reported rather than crashing the server.
+          const html = `<!doctype html><meta charset="utf-8"><style>${CSS}</style>${card()}`;
           response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-          return response.end(`<!doctype html><meta charset="utf-8"><style>${CSS}</style>${card()}`);
+          return response.end(html);
         }
         if (url.pathname.startsWith('/file/')) {
           const file = sourceFile(ROOT, decodeURIComponent(url.pathname.slice(6)));
@@ -149,7 +186,7 @@ function serveCards() {
           return fs.createReadStream(file).pipe(response);
         }
         response.writeHead(404); response.end();
-      } catch (error) { response.writeHead(404); response.end(String(error.message)); }
+      } catch (error) { console.error(`card ${request.url}: ${error.stack || error.message}`); if (!response.headersSent) response.writeHead(500); response.end(String(error.message)); }
     });
     server.listen(0, '127.0.0.1', () => resolve({ server, url: `http://127.0.0.1:${server.address().port}` }));
   });
@@ -175,8 +212,8 @@ async function startTraining(page, p1, p2, stage) {
   for (let i = 0; i < 12; i++) { await page.waitForTimeout(400); if (await page.evaluate(() => FighterDebug.snapshot()?.phase === 'fight' && !FighterDebug.presentation().introSlot && FighterDebug.presentation().screen === 'fight')) break; await page.keyboard.press('Space').catch(() => {}); }
   await page.waitForTimeout(500);
 }
-async function exchange(page, keys) {
-  await page.keyboard.down('ArrowRight'); await page.waitForTimeout(500); await page.keyboard.up('ArrowRight');
+async function exchange(page, keys, walk = 500) {
+  await page.keyboard.down('ArrowRight'); await page.waitForTimeout(walk); await page.keyboard.up('ArrowRight');
   for (const key of keys) { if (Array.isArray(key)) { for (const k of key) await page.keyboard.down(k); await page.waitForTimeout(60); for (const k of key) await page.keyboard.up(k); } else await page.keyboard.press(key); await page.waitForTimeout(420); }
 }
 
@@ -238,41 +275,50 @@ const bounds = (page, filter) => page.evaluate(filter => {
 }, filter);
 
 // ---------------------------------------------------------------- shots
-// A shot records one page; `keep` seconds from its end are kept, so preparation never shows.
+// A shot records one page; `keep` seconds from its end are kept, so preparation never shows. A `clip` shot is a
+// generated video under the run (the Seedance opening): it plays from its start and holds its last frame to fill.
+// Training with the collision boxes on: the settings dialog's DEBUG option persists for the page.
+async function boxesOn(page) {
+  await page.click('#settings-open'); await page.selectOption('#opt-debug', 'boxes'); await page.selectOption('#opt-difficulty', '8'); await page.click('#settings-close'); await page.waitForTimeout(200);
+}
 const SHOTS = {
-  '01-hook': [
-    { keep: 2, game: '', run: async page => { await startTraining(page, 'griddle', 'rivet', 'yard'); await exchange(page, ['a', 's', 'd']); } },
-    { keep: 2, game: 'rogue-ai/', run: async page => { await startTraining(page, 'nullbyte', 'overmind', 'datacore'); await exchange(page, ['s', 'd', 'f']); } },
-    { keep: 2, game: 'midterm-2026/', run: async page => { await startTraining(page, 'talarico', 'paxton', 'statehouse'); await exchange(page, ['a', 'a', 'd']); } },
-    { keep: 3, game: 'billionaires-brawl/', run: async page => { await startTraining(page, 'musk', 'bezos', 'taxhaven'); await exchange(page, ['a', 's']); await page.keyboard.down('KeyF'); await page.keyboard.down('KeyD'); await page.waitForTimeout(80); await page.keyboard.up('KeyD'); await page.keyboard.up('KeyF'); await page.waitForTimeout(1600); } }
-  ],
-  '02-cast': [{ keep: 10, card: 'cast', run: async page => page.waitForTimeout(10500) }],
-  '03-prepare': [{ keep: 10, card: 'prepare', run: async page => page.waitForTimeout(10500) }],
-  '04-workflow': [{ keep: 14, comfy: true, run: async page => {
-    const all = await bounds(page, 'true'); await camera(page, { ...all, maxScale: 0.5 }, 0); await page.waitForTimeout(2200);
-    const characters = await bounds(page, 'node.type === "CFZCharacterFactory"'); await camera(page, { ...characters, maxScale: 0.42 }, 1600); await page.waitForTimeout(1200);
-    const sheets = await bounds(page, 'node.type === "CFZSpriteSheet" && node.title.startsWith("Musk")'); await camera(page, { ...sheets, maxScale: 1 }, 1500); await page.waitForTimeout(1500);
-    const environment = await bounds(page, 'node.type === "CFZEnvironmentFactory"'); await camera(page, { ...environment, maxScale: 0.9 }, 1400); await page.waitForTimeout(1200);
-    const media = await bounds(page, '["CFZTitleArt","CFZTitleVideo","CFZSelectVideo","CFZIntroVideo","CFZSelectIdleVideo"].includes(node.type)'); await camera(page, { ...media, maxScale: 0.8 }, 1400); await page.waitForTimeout(1300);
-    const audio = await bounds(page, 'node.type === "CFZSaveAudio" || /cloud audio/.test(node.title || "")'); await camera(page, { ...audio, maxScale: 0.5 }, 1600); await page.waitForTimeout(1600);
+  '01-intro': [{ keep: 9, clip: config.intro?.clip || 'stills/intro-seedance.mp4' }],
+  '02-cast': [{ keep: 9, card: 'cast', run: async page => page.waitForTimeout(9500) }],
+  '03-prepare': [{ keep: 8, card: 'prepare', run: async page => page.waitForTimeout(8500) }],
+  '04-workflow': [{ keep: 11, comfy: true, run: async page => {
+    const all = await bounds(page, 'true'); await camera(page, { ...all, maxScale: 0.5 }, 0); await page.waitForTimeout(1700);
+    const characters = await bounds(page, 'node.type === "CFZCharacterFactory"'); await camera(page, { ...characters, maxScale: 0.42 }, 1300); await page.waitForTimeout(800);
+    const sheets = await bounds(page, 'node.type === "CFZSpriteSheet" && node.title.startsWith("Musk")'); await camera(page, { ...sheets, maxScale: 1 }, 1200); await page.waitForTimeout(1000);
+    const environment = await bounds(page, 'node.type === "CFZEnvironmentFactory"'); await camera(page, { ...environment, maxScale: 0.9 }, 1100); await page.waitForTimeout(800);
+    const media = await bounds(page, '["CFZTitleArt","CFZTitleVideo","CFZSelectVideo","CFZIntroVideo","CFZSelectIdleVideo"].includes(node.type)'); await camera(page, { ...media, maxScale: 0.8 }, 1100); await page.waitForTimeout(900);
+    const audio = await bounds(page, 'node.type === "CFZSaveAudio" || /cloud audio/.test(node.title || "")'); await camera(page, { ...audio, maxScale: 0.5 }, 1300); await page.waitForTimeout(1300);
   } }],
-  '05-review': [
+  '05-pipeline': [{ keep: 9, card: 'pipeline', run: async page => page.waitForTimeout(9500) }],
+  '06-review': [
     { keep: 4, card: 'posegrid', run: async page => page.waitForTimeout(4600) },
-    { keep: 5, card: 'sweeps', run: async page => page.waitForTimeout(5600) },
     { keep: 3, card: 'cutins', run: async page => page.waitForTimeout(4400) }
   ],
-  '06-scenery': [
-    { keep: 5, card: 'scenery', run: async page => page.waitForTimeout(5600) },
-    { keep: 5, game: '', run: async page => { await startTraining(page, 'brick', 'tempo', 'yard'); await exchange(page, ['a', 's', 'd', 'f']); await page.waitForTimeout(1800); } }
+  '07-engine': [
+    // Collision boxes and the frame-data read-out answering a jab, a kick, a roundhouse, a heavy and a launcher.
+    { keep: 8, game: '', run: async page => { await boxesOn(page); await startTraining(page, 'griddle', 'rivet', 'yard'); await exchange(page, ['a', 's', ['ArrowRight', 's'], 'd'], 1800); await page.waitForTimeout(700); await exchange(page, [['ArrowDown', 'd'], 'a', 'a', 'f'], 500); await page.waitForTimeout(1600); } },
+    // The shared display: the server pairs phones by code and owns the match.
+    { keep: 5, game: '', run: async page => {
+      await page.click('#title-phones'); await page.waitForTimeout(700);
+      const modes = page.locator('input[name="network-play-mode"]'); if (await modes.count() > 1) await modes.nth(1).check().catch(() => {});
+      await page.click('#network-project'); await page.waitForFunction(() => document.querySelectorAll('#network-pairing a').length >= 1, null, { timeout: 20000 }); await page.waitForTimeout(5200);
+    } }
   ],
-  '07-export': [
-    { keep: 4.5, card: 'export', run: async page => page.waitForTimeout(5200) },
-    { keep: 5.5, game: '', run: async page => { await page.click('#title-games'); await page.waitForTimeout(900); const cards = page.locator('#games-grid .game-card'); const count = await cards.count(); for (let i = 0; i < count; i++) { await cards.nth(i).focus(); await page.waitForTimeout(700); } await page.waitForTimeout(700); } }
+  '08-scenery': [
+    { keep: 4, card: 'scenery', run: async page => page.waitForTimeout(4600) },
+    { keep: 4, game: '', run: async page => { await startTraining(page, 'brick', 'tempo', 'yard'); await exchange(page, ['a', 's', 'd', 'f']); await page.waitForTimeout(1500); } }
   ],
-  '08-ultra': [
-    { keep: 4.5, game: 'ultra/', run: async page => { await page.click('#title-training'); await page.waitForTimeout(800); for (const key of ['ArrowDown', 'ArrowDown', 'ArrowRight', 'ArrowRight', 'ArrowDown', 'ArrowRight']) { await page.keyboard.press(key); await page.waitForTimeout(420); } await page.waitForTimeout(900); } },
-    { keep: 5.5, game: 'ultra/', run: async page => { await startTraining(page, 'overmind', 'bezos', 'datacore'); await exchange(page, ['a', 's', 'd']); await page.keyboard.down('KeyF'); await page.keyboard.down('KeyD'); await page.waitForTimeout(80); await page.keyboard.up('KeyD'); await page.keyboard.up('KeyF'); await page.waitForTimeout(2200); } },
-    { keep: 5, card: 'end', run: async page => page.waitForTimeout(5600) }
+  '09-games': [
+    { keep: 3.5, card: 'export', run: async page => page.waitForTimeout(4200) },
+    { keep: 4.5, game: '', run: async page => { await page.click('#title-games'); await page.waitForTimeout(900); const cards = page.locator('#games-grid .game-card'); const count = await cards.count(); for (let i = 0; i < count; i++) { await cards.nth(i).focus(); await page.waitForTimeout(600); } await page.waitForTimeout(600); } }
+  ],
+  '10-ultra': [
+    { keep: 4, game: 'ultra/', run: async page => { await startTraining(page, 'overmind', 'bezos', 'datacore'); await exchange(page, ['a', 's', 'd']); await page.keyboard.down('KeyF'); await page.keyboard.down('KeyD'); await page.waitForTimeout(80); await page.keyboard.up('KeyD'); await page.keyboard.up('KeyF'); await page.waitForTimeout(2000); } },
+    { keep: 4, card: 'end', run: async page => page.waitForTimeout(4600) }
   ]
 };
 
@@ -283,6 +329,12 @@ async function record(browser, cards, scene) {
   if (Math.abs(kept - scene.targetSeconds) > 0.01) throw new Error(`${scene.id}: shots keep ${kept}s but the storyboard allots ${scene.targetSeconds}s.`);
   const parts = [];
   for (const [index, shot] of shots.entries()) {
+    if (shot.clip) {
+      const source = sourceFile(OUT, shot.clip), part = path.join(RAW, `${scene.id}-${index}.webm`);
+      if (probeDuration(source) > shot.keep + .05) throw new Error(`${scene.id}: the clip runs ${probeDuration(source).toFixed(2)}s, longer than its ${shot.keep}s shot.`);
+      command('ffmpeg', ['-y', '-v', 'error', '-i', source, '-an', '-vf', `fps=30,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0x080d1d,setsar=1,tpad=stop_mode=clone:stop_duration=${shot.keep},trim=duration=${shot.keep}`, '-c:v', 'libvpx-vp9', '-crf', '24', '-b:v', '0', '-deadline', 'realtime', '-cpu-used', '6', part]);
+      parts.push(part); continue;
+    }
     const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1, recordVideo: { dir: RAW, size: { width: 1920, height: 1080 } } });
     const page = await context.newPage(), video = page.video(); page.setDefaultTimeout(30000);
     if (shot.comfy) await openComfy(context, page);
@@ -311,6 +363,15 @@ async function record(browser, cards, scene) {
   const cards = await serveCards();
   const browser = await chromium.launch({ headless: true, args: ['--mute-audio', '--use-angle=swiftshader', '--use-gl=angle', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'], ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
   try {
+    // Card design check: screenshots of one card early and settled, nothing recorded.
+    if (settings.card) {
+      if (!CARDS[settings.card] || !settings.png) throw new Error('--card needs a known card name and --png <file>.');
+      const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
+      await page.goto(`${cards.url}/card/${settings.card}`); await page.waitForTimeout(1500); await page.screenshot({ path: settings.png.replace(/\.png$/i, '') + '-early.png' });
+      await page.waitForTimeout(7000); await page.screenshot({ path: settings.png.replace(/\.png$/i, '') + '-settled.png' });
+      const facts = await page.evaluate(() => [...document.querySelectorAll('.stage')].map(stage => { const line = stage.querySelector('.stage-line'); const style = line && getComputedStyle(line); return { box: Math.round(stage.getBoundingClientRect().width), line: line && { scroll: line.scrollWidth, client: line.clientWidth, whiteSpace: style.whiteSpace, wrap: style.overflowWrap, font: style.font.slice(0, 40) } }; }));
+      console.log(`Card ${settings.card}: early and settled screenshots written.`, JSON.stringify(facts)); return;
+    }
     for (const scene of scenes) await record(browser, cards, scene);
     if (report.blockedComfyWrites.some(request => /^\/(?:api\/)?(?:prompt|queue|interrupt)(?:\/|$)/.test(request.path))) throw new Error('An execution request was attempted.');
     fs.writeFileSync(path.join(CAPTURES, 'capture-manifest.json'), JSON.stringify(report, null, 2) + '\n');

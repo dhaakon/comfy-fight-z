@@ -48,11 +48,13 @@ This new demo stays separate from the included `example/bundle/`, the original p
 
 *The included example, built from the fictional artwork in `example/bundle/`.*
 
+### Behind the scenes — 90-second teaser
+
+[![Watch the 90-second teaser: behind the scenes, from a cast file to a playable arcade game](comfyui/docs/images/16-teaser-poster.jpg)](https://github.com/dhaakon/comfy-fight-z/releases/download/teaser-v2/comfy-fighter-z-teaser.mp4)
+
+**[Watch the 90-second teaser — 1080p](https://github.com/dhaakon/comfy-fight-z/releases/download/teaser-v2/comfy-fighter-z-teaser.mp4)** · [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/teaser-v2/comfy-fighter-z-teaser.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/teaser-v2/comfy-fighter-z-teaser.srt) — it opens on a Seedance 2.0 clip generated through ComfyUI from two stills, the real run graph and the game's own title art with its logo, then follows the pipeline from a cast file to a playable game: the priced run, the one ComfyUI graph, the mapped bundle and the browser builder, the review loop, the deterministic engine with its collision boxes and frame data, living scenery, strict export and GAME SELECT. Narration and music are generated through ComfyUI; everything else is a real screen recording. Play the original game and Rogue Protocol at **https://comfy-fight-z.dhaakon.com/** (the satire casts stay local, so no public figure is on the public site). The storyboard is `comfyui/config/teaser.json`; `capture-teaser.cjs` records it and `compose-explainer.cjs` cuts it.
+
 ### Earlier walkthrough — 2:53
-
-[![Watch the 90-second teaser: from a cast file to four arcade games](comfyui/docs/images/16-teaser-poster.jpg)](https://github.com/dhaakon/comfy-fight-z/releases/download/teaser-v1/comfy-fighter-z-teaser.mp4)
-
-**[Watch the 90-second teaser — 1080p](https://github.com/dhaakon/comfy-fight-z/releases/download/teaser-v1/comfy-fighter-z-teaser.mp4)** · [Transcript](https://github.com/dhaakon/comfy-fight-z/releases/download/teaser-v1/comfy-fighter-z-teaser.transcript.txt) · [Subtitles](https://github.com/dhaakon/comfy-fight-z/releases/download/teaser-v1/comfy-fighter-z-teaser.srt) — four games, 26 fighters and 8 arenas generated from text with ComfyUI: real recordings of the run graph, the review sheets and the games, with narration and music generated through ComfyUI. Play the original game and Rogue Protocol at **https://comfy-fight-z.dhaakon.com/** (the satire casts stay local, so no public figure is on the public site). The storyboard is `comfyui/config/teaser.json`; `capture-teaser.cjs` records it and `compose-explainer.cjs` cuts it.
 
 [![Play the Comfy Fighter Z workflow walkthrough](comfyui/docs/images/14-explainer-poster.jpg)](https://github.com/dhaakon/comfy-fight-z/releases/download/explainer-v1/comfy-fighter-z-explainer.mp4)
 

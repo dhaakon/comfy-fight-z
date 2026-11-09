@@ -2,7 +2,7 @@
   "schema": "comfy-fighter-explainer/v1",
   "kind": "teaser",
   "title": "Comfy Fighter Z",
-  "subtitle": "From a cast file to four arcade games, with ComfyUI",
+  "subtitle": "Behind the scenes: from a cast file to playable arcade games, with ComfyUI",
   "outputStem": "comfy-fighter-z-teaser",
   "width": 1920,
   "height": 1080,
@@ -16,7 +16,18 @@
   "liveURL": "https://comfy-fight-z.dhaakon.com/",
   "music": "audio/teaser-music.flac",
   "musicLUFS": -25,
-  "footageDisclosure": "Real screen recordings of the generated games, the ComfyUI run graph and the pipeline's own review sheets and logs. The original cast and Rogue Protocol are fictional; Midterm Mayhem 2026 and Billionaires Brawl are satire casts caricatured from text with stock voices. Narration and music are cloud-generated through ComfyUI; nothing was recorded from a person.",
+  "intro": {
+    "model": "Seedance 2.0",
+    "node": "ByteDance2FirstLastFrameNode",
+    "resolution": "1080p",
+    "ratio": "16:9",
+    "seconds": 8,
+    "firstFrame": "stills/intro-first.png",
+    "lastFrame": "stills/intro-last.png",
+    "clip": "stills/intro-seedance.mp4",
+    "prompt": "Behind-the-scenes opening of an indie arcade fighting game, hand-drawn 1990s anime style. The first frame is a developer's screen: a ComfyUI node graph. The camera pushes slowly into the glowing graph while its nodes light up one after another and hand-drawn fighter sprites, sprite sheets and arena paintings burst out of the nodes and fly toward the camera with radial speed lines. The flying artwork swirls together into a bright shockwave of energy, and the shot settles exactly on the last frame: the six fighters clashing in a backyard at dusk behind the Comfy Fighter Z logo, bold and sharp. Smooth, continuous camera, dramatic lighting, no cuts to other scenes, no new text, letters, subtitles or watermark."
+  },
+  "footageDisclosure": "The opening is a Seedance 2.0 clip generated through ComfyUI from two stills: the real run graph and the game's own title art with its logo. The rest is real screen recordings of the generated games, the ComfyUI run graph and the pipeline's own review sheets, logs and diagrams. The original cast and Rogue Protocol are fictional; Midterm Mayhem 2026 and Billionaires Brawl are satire casts caricatured from text with stock voices. Narration and music are cloud-generated through ComfyUI; nothing was recorded from a person.",
   "voice": {
     "preset": "Brian (male, american)",
     "model": "eleven_v4",
@@ -26,23 +37,23 @@
     "deliveryTag": "[energetic, confident movie-trailer narration, quick and clear]",
     "outputFormat": "mp3_44100_192",
     "saveFormat": "flac",
-    "seed": 20261109
+    "seed": 20261110
   },
   "scenes": [
     {
-      "id": "01-hook",
-      "title": "Four games, one pipeline",
+      "id": "01-intro",
+      "title": "Behind the scenes",
       "targetSeconds": 9,
-      "narration": "Four fighting games. Twenty-six fighters. Eight arenas. Every sprite, voice and background here was generated with ComfyUI, from text.",
-      "audio": "audio/01-hook.flac",
-      "visual": "captures/01-hook.webm",
-      "onScreen": ["4 GAMES · 26 FIGHTERS · 8 ARENAS", "Generated with ComfyUI"],
-      "visualDirection": "Hard cuts between live fights in each game, one every two seconds, ending on a super-move cut-in."
+      "narration": "Behind the scenes of Comfy Fighter Z: an arcade fighter whose every sprite, arena, clip and voice was generated with ComfyUI, from text.",
+      "audio": "audio/01-intro.flac",
+      "visual": "captures/01-intro.webm",
+      "onScreen": ["BEHIND THE SCENES", "Generated with ComfyUI"],
+      "visualDirection": "A Seedance 2.0 clip: the camera pushes into the real run graph, artwork bursts out of the nodes, and the shot lands on the title art with the Comfy Fighter Z logo; the last frame holds for a beat."
     },
     {
       "id": "02-cast",
       "title": "It starts with a cast file",
-      "targetSeconds": 10,
+      "targetSeconds": 9,
       "narration": "It starts with a cast file: a short description of each fighter, their special move, and the arenas they fight in.",
       "audio": "audio/02-cast.flac",
       "visual": "captures/02-cast.webm",
@@ -52,7 +63,7 @@
     {
       "id": "03-prepare",
       "title": "Priced before it runs",
-      "targetSeconds": 10,
+      "targetSeconds": 8,
       "narration": "One command prices the entire run before anything is spent, and refuses to run without an approved budget.",
       "audio": "audio/03-prepare.flac",
       "visual": "captures/03-prepare.webm",
@@ -62,53 +73,73 @@
     {
       "id": "04-workflow",
       "title": "One ComfyUI graph",
-      "targetSeconds": 14,
-      "narration": "The run is one ComfyUI graph: character factories, nine-cell sprite sheets, arenas, menus, intro clips, voices and music. Every node calls a cloud model, submitted one paid node at a time.",
+      "targetSeconds": 11,
+      "narration": "The run is one ComfyUI graph: character factories, nine-cell sprite sheets, arenas, menus, intro clips, voices and music, submitted one paid node at a time.",
       "audio": "audio/04-workflow.flac",
       "visual": "captures/04-workflow.webm",
       "onScreen": ["comfyui/workflows/comfy-hackathon.json", "character factories → sprite sheets → arenas → media → audio"],
       "visualDirection": "The real run graph in the ComfyUI editor: a wide establishing view, then camera moves across the character column, the sprite-sheet nodes, an environment factory, the media nodes and the audio bank."
     },
     {
-      "id": "05-review",
-      "title": "Review, then redraw one node",
-      "targetSeconds": 12,
-      "narration": "Contact sheets flag what needs another pass. Only that node is redrawn, so a fix costs cents, not a new run. Here, four sweeps were redrawn until they connected low.",
-      "audio": "audio/05-review.flac",
-      "visual": "captures/05-review.webm",
-      "onScreen": ["new-game.cjs review", "reroll one node · the cache keeps the rest"],
-      "visualDirection": "Slow pans across the real review grids: a fighter's pose sheet, the flagged sweep cells before and after, and the redrawn super cut-ins."
+      "id": "05-pipeline",
+      "title": "From graph to playable game",
+      "targetSeconds": 9,
+      "narration": "Every output lands in a mapped bundle. The browser builder cuts the sheets into cels, checks every file and clip, and exports a complete, playable game.",
+      "audio": "audio/05-pipeline.flac",
+      "visual": "captures/05-pipeline.webm",
+      "onScreen": ["cast file → ComfyUI run → mapped bundle → builder → playable game", "assets.json · audio.json · video.json"],
+      "visualDirection": "An animated diagram: five stages light up left to right with their arrows, the review loop curling back from the bundle to the run, and the last stage fanning out to the game's targets."
     },
     {
-      "id": "06-scenery",
+      "id": "06-review",
+      "title": "Review, then redraw one node",
+      "targetSeconds": 7,
+      "narration": "Contact sheets flag what needs another pass, and only that node is redrawn, so a fix costs cents.",
+      "audio": "audio/06-review.flac",
+      "visual": "captures/06-review.webm",
+      "onScreen": ["new-game.cjs review", "reroll one node · the cache keeps the rest"],
+      "visualDirection": "A slow pan across a fighter's real pose grid, then the redrawn super cut-ins."
+    },
+    {
+      "id": "07-engine",
+      "title": "A deterministic fighting engine",
+      "targetSeconds": 13,
+      "narration": "Underneath is a deterministic engine: Capcom-style frame data, hit, hurt and limb boxes, a CPU that blocks and punishes, sixty identical ticks a second on every machine, so online matches are server-authoritative.",
+      "audio": "audio/07-engine.flac",
+      "visual": "captures/07-engine.webm",
+      "onScreen": ["engine.js · 60 ticks/s · no Math.random", "frame data · hit, hurt and limb boxes · server-authoritative"],
+      "visualDirection": "Training mode with the collision boxes on and the frame-data read-out answering each strike, then the phone and TV pairing screen with its player codes."
+    },
+    {
+      "id": "08-scenery",
       "title": "Living stage scenery",
-      "targetSeconds": 10,
+      "targetSeconds": 8,
       "narration": "A vision model plans living stage scenery, paints it, separates it into layers, and the game animates them behind the fight.",
-      "audio": "audio/06-scenery.flac",
-      "visual": "captures/06-scenery.webm",
+      "audio": "audio/08-scenery.flac",
+      "visual": "captures/08-scenery.webm",
       "onScreen": ["director → paint → separate → extract", "elements · effects · weather"],
       "visualDirection": "The scenery review image with its labelled boxes dissolving into the same arena live in the game, elements moving."
     },
     {
-      "id": "07-export",
+      "id": "09-games",
       "title": "Strict export, one menu",
-      "targetSeconds": 10,
-      "narration": "A strict export checks every file and clip, then every game lands on one GAME SELECT screen with its own title card.",
-      "audio": "audio/07-export.flac",
-      "visual": "captures/07-export.webm",
-      "onScreen": ["export · 23 checks passed", "GAME SELECT"],
-      "visualDirection": "The export log's passing checks, then the GAME SELECT screen with the five generated title cards and the cursor moving across them."
+      "targetSeconds": 8,
+      "narration": "A strict export checks every file, then every game lands on one GAME SELECT screen with its own title card.",
+      "audio": "audio/09-games.flac",
+      "visual": "captures/09-games.webm",
+      "onScreen": ["export · every check passed", "GAME SELECT"],
+      "visualDirection": "The export log's passing checks, then the GAME SELECT screen with the generated title cards and the cursor moving across them."
     },
     {
-      "id": "08-ultra",
+      "id": "10-ultra",
       "title": "Ultra Dream Match",
-      "targetSeconds": 15,
-      "narration": "Combine them and you get Ultra Dream Match: all twenty-six fighters, all eight arenas, one final boss. Play it now at comfy-fight-z dot dhaakon dot com, and build your own from the repository.",
-      "captionText": "Combine them and you get Ultra Dream Match: all twenty-six fighters, all eight arenas, one final boss. Play it now at comfy-fight-z.dhaakon.com, and build your own from the repository.",
-      "audio": "audio/08-ultra.flac",
-      "visual": "captures/08-ultra.webm",
+      "targetSeconds": 8,
+      "narration": "Combine them and you get Ultra Dream Match. Play it now at comfy-fight-z dot dhaakon dot com, and build your own from the repository.",
+      "captionText": "Combine them and you get Ultra Dream Match. Play it now at comfy-fight-z.dhaakon.com, and build your own from the repository.",
+      "audio": "audio/10-ultra.flac",
+      "visual": "captures/10-ultra.webm",
       "onScreen": ["ULTRA DREAM MATCH · 26 FIGHTERS · 8 ARENAS", "PLAY: comfy-fight-z.dhaakon.com", "BUILD: github.com/dhaakon/comfy-fight-z"],
-      "visualDirection": "The Ultra select grid, a crossover fight, the final battle, then the end card holding the live and repository addresses."
+      "visualDirection": "A crossover fight, then the end card holding the live and repository addresses."
     }
   ]
 }
