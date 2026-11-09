@@ -32,9 +32,11 @@ async function verifyBundle(directory, { packaged = true } = {}) {
   const manifest = validateManifest(read(sourceFile(directory, 'assets.json')));
   const audio = validateAudioManifest(read(sourceFile(directory, 'audio.json')), manifest.game);
   const contract = contractFor(manifest.game);
-  // The generated menu frame (ui/frame) is a later addition; a release may carry it on top of its contract.
+  // The generated menu frame (ui/frame) and game-select title card (ui/card) are later additions; a release may carry
+  // them on top of its contract.
   const motionSheets = manifest.assets.filter(asset => asset.kind === 'sprites' && (Object.hasOwn(manifest.game.motionSheets || {}, asset.sheet) || Object.hasOwn(manifest.game.detailSheets || {}, asset.sheet))).length;
-  const images = manifest.assets.length - (manifest.assets.some(asset => asset.kind === 'ui' && asset.id === 'frame') ? 1 : 0) - motionSheets;
+  const later = ['frame', 'card'].filter(id => manifest.assets.some(asset => asset.kind === 'ui' && asset.id === id)).length;
+  const images = manifest.assets.length - later - motionSheets;
   if (manifest.cloudOnly !== true || manifest.game.fighters.length !== contract.fighters || manifest.game.stages.length !== contract.stages || images !== contract.images || audio.assets.length !== contract.audio)
     throw new Error(`The complete ${contract.name} example requires ${contract.fighters} fictional fighters, ${contract.stages} arena(s), ${contract.images} generated images and ${contract.audio} audio clips.`);
   if (manifest.game.fighters.filter(fighter => fighter.boss).length !== contract.bosses) throw new Error(`The complete ${contract.name} example requires ${contract.bosses} final boss(es).`);

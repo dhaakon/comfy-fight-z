@@ -195,6 +195,38 @@ class CloudFactoryTests(unittest.TestCase):
         self.assertTrue(all(call["nested"]["model"]["resolution"] == "2K" for call in sheets))
         self.assertTrue(all("image_1" in call["nested"]["model"]["images"] for call in sheets))
 
+    def test_title_card_letters_the_game_name_over_its_key_art_and_joins_a_complete_export(self):
+        output = factory.CFZTitleCard.execute(self.project, ["ensemble", 1], title_text="Billionaires Brawl", tagline_text="Comfy Fighter Z")
+        calls = [node["inputs"] for node in output.expand.values() if node["class_type"] == "GeminiNanoBanana2V2"]
+        self.assertEqual(len(calls), 1)
+        call = calls[0]
+        self.assertEqual((call["model.aspect_ratio"], call["model.resolution"]), ("16:9", "2K"))
+        self.assertEqual(call["model.images.image_1"], ["ensemble", 1])
+        self.assertIn('the exact words "BILLIONAIRES BRAWL"', call["prompt"])
+        self.assertIn('the exact words "COMFY FIGHTER Z"', call["prompt"])
+        self.assertEqual(call["system_prompt"], factory.CARD_SYSTEM_PROMPT)
+        saved = [json.loads(node["inputs"]["asset_json"]) for node in output.expand.values() if node["class_type"] == "CFZSaveMappedAsset"]
+        self.assertEqual(saved, [{"id": "card", "kind": "ui", "key": False}])
+        self.assertTrue(factory.CFZTitleCard.GET_NODE_INFO_V1()["api_node"])
+        # Empty texts letter the edition (the project subtitle) under the project title; quotes and long lines are refused.
+        defaults_call = [node["inputs"] for node in factory.CFZTitleCard.execute(self.project, ["ensemble", 1]).expand.values() if node["class_type"] == "GeminiNanoBanana2V2"][0]
+        self.assertIn('the exact words "AN ORIGINAL SAGA"', defaults_call["prompt"])
+        self.assertIn('the exact words "FIXTURE FIGHTERS"', defaults_call["prompt"])
+        for bad in ['Say "hi"', "x" * 41]:
+            with self.assertRaises(ValueError):
+                factory.CFZTitleCard.execute(self.project, ["ensemble", 1], title_text=bad)
+        with self.assertRaises(ValueError):
+            factory.CFZTitleCard.execute(self.project, None)
+        # A complete export accepts the card as optional interface art.
+        graph = self.full_graph(fighters=2, enabled_stages=1)
+        graph.graph["card"] = {"class_type": "CFZTitleCard", "inputs": {"project": self.project, "title_image": ["shared", 1]}}
+        export = graph.graph["export"]["inputs"]; export[f"bundles.bundle_{len([k for k in export if k.startswith('bundles.')])}"] = ["card", 0]
+        manifest = json.loads(Path(graph.node("export")[0]).read_text(encoding="utf-8"))
+        card = [item for item in manifest["assets"] if item["id"] == "card"]
+        self.assertEqual(len(card), 1)
+        self.assertEqual((card[0]["kind"], card[0]["key"]), ("ui", False))
+        self.assertIn("card", manifest["game"]["expectedAssets"])
+
     def test_default_one_stage_keeps_other_slots_truly_empty_and_free(self):
         graph = self.full_graph(enabled_stages=1)
         manifest = json.loads(Path(graph.node("export")[0]).read_text(encoding="utf-8"))

@@ -149,7 +149,7 @@ graph = fx.GraphBuilder()
 node = fx._cloud(graph, project, "prompt", [["10", 0], None, ["11", 1]], "16:9", "2K")
 inputs = graph.finalize()[node.id]["inputs"]
 check("multiple references map to consecutive image slots", inputs["model.images.image_1"] == ["10", 0] and inputs["model.images.image_2"] == ["11", 1] and "model.images.image_3" not in inputs)
-for cls in (fx.CFZTitleArt, fx.CFZTitleVideo, fx.CFZIntroVideo, fx.CFZSaveVideo, fx.CFZExportVideos):
+for cls in (fx.CFZTitleArt, fx.CFZTitleCard, fx.CFZTitleVideo, fx.CFZIntroVideo, fx.CFZSaveVideo, fx.CFZExportVideos):
     check(f"{cls.__name__} schema defines", cls.define_schema().node_id == cls.__name__)
 single = fx.GraphBuilder()
 node = fx._cloud(single, project, "prompt", ["10", 0], "2:3")
@@ -192,6 +192,11 @@ ensemble = expanded(fx.CFZTitleArt.execute(project, ["7", 1], fighter_1=["2", 1]
 check("ensemble references each fighter, then the arena", [art["inputs"].get(f"model.images.image_{i}") for i in (1, 2, 3, 4)] == [["2", 1], ["8", 1], ["7", 1], None]
       and art["inputs"]["model.aspect_ratio"] == "16:9" and art["inputs"]["model.resolution"] == "2K")
 check("ensemble is saved as the ui/ensemble asset", any(json.loads(node["inputs"]["asset_json"]) == {"id": "ensemble", "kind": "ui", "key": False} for _, node in of(ensemble, "CFZSaveMappedAsset")))
+card = expanded(fx.CFZTitleCard.execute(project, ["15", 1], title_text="Rogue Protocol", tagline_text="Comfy Fighter Z"))
+(_, lettered), = of(card, "GeminiNanoBanana2V2")
+check("title card letters the exact game name over the accepted key art", lettered["inputs"]["model.images.image_1"] == ["15", 1] and '"ROGUE PROTOCOL"' in lettered["inputs"]["prompt"]
+      and '"COMFY FIGHTER Z"' in lettered["inputs"]["prompt"] and lettered["inputs"]["model.resolution"] == "2K" and lettered["inputs"]["system_prompt"] == fx.CARD_SYSTEM_PROMPT)
+check("title card is saved as the ui/card asset", any(json.loads(node["inputs"]["asset_json"]) == {"id": "card", "kind": "ui", "key": False} for _, node in of(card, "CFZSaveMappedAsset")))
 menu = expanded(fx.CFZTitleVideo.execute(project, ["15", 1], "8"))
 (_, loop), = of(menu, "LtxApi25ImageToVideo")
 check("menu video loops the ensemble as first and last frame", loop["inputs"]["image"] == ["15", 1] and loop["inputs"]["last_frame"] == ["15", 1] and loop["inputs"]["model.duration"] == "8")

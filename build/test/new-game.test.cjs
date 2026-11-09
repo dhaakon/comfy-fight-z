@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createCanvas } = require('@napi-rs/canvas');
-const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, packMedia, packageFloor, exportGame, install, pipeline } = require('../tools/new-game.cjs');
+const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, titleCard, titleCardSource, TITLE_CARD_USD, packMedia, packageFloor, exportGame, install, pipeline } = require('../tools/new-game.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const CAST = 'comfyui/casts/blue-wave-2026.json';
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -110,6 +110,33 @@ test('adding motion sheets to an existing run prices two 2K sheets per fighter a
   fs.writeFileSync(path.join(directory, 'bundle/assets.json'), JSON.stringify({ schema: 'comfy-fighter-assets/v1', root: '.', game: cast, assets: [] }));
   await assert.rejects(addSheets({ run: out, approveUsd: '0.5' }), /about \$0\.864864; pass --approve-usd 0\.87/);
   assert.equal(pipeline(directory).addedSheets, undefined, 'a refused request records nothing');
+});
+
+test('a title card letters each kind of game with its own name and refuses without approval', async t => {
+  const out = freshRun(t), { directory } = prepare({ cast: CAST, out });
+  assert.deepEqual(parse(['title-card', '--example', '--approve-usd', '0.08', '--title', 'X', '--tagline', 'Y']).options, { example: true, approveUsd: '0.08', title: 'X', tagline: 'Y' });
+  assert.throws(() => titleCardSource({}), /Choose one title-card source/);
+  assert.throws(() => titleCardSource({ example: true, crossover: 'build/crossovers/ultra.json' }), /Choose one title-card source/);
+  // A cast run letters its edition (the subtitle) over the series title, from the accepted ensemble.
+  fs.mkdirSync(path.join(directory, 'bundle/raw'), { recursive: true });
+  const game = { title: 'Comfy Fighter Z', subtitle: 'Blue Wave Saga', expectedAssets: ['title'] };
+  fs.writeFileSync(path.join(directory, 'bundle/assets.json'), JSON.stringify({ schema: 'comfy-fighter-assets/v1', game, assets: [{ id: 'title', kind: 'ui', src: 'raw/title.png' }] }));
+  assert.throws(() => titleCardSource({ run: out }), /no accepted ui\/ensemble/);
+  fs.writeFileSync(path.join(directory, 'bundle/assets.json'), JSON.stringify({ schema: 'comfy-fighter-assets/v1', game, assets: [{ id: 'ensemble', kind: 'ui', src: 'raw/ensemble-0123456789abcdef.png' }] }));
+  const cast = titleCardSource({ run: out });
+  assert.deepEqual([cast.mode, cast.title, cast.tagline, path.relative(directory, cast.reference).split(path.sep).join('/'), cast.root],
+    ['run', 'Blue Wave Saga', 'Comfy Fighter Z', 'bundle/raw/ensemble-0123456789abcdef.png', path.join(directory, 'bundle')]);
+  await assert.rejects(titleCard({ run: out, approveUsd: '0.05' }), new RegExp(`one 2K image, about \\$${TITLE_CARD_USD}; pass --approve-usd 0\\.08`));
+  assert.equal(pipeline(directory).titleCards, undefined);
+  // The original game letters its own title over its saga, from the original cast's arcade title art.
+  const example = titleCardSource({ example: true });
+  assert.deepEqual([example.title, example.tagline, path.relative(ROOT, example.reference).split(path.sep).join('/')], ['Comfy Fighter Z', 'Higgsfield Open Source Saga', 'build/public/arcade/title-ensemble.webp']);
+  // A crossover letters its subtitle and writes the card its definition maps as interface.card.
+  const ultra = titleCardSource({ crossover: 'build/crossovers/ultra.json' });
+  assert.deepEqual([ultra.title, ultra.tagline, path.relative(ROOT, ultra.target).split(path.sep).join('/')], ['Ultra Dream Match', 'Comfy Fighter Z', 'output/crossovers/ultra/card.png']);
+  const definition = read(path.join(ROOT, 'build/crossovers/ultra.json')); delete definition.interface.card;
+  const file = path.join(directory, 'crossover.json'); fs.writeFileSync(file, JSON.stringify(definition));
+  assert.throws(() => titleCardSource({ crossover: path.relative(ROOT, file) }), /needs interface\.card/);
 });
 
 test('pack-media web-encodes heavy clips and WAV sounds, keeps the originals, and the export floor counts both copies', async t => {

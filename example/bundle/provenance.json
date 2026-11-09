@@ -1349,6 +1349,17 @@
       "height": 2048,
       "pixelsIdentical": true,
       "rgbaSha256": "a88c38669152e93203cdf66aed03d4c4766daa069e8d79b9cd9b20c248940b21"
+    },
+    {
+      "id": "card",
+      "sourceSha256": "f58332fbd118274dc6a9db68ea227492291df25e51c9fc36b94dca517d1ef991",
+      "packagedSha256": "185a7410d22e5443268b357cb348f735eb63c20edf05b7ecf4cf8b618d8c9d3f",
+      "sourceBytes": 5839451,
+      "bytes": 4395518,
+      "width": 2752,
+      "height": 1536,
+      "pixelsIdentical": true,
+      "rgbaSha256": "113f04a360ead993db192be488160b667c7804642b9c4e8e4b385cac9934bfdf"
     }
   ],
   "audio": [
@@ -3529,5 +3540,15 @@
       ],
       "note": "nimbus_sheetI is a reviewed assembly of four generations of the same sheet (pipeline.json assembledSheets in output/test-runs/canonical-motion-20261106): the base drawing with the extension cell from the third attempt and the follow-through cell from the first, copied pixel for pixel, because every attempt drew one sweep frame standing."
     }
-  ]
+  ],
+  "titleCard": {
+    "addedAt": "2026-11-09",
+    "run": "output/test-runs/title-card-example",
+    "promptId": "1e43db38-e069-4a66-adf2-a813a0f63472",
+    "model": "Gemini Nano Banana 2.1",
+    "estimatedUSD": 0.072072,
+    "title": "Comfy Fighter Z",
+    "tagline": "Higgsfield Open Source Saga",
+    "note": "CFZTitleCard lettering over build/public/arcade/title-ensemble.webp (the original cast's title art), for the game-select menu."
+  }
 }

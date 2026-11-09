@@ -57,6 +57,8 @@ async function adopt(game) {
   }
   try {
     manifest.subtitle = config.subtitle || manifest.subtitle || '';
+    // GAME SELECT names every other edition by its subtitle; the original game goes by its title.
+    manifest.name = config.title;
     for (const fighter of manifest.fighters) {
       const definition = config.fighters.find(f => f.id === fighter.id);
       if (!definition) throw new Error(`Unknown fighter: ${fighter.id}`);

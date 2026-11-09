@@ -111,6 +111,16 @@ To replay the free extraction from a saved patch, for example after the extracto
 
 In the game, `build/public/render/scenery.js` draws the clean painting as the plate and animates the elements and effects in the painting's own space, so they keep its parallax and scale. `cheer` elements bounce and `flash` effects fire more often when hits, supers and K.O.s land. Weather falls over the fighters. A stage without scenery still gets weather from its description.
 
+### Game-select title card (optional, one 2K image)
+
+GAME SELECT shows each installed game as a card. Give the game its own title card before exporting: `CFZTitleCard` keeps the accepted cast ensemble (`ui/ensemble`) and letters the game's name across it, the subtitle (the edition) big with the title as the smaller line above.
+
+```
+node build/tools/new-game.cjs title-card --run output/test-runs/<name>-<date> --approve-usd 0.08 [--title "<big name>"] [--tagline "<smaller line>"]
+```
+
+It uploads the ensemble from the bundle (no cache needed), maps the result as `ui/card` in `assets.json` and logs the attempt in `pipeline.json`; a repeat draws a fresh seed. Read the lettering before exporting: short titles come out right, so redraw on any misspelling. The same step serves the included example (`--example`: the original cast's arcade ensemble, lettered with the title over the saga, added to `example/bundle` as a lossless WebP with provenance; then `npm run example -- --out <fresh> --no-install` and `node build/tools/adopt-game.cjs --game <export>/game`) and crossovers (`--crossover <definition>`, see section 6). The listing (`games.json`) puts the card first and names each game by its manifest `name` (adopt-game sets the original's title), else its subtitle. Games without a card fall back to their title art.
+
 ## 5. Export and install
 
 ```
@@ -127,8 +137,11 @@ Omit `--slot` to make the new game the main one (`output/game`). `node build/too
 ## 6. Crossover: every installed game in one roster (free)
 
 ```
+node build/tools/new-game.cjs title-card --crossover build/crossovers/ultra.json --approve-usd 0.08   # once: the game-select card (paid, one 2K image)
 node build/tools/crossover.cjs build/crossovers/ultra.json   # → output/games/ultra, served at /ultra/ after restarting npm start
 ```
+
+The title card letters the four-game key-art composite with the crossover's subtitle and writes the file `interface.card` names (`output/crossovers/ultra/card.png`); the build refuses until it exists.
 
 A crossover definition (`comfy-fighter-crossover/v1`; `build/crossovers/ultra.json` is the reference, Comfy Fighter Z: Ultra Dream Match) lists source games in roster order: the canonical runtime (`build/public`) and installed slots (`output/games/<id>`). It composes their verified runtimes without generating or re-processing anything, so it costs nothing and takes about 30 seconds:
 

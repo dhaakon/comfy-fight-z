@@ -218,10 +218,10 @@ def _artwork(graph, project, character, identity, kind, offset):
     return _save(graph, project, generated.out(0), {"id": f"{character['id']}_{kind}", "kind": kind, "fighter": character["id"], "key": key}, _members(character=character))
 
 
-def _cloud(graph, project, prompt, reference=None, aspect="1:1", resolution="1K", offset=0):
+def _cloud(graph, project, prompt, reference=None, aspect="1:1", resolution="1K", offset=0, system_prompt=SYSTEM_PROMPT):
     inputs = {"prompt": prompt, "model": project["model"], "model.aspect_ratio": aspect, "model.resolution": resolution,
               "model.thinking_level": "MINIMAL", "seed": (project["seed"] + offset) % (2 ** 64),
-              "response_modalities": "IMAGE", "system_prompt": SYSTEM_PROMPT}
+              "response_modalities": "IMAGE", "system_prompt": system_prompt}
     # One reference link, or a list of them (the ensemble and intro keyframes combine fighters and an arena).
     # A single link is itself a [node_id, output] pair, so it must not be unpacked as a list of images.
     single = reference is None or (isinstance(reference, (list, tuple)) and len(reference) == 2 and isinstance(reference[0], str) and isinstance(reference[1], int))
@@ -626,6 +626,55 @@ class CFZTitleArt(io.ComfyNode):
         return io.NodeOutput(_collect(graph, project, members, [asset]), generated.out(0), expand=graph.finalize())
 
 
+# The game-select menu shows each installed game as a title card: its accepted key art with the game's own name lettered
+# across it. Image models letter short titles well; the exact words are quoted and the system prompt allows a panelled
+# reference (a crossover's four-game composite) to stay panelled.
+CARD_SYSTEM_PROMPT = ("Generate exactly one finished title-card image: keep the reference illustration's composition, characters and arena, "
+                      "and add only the requested title lettering, spelled exactly as given.")
+
+
+def _card_text(value, label, fallback):
+    text = " ".join(str(value or "").split()) or " ".join(str(fallback or "").split())
+    if not 1 <= len(text) <= 40 or '"' in text:
+        raise ValueError(f"{label} must be 1-40 characters without double quotes")
+    return text.upper()
+
+
+class CFZTitleCard(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(node_id="CFZTitleCard", display_name="CFZ Game Title Card", category="Comfy Fighter Z",
+            description="PAID cloud generation: one 2K 16:9 title card for the game-select menu. Connect the game's accepted key art (the title ensemble); "
+                        "the card keeps that illustration and letters the game's own name across it with a smaller line above. Empty texts use the project "
+                        "subtitle (an edition's name) and title.",
+            inputs=[Project.Input("project"), io.Image.Input("title_image", raw_link=True),
+                    io.String.Input("title_text", default="", optional=True, tooltip="The game's name in big letters; empty uses the project subtitle."),
+                    io.String.Input("tagline_text", default="", optional=True, tooltip="The smaller line above the name; empty uses the project title."),
+                    _reroll_input()],
+            outputs=[Bundle.Output(display_name="bundle"), io.Image.Output(display_name="card_image")], enable_expand=True, is_api_node=True)
+
+    @classmethod
+    def execute(cls, project, title_image, title_text="", tagline_text="", reroll=0):
+        project = _rerolled(project, reroll)
+        _project(project)
+        if title_image is None:
+            raise ValueError("Connect the game's accepted key art (its title ensemble image)")
+        title = _card_text(title_text, "Title text", project.get("subtitle") or project["title"])
+        tagline = _card_text(tagline_text, "Tagline text", project["title"])
+        graph = GraphBuilder(); members = _members()
+        prompt = ("ASSET TYPE: the box-art title card of an arcade fighting game, shown on its game-select menu.\n"
+                  "Keep the reference illustration as the card's artwork: the same composition, characters, faces, hair, outfits, poses, colors and arena, "
+                  "with nothing redrawn, added or removed apart from the lettering. If the reference is divided into panels, keep every panel. "
+                  "Darken only the lower third slightly so the lettering reads.\n"
+                  f"Across the lower middle, one huge arcade title logo with the exact words \"{title}\": bold italic beveled capital letters with a thick black "
+                  "ink outline, a hard drop shadow and a bright metallic fill in colors taken from the illustration, every letter complete and correctly spelled. "
+                  f"Directly above it, a smaller banner line with the exact words \"{tagline}\". "
+                  "No other words, letters, numbers, interface, health bars, frames, borders or watermark.")
+        generated = _cloud(graph, project, prompt, title_image, "16:9", "2K", offset=66, system_prompt=CARD_SYSTEM_PROMPT)
+        asset = _save(graph, project, generated.out(0), {"id": "card", "kind": "ui", "key": False}, members)
+        return io.NodeOutput(_collect(graph, project, members, [asset]), generated.out(0), expand=graph.finalize())
+
+
 class CFZTitleVideo(io.ComfyNode):
     @classmethod
     def define_schema(cls):
@@ -898,10 +947,11 @@ def _export(project, bundles, complete):
                 raise ValueError(f"Mapped image dimensions changed: {record['id']}")
         record.update(src=relative, sha256=digest, width=item["width"], height=item["height"]); records.append(record)
     if complete:
-        mappings = {name: {"kind": "ui"} for name in ["title", "select", "logo", "hud", "icons", "ensemble", "frame"]}
+        mappings = {name: {"kind": "ui"} for name in ["title", "select", "logo", "hud", "icons", "ensemble", "frame", "card"]}
         mappings["combat_effects"] = {"kind": "effects", "poses": EFFECTS, "key": True}
-        # The title ensemble and the menu frame are optional interface art; the game falls back to its built-in panels.
-        optional = {"ensemble", "frame"}
+        # The title ensemble, the menu frame and the game-select title card are optional interface art; the game falls back
+        # to its built-in panels and the listing to its other key art.
+        optional = {"ensemble", "frame", "card"}
         for fighter in config["fighters"]:
             for suffix in ["source", "reference", *ALL_SHEETS, "portrait", "hero", "cutin", "ending"]:
                 expected_mapping = {"kind": "sprites" if suffix in ALL_SHEETS else suffix, "fighter": fighter["id"]}
@@ -980,4 +1030,4 @@ class CFZExportAssetPatch(io.ComfyNode):
 
 
 FACTORY_NODES = [CFZProjectSettings, CFZProjectAudioRoot, CFZCharacterDefinition, CFZFictionalReference, CFZCharacterFactory, CFZSpriteSheet, CFZCharacterArt, CFZEnvironmentFactory,
-                 CFZSharedArtFactory, CFZTitleArt, CFZTitleVideo, CFZSelectVideo, CFZSelectIdleVideo, CFZIntroVideo, CFZSaveVideo, CFZExportVideos, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]
+                 CFZSharedArtFactory, CFZTitleArt, CFZTitleCard, CFZTitleVideo, CFZSelectVideo, CFZSelectIdleVideo, CFZIntroVideo, CFZSaveVideo, CFZExportVideos, CFZSaveMappedAsset, CFZCollectBundle, CFZExportGameAssets, CFZExportAssetPatch]

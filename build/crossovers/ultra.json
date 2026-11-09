@@ -9,7 +9,8 @@
   "interface": {
     "logo": "build/public/arcade/title-logo.webp",
     "select": "build/public/arcade/select-backdrop.webp",
-    "frame": "build/public/arcade/menu-frame.webp"
+    "frame": "build/public/arcade/menu-frame.webp",
+    "card": "output/crossovers/ultra/card.png"
   },
   "ensemble": [
     "build/public/arcade/title-ensemble.webp",

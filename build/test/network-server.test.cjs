@@ -266,8 +266,15 @@ test('games.json lists every mounted game with its generated key art so title sc
   assert.deepEqual(main.games.map(game => [game.basePath, game.current, game.fighters, game.stages]), [['/', true, 7, 3], ['/blue-wave/', false, 2, 2]]);
   assert.deepEqual(main.games[1].art, { title: 'assets/ui/title.png', ensemble: 'assets/ui/ensemble.png' }, 'only generated interface art under assets/ui is listed');
   assert.equal(main.games[1].subtitle, 'Blue Wave Saga');
+  // An edition is named by its subtitle unless its manifest names it.
+  assert.equal(main.games[1].name, 'Blue Wave Saga');
   const other = await (await fetch(http + '/blue-wave/games.json')).json();
   assert.deepEqual(other.games.map(game => game.current), [false, true]);
+  // A lettered title card leads the listed art; a manifest name wins over the subtitle.
+  fs.writeFileSync(path.join(second, 'assets/manifest.json'), JSON.stringify({ ...manifest, title: 'Comfy Fighter Z', subtitle: 'Original Saga', name: 'Comfy Fighter Z', ui: { card: 'assets/ui/card.png', ensemble: 'assets/ui/ensemble.png' } }));
+  const named = await fixture(t, { mounts: { '/named/': second } });
+  const listed = (await (await fetch(named.http + '/named/games.json')).json()).games[0];
+  assert.deepEqual([listed.name, listed.subtitle, Object.keys(listed.art)], ['Comfy Fighter Z', 'Original Saga', ['card', 'ensemble']]);
   const single = await fixture(t);
   const alone = await (await fetch(single.http + '/games.json')).json();
   assert.equal(alone.games.length, 1); assert.equal(alone.games[0].current, true);

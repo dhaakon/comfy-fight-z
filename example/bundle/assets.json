@@ -410,7 +410,8 @@
       "brick_sheetI",
       "bylaw_sheetH",
       "bylaw_sheetI",
-      "rivet_sheetH"
+      "rivet_sheetH",
+      "card"
     ],
     "expectedAudio": [
       "menu_music",
@@ -2610,6 +2611,16 @@
       "width": 2048,
       "height": 2048,
       "bytes": 3100796
+    },
+    {
+      "id": "card",
+      "kind": "ui",
+      "key": false,
+      "src": "raw/card.webp",
+      "width": 2752,
+      "height": 1536,
+      "sha256": "185a7410d22e5443268b357cb348f735eb63c20edf05b7ecf4cf8b618d8c9d3f",
+      "bytes": 4395518
     }
   ]
 }

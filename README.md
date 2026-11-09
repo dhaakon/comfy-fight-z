@@ -154,6 +154,7 @@ node build/tools/new-game.cjs prepare --cast comfyui/casts/blue-wave-2026.json -
 node build/tools/new-game.cjs run     --run output/test-runs/blue-wave --approve-usd 16                               # paid: one node at a time
 node build/tools/new-game.cjs review  --run output/test-runs/blue-wave                                                # contact sheets + flags to read
 node build/tools/new-game.cjs reroll  --run output/test-runs/blue-wave --node "Keystone | sheet C" --approve-usd 0.08 # redraw one node, cache keeps the rest
+node build/tools/new-game.cjs title-card --run output/test-runs/blue-wave --approve-usd 0.08                          # the GAME SELECT card: key art lettered with the game's name
 node build/tools/new-game.cjs export  --run output/test-runs/blue-wave                                                # strict export with gameplay checks
 node build/tools/new-game.cjs install --run output/test-runs/blue-wave --slot blue-wave-2026                          # served at /blue-wave-2026/ by npm start
 ```

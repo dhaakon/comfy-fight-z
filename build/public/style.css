@@ -706,3 +706,5 @@ body:has(.canvas-wrap.filter-scanlines) .crt-overlay,body:has(.canvas-wrap.filte
   .roster-large .select-board { grid-template-columns:minmax(0,.5fr) minmax(0,2fr) minmax(0,.5fr); }
   .roster-large .series-label { display:none; }
 }
+/* A generated title card carries the game's name in its lower third: keep that part in view when the plate crops. */
+.game-art.title-card { background-position:center 80%; }

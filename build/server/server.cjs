@@ -51,10 +51,13 @@ function createGameServer(options = {}) {
     if (typeof engine.create !== 'function' || typeof engine.tick !== 'function') throw new Error('Game mount engine must expose create() and tick().');
     // Fighting styles travel with the runtime manifest so online matches use each fighter's moveset.
     const profiles = Object.fromEntries((manifest.fighters || []).map(f => [f.id, { style: f.style, boss: f.boss === true, reaches: engine.artReaches ? engine.artReaches(f.poses) : null }]));
-    // The game-select listing: generated key art only, as mount-relative asset paths.
+    // The game-select listing: the game's name (the original sets name; every other edition is named by its subtitle)
+    // and its generated key art as mount-relative asset paths, the lettered title card first.
     const artSource = value => { const src = typeof value === 'string' ? value : value?.src; return typeof src === 'string' && /^assets\/ui\/[A-Za-z0-9_-]+\.(?:png|webp|jpg)$/.test(src) ? src : undefined; };
-    const listing = { title: typeof manifest.title === 'string' ? manifest.title : 'Comfy Fighter Z', subtitle: typeof manifest.subtitle === 'string' ? manifest.subtitle : '',
-      fighters: fighters.length, stages: stages.length, art: Object.fromEntries(['title', 'ensemble', 'logo'].map(key => [key, artSource(manifest.ui?.[key])]).filter(([, src]) => src)) };
+    const text = value => typeof value === 'string' ? value.trim() : '';
+    const title = text(manifest.title) || 'Comfy Fighter Z', subtitle = text(manifest.subtitle);
+    const listing = { title, subtitle, name: text(manifest.name) || subtitle || title,
+      fighters: fighters.length, stages: stages.length, art: Object.fromEntries(['card', 'title', 'ensemble', 'logo'].map(key => [key, artSource(manifest.ui?.[key])]).filter(([, src]) => src)) };
     return { basePath: basePath(mount), root: gameRoot, engine, profiles, catalog: { fighters, stages }, listing, fighters: new Set(fighters.map(f => f.id)), stages: new Set(stages.map(s => s.id)) };
   }).sort((a, b) => b.basePath.length - a.basePath.length);
   if (!mounts.length) throw new Error('Configure at least one game mount.');

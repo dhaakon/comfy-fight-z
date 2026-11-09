@@ -160,7 +160,11 @@ function compose(definition, series) {
   for (const [id, effect] of Object.entries(effects)) add(shared, effect.src, `effect ${id}`);
   const ui = {};
   // Interface art either comes from the definition (repository files) or from the shared series.
-  if (definition.interface) for (const [id, file] of Object.entries(definition.interface)) ui[id] = { file: repoFile(file, `interface ${id}`) };
+  // The game-select title card is drawn by node build/tools/new-game.cjs title-card --crossover <definition>.
+  if (definition.interface) for (const [id, file] of Object.entries(definition.interface)) {
+    if (id === 'card' && !fs.existsSync(path.resolve(ROOT, file))) throw new Error(`interface card is missing: ${file}. Draw it with node build/tools/new-game.cjs title-card --crossover <definition> --approve-usd 0.08.`);
+    ui[id] = { file: repoFile(file, `interface ${id}`) };
+  }
   else for (const [id, value] of Object.entries(shared.manifest.ui || {})) ui[id] = add(shared, srcOf(value), `ui ${id}`);
   const manifest = {
     version: 1, title: definition.title.trim(), subtitle: (definition.subtitle || '').trim(), crossover: definition.slot, publicFigures: definition.publicFigures,
@@ -351,4 +355,4 @@ if (require.main === module) {
   buildCrossover(options).catch(error => { console.error(error.message); process.exitCode = 1; });
 }
 
-module.exports = { buildCrossover, loadDefinition, loadSeries, compose, SCHEMA };
+module.exports = { buildCrossover, loadDefinition, loadSeries, compose, ensembleArt, SCHEMA };

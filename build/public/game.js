@@ -265,10 +265,13 @@
     const grid = $('games-grid'); grid.replaceChildren(); $('games-count').textContent = games.length;
     games.forEach(entry => {
       const card = document.createElement('button'); card.type = 'button'; card.className = 'game-card' + (entry.current ? ' current' : '');
-      const key = [entry.art?.title, entry.art?.ensemble].find(src => typeof src === 'string' && /^assets\/ui\/[A-Za-z0-9_-]+\.(?:png|webp|jpg)$/.test(src));
-      const plate = document.createElement('div'); plate.className = 'game-art'; if (key) plate.style.backgroundImage = `url("${entry.basePath}${key}")`;
+      // A generated title card (the game's key art lettered with its name) leads; older games fall back to their title art.
+      const key = [entry.art?.card, entry.art?.title, entry.art?.ensemble].find(src => typeof src === 'string' && /^assets\/ui\/[A-Za-z0-9_-]+\.(?:png|webp|jpg)$/.test(src));
+      const plate = document.createElement('div'); plate.className = 'game-art'; plate.classList.toggle('title-card', key === entry.art?.card); if (key) plate.style.backgroundImage = `url("${entry.basePath}${key}")`;
       const copy = document.createElement('div'); copy.className = 'game-copy';
-      const title = document.createElement('strong'); title.textContent = entry.title; const subtitle = document.createElement('span'); subtitle.textContent = entry.subtitle || '';
+      // Each card is headed by the game's own name: the original by its title, every other edition by its subtitle.
+      const name = entry.name || entry.subtitle || entry.title;
+      const title = document.createElement('strong'); title.textContent = name; const subtitle = document.createElement('span'); subtitle.textContent = name === entry.title ? entry.subtitle || '' : entry.title || '';
       const meta = document.createElement('small'); meta.textContent = `${numberWord(entry.fighters)} ${entry.fighters === 1 ? 'FIGHTER' : 'FIGHTERS'} · ${numberWord(entry.stages)} ${entry.stages === 1 ? 'ARENA' : 'ARENAS'}${entry.current ? ' · NOW PLAYING' : ''}`;
       copy.append(title, subtitle, meta); card.append(plate, copy);
       card.addEventListener('click', () => { playSound('sfx_menu_select', .5); if (entry.current) showTitle(); else location.assign(entry.basePath); });

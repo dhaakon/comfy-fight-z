@@ -5311,7 +5311,8 @@
     "select": "assets/ui/select.webp",
     "logo": "assets/ui/logo.webp",
     "hud": "assets/ui/hud.webp",
-    "icons": "assets/ui/icons.webp"
+    "icons": "assets/ui/icons.webp",
+    "card": "assets/ui/card.webp"
   },
   "effects": {
     "hit": {
@@ -6634,5 +6635,6 @@
       "codec": "mp3",
       "bytes": 52092
     }
-  }
+  },
+  "name": "Comfy Fighter Z"
 }

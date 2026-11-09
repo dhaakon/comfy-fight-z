@@ -6,6 +6,8 @@
 //   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle>|title_video|select_video --approve-usd <amount> [--video-model <name>] [--video-resolution 720p|1080p]
 //   node build/tools/new-game.cjs add-sheets --run output/test-runs/<name> --approve-usd <amount> [--sheets sheetF,sheetG] [--fighters a,b] [--reference-sheet sheetF]
 //     (--reference-sheet picks the accepted sheet sent as the style reference, default sheet A; use a clean one when sheet A has an extra figure)
+//   node build/tools/new-game.cjs title-card (--run output/test-runs/<name> | --example | --crossover build/crossovers/<name>.json) --approve-usd 0.08 [--title <text>] [--tagline <text>]
+//     (one 2K image: the game's key art lettered with its own name, the game-select title card; see titleCard below)
 //   node build/tools/new-game.cjs pack-media --run output/test-runs/<name>
 //     (free and local: re-encodes clips above 12 Mbit/s as H.264 CRF 18 and WAV sounds as MP3 VBR q2, originals kept in
 //     <run>/originals/; export asks for it when the package could not fit the 1 GiB browser limit)
@@ -25,17 +27,18 @@ const now = () => new Date().toISOString();
 
 function parse(argv) {
   const [command, ...rest] = argv, options = {};
-  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters', '--reference-sheet', '--stages', '--direction', '--elements', '--director-model', '--reroll'];
+  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters', '--reference-sheet', '--stages', '--direction', '--elements', '--director-model', '--reroll', '--title', '--tagline', '--crossover'];
   for (let i = 0; i < rest.length; i++) {
     if (rest[i] === '--no-media') options.media = false;
     else if (rest[i] === '--no-audio') options.audio = false;
     else if (rest[i] === '--resume') options.resume = true;
+    else if (rest[i] === '--example') options.example = true;
     else if (valued.includes(rest[i]) && rest[i + 1] !== undefined && !rest[i + 1].startsWith('--')) options[rest[i].slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = rest[++i];
     else throw new Error(`Unknown argument ${rest[i]}. ${USAGE}`);
   }
   return { command, options };
 }
-const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|add-sheets|add-scenery|pack-media|export|install|status> ... (see the header of this file).';
+const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|add-sheets|add-scenery|title-card|pack-media|export|install|status> ... (see the header of this file).';
 
 function runDirectory(options) {
   if (!options.run) throw new Error('Supply --run output/test-runs/<name>.');
@@ -541,12 +544,129 @@ async function addScenery(options) {
   console.log(`Added living scenery for ${stages.join(', ')}. Review bundle/scenery/<stage>-review.png, edit motions in bundle/scenery/<stage>.json and run build/tools/stage-scenery.cjs sync if needed, then export to a fresh folder.`);
 }
 
+// The game-select title card (CFZTitleCard): a game's accepted key art with its own name lettered across it, one 2K
+// image. Cache-independent like reroll-art: the key art is uploaded from disk and a repeat draws with a fresh seed.
+//   --run <run>         a cast run: the bundle's ui/ensemble lettered with the subtitle (the edition's name) over the
+//                       title; the card joins assets.json as ui/card, then export and install as usual.
+//   --example           the included example: the original cast's arcade title ensemble lettered with the title over
+//                       the subtitle; the card joins example/bundle as a lossless WebP with provenance.
+//   --crossover <file>  a crossover definition: its four-game key-art composite lettered with the subtitle over the title,
+//                       written to the definition's interface.card file for the next crossover build.
+// --title and --tagline change the lettering.
+const TITLE_CARD_USD = RATES.image2K;
+async function uploadInput(server, file, subfolder) {
+  const form = new FormData(), name = path.basename(file);
+  form.append('image', new Blob([fs.readFileSync(file)], { type: /\.webp$/i.test(name) ? 'image/webp' : 'image/png' }), name);
+  form.append('subfolder', subfolder); form.append('overwrite', 'true');
+  const response = await fetch(`${server}/upload/image`, { method: 'POST', body: form });
+  if (!response.ok) throw new Error(`ComfyUI refused the reference upload (${response.status}).`);
+  const info = await response.json(); return `${info.subfolder ? info.subfolder + '/' : ''}${info.name}`;
+}
+// Project settings for sources without a run workflow: the node's own defaults, read from the running server.
+async function projectDefaults(server, overrides) {
+  const info = await fetch(`${server}/object_info/CFZProjectSettings`).then(response => response.json()).catch(() => ({}));
+  const inputs = info.CFZProjectSettings?.input; if (!inputs) throw new Error(`The ComfyUI at ${server} lacks CFZProjectSettings; install the node pack and restart it.`);
+  const defaults = Object.fromEntries(Object.entries({ ...inputs.required, ...inputs.optional }).filter(([, spec]) => spec?.[1]?.default !== undefined).map(([key, spec]) => [key, spec[1].default]));
+  return { ...defaults, ...overrides };
+}
+function titleCardSource(options) {
+  const modes = ['run', 'example', 'crossover'].filter(key => options[key]);
+  if (modes.length !== 1) throw new Error('Choose one title-card source: --run output/test-runs/<name>, --example or --crossover build/crossovers/<name>.json.');
+  if (options.run) {
+    const directory = runDirectory(options), bundle = path.join(directory, 'bundle'), assets = read(path.join(bundle, 'assets.json'));
+    const ensemble = assets.assets.find(item => item.kind === 'ui' && item.id === 'ensemble');
+    if (!ensemble) throw new Error('The run has no accepted ui/ensemble key art to letter; generate the startup media first.');
+    return { mode: 'run', label: path.relative(ROOT, directory), reference: path.join(bundle, ensemble.src), root: bundle, state: directory,
+      title: assets.game.subtitle || assets.game.title, tagline: assets.game.title, directory, bundle };
+  }
+  if (options.example) {
+    const example = path.join(ROOT, 'example/bundle'), game = read(path.join(example, 'assets.json')).game;
+    // The original game is named by its title; every other edition by its subtitle.
+    return { mode: 'example', label: 'example/bundle', reference: path.join(ROOT, 'build/public/arcade/title-ensemble.webp'), root: path.join(ROOT, 'output/test-runs/title-card-example'),
+      title: game.title, tagline: game.subtitle, project: { title: game.title, subtitle: game.subtitle }, example };
+  }
+  const { loadDefinition } = require('./crossover.cjs'), file = path.resolve(ROOT, options.crossover), definition = loadDefinition(file);
+  const target = definition.interface?.card;
+  if (typeof target !== 'string' || !target.startsWith('output/')) throw new Error(`${path.relative(ROOT, file)} needs interface.card: the output/ file the crossover build copies, such as output/crossovers/${definition.slot}/card.png.`);
+  if (!Array.isArray(definition.ensemble)) throw new Error('The crossover needs its ensemble list: the card letters that key-art composite.');
+  const root = path.join(ROOT, 'output/crossovers', definition.slot);
+  return { mode: 'crossover', label: path.relative(ROOT, file), definition, root, title: definition.subtitle || definition.title, tagline: definition.title,
+    project: { title: definition.title, subtitle: definition.subtitle || '' }, target: path.resolve(ROOT, target) };
+}
+async function titleCard(options) {
+  const source = titleCardSource(options), approved = Number(options.approveUsd);
+  if (!Number.isFinite(approved) || approved < TITLE_CARD_USD) throw new Error(`A title card is one 2K image, about $${TITLE_CARD_USD}; pass --approve-usd 0.08 (or more) once authorized.`);
+  const server = (options.server || 'http://127.0.0.1:8188').replace(/\/$/, ''), title = options.title || source.title, tagline = options.tagline || source.tagline;
+  fs.mkdirSync(source.root, { recursive: true });
+  if (source.mode === 'crossover') {
+    const { ensembleArt } = require('./crossover.cjs');
+    source.reference = path.join(source.root, 'key-art.webp');
+    await ensembleArt(source.definition.ensemble.map(file => path.resolve(ROOT, file)), source.reference);
+  }
+  const stateFile = path.join(source.mode === 'run' ? source.directory : source.root, 'pipeline.json');
+  const state = fs.existsSync(stateFile) ? read(stateFile) : { schema: 'comfy-fighter-pipeline/v1', run: path.relative(ROOT, source.root).split(path.sep).join('/'), steps: {} };
+  const attempt = (state.titleCards || []).length + 1, save = () => fs.writeFileSync(stateFile, JSON.stringify(state, null, 2) + '\n');
+  const base = source.mode === 'run' ? read(path.join(source.directory, 'workflow.api.json')) : null;
+  const projectInputs = base ? Object.values(base).find(item => item.class_type === 'CFZProjectSettings')?.inputs : await projectDefaults(server, source.project);
+  if (!projectInputs) throw new Error('The run workflow has no CFZProjectSettings node.');
+  const prompt = {
+    project: { class_type: 'CFZProjectSettings', inputs: { ...projectInputs, root_directory: source.root, seed: (Number(projectInputs.seed) + attempt * 1000) % 2 ** 32 }, _meta: { title: `Project settings | title card #${attempt}` } },
+    art: { class_type: 'LoadImage', inputs: { image: await uploadInput(server, source.reference, 'cfz-title-card') }, _meta: { title: 'Accepted key art' } },
+    card: { class_type: 'CFZTitleCard', inputs: { project: ['project', 0], title_image: ['art', 0], title_text: title, tagline_text: tagline }, _meta: { title: `Title card #${attempt}: ${title}` } },
+    keep: { class_type: 'PreviewAny', inputs: { source: ['card', 0] }, _meta: { title: 'keep' } }
+  };
+  const missing = await missingNodes(prompt, server);
+  if (missing.length) throw new Error(`The running ComfyUI lacks ${missing.join(', ')}; install the node pack and restart it.`);
+  const file = path.join(path.dirname(stateFile), `title-card-${attempt}.api.json`); fs.writeFileSync(file, JSON.stringify(prompt, null, 2) + '\n');
+  const raw = path.join(source.root, 'raw'), before = new Set(fs.existsSync(raw) ? fs.readdirSync(raw) : []);
+  const entry = { at: now(), source: source.label, attempt, title, tagline, estimatedUSD: TITLE_CARD_USD, approvedUSD: approved, prompt: path.relative(ROOT, file).split(path.sep).join('/') };
+  state.titleCards = [...(state.titleCards || []), entry]; save();
+  console.log(`Lettering "${title}" / "${tagline}" over ${path.relative(ROOT, source.reference)} (attempt ${attempt}, about $${TITLE_CARD_USD}).`);
+  const { submit, outcome } = require('../../comfyui/tools/run-sequential.cjs');
+  const promptId = submit(file), result = await outcome(server, promptId, 30 * 60000);
+  entry.promptId = promptId; entry.ok = result.ok; save();
+  if (!result.ok) throw new Error(`Title card failed: ${result.error?.exception_type || ''}: ${result.error?.exception_message || 'unknown error'}`);
+  const produced = (fs.existsSync(raw) ? fs.readdirSync(raw) : []).filter(name => /^card-[0-9a-f]{16}\.png$/.test(name) && !before.has(name));
+  if (produced.length !== 1) throw new Error(`Expected one new raw/card-*.png, found ${produced.length}.`);
+  const output = path.join(raw, produced[0]), bytes = fs.readFileSync(output), digest = require('node:crypto').createHash('sha256').update(bytes).digest('hex');
+  const { loadImage } = require('@napi-rs/canvas'), image = await loadImage(bytes);
+  entry.file = path.relative(ROOT, output).split(path.sep).join('/');
+  if (source.mode === 'run') {
+    const assetsFile = path.join(source.bundle, 'assets.json'), assets = read(assetsFile), record = { id: 'card', kind: 'ui', key: false, src: `raw/${produced[0]}`, sha256: digest, width: image.width, height: image.height };
+    const at = assets.assets.findIndex(item => item.id === 'card');
+    if (at >= 0) assets.assets[at] = record; else assets.assets.push(record);
+    if (Array.isArray(assets.game.expectedAssets) && !assets.game.expectedAssets.includes('card')) assets.game.expectedAssets.push('card');
+    fs.writeFileSync(assetsFile, JSON.stringify(assets, null, 2) + '\n');
+    console.log(`Mapped ui/card → bundle/raw/${produced[0]}. Review it, then export to a fresh folder and install the slot again.`);
+  } else if (source.mode === 'example') {
+    const { losslessImage } = require('./package-example.cjs'), { verifyBundle, hash } = require('./lib/example-bundle.cjs');
+    const assetsFile = path.join(source.example, 'assets.json'), assets = read(assetsFile), provenanceFile = path.join(source.example, 'provenance.json'), provenance = read(provenanceFile);
+    const src = 'raw/card.webp', verified = await losslessImage(output, path.join(source.example, src)), encoded = fs.readFileSync(path.join(source.example, src));
+    const record = { id: 'card', kind: 'ui', key: false, src, width: verified.width, height: verified.height, sha256: hash(encoded), bytes: encoded.length };
+    const at = assets.assets.findIndex(item => item.id === 'card');
+    if (at >= 0) assets.assets[at] = record; else assets.assets.push(record);
+    if (Array.isArray(assets.game.expectedAssets) && !assets.game.expectedAssets.includes('card')) assets.game.expectedAssets.push('card');
+    const evidence = { id: 'card', sourceSha256: hash(bytes), packagedSha256: hash(encoded), sourceBytes: bytes.length, bytes: encoded.length, ...verified };
+    const known = provenance.images.findIndex(item => item.id === 'card');
+    if (known >= 0) provenance.images[known] = evidence; else provenance.images.push(evidence);
+    provenance.titleCard = { addedAt: now().slice(0, 10), run: path.relative(ROOT, source.root).split(path.sep).join('/'), promptId, model: projectInputs.model, estimatedUSD: TITLE_CARD_USD, title, tagline,
+      note: 'CFZTitleCard lettering over build/public/arcade/title-ensemble.webp (the original cast\'s title art), for the game-select menu.' };
+    fs.writeFileSync(assetsFile, JSON.stringify(assets, null, 2) + '\n'); fs.writeFileSync(provenanceFile, JSON.stringify(provenance, null, 2) + '\n');
+    const checked = await verifyBundle(source.example);
+    console.log(`Added ui/card to example/bundle (lossless WebP, identical pixels); verifier OK with ${checked.manifest.assets.length} images. Run npm run example, then adopt the export.`);
+  } else {
+    fs.mkdirSync(path.dirname(source.target), { recursive: true }); fs.copyFileSync(output, source.target);
+    console.log(`Wrote ${path.relative(ROOT, source.target)}; rebuild the crossover to use it.`);
+  }
+  save();
+}
+
 async function main(argv) {
   const { command, options } = parse(argv);
-  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, 'add-sheets': addSheets, 'add-scenery': addScenery, review, 'pack-media': packMedia, export: exportGame, install, status };
+  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, 'add-sheets': addSheets, 'add-scenery': addScenery, 'title-card': titleCard, review, 'pack-media': packMedia, export: exportGame, install, status };
   if (!commands[command]) throw new Error(USAGE);
   await commands[command](options);
 }
 
 if (require.main === module) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
-module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, packMedia, packageFloor, exportGame, install, pipeline, missingNodes };
+module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, titleCard, titleCardSource, TITLE_CARD_USD, packMedia, packageFloor, exportGame, install, pipeline, missingNodes };

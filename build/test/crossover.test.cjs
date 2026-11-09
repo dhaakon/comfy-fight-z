@@ -91,6 +91,7 @@ test('a crossover refuses ambiguous rosters, a missing boss or arena, undeclared
   await assert.rejects(build({ ...definition, bossStage: 'moon' }), /bossStage moon/);
   await assert.rejects(build({ ...definition, shared: 'gamma' }), /shared must name a series/);
   await assert.rejects(build({ ...definition, series: [definition.series[0]] }), /at least two games/);
+  await assert.rejects(build({ ...definition, interface: { card: relative(path.join(base, 'missing-card.png')) } }), /interface card is missing: .*title-card --crossover/);
   // The same fighter id in two games would make voice lines and art ambiguous.
   game(path.join(base, 'gamma'), { fighters: ['ace', 'fang'], stages: ['pit'], color: '#3e3' });
   await assert.rejects(build({ ...definition, series: [...definition.series, { id: 'gamma', name: 'Gamma', game: relative(path.join(base, 'gamma')) }] }), /Fighter ace is in both alpha and gamma/);
