@@ -124,6 +124,22 @@ The package carries every source and a runtime copy of each clip and sound, and 
 
 Omit `--slot` to make the new game the main one (`output/game`). `node build/tools/new-game.cjs status --run <run>` prints the step log. The exported `game/` folder is self-contained (`npm start` inside it serves one game; `GAME_MOUNTS='{"/":".","/other/":"../other/game"}'` serves several).
 
+## 6. Crossover: every installed game in one roster (free)
+
+```
+node build/tools/crossover.cjs build/crossovers/ultra.json   # → output/games/ultra, served at /ultra/ after restarting npm start
+```
+
+A crossover definition (`comfy-fighter-crossover/v1`; `build/crossovers/ultra.json` is the reference, Comfy Fighter Z: Ultra Dream Match) lists source games in roster order: the canonical runtime (`build/public`) and installed slots (`output/games/<id>`). It composes their verified runtimes without generating or re-processing anything, so it costs nothing and takes about 30 seconds:
+
+- **Roster and arenas.** Every fighter keeps its poses, art, intro and idle clips, voice lines and moveset; every arena keeps its scenery and music. Fighter and arena ids must be unique across the games (the tool refuses a clash). Each gets a `series` field and the manifest lists `series` (id, `tag` for the select-screen row label, name).
+- **One final boss.** `finalBoss` keeps `boss: true`; the other games' bosses become regular, selectable fighters with their boss moveset (labelled BOSS, not FINAL BOSS). `bossStage` is the arena of the final battle.
+- **Arcade tour.** `arcade.perSeries` rivals from each game (shuffled game order), each in an arena of their own game, then the final boss: 2 × 4 games + 1 = nine battles for Ultra.
+- **Shared presentation.** `shared` names the game whose announcer, menu, boss and result music, sound effects and hit effects serve every fight; the other games' copies are left out (listed in `installation.json`). `interface` maps ui ids to image files (Ultra uses the original arcade logo, backdrops and menu frame), `ensemble` makes a 2 × 2 key-art composite (the startup still and the GAME SELECT card) and `titleMontage` cuts the title loop from stills (slow push-in) and each game's own title loop with a white flash between them (1080p, CRF 20 capped at 12 Mbit/s).
+- **Satire flag.** `publicFigures` must be declared; it is true when any source cast caricatures named public figures, and the credits then say so. The canonical cast and the included example stay fictional; a crossover is a separate slot.
+
+The tool hard-links media from `output/` (copies tracked files from `build/public`), checks every mapped file and clip digest, writes `installation.json` and swaps the slot in only when everything checks out. Rebuild it after reinstalling any source game. With more than twelve fighters the select screen switches to the wide layout (one row per game, tiles sized to the screen) and arrow keys follow the grid as drawn.
+
 ## Reference run
 
 `comfyui/casts/blue-wave-2026.json` — six invented hometown champions inspired by the November 2026 midterm map (four from states that voted blue, two from deep-red states that flipped) on the fictional Statehouse Steps; see its `about` field. Prepared as `output/test-runs/blue-wave-20261105` (estimate $15.62).

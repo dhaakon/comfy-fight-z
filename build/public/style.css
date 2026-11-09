@@ -683,3 +683,26 @@ body:has(.canvas-wrap.filter-scanlines) .crt-overlay,body:has(.canvas-wrap.filte
 .boot-bar span { display:block; width:0; height:100%; background:repeating-linear-gradient(90deg, #ffe14a 0 14px, #ff9a1f 14px 18px); transition:width .12s steps(3); }
 .boot-count { margin:0; color:#fff; font-size:clamp(10px, 1.6vw, 14px); text-shadow:2px 2px 0 #000; }
 @keyframes boot-blink { 50% { opacity:.15; } }
+
+/* A crossover roster (more than twelve fighters): the roster panel widens and takes one series per row, each row
+   labelled with its game, so 26 fighters fit beside the two hero cards. */
+.roster-large .select-board { grid-template-columns:minmax(0,.62fr) minmax(0,1.9fr) minmax(0,.62fr); }
+.roster-large .fighter-grid { grid-template-columns:repeat(var(--roster-columns,7),minmax(0,1fr)); gap:4px; align-content:center; max-height:none; }
+.roster-large .fighter-grid.series-grid { grid-template-columns:auto repeat(var(--roster-columns,7),minmax(0,1fr)); }
+/* Wide screens size the tiles from the height left between the header and the arena bar, one grid row per series. */
+@media (min-width:801px) {
+  .roster-large .roster-panel { min-height:0; }
+  .roster-large .fighter-grid { flex:1 1 0; min-height:0; grid-template-rows:repeat(var(--roster-rows,4),minmax(0,1fr)); }
+  .roster-large .fighter-tile { aspect-ratio:auto; width:100%; height:100%; min-height:0; }
+}
+@media (max-width:800px) { .roster-large .fighter-tile { aspect-ratio:1; } }
+.roster-large #fighter-grid .fighter-tile .tile-name { bottom:5px; font-size:clamp(5px,calc(80cqw / var(--name-chars,8)),10px); }
+.series-label { display:flex; align-items:center; justify-content:center; align-self:stretch; writing-mode:vertical-rl; transform:rotate(180deg); padding:0 3px; background:#000c; border:2px solid #000; color:#ffd23f; font-family:'Press Start 2P',monospace; font-size:7px; letter-spacing:1px; line-height:1.1; text-align:center; text-shadow:1px 1px 0 #000; white-space:nowrap; overflow:hidden; }
+@media (max-width:800px) {
+  .roster-large .select-board { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .roster-large .series-label, .roster-large #fighter-grid .fighter-tile .tile-name { display:none; }
+}
+@media (max-width:900px) and (orientation:landscape) {
+  .roster-large .select-board { grid-template-columns:minmax(0,.5fr) minmax(0,2fr) minmax(0,.5fr); }
+  .roster-large .series-label { display:none; }
+}

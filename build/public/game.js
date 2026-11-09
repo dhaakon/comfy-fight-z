@@ -39,6 +39,14 @@
   const training = { action: 'stand', guard: 'none', meter: 'infinite', boxes: false, inputs: true, frames: true, history: [], frameData: null, watch: null, lastHit: -999 };
   const padHistory = [];
   const STYLE_LABELS = { balanced: 'BALANCED', power: 'POWER', speed: 'SPEED', zoner: 'ZONER', grappler: 'GRAPPLER', trickster: 'TRICKSTER', boss: 'FINAL BOSS' };
+  // A crossover keeps the earlier games' bosses as regular fighters with their boss moveset: only the final boss is FINAL BOSS.
+  const styleLabel = f => f?.boss ? STYLE_LABELS.boss : f?.style === 'boss' ? 'BOSS' : STYLE_LABELS[f?.style];
+  const ONES = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+  const TENS = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+  const numberWord = count => count < 20 ? ONES[count] : count < 100 ? TENS[Math.floor(count / 10)] + (count % 10 ? '-' + ONES[count % 10] : '') : String(count);
+  // A crossover (several games in one roster) lists its series; each fighter and arena names the series it came from.
+  const crossover = () => Array.isArray(manifest.series) && manifest.series.length > 1;
+  const seriesName = item => crossover() ? manifest.series.find(series => series.id === item?.series)?.name || '' : '';
   // Read-only snapshot for move tuning and automated browser checks.
   // ?debug adds local-only test hooks; network matches stay server-authoritative.
   const debugHooks = /[?&]debug(?:=1)?(?:&|$)/.test(location.search) ? {
@@ -255,7 +263,6 @@
     $('title-screen').hidden = true; $('selection-screen').hidden = true; $('games-screen').hidden = false;
     setScene('games'); sceneMusic('select'); playSound('sfx_menu_select', .5);
     const grid = $('games-grid'); grid.replaceChildren(); $('games-count').textContent = games.length;
-    const numberWord = count => ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT'][count] || String(count);
     games.forEach(entry => {
       const card = document.createElement('button'); card.type = 'button'; card.className = 'game-card' + (entry.current ? ' current' : '');
       const key = [entry.art?.title, entry.art?.ensemble].find(src => typeof src === 'string' && /^assets\/ui\/[A-Za-z0-9_-]+\.(?:png|webp|jpg)$/.test(src));
@@ -395,6 +402,17 @@
     }
     if (scene.elapsed >= scene.duration) finishIntroduction(false);
   }
+  // Arrow keys follow the roster as laid out, whatever the column count: left and right in reading order (wrapping),
+  // up and down to the nearest tile of the row above or below (wrapping). Layout offsets ignore the hover lift.
+  function gridStep(code) {
+    const tiles = [...$('fighter-grid').querySelectorAll('.fighter-tile')];
+    if (!tiles.length) return null;
+    const current = tiles.find(tile => Number(tile.dataset.index) === selected[pickingSlot]) || tiles[0], at = tiles.indexOf(current);
+    if (code === 'ArrowLeft' || code === 'ArrowRight') return tiles[(at + (code === 'ArrowLeft' ? -1 : 1) + tiles.length) % tiles.length];
+    const middle = tile => tile.offsetLeft + tile.offsetWidth / 2, rows = [...new Set(tiles.map(tile => tile.offsetTop))].sort((a, b) => a - b);
+    const row = rows[(rows.indexOf(current.offsetTop) + (code === 'ArrowUp' ? -1 : 1) + rows.length) % rows.length], x = middle(current);
+    return tiles.filter(tile => tile.offsetTop === row).sort((a, b) => Math.abs(middle(a) - x) - Math.abs(middle(b) - x))[0] || current;
+  }
   function chooseFighter(index) {
     selected[pickingSlot] = index; $(pickingSlot ? 'fighter-two' : 'fighter-one').value = index;
     engageAudio(); refreshCards();
@@ -457,9 +475,10 @@
       }
       else { const placeholder = document.createElement('div'); placeholder.className = 'fallback-portrait'; placeholder.textContent = String(index + 1).padStart(2, '0'); frame.append(placeholder); }
       const plate = document.createElement('div'); plate.className = 'fighter-nameplate';
-      const tag = document.createElement('span'); tag.className = 'mini-tag'; tag.textContent = slot ? `${mode === 'versus' ? '2P' : mode === 'training' ? 'DUMMY' : 'CPU'} / ${STYLE_LABELS[f.style] || 'CHALLENGER'}` : `1P / ${STYLE_LABELS[f.style] || 'YOUR FIGHTER'}`;
+      const tag = document.createElement('span'); tag.className = 'mini-tag'; tag.textContent = slot ? `${mode === 'versus' ? '2P' : mode === 'training' ? 'DUMMY' : 'CPU'} / ${styleLabel(f) || 'CHALLENGER'}` : `1P / ${styleLabel(f) || 'YOUR FIGHTER'}`;
       const title = document.createElement('h3'); title.textContent = f.name.toUpperCase();
-      const artType = document.createElement('span'); artType.className = 'art-type'; artType.textContent = generated ? 'CHARACTER ART' : source ? 'SOURCE REFERENCE / ANIME ART PENDING' : 'CHARACTER ART PENDING';
+      // In a crossover the plate names the game the fighter comes from.
+      const artType = document.createElement('span'); artType.className = 'art-type'; artType.textContent = seriesName(f).toUpperCase() || (generated ? 'CHARACTER ART' : source ? 'SOURCE REFERENCE / ANIME ART PENDING' : 'CHARACTER ART PENDING');
       plate.append(tag, title, artType); frame.append(plate);
       const body = document.createElement('div'); body.className = 'fighter-card-body';
       const bio = document.createElement('p'); bio.className = 'fighter-bio'; bio.textContent = f.description ? f.description.split(/(?<=[.!?])\s+/).slice(0, 2).join(' ') : 'An original challenger enters the arena.';
@@ -477,16 +496,27 @@
         const heading = document.createElement('h3'); heading.textContent = 'CHALLENGERS AWAIT';
         mysteryPlate.append(mysteryTag, heading); mysteryFrame.append(mysteryPlate);
         const mysteryBody = document.createElement('div'); mysteryBody.className = 'fighter-card-body';
-        const rivals = manifest.fighters.filter((item, i) => !item.boss && i !== selected[0]).length, boss = manifest.fighters.find(item => item.boss);
-        const line = document.createElement('p'); line.className = 'fighter-bio'; line.textContent = `${rivals} rivals across ${manifest.stages.length} arena${manifest.stages.length === 1 ? '' : 's'}${boss ? ', then the final boss.' : '.'} Continue after a loss.`;
+        const plan = ladderPlan(selected[0]);
+        const line = document.createElement('p'); line.className = 'fighter-bio';
+        line.textContent = (plan.tour ? `${plan.rivals} rivals from ${manifest.series.length} games, each in their own arena` : `${plan.rivals} rivals across ${manifest.stages.length} arena${manifest.stages.length === 1 ? '' : 's'}`) + `${plan.boss ? ', then the final boss.' : '.'} Continue after a loss.`;
         mysteryBody.append(line); card.append(mysteryFrame, mysteryBody);
       }
       $('fighter-cards').append(card);
     });
     $('fighter-grid').replaceChildren();
+    // A crossover lays the roster out one series per row, each row labelled with its game.
+    const rows = crossover() ? manifest.series.map(series => ({ series, members: manifest.fighters.map((f, index) => index).filter(index => selectable(index) && manifest.fighters[index].series === series.id) })).filter(row => row.members.length) : [];
+    const place = new Map(rows.flatMap((row, r) => row.members.map((index, c) => [index, [r + 1, c + 2]])));
+    $('fighter-grid').classList.toggle('series-grid', rows.length > 0);
+    if (rows.length) { $('fighter-grid').style.setProperty('--roster-columns', String(Math.max(...rows.map(row => row.members.length)))); $('fighter-grid').style.setProperty('--roster-rows', String(rows.length)); }
+    rows.forEach((row, r) => {
+      const label = document.createElement('span'); label.className = 'series-label'; label.textContent = (row.series.tag || row.series.name).toUpperCase(); label.title = row.series.name;
+      label.style.gridRow = String(r + 1); label.style.gridColumn = '1'; label.setAttribute('aria-hidden', 'true'); $('fighter-grid').append(label);
+    });
     manifest.fighters.forEach((f, index) => {
       if (!selectable(index)) return;
       const tile = document.createElement('button'); tile.className = 'fighter-tile'; tile.dataset.fighter = f.id; tile.dataset.index = String(index); tile.classList.toggle('long-name', f.name.length > 14); tile.classList.toggle('boss-tile', !!f.boss);
+      if (place.has(index)) { const [row, column] = place.get(index); tile.style.gridRow = String(row); tile.style.gridColumn = String(column); tile.dataset.series = f.series; }
       tile.style.setProperty('--accent', f.color || '#7a5cff'); tile.style.setProperty('--name-chars', String(Math.max(7, f.name.length))); tile.setAttribute('aria-label', (pickingSlot ? `Choose ${mode === 'versus' ? 'player two' : mode === 'training' ? 'training dummy' : 'CPU opponent'} ` : 'Play as ') + f.name);
       tile.classList.toggle('picked-one', selected[0] === index); tile.classList.toggle('picked-two', selected[1] === index && mode !== 'arcade');
       tile.setAttribute('aria-pressed', String(selected[pickingSlot] === index));
@@ -505,12 +535,11 @@
     $('fight-stage-label').textContent = `${manifest.title} / ${stage.name}`.toUpperCase();
     $('result-stage-label').textContent = `${stage.name} HAS A CHAMPION`.toUpperCase();
     $('title-stage-label').textContent = manifest.stages.length > 1 ? `${manifest.stages.length} ENVIRONMENTS / CHOOSE YOUR ARENA` : stage.name.toUpperCase();
-    const numberWord = count => ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'][count] || String(count);
-    const arenaCount = `${numberWord(manifest.stages.length)} ${manifest.stages.length === 1 ? 'ARENA' : 'ARENAS'}`;
+    const arenaCount =`${numberWord(manifest.stages.length)} ${manifest.stages.length === 1 ? 'ARENA' : 'ARENAS'}`;
     const stageSummary = manifest.stages.length === 1 && stage.id === 'yard' && stage.name === 'The Yard' ? 'ONE YARD' : arenaCount;
     $('title-roster-summary').textContent = `${window.CFZ_CONFIG?.multiplayer ? 'LOCAL / ONLINE' : 'SINGLE PLAYER'} · ${numberWord(manifest.fighters.length)} ${manifest.fighters.length === 1 ? 'FIGHTER' : 'FIGHTERS'} · ${stageSummary}`;
     $('selection-eyebrow').textContent = `ONE NIGHT. ${arenaCount}. YOUR FIGHTERS.`;
-    $('stage-art-status').textContent = mode === 'arcade' ? `ARCADE · ${manifest.fighters.filter((item, i) => !item.boss && i !== selected[0]).length + (manifest.fighters.some(item => item.boss) ? 1 : 0)} BATTLES` : art(stage.src) ? manifest.stages.length > 1 ? `STAGE ${stageIndex + 1} OF ${manifest.stages.length} · ◀ ▶ TO CHANGE` : 'ONE PLAYABLE ARENA' : background ? 'SOURCE REFERENCE / ANIME STAGE PENDING' : 'STAGE ART PENDING';
+    $('stage-art-status').textContent = mode === 'arcade' ? `ARCADE · ${ladderPlan(selected[0]).battles} BATTLES` : art(stage.src) ? manifest.stages.length > 1 ? `STAGE ${stageIndex + 1} OF ${manifest.stages.length} · ◀ ▶ TO CHANGE` : 'ONE PLAYABLE ARENA' : background ? 'SOURCE REFERENCE / ANIME STAGE PENDING' : 'STAGE ART PENDING';
     if (background) $('stage-thumb').style.backgroundImage = 'url("' + background.src + '")';
     const complete = selected.every(i => Object.values(manifest.fighters[i].poses || {}).filter(pose => art(pose.src)).length >= 27) && art(stage.src);
     $('placeholder-label').hidden = !!complete;
@@ -607,12 +636,40 @@
       canvas.focus({ preventScroll: true });
     } else { showIntroduction(intros); $('intro-skip').focus(); }
   }
-  // Arcade: a shuffled ladder of every rival, then the final boss in the last arena.
+  // Arcade: a shuffled ladder of every rival, then the final boss in the last arena. A crossover tours its series
+  // instead (manifest.arcade.perSeries rivals from each, in their own arenas), then the final boss in arcade.bossStage.
+  function shuffled(list) {
+    const copy = [...list];
+    for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; }
+    return copy;
+  }
+  const touring = () => crossover() && Number.isInteger(manifest.arcade?.perSeries) && manifest.arcade.perSeries > 0;
+  const rivalsOf = player => manifest.fighters.map((_, index) => index).filter(index => index !== player && !manifest.fighters[index].boss);
+  function ladderPlan(player) {
+    const rivals = rivalsOf(player), tour = touring();
+    const count = tour ? manifest.series.reduce((sum, series) => sum + Math.min(manifest.arcade.perSeries, rivals.filter(index => manifest.fighters[index].series === series.id).length), 0) : rivals.length;
+    const boss = manifest.fighters.some((f, index) => f.boss && index !== player);
+    return { tour, rivals: count, boss, battles: count + (boss ? 1 : 0) };
+  }
   function buildLadder(player) {
-    const rivals = manifest.fighters.map((_, index) => index).filter(index => index !== player && !manifest.fighters[index].boss);
-    for (let i = rivals.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rivals[i], rivals[j]] = [rivals[j], rivals[i]]; }
+    const rivals = rivalsOf(player);
+    const order = touring() ? shuffled(manifest.series).flatMap(series => shuffled(rivals.filter(index => manifest.fighters[index].series === series.id)).slice(0, manifest.arcade.perSeries)) : shuffled(rivals);
     const boss = manifest.fighters.findIndex(f => f.boss);
-    return boss >= 0 && boss !== player ? [...rivals, boss] : rivals;
+    return boss >= 0 && boss !== player ? [...order, boss] : order;
+  }
+  function bossStageIndex() {
+    const at = manifest.stages.findIndex(stage => stage.id === manifest.arcade?.bossStage);
+    return at >= 0 ? at : manifest.stages.length - 1;
+  }
+  // On a tour each rival fights in an arena of their own series, taking turns through that series' arenas and leaving
+  // the final battle's arena for the boss when the series has another.
+  function ladderStage(ladder, at) {
+    if (!touring()) return at % manifest.stages.length;
+    const series = manifest.fighters[ladder[at]]?.series, finale = bossStageIndex();
+    let home = manifest.stages.map((stage, index) => stage.series === series ? index : -1).filter(index => index >= 0);
+    if (home.length > 1) home = home.filter(index => index !== finale);
+    if (!home.length) return at % manifest.stages.length;
+    return home[ladder.slice(0, at).filter(index => manifest.fighters[index]?.series === series).length % home.length];
   }
   function startArcade() {
     const ladder = buildLadder(selected[0]);
@@ -623,7 +680,7 @@
     closeOverlay();
     const opponent = arcade.ladder[arcade.index], boss = !!manifest.fighters[opponent].boss;
     selected = [arcade.player, opponent];
-    stageIndex = boss ? manifest.stages.length - 1 : arcade.index % manifest.stages.length;
+    stageIndex = boss ? bossStageIndex() : ladderStage(arcade.ladder, arcade.index);
     // The CPU sharpens as the ladder climbs; the boss adds its own edge in the engine.
     const level = Math.max(1, Math.min(8, options.difficulty - 1 + Math.floor(arcade.index * .7)));
     const label = boss ? 'ARCADE / FINAL BATTLE' : `ARCADE / STAGE ${arcade.index + 1} OF ${arcade.ladder.length}`;
@@ -646,7 +703,7 @@
     const [one, two] = [fighterData(0), fighterData(1)];
     setArt($('vs-art-one'), [one.hero, one.portrait]); setArt($('vs-art-two'), [two.hero, two.portrait]);
     $('vs-name-one').textContent = one.name.toUpperCase(); $('vs-name-two').textContent = two.name.toUpperCase();
-    $('vs-style-one').textContent = STYLE_LABELS[one.style] || ''; $('vs-style-two').textContent = STYLE_LABELS[two.style] || '';
+    $('vs-style-one').textContent = styleLabel(one) || ''; $('vs-style-two').textContent = styleLabel(two) || '';
     $('vs-stage').textContent = manifest.stages[stageIndex].name.toUpperCase();
     $('vs-round').textContent = roundLabel;
     $('vs-screen').hidden = false; sceneMusic('select');
@@ -718,9 +775,12 @@
       const add = (tag, value) => { const element = document.createElement(tag); element.textContent = value; body.append(element); };
       add('h3', manifest.title.toUpperCase());
       add('h4', 'CHAMPION'); add('p', `${fighter.name} · ${String(arcade.score).padStart(8, '0')} POINTS`);
-      add('h4', 'THE NEIGHBORHOOD'); manifest.fighters.forEach(item => add('p', `${item.name}${item.boss ? ' — Final Boss' : ''}`));
+      const roll = item => add('p', `${item.name}${item.boss ? ' — Final Boss' : ''}`);
+      if (crossover()) manifest.series.forEach(series => { add('h4', series.name.toUpperCase()); manifest.fighters.filter(item => item.series === series.id).forEach(roll); });
+      else { add('h4', 'THE NEIGHBORHOOD'); manifest.fighters.forEach(roll); }
       add('h4', 'ARENAS'); manifest.stages.forEach(stage => add('p', stage.name));
-      add('h4', 'ART, MUSIC & VOICES'); add('p', 'Generated with ComfyUI cloud workflows'); add('p', 'Fictional characters invented from text');
+      add('h4', 'ART, MUSIC & VOICES'); add('p', 'Generated with ComfyUI cloud workflows');
+      add('p', manifest.publicFigures ? 'Satire: public figures caricatured from text, stock voices' : 'Fictional characters invented from text');
       add('h4', 'BUILT WITH'); add('p', 'The Comfy Fighter Z builder'); add('p', manifest.subtitle || '');
       add('h4', ''); add('h3', 'THANK YOU FOR PLAYING');
       $('staff-roll').hidden = false; overlay = { type: 'ending', next: finish }; overlay.timer = setTimeout(finish, 26000);
@@ -760,7 +820,7 @@
       const fighter = manifest.fighters[index], section = document.createElement('section');
       section.style.setProperty('--accent', fighter.color || '#c9a25e');
       const heading = document.createElement('h3'); heading.textContent = fighter.name.toUpperCase();
-      const tag = document.createElement('small'); tag.textContent = STYLE_LABELS[fighter.style] || 'BALANCED'; heading.append(tag);
+      const tag = document.createElement('small'); tag.textContent = styleLabel(fighter) || 'BALANCED'; heading.append(tag);
       const list = document.createElement('ul');
       for (const move of E.moveList(fighter)) {
         const item = document.createElement('li'), name = document.createElement('b'), input = document.createElement('kbd');
@@ -1077,8 +1137,9 @@
     // The ensemble title art shows the six included heroes; the final boss does not change that cast.
     const heroes = manifest.fighters.filter(f => !f.boss);
     const includedCast = heroes.length === 6 && heroes.every(f => demoCast[f.id] && f.description?.startsWith(demoCast[f.id]));
-    const heroCount = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT'][heroes.length] || String(heroes.length);
-    $('title-eyebrow').textContent = `${heroCount} ${heroes.length === 1 ? 'CHALLENGER' : 'CHALLENGERS'}. ONE OPEN SOURCE SHOWDOWN.`;
+    $('title-eyebrow').textContent = `${numberWord(heroes.length)} ${heroes.length === 1 ? 'CHALLENGER' : 'CHALLENGERS'}. ONE OPEN SOURCE SHOWDOWN.`;
+    // Big rosters (a crossover) get the wide select layout with smaller tiles.
+    document.body.classList.toggle('roster-large', manifest.fighters.length > 12);
     // The static arcade/ set is the original cast's own title art (its backyard backdrops, first logo and six-hero
     // ensemble); every other game shows only its own generated art. This is decided from the manifest, before any art
     // paints, and the boot screen stays up until that art has loaded, so a game never flashes another game's art.
@@ -1242,9 +1303,9 @@
         if (tile && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.code)) {
           // Move through the visible grid; Arcade hides the final boss.
           event.preventDefault();
-          const tiles = [...$('fighter-grid').querySelectorAll('.fighter-tile')].map(item => Number(item.dataset.index));
-          const position = Math.max(0, tiles.indexOf(selected[pickingSlot])), step = event.code === 'ArrowLeft' ? -1 : event.code === 'ArrowRight' ? 1 : event.code === 'ArrowUp' ? -3 : 3;
-          chooseFighter(tiles[(position + step + tiles.length * 3) % tiles.length]); playSound('sfx_menu_move', .4); return;
+          const next = gridStep(event.code);
+          if (next) chooseFighter(Number(next.dataset.index));
+          playSound('sfx_menu_move', .4); return;
         }
         if (!event.repeat && ['KeyQ', 'KeyE', 'BracketLeft', 'BracketRight'].includes(event.code) && mode !== 'arcade') { event.preventDefault(); cycleStage(['KeyQ', 'BracketLeft'].includes(event.code) ? -1 : 1); return; }
         if (!event.repeat && event.code === 'Tab' && mode !== 'arcade' && tile) { event.preventDefault(); pickingSlot = pickingSlot ? 0 : 1; refreshCards(); $('fighter-grid').querySelector(`[data-index="${selected[pickingSlot]}"]`)?.focus({ preventScroll: true }); return; }

@@ -160,6 +160,8 @@ node build/tools/new-game.cjs install --run output/test-runs/blue-wave --slot bl
 
 [`comfyui/docs/new-game-runbook.md`](comfyui/docs/new-game-runbook.md) spells out every step, the cast-file fields and the cost formula so an agent can follow it unattended. Every slot installed this way appears under **GAME SELECT** on every title screen `npm start` serves.
 
+**Put every game in one roster.** `npm run crossover` (`node build/tools/crossover.cjs build/crossovers/ultra.json`) composes **Comfy Fighter Z: Ultra Dream Match** from the installed games without generating anything: all 26 fighters and 8 arenas of the canonical game, Rogue Protocol, Midterm Mayhem and Billionaires Brawl, one row per game on the select screen, an Arcade tour of two rivals from each game in their own arenas and Baron Bylaw as the one final boss, and a title loop cut from each game's title art. It installs at `/ultra/`; runbook section 6 covers the definition fields.
+
 The completed folder contains:
 
 ```text

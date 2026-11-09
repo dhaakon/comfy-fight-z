@@ -37,6 +37,7 @@
     "workflows:expansion": "node comfyui/tools/prepare-arcade-expansion.cjs",
     "test:expansion": "node build/test/expansion-pipeline.cjs",
     "new-game": "node build/tools/new-game.cjs",
+    "crossover": "node build/tools/crossover.cjs",
     "test:games": "npm run build && node build/test/games-select-browser.cjs"
   }
 }
