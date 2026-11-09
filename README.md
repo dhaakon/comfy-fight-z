@@ -371,6 +371,18 @@ Serve the game over HTTP rather than double-clicking `index.html`. Share the com
 
 For a public deployment with online matches and phone controllers, see the [hosting guide](build/deploy/README.md). The site serves the game and its generated media; generation stays in your own ComfyUI workspace.
 
+## Agent harness: Claude Code and Codex
+
+This game was made by coding agents driving ComfyUI, and the repository is set up so an agent can keep doing it. `AGENTS.md` is the contract both Claude Code and Codex read (layout, fictional-cast and spending rules, the engine's frame data); the runbooks in `comfyui/docs/` are written to be followed verbatim; a project skill, `comfy-fighter-z`, maps every command for both tools (`.agents/skills/` for Codex, `.claude/skills/` for Claude Code); and the `comfy` skill family plus the `comfy-mcp` server give the agent ComfyUI itself. Every tool is a plain Node command that writes files, so a run resumes from disk, and the only commands that spend money take `--approve-usd` and refuse below their estimate.
+
+```sh
+pip install comfy-cli && comfy cloud login   # the ComfyUI CLI, signed in to a workspace with credit
+comfy skills install                          # comfy, comfy-debug, comfy-relay … into ~/.claude/skills and ~/.agents/skills
+cp .mcp.example.json .mcp.json                # the comfy-mcp server for Claude Code (Codex: ~/.codex/config.toml)
+```
+
+[The agent harness guide](comfyui/docs/agent-harness.md) covers the setup for each tool, what the machine needs, and the typical sessions: a new game from a cast file, a fight change measured with the probes, a video, a site release.
+
 ## Where things live
 
 | Folder | Contents |

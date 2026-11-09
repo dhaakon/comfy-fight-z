@@ -26,3 +26,11 @@ test('image job paths keep generated media in output and recipes in comfyui', ()
   const main = fs.readFileSync(path.join(root, 'comfyui/workflows/comfy-hackathon.json'));
   assert.ok(main.equals(fs.readFileSync(path.join(root, 'build/public/builder/templates/comfy-hackathon.json'))));
 });
+
+test('the comfy-fighter-z project skill is identical for Codex and Claude Code', () => {
+  const codex = fs.readFileSync(path.join(root, '.agents/skills/comfy-fighter-z/SKILL.md'), 'utf8');
+  const claude = fs.readFileSync(path.join(root, '.claude/skills/comfy-fighter-z/SKILL.md'), 'utf8');
+  assert.equal(codex, claude);
+  assert.match(codex, /^---\nname: comfy-fighter-z\ndescription: /);
+  assert.ok(fs.statSync(path.join(root, 'comfyui/docs/agent-harness.md')).isFile());
+});
