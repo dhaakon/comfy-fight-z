@@ -4,6 +4,11 @@
 // to the storyboard's seconds and joins a scene's shots with hard cuts. Never queues ComfyUI work or spends anything.
 //   node build/tools/capture-teaser.cjs [--config comfyui/config/teaser.json] [--out output/explainer/<run>] [--scene 04-workflow]
 //        [--game-url http://127.0.0.1:8096] [--comfy-url http://127.0.0.1:8188] [--run output/test-runs/<cast run>]
+//        [--portrait] [--stills]
+// --portrait records the phone cut: the 1080x1270 picture area of a 1080x1920 frame (the composer adds the header and
+// the caption band) into captures/portrait/, with the cards laid out for that shape, the graph camera and the games at
+// that aspect, and the opening clip zooming onto the logo. --stills screenshots each shot's end instead of recording,
+// for checking a layout quickly.
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
@@ -15,10 +20,12 @@ const { sourceFile } = require('./lib/runtime-validation.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const settings = { config: 'comfyui/config/teaser.json', out: 'output/explainer/teaser-v2-20261109', scene: null, gameUrl: 'http://127.0.0.1:8096', comfyUrl: 'http://127.0.0.1:8188',
   run: 'output/test-runs/billionaires-brawl-20261108', cast: 'comfyui/casts/billionaires-brawl.json', export: 'output/exports/billionaires-brawl-card', sceneryRun: 'output/test-runs/canonical-20261109' };
-for (let i = 2; i < process.argv.length; i += 2) {
+const FLAGS = { '--portrait': 'portrait', '--stills': 'stills' };
+for (let i = 2; i < process.argv.length; i++) {
+  if (FLAGS[process.argv[i]]) { settings[FLAGS[process.argv[i]]] = true; continue; }
   const key = { '--config': 'config', '--out': 'out', '--scene': 'scene', '--game-url': 'gameUrl', '--comfy-url': 'comfyUrl', '--run': 'run', '--cast': 'cast', '--export': 'export', '--scenery-run': 'sceneryRun', '--card': 'card', '--png': 'png' }[process.argv[i]];
-  if (!key || !process.argv[i + 1]) throw new Error('Usage: node build/tools/capture-teaser.cjs [--config <json>] [--out <run>] [--scene <id>] [--game-url URL] [--comfy-url URL] [--run <cast run>] | --card <name> --png <file>');
-  settings[key] = process.argv[i + 1];
+  if (!key || !process.argv[i + 1]) throw new Error('Usage: node build/tools/capture-teaser.cjs [--config <json>] [--out <run>] [--scene <id>] [--game-url URL] [--comfy-url URL] [--run <cast run>] [--portrait] [--stills] | --card <name> --png <file>');
+  settings[key] = process.argv[++i];
 }
 for (const key of ['gameUrl', 'comfyUrl']) {
   const url = new URL(settings[key]);
@@ -26,8 +33,12 @@ for (const key of ['gameUrl', 'comfyUrl']) {
   settings[key] = url.href.replace(/\/$/, '');
 }
 const config = JSON.parse(fs.readFileSync(path.resolve(ROOT, settings.config), 'utf8'));
-const OUT = path.resolve(ROOT, settings.out), CAPTURES = path.join(OUT, 'captures'), RAW = path.join(CAPTURES, 'raw');
+// Landscape shots are whole 1920x1080 frames. Portrait shots are the picture area of the phone frame: 1080x1270 under
+// a 150 px header and over a 500 px caption band that the composer draws.
+const portrait = !!settings.portrait, FRAME = portrait ? { width: 1080, height: 1270 } : { width: 1920, height: 1080 };
+const OUT = path.resolve(ROOT, settings.out), CAPTURES = path.join(OUT, 'captures', ...(portrait ? ['portrait'] : [])), RAW = path.join(CAPTURES, 'raw'), STILLS = path.join(CAPTURES, 'stills');
 fs.mkdirSync(RAW, { recursive: true });
+if (settings.stills) fs.mkdirSync(STILLS, { recursive: true });
 const scenes = config.scenes.filter(scene => !settings.scene || scene.id === settings.scene);
 if (!scenes.length) throw new Error(`Unknown scene ${settings.scene}`);
 const report = { capturedAt: new Date().toISOString(), inferenceSubmitted: false, blockedComfyWrites: [], scenes: [] };
@@ -54,19 +65,32 @@ h1{font-family:'Press Start 2P',monospace;font-size:38px;line-height:1.45;margin
 .tag{position:absolute;font-family:'Press Start 2P',monospace;font-size:16px;color:#fff;background:#000c;border:2px solid #ffd23f;padding:12px 16px;letter-spacing:1px}
 .end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;text-align:center}
 .end h1{font-size:54px}.end .url{font-family:'Press Start 2P',monospace;font-size:24px;color:#ffd23f;text-shadow:3px 3px 0 #000}.end .url small{display:block;color:#8de9e6;font-size:14px;margin-bottom:12px}
-.line{opacity:0;animation:rise .5s forwards}@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}`;
+.line{opacity:0;animation:rise .5s forwards}@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}` + (portrait ? `
+html,body{width:1080px;height:1270px}
+.card{padding:64px 60px 56px;gap:20px}
+.eyebrow{font-size:15px}
+h1{font-size:26px;line-height:1.5}
+.mono{font-size:21px}
+.panel{padding:26px 30px;min-height:0}
+.tag{font-size:12px;padding:10px 12px}
+.end{gap:28px;padding:0 50px}.end h1{font-size:40px}.end .url{font-size:17px;overflow-wrap:anywhere}.end .url small{font-size:12px}` : '');
+// Monospace panels: the frame's width sets how many characters a line can hold.
+const PANEL = portrait ? 'font-size:20px;line-height:1.42' : 'font-size:27px;line-height:1.42';
 
 function castCard() {
   const cast = JSON.parse(fs.readFileSync(path.resolve(ROOT, settings.cast), 'utf8')), fighter = cast.fighters[0], stage = cast.stages[0];
+  // The quoted descriptions are cut to what one line of the panel holds.
+  const [about, move, tagline, arena] = portrait ? [44, 40, 44, 44] : [78, 66, 70, 70];
   const lines = [];
   const push = (text, cls = '') => lines.push({ text, cls });
   push(`{`); push(`  "castSchema": "${cast.castSchema}",`); push(`  "title": "${cast.title}",`); push(`  "subtitle": "${cast.subtitle}",`); push(`  "videoModel": "${cast.videoModel}", "videoResolution": "${cast.videoResolution}",`);
   push(`  "fighters": [`); push(`    {`); push(`      "id": "${fighter.id}", "name": "${fighter.name}", "color": "${fighter.color}",`);
-  push(`      "description": "${fighter.description.slice(0, 78)}…",`, 'hl'); push(`      "specialMove": { "name": "${fighter.specialMove.name}",`, 'hl');
-  push(`        "description": "${fighter.specialMove.description.slice(0, 66)}…" },`, 'hl'); push(`      "introTagline": "${fighter.introTagline.slice(0, 70)}",`); push(`      "style": "${fighter.style}"`);
-  push(`    },`); push(`    … ${cast.fighters.length - 1} more fighters`); push(`  ],`); push(`  "stages": [`); push(`    { "id": "${stage.id}", "name": "${stage.name}",`, 'hl'); push(`      "description": "${stage.description.slice(0, 70)}…" }`, 'hl'); push(`    … ${cast.stages.length - 1} more arenas`); push(`  ]`); push(`}`);
+  push(`      "description": "${fighter.description.slice(0, about)}…",`, 'hl'); push(`      "specialMove": { "name": "${fighter.specialMove.name}",`, 'hl');
+  push(`        "description": "${fighter.specialMove.description.slice(0, move)}…" },`, 'hl'); push(`      "introTagline": "${fighter.introTagline.slice(0, tagline)}",`); push(`      "style": "${fighter.style}"`);
+  push(`    },`); push(`    … ${cast.fighters.length - 1} more fighters`); push(`  ],`); push(`  "stages": [`); push(`    { "id": "${stage.id}", "name": "${stage.name}",`, 'hl'); push(`      "description": "${stage.description.slice(0, arena)}…" }`, 'hl'); push(`    … ${cast.stages.length - 1} more arenas`); push(`  ]`); push(`}`);
   const code = lines.map((line, i) => `<div class="line ${line.cls}" style="animation-delay:${(0.4 + i * 0.22).toFixed(2)}s">${escape(line.text).replace(/"([a-zA-Z]+)":/g, '<span class="key">"$1"</span>:').replace(/: "([^"]*)"/g, ': <span class="str">"$1"</span>')}</div>`).join('');
-  return `<div class="card"><div class="eyebrow">01 · THE CAST FILE</div><h1>${escape(path.relative(ROOT, path.resolve(ROOT, settings.cast)).split(path.sep).join('/'))}</h1><div class="panel mono" style="font-size:27px;line-height:1.42">${code}</div></div>`;
+  const file = path.relative(ROOT, path.resolve(ROOT, settings.cast)).split(path.sep).join('/');
+  return `<div class="card"><div class="eyebrow">01 · THE CAST FILE</div><h1>${escape(portrait ? file.replace(/^comfyui\//, '') : file)}</h1><div class="panel mono" style="${PANEL}">${code}</div></div>`;
 }
 
 function prepareCard() {
@@ -88,7 +112,7 @@ function prepareCard() {
     `Submitting one paid node at a time…`
   ];
   const html = lines.map((line, i) => `<div class="line${i === lines.length - 1 ? ' cursor' : ''}" style="animation-delay:${(0.5 + i * 0.6).toFixed(2)}s">${line.startsWith('$') ? `<span class="key">${escape(line)}</span>` : escape(line).replace(/\$[0-9.]+/g, m => `<span class="num">${m}</span>`)}</div>`).join('');
-  return `<div class="card"><div class="eyebrow">02 · PRICE THE RUN</div><h1>One command, one <em>estimate</em>, one approval</h1><div class="panel mono" style="font-size:27px;line-height:1.45">${html}</div></div>`;
+  return `<div class="card"><div class="eyebrow">02 · PRICE THE RUN</div><h1>One command, one <em>estimate</em>, one approval</h1><div class="panel mono" style="${PANEL}">${html}</div></div>`;
 }
 
 function exportCard() {
@@ -97,7 +121,7 @@ function exportCard() {
   const html = [`<div class="line key" style="animation-delay:.3s">$ new-game.cjs export --run ${escape(run)}</div>`,
     ...checks.map((check, i) => `<div class="line" style="animation-delay:${(0.6 + i * 0.32).toFixed(2)}s"><span class="str">✓</span> ${escape(check.length > 62 ? check.slice(0, 60) + '…' : check)}</div>`),
     `<div class="line" style="animation-delay:${(0.8 + checks.length * 0.32).toFixed(2)}s">… <span class="num">${receipt.checks.length} checks ${receipt.status}</span> · ${receipt.poseCount} poses · ${receipt.sourceAssets} source assets</div>`].join('');
-  return `<div class="card"><div class="eyebrow">06 · STRICT EXPORT</div><h1>Every file and clip <em>checked</em> before it ships</h1><div class="panel mono" style="font-size:27px;line-height:1.45">${html}</div></div>`;
+  return `<div class="card"><div class="eyebrow">06 · STRICT EXPORT</div><h1>Every file and clip <em>checked</em> before it ships</h1><div class="panel mono" style="${PANEL}">${html}</div></div>`;
 }
 
 // A still the camera drifts across. The image is fitted to the frame (contain, or to its width) and moved between two
@@ -108,11 +132,12 @@ function pngSize(file) {
   return { width: header.readUInt32BE(16), height: header.readUInt32BE(20) };
 }
 function panCard(file, { from, to, seconds, label, eyebrow, fit = 'contain' }) {
-  const { width, height } = pngSize(file), base = fit === 'width' ? 1920 / width : Math.min(1920 / width, 1080 / height);
-  const place = ({ zoom, x, y }) => { const s = base * zoom; return `translate(${(960 - x * width * s).toFixed(1)}px,${(540 - y * height * s).toFixed(1)}px) scale(${s.toFixed(4)})`; };
+  const { width, height } = pngSize(file), base = fit === 'width' ? FRAME.width / width : Math.min(FRAME.width / width, FRAME.height / height);
+  const place = ({ zoom, x, y }) => { const s = base * zoom; return `translate(${(FRAME.width / 2 - x * width * s).toFixed(1)}px,${(FRAME.height / 2 - y * height * s).toFixed(1)}px) scale(${s.toFixed(4)})`; };
   const src = `/file/${path.relative(ROOT, path.resolve(ROOT, file)).split(path.sep).join('/')}`;
+  const [left, top, bottom] = portrait ? [36, 36, 36] : [60, 120, 200];
   return `<div class="stage"><img src="${escape(src)}" style="transform-origin:0 0;transform:${place(from)};animation:pan ${seconds}s cubic-bezier(.3,0,.6,1) forwards"><style>@keyframes pan{from{transform:${place(from)}}to{transform:${place(to)}}}</style>
-    ${eyebrow ? `<div class="tag" style="left:60px;top:120px;color:#ffd23f">${escape(eyebrow)}</div>` : ''}${label ? `<div class="tag" style="left:60px;bottom:200px">${escape(label)}</div>` : ''}</div>`;
+    ${eyebrow ? `<div class="tag" style="left:${left}px;top:${top}px;color:#ffd23f">${escape(eyebrow)}</div>` : ''}${label ? `<div class="tag" style="left:${left}px;bottom:${bottom}px;max-width:${FRAME.width - 2 * left}px">${escape(label)}</div>` : ''}</div>`;
 }
 
 function endCard() {
@@ -132,7 +157,34 @@ function pipelineCard() {
     { title: 'BROWSER BUILDER', lines: ['cuts each sheet into cels', 'keys chroma, maps 45+ poses', 'strict export: every file checked'] },
     { title: 'PLAYABLE GAME', lines: ['npm start · GAME SELECT', 'online 1v1 · phone & TV', 'comfy-fight-z.dhaakon.com'] }
   ];
-  const at = index => 0.4 + index * 1.4, delay = seconds => `animation-delay:${seconds.toFixed(2)}s`;
+  const delay = seconds => `animation-delay:${seconds.toFixed(2)}s`;
+  const targets = ['browser', 'phone', 'shared TV + phones', 'online 1v1', 'static site'];
+  if (portrait) {
+    // The phone frame stacks the stages: a column of boxes with arrows between them, the review loop as its own row
+    // under the bundle, and the targets wrapping at the bottom.
+    const at = index => 0.4 + index * 1.05;
+    const column = stages.flatMap((stage, index) => [
+      ...(index ? [`<div class="arrow line" style="${delay(at(index) - 0.35)}">▼</div>`] : []),
+      `<div class="stage line" style="${delay(at(index))}"><div class="stage-title">${escape(stage.title)}</div>${stage.lines.map(line => `<div class="stage-line">${escape(line)}</div>`).join('')}</div>`,
+      ...(index === 2 ? [`<div class="loop line" style="${delay(at(3) - 0.1)}">⟲ REVIEW · REROLL ONE NODE · THE CACHE KEEPS THE REST</div>`] : [])
+    ]);
+    return `<style>
+      .flow{display:flex;flex-direction:column;margin-top:4px}
+      .flow .stage{position:relative;inset:auto;background:#0f1730;border:3px solid #23334c;box-shadow:10px 10px 0 #000;padding:14px 20px;display:flex;flex-direction:column;gap:5px}
+      .stage-title{font-family:'Press Start 2P',monospace;font-size:14px;color:#ffd23f;line-height:1.5;text-shadow:3px 3px 0 #000;margin-bottom:4px}
+      .stage-line{font-family:Consolas,'Cascadia Mono',monospace;font-size:17px;line-height:1.3;color:#d5deec;overflow-wrap:anywhere}
+      .stage:nth-of-type(2) .stage-title{color:#8de9e6}.stage:last-of-type .stage-title{color:#2edbc8}
+      .arrow{height:34px;line-height:34px;text-align:center;font-size:24px;color:#ffd23f;text-shadow:3px 3px 0 #000}
+      .loop{font-family:'Press Start 2P',monospace;font-size:10px;color:#ff8ba7;text-align:center;letter-spacing:1px;padding:9px 0 0;border-top:3px dashed #ff8ba7;margin:12px 90px 0}
+      .targets{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:22px}
+      .chip{font-family:'Press Start 2P',monospace;font-size:11px;color:#fff;background:#000c;border:2px solid #2edbc8;padding:9px 11px;letter-spacing:1px}
+    </style>
+    <div class="card"><div class="eyebrow">05 · THE PIPELINE</div><h1>ComfyUI <em>generation</em> → build → playable game</h1>
+      <div class="flow">${column.join('')}</div>
+      <div class="targets">${targets.map((target, index) => `<div class="chip line" style="${delay(at(4) + 0.5 + index * 0.2)}">${escape(target.toUpperCase())}</div>`).join('')}</div>
+    </div>`;
+  }
+  const at = index => 0.4 + index * 1.4;
   const boxes = stages.map((stage, index) => `<div class="stage line" style="grid-column:${index * 2 + 1} / ${index * 2 + 2};grid-row:1;${delay(at(index))}"><div class="stage-title">${escape(stage.title)}</div>${stage.lines.map(line => `<div class="stage-line">${escape(line)}</div>`).join('')}</div>`);
   const arrows = stages.slice(1).map((_, index) => `<div class="arrow line" style="grid-column:${index * 2 + 2} / ${index * 2 + 3};grid-row:1;${delay(at(index) + 0.95)}">▶</div>`);
   return `<style>
@@ -152,7 +204,7 @@ function pipelineCard() {
     <div class="flow">${boxes.join('')}${arrows.join('')}
       <svg class="loop line" viewBox="0 0 1700 140" style="${delay(at(3))}"><path d="M 850 134 C 850 50, 497 50, 497 126" marker-end="url(#tip)"/><defs><marker id="tip" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="9" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#ff8ba7"/></marker></defs><text x="673" y="30">REVIEW · REROLL ONE NODE · THE CACHE KEEPS THE REST</text></svg>
     </div>
-    <div class="targets">${['browser', 'phone', 'shared TV + phones', 'online 1v1', 'static site'].map((target, index) => `<div class="chip line" style="${delay(at(4) + 0.6 + index * 0.25)}">${escape(target.toUpperCase())}</div>`).join('')}</div>
+    <div class="targets">${targets.map((target, index) => `<div class="chip line" style="${delay(at(4) + 0.6 + index * 0.25)}">${escape(target.toUpperCase())}</div>`).join('')}</div>
   </div>`;
 }
 
@@ -161,9 +213,13 @@ const CARDS = {
   // The sweep comparison is eight rows of four cells (wind-up, full, through, back; the full cell is the one that went
   // wrong); fitted to the width, two rows fill the frame, and the camera crawls down from the first pair.
   sweeps: () => panCard(path.join(OUT, 'stills/sweeps-compare.png'), { fit: 'width', from: { zoom: 1, x: .5, y: .125 }, to: { zoom: 1, x: .5, y: .5 }, seconds: 5, eyebrow: '04 · REVIEW', label: 'sweepfull: a standing kick, redrawn until it connected low' }),
-  cutins: () => panCard(path.join(OUT, 'stills/cutins-new.png'), { fit: 'width', from: { zoom: 1, x: .5, y: .5 }, to: { zoom: 1.12, x: .5, y: .5 }, seconds: 3, label: 'super cut-ins after the prompt fix' }),
+  // The phone frame is taller than it is wide: the wide strip of cut-ins is panned across at a zoom that shows one at
+  // a time, and the review painting is fitted whole with a slight push.
+  cutins: () => panCard(path.join(OUT, 'stills/cutins-new.png'), portrait ? { fit: 'width', from: { zoom: 2.4, x: .17, y: .5 }, to: { zoom: 2.4, x: .83, y: .5 }, seconds: 3, label: 'super cut-ins after the prompt fix' }
+    : { fit: 'width', from: { zoom: 1, x: .5, y: .5 }, to: { zoom: 1.12, x: .5, y: .5 }, seconds: 3, label: 'super cut-ins after the prompt fix' }),
   posegrid: () => panCard(path.join(OUT, 'stills/pose-grid.png'), { from: { zoom: 1, x: .5, y: .5 }, to: { zoom: 1.4, x: .4, y: .3 }, seconds: 4, eyebrow: '04 · REVIEW', label: 'new-game.cjs review · every pose on one grid' }),
-  scenery: () => panCard(path.join(OUT, 'stills/yard-review.png'), { fit: 'width', from: { zoom: 1, x: .5, y: .25 }, to: { zoom: 1.08, x: .5, y: .36 }, seconds: 5, eyebrow: '05 · LIVING SCENERY', label: 'director plan → painted → separated → placed layers' })
+  scenery: () => panCard(path.join(OUT, 'stills/yard-review.png'), portrait ? { from: { zoom: 1, x: .5, y: .5 }, to: { zoom: 1.15, x: .5, y: .45 }, seconds: 5, eyebrow: '05 · LIVING SCENERY', label: 'director plan → painted → separated → placed layers' }
+    : { fit: 'width', from: { zoom: 1, x: .5, y: .25 }, to: { zoom: 1.08, x: .5, y: .36 }, seconds: 5, eyebrow: '05 · LIVING SCENERY', label: 'director plan → painted → separated → placed layers' })
 };
 
 function serveCards() {
@@ -260,13 +316,15 @@ async function openComfy(context, page) {
   if (report.comfy.errors.length) throw new Error(`The editor lacks nodes: ${report.comfy.errors.join(', ')}`);
 }
 async function camera(page, box, duration = 1400) {
-  await page.evaluate(async ({ box, duration }) => {
-    const app = window.comfyAPI.app.app, rect = app.canvas.canvas.getBoundingClientRect(), area = { x: 60, y: 130, width: 1800, height: 740 };
+  // The part of the editor the graph is framed in: under its top bar, clear of the frame's own header and captions.
+  const area = portrait ? { x: 30, y: 110, width: 1020, height: 1100 } : { x: 60, y: 130, width: 1800, height: 740 };
+  await page.evaluate(async ({ box, duration, area }) => {
+    const app = window.comfyAPI.app.app, rect = app.canvas.canvas.getBoundingClientRect();
     const scale = Math.min(area.width / box.width, area.height / box.height, box.maxScale || 1.2);
     const target = [(area.x - rect.x + (area.width - box.width * scale) / 2) / scale - box.x, (area.y - rect.y + (area.height - box.height * scale) / 2) / scale - box.y];
     const startScale = app.canvas.ds.scale, start = [...app.canvas.ds.offset], began = performance.now();
     await new Promise(resolve => { (function step(now) { const t = duration ? Math.min((now - began) / duration, 1) : 1, e = t * t * (3 - 2 * t); app.canvas.ds.scale = startScale + (scale - startScale) * e; app.canvas.ds.offset = start.map((v, i) => v + (target[i] - v) * e); app.canvas.setDirty(true, true); if (t < 1) requestAnimationFrame(step); else resolve(); })(performance.now()); });
-  }, { box, duration });
+  }, { box, duration, area });
 }
 const bounds = (page, filter) => page.evaluate(filter => {
   const nodes = window.comfyAPI.app.app.graph._nodes.filter(new Function('node', `return ${filter}`));
@@ -300,7 +358,7 @@ const SHOTS = {
   ],
   '07-engine': [
     // Collision boxes and the frame-data read-out answering a jab, a kick, a roundhouse, a heavy and a launcher.
-    { keep: 8, game: '', run: async page => { await boxesOn(page); await startTraining(page, 'griddle', 'rivet', 'yard'); await exchange(page, ['a', 's', ['ArrowRight', 's'], 'd'], 1800); await page.waitForTimeout(700); await exchange(page, [['ArrowDown', 'd'], 'a', 'a', 'f'], 500); await page.waitForTimeout(1600); } },
+    { keep: 8, game: '', arena: true, run: async page => { await boxesOn(page); await startTraining(page, 'griddle', 'rivet', 'yard'); await exchange(page, ['a', 's', ['ArrowRight', 's'], 'd'], 1800); await page.waitForTimeout(700); await exchange(page, [['ArrowDown', 'd'], 'a', 'a', 'f'], 500); await page.waitForTimeout(1600); } },
     // The shared display: the server pairs phones by code and owns the match.
     { keep: 5, game: '', run: async page => {
       await page.click('#title-phones'); await page.waitForTimeout(700);
@@ -310,14 +368,14 @@ const SHOTS = {
   ],
   '08-scenery': [
     { keep: 4, card: 'scenery', run: async page => page.waitForTimeout(4600) },
-    { keep: 4, game: '', run: async page => { await startTraining(page, 'brick', 'tempo', 'yard'); await exchange(page, ['a', 's', 'd', 'f']); await page.waitForTimeout(1500); } }
+    { keep: 4, game: '', arena: true, run: async page => { await startTraining(page, 'brick', 'tempo', 'yard'); await exchange(page, ['a', 's', 'd', 'f']); await page.waitForTimeout(1500); } }
   ],
   '09-games': [
     { keep: 3.5, card: 'export', run: async page => page.waitForTimeout(4200) },
     { keep: 4.5, game: '', run: async page => { await page.click('#title-games'); await page.waitForTimeout(900); const cards = page.locator('#games-grid .game-card'); const count = await cards.count(); for (let i = 0; i < count; i++) { await cards.nth(i).focus(); await page.waitForTimeout(600); } await page.waitForTimeout(600); } }
   ],
   '10-ultra': [
-    { keep: 4, game: 'ultra/', run: async page => { await startTraining(page, 'overmind', 'bezos', 'datacore'); await exchange(page, ['a', 's', 'd']); await page.keyboard.down('KeyF'); await page.keyboard.down('KeyD'); await page.waitForTimeout(80); await page.keyboard.up('KeyD'); await page.keyboard.up('KeyF'); await page.waitForTimeout(2000); } },
+    { keep: 4, game: 'ultra/', arena: true, run: async page => { await startTraining(page, 'overmind', 'bezos', 'datacore'); await exchange(page, ['a', 's', 'd']); await page.keyboard.down('KeyF'); await page.keyboard.down('KeyD'); await page.waitForTimeout(80); await page.keyboard.up('KeyD'); await page.keyboard.up('KeyF'); await page.waitForTimeout(2000); } },
     { keep: 4, card: 'end', run: async page => page.waitForTimeout(4600) }
   ]
 };
@@ -332,21 +390,42 @@ async function record(browser, cards, scene) {
     if (shot.clip) {
       const source = sourceFile(OUT, shot.clip), part = path.join(RAW, `${scene.id}-${index}.webm`);
       if (probeDuration(source) > shot.keep + .05) throw new Error(`${scene.id}: the clip runs ${probeDuration(source).toFixed(2)}s, longer than its ${shot.keep}s shot.`);
-      command('ffmpeg', ['-y', '-v', 'error', '-i', source, '-an', '-vf', `fps=30,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0x080d1d,setsar=1,tpad=stop_mode=clone:stop_duration=${shot.keep},trim=duration=${shot.keep}`, '-c:v', 'libvpx-vp9', '-crf', '24', '-b:v', '0', '-deadline', 'realtime', '-cpu-used', '6', part]);
+      // Landscape shows the 16:9 clip whole. Portrait pads it to the picture's aspect and shows the clip's full height
+      // through the middle of its width (the graph fills the phone), then pushes in a little onto the logo as the shot
+      // settles, held to the end. The ease is a smoothstep over frames 160-235 of the 30 fps shot.
+      const ease = '(3*pow(clip((on-160)/75,0,1),2)-2*pow(clip((on-160)/75,0,1),3))';
+      const framing = portrait
+        ? `pad=1920:2258:0:(oh-ih)/2:color=0x080d1d,zoompan=z='2.09+0.11*${ease}':x='iw/2-iw/zoom/2':y='clip(1129+86*${ease}-ih/zoom/2,0,ih-ih/zoom)':d=1:s=${FRAME.width}x${FRAME.height}:fps=30`
+        : `scale=${FRAME.width}:${FRAME.height}:force_original_aspect_ratio=decrease,pad=${FRAME.width}:${FRAME.height}:(ow-iw)/2:(oh-ih)/2:color=0x080d1d`;
+      command('ffmpeg', ['-y', '-v', 'error', '-i', source, '-an', '-vf', `fps=30,${framing},setsar=1,tpad=stop_mode=clone:stop_duration=${shot.keep},trim=duration=${shot.keep}`, '-c:v', 'libvpx-vp9', '-crf', '24', '-b:v', '0', '-deadline', 'realtime', '-cpu-used', '6', part]);
+      if (settings.stills) for (const [name, at] of [['open', 1], ['close', shot.keep - .1]]) command('ffmpeg', ['-y', '-v', 'error', '-ss', String(at), '-i', part, '-frames:v', '1', path.join(STILLS, `${scene.id}-${index}-${name}.png`)]);
       parts.push(part); continue;
     }
-    const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1, recordVideo: { dir: RAW, size: { width: 1920, height: 1080 } } });
+    const context = await browser.newContext({ viewport: { ...FRAME }, deviceScaleFactor: 1, ...(settings.stills ? {} : { recordVideo: { dir: RAW, size: { ...FRAME } } }) });
     const page = await context.newPage(), video = page.video(); page.setDefaultTimeout(30000);
     if (shot.comfy) await openComfy(context, page);
     else if (shot.card) { await page.goto(`${cards.url}/card/${shot.card}`); await page.waitForTimeout(400); }
     else await openGame(page, shot.game);
     await shot.run(page);
+    // The game keeps its 16:9 arena, letterboxed in the phone's picture. A fight shot in portrait is cut to the arena
+    // and pushed in by 1.45x, so the fighters fill the width and the sides of the HUD give way.
+    let framing = `scale=${FRAME.width}:${FRAME.height}`;
+    if (portrait && shot.arena) {
+      const rect = await page.evaluate(() => { const r = document.getElementById('arena').getBoundingClientRect(); return { x: Math.round(r.x), y: Math.round(r.y), width: Math.round(r.width), height: Math.round(r.height) }; });
+      framing = `crop=${rect.width}:${rect.height}:${rect.x}:${rect.y},scale=trunc(iw*1.45/2)*2:-2,crop=${FRAME.width}:min(ih\\,${FRAME.height}),pad=${FRAME.width}:${FRAME.height}:(ow-iw)/2:(oh-ih)/2:color=0x080d1d`;
+    }
+    if (settings.stills) {
+      const still = path.join(STILLS, `${scene.id}-${index}.png`); await page.screenshot({ path: still }); await context.close();
+      if (portrait && shot.arena) command('ffmpeg', ['-y', '-v', 'error', '-i', still, '-vf', framing, path.join(STILLS, `${scene.id}-${index}-arena.png`)]);
+      continue;
+    }
     await context.close();
     const raw = await video.path(), duration = probeDuration(raw), part = path.join(RAW, `${scene.id}-${index}.webm`);
     if (duration < shot.keep) throw new Error(`${scene.id} shot ${index} recorded ${duration}s, under its ${shot.keep}s.`);
-    command('ffmpeg', ['-y', '-v', 'error', '-ss', (duration - shot.keep).toFixed(3), '-i', raw, '-t', String(shot.keep), '-an', '-vf', 'fps=30,scale=1920:1080,setsar=1', '-c:v', 'libvpx-vp9', '-crf', '24', '-b:v', '0', '-deadline', 'realtime', '-cpu-used', '6', part]);
+    command('ffmpeg', ['-y', '-v', 'error', '-ss', (duration - shot.keep).toFixed(3), '-i', raw, '-t', String(shot.keep), '-an', '-vf', `fps=30,${framing},setsar=1`, '-c:v', 'libvpx-vp9', '-crf', '24', '-b:v', '0', '-deadline', 'realtime', '-cpu-used', '6', part]);
     parts.push(part);
   }
+  if (settings.stills) { console.log(`${scene.id}: ${shots.length} shot(s) screenshotted under ${path.relative(ROOT, STILLS)}`); return; }
   const target = path.join(CAPTURES, `${scene.id}.webm`);
   if (parts.length === 1) fs.copyFileSync(parts[0], target);
   else {
@@ -366,7 +445,7 @@ async function record(browser, cards, scene) {
     // Card design check: screenshots of one card early and settled, nothing recorded.
     if (settings.card) {
       if (!CARDS[settings.card] || !settings.png) throw new Error('--card needs a known card name and --png <file>.');
-      const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
+      const page = await browser.newPage({ viewport: { ...FRAME } });
       await page.goto(`${cards.url}/card/${settings.card}`); await page.waitForTimeout(1500); await page.screenshot({ path: settings.png.replace(/\.png$/i, '') + '-early.png' });
       await page.waitForTimeout(7000); await page.screenshot({ path: settings.png.replace(/\.png$/i, '') + '-settled.png' });
       const facts = await page.evaluate(() => [...document.querySelectorAll('.stage')].map(stage => { const line = stage.querySelector('.stage-line'); const style = line && getComputedStyle(line); return { box: Math.round(stage.getBoundingClientRect().width), line: line && { scroll: line.scrollWidth, client: line.clientWidth, whiteSpace: style.whiteSpace, wrap: style.overflowWrap, font: style.font.slice(0, 40) } }; }));
@@ -374,6 +453,8 @@ async function record(browser, cards, scene) {
     }
     for (const scene of scenes) await record(browser, cards, scene);
     if (report.blockedComfyWrites.some(request => /^\/(?:api\/)?(?:prompt|queue|interrupt)(?:\/|$)/.test(request.path))) throw new Error('An execution request was attempted.');
+    if (settings.stills) { console.log('Finished the stills. No cloud jobs submitted.'); return; }
+    report.frame = { ...FRAME, orientation: portrait ? 'portrait' : 'landscape' };
     fs.writeFileSync(path.join(CAPTURES, 'capture-manifest.json'), JSON.stringify(report, null, 2) + '\n');
     console.log('Finished. No cloud jobs submitted.');
   } finally { await browser.close(); cards.server.close(); }

@@ -5,8 +5,15 @@ const { spawn, spawnSync } = require('node:child_process');
 const { createHash } = require('node:crypto');
 const { sourceFile, directoryTarget } = require('./lib/runtime-validation.cjs');
 const PROJECT = path.resolve(__dirname, '../..');
-const FPS = 30, WIDTH = 1920, HEIGHT = 1080, HOLD = .5;
+const FPS = 30, HOLD = .5;
 const STEM = 'comfy-fighter-z-explainer';
+// The frame: the storyboard is recorded and cut at 1920x1080; the portrait cut wraps 1080x1270 recordings (under
+// captures/portrait/) in a 1080x1920 phone frame with a taller caption band and larger type.
+const LAYOUTS = {
+  landscape: { width: 1920, height: 1080, picture: { width: 1920, height: 1080, top: 0 }, brand: { x: 65, y: 34, size: 28 }, chapter: { x: 1855, y: 38, align: 9, size: 21 }, rule: { x: 65, y: 98, width: 1790 }, header: 112, band: { y: 890, height: 190 }, caption: { x: 960, y: 1008, size: 38, margin: 120, limit: 45 }, footer: { x: 960, y: 1055 } },
+  portrait: { width: 1080, height: 1920, picture: { width: 1080, height: 1270, top: 150 }, brand: { x: 40, y: 36, size: 30 }, chapter: { x: 40, y: 94, align: 7, size: 22 }, rule: { x: 40, y: 138, width: 1000 }, header: 150, band: { y: 1420, height: 500 }, caption: { x: 540, y: 1800, size: 50, margin: 60, limit: 30 }, footer: { x: 540, y: 1895 } }
+};
+let layout = LAYOUTS.landscape, WIDTH = layout.width, HEIGHT = layout.height;
 const hash = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 
@@ -41,7 +48,7 @@ function wrap(text, limit = 45) {
   return lines.join('\n');
 }
 
-function captions(narration, duration) {
+function captions(narration, duration, limit = 45) {
   const words = narration.trim().split(/\s+/), chunks = []; let current = [];
   for (const word of words) {
     if (current.length && [...current, word].join(' ').length > 83) {
@@ -60,31 +67,32 @@ function captions(narration, duration) {
   const weights = chunks.map(chunk => chunk.split(/\s+/).reduce((sum, word) => sum + Math.max(1, word.replace(/[^a-z0-9]/gi, '').length / 5) + (/[.!?,;:]$/.test(word) ? .35 : 0), 0));
   const total = weights.reduce((a, b) => a + b, 0), beginning = Math.min(.1, duration / 20), available = duration - beginning - Math.min(.12, duration / 20);
   let time = beginning;
-  return chunks.map((text, index) => { const start = time; time += available * weights[index] / total; return { start, end: time, text, wrapped: wrap(text) }; });
+  return chunks.map((text, index) => { const start = time; time += available * weights[index] / total; return { start, end: time, text, wrapped: wrap(text, limit) }; });
 }
 
 const assText = text => String(text).replaceAll('\\', '\\u005c').replaceAll('{', '(').replaceAll('}', ')').replaceAll('\n', '\\N');
 function ass(scene, index, count, totalDuration, font) {
   const events = [], event = (start, end, style, text, layer = 1) => events.push(`Dialogue: ${layer},${stamp(start, 'ass')},${stamp(end, 'ass')},${style},,0,0,0,,${text}`);
-  event(0, scene.duration, 'Brand', '{\\an7\\pos(65,34)}COMFY FIGHTER {\\c&H0053DAFF&}Z');
-  event(0, scene.duration, 'Chapter', `{\\an9\\pos(1855,38)}{\\c&H0053DAFF&}${String(index + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}{\\c&H00D5DEEC&}    ${assText(scene.title.toUpperCase())}`);
-  event(0, scene.duration, 'Footer', `{\\an2\\pos(960,1055)}${scene.silentPreview ? 'SILENT PREVIEW  ·  NARRATION PENDING' : 'WORKFLOW  →  MAPPED ASSETS  →  YOUR PLAYABLE GAME'}`);
-  if (scene.id === '03-references') {
+  const { brand, chapter, rule, caption, footer } = layout;
+  event(0, scene.duration, 'Brand', `{\\an7\\pos(${brand.x},${brand.y})}COMFY FIGHTER {\\c&H0053DAFF&}Z`);
+  event(0, scene.duration, 'Chapter', `{\\an${chapter.align}\\pos(${chapter.x},${chapter.y})}{\\c&H0053DAFF&}${String(index + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}{\\c&H00D5DEEC&}    ${assText(scene.title.toUpperCase())}`);
+  event(0, scene.duration, 'Footer', `{\\an2\\pos(${footer.x},${footer.y})}${scene.silentPreview ? 'SILENT PREVIEW  ·  NARRATION PENDING' : 'WORKFLOW  →  MAPPED ASSETS  →  YOUR PLAYABLE GAME'}`);
+  if (scene.id === '03-references' && layout === LAYOUTS.landscape) {
     event(0, 4, 'Chapter', '{\\an2\\pos(960,866)\\bord2}ACTUAL COMFYUI RUN  ·  TIME-LAPSE');
     event(4, scene.duration, 'Chapter', '{\\an2\\pos(960,875)\\bord2}AI-GENERATED FICTIONAL ADULTS + ENVIRONMENT');
   }
-  if (scene.id === '06-generate' && scene.fixedTimeline) event(0, scene.duration, 'Chapter', '{\\an2\\pos(960,866)\\bord2}ACTUAL COMFYUI RUN  ·  CONDENSED  ·  49 NEW IMAGES + 22 AUDIO CLIPS');
-  if (scene.id === '07-review' && scene.fixedTimeline) event(0, scene.duration, 'Chapter', '{\\an2\\pos(960,866)\\bord2}5 OUTPUTS REPAIRED AFTER VISUAL REVIEW');
-  if (scene.id === '10-play' && scene.fixedTimeline) {
+  if (scene.id === '06-generate' && scene.fixedTimeline && layout === LAYOUTS.landscape) event(0, scene.duration, 'Chapter', '{\\an2\\pos(960,866)\\bord2}ACTUAL COMFYUI RUN  ·  CONDENSED  ·  49 NEW IMAGES + 22 AUDIO CLIPS');
+  if (scene.id === '07-review' && scene.fixedTimeline && layout === LAYOUTS.landscape) event(0, scene.duration, 'Chapter', '{\\an2\\pos(960,866)\\bord2}5 OUTPUTS REPAIRED AFTER VISUAL REVIEW');
+  if (scene.id === '10-play' && scene.fixedTimeline && layout === LAYOUTS.landscape) {
     event(scene.duration - 4, scene.duration, 'Chapter', '{\\an2\\pos(960,950)\\bord3}PLAY: comfy-fight-z.dhaakon.com/phone-photo-demo/');
     event(scene.duration - 4, scene.duration, 'Chapter', '{\\an2\\pos(960,990)\\bord3}BUILD: github.com/dhaakon/comfy-fight-z');
   }
   for (let time = 0; time < scene.duration; time += .25) {
-    const progress = Math.max(1, Math.round(1790 * (scene.start + time) / totalDuration));
-    event(time, Math.min(time + .25, scene.duration), 'Shape', `{\\an7\\pos(65,98)\\p1\\c&H00DFE68A&}m 0 0 l ${progress} 0 l ${progress} 3 l 0 3`, 0);
+    const progress = Math.max(1, Math.round(rule.width * (scene.start + time) / totalDuration));
+    event(time, Math.min(time + .25, scene.duration), 'Shape', `{\\an7\\pos(${rule.x},${rule.y})\\p1\\c&H00DFE68A&}m 0 0 l ${progress} 0 l ${progress} 3 l 0 3`, 0);
   }
-  for (const cue of scene.captions) event(cue.start, cue.end, 'Caption', `{\\an2\\pos(960,1008)}${assText(cue.wrapped)}`);
-  return `[Script Info]\nScriptType: v4.00+\nPlayResX: ${WIDTH}\nPlayResY: ${HEIGHT}\nScaledBorderAndShadow: yes\nWrapStyle: 2\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Brand,${font},28,&H00F6F6F9,&H00F6F6F9,&H00201108,&H00000000,-1,0,0,0,100,100,1.2,0,1,0,0,7,65,65,25,1\nStyle: Chapter,${font},21,&H00D5DEEC,&H00D5DEEC,&H00201108,&H00000000,0,0,0,0,100,100,.6,0,1,0,0,9,65,65,25,1\nStyle: Caption,${font},38,&H00F9FAFF,&H00F9FAFF,&H00120805,&H50000000,-1,0,0,0,100,100,0,0,1,1,1,2,120,120,70,1\nStyle: Footer,${font},13,&H00A6B1C5,&H00A6B1C5,&H00000000,&H00000000,0,0,0,0,100,100,2,0,1,0,0,2,65,65,20,1\nStyle: Shape,${font},1,&H00DFE68A,&H00DFE68A,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n${events.join('\n')}\n`;
+  for (const cue of scene.captions) event(cue.start, cue.end, 'Caption', `{\\an2\\pos(${caption.x},${caption.y})}${assText(cue.wrapped)}`);
+  return `[Script Info]\nScriptType: v4.00+\nPlayResX: ${WIDTH}\nPlayResY: ${HEIGHT}\nScaledBorderAndShadow: yes\nWrapStyle: 2\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Brand,${font},${brand.size},&H00F6F6F9,&H00F6F6F9,&H00201108,&H00000000,-1,0,0,0,100,100,1.2,0,1,0,0,7,65,65,25,1\nStyle: Chapter,${font},${chapter.size},&H00D5DEEC,&H00D5DEEC,&H00201108,&H00000000,0,0,0,0,100,100,.6,0,1,0,0,9,65,65,25,1\nStyle: Caption,${font},${caption.size},&H00F9FAFF,&H00F9FAFF,&H00120805,&H50000000,-1,0,0,0,100,100,0,0,1,1,1,2,${caption.margin},${caption.margin},70,1\nStyle: Footer,${font},13,&H00A6B1C5,&H00A6B1C5,&H00000000,&H00000000,0,0,0,0,100,100,2,0,1,0,0,2,65,65,20,1\nStyle: Shape,${font},1,&H00DFE68A,&H00DFE68A,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n${events.join('\n')}\n`;
 }
 
 function fonts(work) {
@@ -95,12 +103,14 @@ function fonts(work) {
   return process.platform === 'win32' ? 'Arial' : 'DejaVu Sans';
 }
 
-function planScenes(config, root, selected, silentPreview = false) {
-  if (config.width !== WIDTH || config.height !== HEIGHT || config.fps !== FPS || !Array.isArray(config.scenes) || !config.scenes.length) throw new Error('Explainer configuration requires 1920×1080, 30fps and scenes.');
+function planScenes(config, root, selected, silentPreview = false, portrait = false) {
+  if (config.width !== 1920 || config.height !== 1080 || config.fps !== FPS || !Array.isArray(config.scenes) || !config.scenes.length) throw new Error('Explainer configuration requires 1920×1080, 30fps and scenes.');
   const ids = new Set(); let start = 0;
   const scenes = config.scenes.filter(scene => !selected || scene.id === selected).map(scene => {
     if (!/^[0-9]{2}-[a-z0-9-]+$/.test(scene.id) || ids.has(scene.id) || !scene.narration?.trim() || !scene.title) throw new Error('Invalid or duplicate explainer scene.'); ids.add(scene.id);
-    const video = sourceFile(root, scene.visual), audio = silentPreview ? null : sourceFile(root, scene.audio), backgroundAudio = !silentPreview && scene.backgroundAudio ? sourceFile(root, scene.backgroundAudio) : null, videoProbe = probe(video), audioProbe = audio ? probe(audio) : null;
+    // The portrait cut reads the phone recordings of the same scenes.
+    const visual = portrait ? scene.visual.replace(/^captures\//, 'captures/portrait/') : scene.visual;
+    const video = sourceFile(root, visual), audio = silentPreview ? null : sourceFile(root, scene.audio), backgroundAudio = !silentPreview && scene.backgroundAudio ? sourceFile(root, scene.backgroundAudio) : null, videoProbe = probe(video), audioProbe = audio ? probe(audio) : null;
     const videoStream = videoProbe.streams.find(stream => stream.codec_type === 'video'), audioStream = audioProbe?.streams.find(stream => stream.codec_type === 'audio');
     const videoDuration = Number(videoStream?.duration || videoProbe.format?.duration), audioDuration = silentPreview ? Number(scene.targetSeconds) - HOLD : Number(audioStream?.duration || audioProbe?.format?.duration);
     if (!videoStream || !silentPreview && !audioStream || !Number.isFinite(videoDuration) || videoDuration < 1 || !Number.isFinite(audioDuration) || audioDuration <= .2 || audioDuration > 120) throw new Error(`Invalid video or narration duration: ${scene.id}`);
@@ -113,7 +123,7 @@ function planScenes(config, root, selected, silentPreview = false) {
     // Preserve every demonstrated click/result in captured UI footage. Cards may trim their quiet tail.
     const speed = fixed && scene.id === '10-play' ? 1 : scene.visual.startsWith('captures/') ? Math.min(1.12, duration / videoDuration) : Math.max(1, Math.min(1.12, duration / videoDuration));
     // Captions show the spoken text, or a scene's captionText where the voice spells something out (an address).
-    const result = { ...scene, index: config.scenes.indexOf(scene), silentPreview, fixedTimeline: fixed, video, audio, backgroundAudio, videoDuration, audioDuration, narrationTempo, spokenDuration, duration, start, end: start + duration, slowFactor: speed, holdLastFrame: Math.max(0, duration - videoDuration * speed), captions: captions(scene.captionText || scene.narration, spokenDuration), sourceSha256: { audio: audio ? hash(audio) : null, backgroundAudio: backgroundAudio ? hash(backgroundAudio) : null, video: hash(video) } };
+    const result = { ...scene, visual, index: config.scenes.indexOf(scene), silentPreview, fixedTimeline: fixed, video, audio, backgroundAudio, videoDuration, audioDuration, narrationTempo, spokenDuration, duration, start, end: start + duration, slowFactor: speed, holdLastFrame: Math.max(0, duration - videoDuration * speed), captions: captions(scene.captionText || scene.narration, spokenDuration, layout.caption.limit), sourceSha256: { audio: audio ? hash(audio) : null, backgroundAudio: backgroundAudio ? hash(backgroundAudio) : null, video: hash(video) } };
     start += duration; return result;
   });
   if (!scenes.length) throw new Error(`Unknown scene: ${selected}`);
@@ -121,14 +131,15 @@ function planScenes(config, root, selected, silentPreview = false) {
   return { scenes, duration: start };
 }
 
-async function compose({ root = path.join(PROJECT, 'output/explainer/20261103'), config: configPath = path.join(PROJECT, 'comfyui/config/explainer.json'), scene: selected, overwrite = false, silentPreview = false } = {}) {
+async function compose({ root = path.join(PROJECT, 'output/explainer/20261103'), config: configPath = path.join(PROJECT, 'comfyui/config/explainer.json'), scene: selected, overwrite = false, silentPreview = false, portrait = false } = {}) {
   root = path.resolve(root); configPath = path.resolve(configPath);
   if (!root.startsWith(path.join(PROJECT, 'output/explainer') + path.sep) || directoryTarget(root) !== root) throw new Error('Explainer output must be under output/explainer/ without redirected paths.');
-  const config = read(configPath), plan = planScenes(config, root, selected, silentPreview);
+  layout = portrait ? LAYOUTS.portrait : LAYOUTS.landscape; WIDTH = layout.width; HEIGHT = layout.height;
+  const config = read(configPath), plan = planScenes(config, root, selected, silentPreview, portrait);
   if (config.outputStem && !/^[a-z0-9-]+$/.test(config.outputStem)) throw new Error('Invalid explainer filename stem.');
-  const stem = (selected ? `preview-${selected}` : config.outputStem || STEM) + (silentPreview ? '-silent-preview' : '');
+  const stem = (selected ? `preview-${selected}` : config.outputStem || STEM) + (portrait ? '-portrait' : '') + (silentPreview ? '-silent-preview' : '');
   const artifacts = ['.mp4', '.srt', '.transcript.txt', '.chapters.txt', '.poster.jpg'].map(extension => path.join(root, stem + extension));
-  const reportFile = path.join(root, selected || silentPreview ? `${stem}-report.json` : 'render-report.json'); artifacts.push(reportFile);
+  const reportFile = path.join(root, selected || silentPreview || portrait ? `${stem}-report.json` : 'render-report.json'); artifacts.push(reportFile);
   const existing = artifacts.filter(file => fs.existsSync(file));
   if (existing.length && !overwrite) throw new Error('Rendered artifacts already exist. Use --overwrite to archive them before a new render.');
   if (existing.length) {
@@ -148,8 +159,11 @@ async function compose({ root = path.join(PROJECT, 'output/explainer/20261103'),
     for (const scene of plan.scenes) {
       const captionFile = `${scene.id}.ass`, output = `${scene.id}.mov`;
       fs.writeFileSync(path.join(work, captionFile), ass(scene, scene.index, config.scenes.length, plan.duration, font));
-      const framing = scene.fixedTimeline && scene.id === '10-play' ? 'scale=1360:765,pad=1920:1080:280:120:color=0x080d1d' : `scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=decrease,pad=${WIDTH}:${HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=0x080d1d`;
-      const video = `setpts=${scene.slowFactor.toFixed(6)}*(PTS-STARTPTS),${framing},setsar=1,fps=${FPS},tpad=stop_mode=clone:stop_duration=${Math.max(1, scene.holdLastFrame + .5).toFixed(3)},trim=duration=${scene.duration.toFixed(6)},fade=t=in:st=0:d=0.2,fade=t=out:st=${(scene.duration - .25).toFixed(6)}:d=0.25,drawbox=x=0:y=0:w=iw:h=${scene.fixedTimeline && ['04-upload', '05-design'].includes(scene.id) ? 130 : 112}:color=0x080d1d@1:t=fill,drawbox=x=65:y=98:w=1790:h=3:color=0x23334c@1:t=fill,drawbox=x=0:y=890:w=iw:h=190:color=0x080d1d@0.94:t=fill,ass=${captionFile}:fontsdir=fonts`;
+      // The picture is fitted into its area of the frame; the header, its rule and the caption band are drawn over.
+      const { picture, rule, band } = layout;
+      const framing = scene.fixedTimeline && scene.id === '10-play' && !portrait ? 'scale=1360:765,pad=1920:1080:280:120:color=0x080d1d' : `scale=${picture.width}:${picture.height}:force_original_aspect_ratio=decrease,pad=${WIDTH}:${HEIGHT}:(ow-iw)/2:${picture.top ? `${picture.top}+(${picture.height}-ih)/2` : '(oh-ih)/2'}:color=0x080d1d`;
+      const header = scene.fixedTimeline && ['04-upload', '05-design'].includes(scene.id) && !portrait ? 130 : layout.header;
+      const video = `setpts=${scene.slowFactor.toFixed(6)}*(PTS-STARTPTS),${framing},setsar=1,fps=${FPS},tpad=stop_mode=clone:stop_duration=${Math.max(1, scene.holdLastFrame + .5).toFixed(3)},trim=duration=${scene.duration.toFixed(6)},fade=t=in:st=0:d=0.2,fade=t=out:st=${(scene.duration - .25).toFixed(6)}:d=0.25,drawbox=x=0:y=0:w=iw:h=${header}:color=0x080d1d@1:t=fill,drawbox=x=${rule.x}:y=${rule.y}:w=${rule.width}:h=3:color=0x23334c@1:t=fill,drawbox=x=0:y=${band.y}:w=iw:h=${band.height}:color=0x080d1d@0.94:t=fill,ass=${captionFile}:fontsdir=fonts`;
       const audio = `atempo=${scene.narrationTempo.toFixed(6)},loudnorm=I=-16:TP=-1.5:LRA=7,aresample=48000,apad=whole_dur=${scene.duration.toFixed(6)},atrim=duration=${scene.duration.toFixed(6)},asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.012,afade=t=out:st=${(scene.duration - .2).toFixed(6)}:d=0.2`;
       const audioInput = silentPreview ? ['-f', 'lavfi', '-i', 'anullsrc=sample_rate=48000:channel_layout=stereo'] : ['-i', scene.audio];
       const mixing = scene.backgroundAudio ? ['-i', scene.backgroundAudio, '-filter_complex', `[1:a]${audio}[speech];[2:a]atrim=duration=${scene.duration},asetpts=PTS-STARTPTS,loudnorm=I=-28:TP=-8:LRA=7,aresample=48000,afade=t=in:st=0:d=1.2,afade=t=out:st=${scene.duration - 1}:d=1[music];[speech][music]amix=inputs=2:duration=first:dropout_transition=0,volume=2,alimiter=limit=0.89:level=0[mixed]`, '-map', '[mixed]'] : ['-map', '1:a:0', '-af', audio];
@@ -183,7 +197,7 @@ async function compose({ root = path.join(PROJECT, 'output/explainer/20261103'),
     await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-ss', String(Math.min(3, plan.duration / 3)), '-i', movie, '-frames:v', '1', '-q:v', '2', '-y', path.join(root, stem + '.poster.jpg')], work);
     report.status = 'complete'; report.actualDuration = Number(result.format.duration); report.bytes = fs.statSync(movie).size; report.sha256 = hash(movie); report.video = v; report.audio = a;
     fs.writeFileSync(reportFile, JSON.stringify(report, null, 2) + '\n');
-    console.log(`Finished ${movie}\n${report.actualDuration.toFixed(2)} seconds · ${(report.bytes / 1024 / 1024).toFixed(1)} MB · 1080p/30 H.264 + AAC`);
+    console.log(`Finished ${movie}\n${report.actualDuration.toFixed(2)} seconds · ${(report.bytes / 1024 / 1024).toFixed(1)} MB · ${WIDTH}x${HEIGHT}/30 H.264 + AAC`);
     return report;
   } catch (error) { report.status = 'failed'; report.error = error.message; fs.writeFileSync(reportFile, JSON.stringify(report, null, 2) + '\n'); throw error; }
 }
@@ -193,7 +207,8 @@ if (require.main === module) {
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--overwrite') { options.overwrite = true; continue; }
     if (args[i] === '--silent-preview') { options.silentPreview = true; continue; }
-    if (!['--root', '--config', '--scene'].includes(args[i]) || !args[i + 1]) throw new Error('Usage: node build/tools/compose-explainer.cjs [--root output/explainer/20261103] [--config comfyui/config/explainer.json] [--scene 02-setup] [--silent-preview] [--overwrite]');
+    if (args[i] === '--portrait') { options.portrait = true; continue; }
+    if (!['--root', '--config', '--scene'].includes(args[i]) || !args[i + 1]) throw new Error('Usage: node build/tools/compose-explainer.cjs [--root output/explainer/20261103] [--config comfyui/config/explainer.json] [--scene 02-setup] [--silent-preview] [--portrait] [--overwrite]');
     options[args[i].slice(2)] = args[++i];
   }
   compose(options).catch(error => { console.error(error.stack); process.exitCode = 1; });
