@@ -3967,56 +3967,68 @@
   "videos": [
     {
       "id": "title",
-      "sha256": "a60c23c4eb5891eb075ae23a4491120b6b210a842d9c33a25d7098fe1ab00244",
-      "bytes": 16778728,
+      "sha256": "8f06eb1b5aa0439d726dbc05e7952d96e0aa04681f40d817b64a9e9c6b2bc97d",
+      "bytes": 15505627,
       "duration": 8.042
     },
     {
       "id": "select",
-      "sha256": "82c91e28bdd5b51239813e53c132a47ddddd6988eb05ea785566f25723271c1a",
-      "bytes": 14581074,
+      "sha256": "d4e5e222641cbe58d1fe30c3ebfcdd49d2220fdd2b92264cc01b45750e602d27",
+      "bytes": 12997696,
+      "duration": 8.042
+    },
+    {
+      "id": "title-portrait",
+      "sha256": "93cf816b06b5411af4924d00e0fd40f8f332447944b02de49484f1e9554eb07b",
+      "bytes": 3500990,
+      "duration": 8.042
+    },
+    {
+      "id": "select-portrait",
+      "sha256": "117878eead9cd7bd9ede3cc2c8f3ea24c95c4b9c804a4dcd6196b977c5830890",
+      "bytes": 2684341,
       "duration": 8.042
     },
     {
       "id": "intro-griddle",
-      "sha256": "f28154da7421d0ca90036be9d8a92adf79626e70d39c3c0ee7df21f49af1aab1",
-      "bytes": 7239266,
+      "sha256": "3dab681a674604372fdb3e8f837445ae4d9be84a14d8be30bb5c2e402786e845",
+      "bytes": 6690210,
       "duration": 4.042
     },
     {
       "id": "intro-rivet",
-      "sha256": "97f78c9b9a4ec3d4fbfcfb6a5739ad0d265982b6a514e5cae0397647ed8df775",
-      "bytes": 7170380,
+      "sha256": "00f256f6dff89b72825b56b2a4937355f345583f5cf9e43d05a7d65cab371a03",
+      "bytes": 6592180,
       "duration": 4.042
     },
     {
       "id": "intro-tempo",
-      "sha256": "43c25e79cc2dc2630a1d6526d9ececc930a8022764b05041d7b1ac559b8cbbbe",
-      "bytes": 7805229,
+      "sha256": "41ee6e4d496b78722fc6c519b62c8a71541d239bb558906f78ff6cab11051799",
+      "bytes": 7184759,
       "duration": 4.042
     },
     {
       "id": "intro-nimbus",
-      "sha256": "3ad5907122a00b90c9842b110b4b1149e644da5903c8c3608d6e3198dd4965d8",
-      "bytes": 6921800,
+      "sha256": "7506065714ade890fef80bbdf91d9fdff47deba0ff82e603d9783b6c5c746ef2",
+      "bytes": 6546391,
       "duration": 4.042
     },
     {
       "id": "intro-switchback",
-      "sha256": "5ea8b26f4d862e29728625f59a5643c5414e12b365aed0b4d34c5f29bbef5da9",
-      "bytes": 8502942,
+      "sha256": "1ea64e53a7d27d04caf31ac3556d36794d44d84a3b0e5668216d1b58dddb7add",
+      "bytes": 7952144,
       "duration": 4.042
     },
     {
       "id": "intro-brick",
-      "sha256": "90b5659a86fefde39c93ecc262dab3514b656c7641e178deadda77217d6f3c88",
-      "bytes": 7926586,
+      "sha256": "be98699d881b1a0ccd49d6ce45e56928e208f07741f78f874cf54a8d39ce4e51",
+      "bytes": 7263242,
       "duration": 4.042
     },
     {
       "id": "intro-bylaw",
-      "sha256": "a20fa6a20e8e160646b0a06a13da58f108cad3cffde9d47f547f19b7768259ea",
-      "bytes": 7789185,
+      "sha256": "34eb0e7abde214e04e07b3bc2136484d6ac1b93f89e418c5c543b8543f9b6079",
+      "bytes": 7189457,
       "duration": 4.042
     },
     {
@@ -4065,8 +4077,8 @@
   "media": {
     "addedAt": "2026-11-09",
     "run": "output/test-runs/canonical-20261109",
-    "clips": 16,
+    "clips": 18,
     "packed": true,
-    "note": "CFZIntroVideo, CFZSelectIdleVideo, CFZTitleVideo and CFZSelectVideo (Seedance 1.5 Pro, 1080p) drawn by new-game.cjs add-media from the accepted identities, The Yard and the arcade title and select art."
+    "note": "CFZIntroVideo, CFZSelectIdleVideo, CFZTitleVideo and CFZSelectVideo (Seedance 1.5 Pro, 1080p) drawn by new-game.cjs add-media from the accepted identities, The Yard and the arcade title and select art; the portrait cuts (title-portrait, select-portrait) recompose that art tall for phones and are packed 720 wide."
   }
 }

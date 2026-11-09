@@ -11,8 +11,8 @@
   "stages": 3,
   "poses": 567,
   "audio": 99,
-  "files": 774,
-  "sourceBytes": 276888791,
-  "outputBytes": 162905696,
+  "files": 776,
+  "sourceBytes": 276280638,
+  "outputBytes": 162297543,
   "formats": "WebP quality 94, MP3 VBR quality 2, accepted MP4 copied unchanged; source reference previews limited to 1200px"
 }
