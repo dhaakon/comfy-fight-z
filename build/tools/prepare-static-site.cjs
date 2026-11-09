@@ -3,16 +3,25 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
 const { verifiedExport } = require('./install-game.cjs');
+const { verifiedCrossover } = require('./crossover.cjs');
 const { directoryTarget, isInside, sourceFile, runtimeSources } = require('./lib/runtime-validation.cjs');
+
+// A verified export's game/ directory, or an installed crossover slot (output/games/<id> built by crossover.cjs), which
+// has no export receipt and is re-verified by its own tool instead.
+function verifiedGame(game) {
+  const record = path.join(game, 'installation.json');
+  if (fs.existsSync(record) && JSON.parse(fs.readFileSync(record, 'utf8')).source === 'crossover') return verifiedCrossover(game);
+  return verifiedExport(game);
+}
 const ROOT = path.resolve(__dirname, '../..');
 const CODE = ['index.html', 'style.css', 'engine.js', 'anim.js', 'render/arena.js', 'render/scenery.js', 'render/canvas-renderer.js', 'render/pixi-renderer.js', 'vendor/pixi.min.js', 'fonts/PressStart2P-Regular.ttf', 'fonts/OFL-PressStart2P.txt', 'game.js', 'runtime-config.js', 'session-client.js', 'multiplayer.js', 'controller.js', 'controller.html', 'network.css', 'LICENSE', 'THIRD-PARTY-NOTICES.txt', 'arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp', 'arcade/title-logo.webp'];
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.flac': 'audio/flac', '.mp4': 'video/mp4' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8', '.ttf': 'font/ttf', '.png': 'image/png', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.flac': 'audio/flac', '.mp4': 'video/mp4' };
 const digest = data => createHash('sha256').update(data).digest('hex');
 
 function prepareStaticSite({ game, out } = {}) {
   if (!game || !out) throw new Error('Supply --game <verified export/game> and --out <deployment folder>.');
   game = path.resolve(game); out = path.resolve(out);
-  const source = verifiedExport(game), site = path.join(out, 'site');
+  const source = verifiedGame(game), site = path.join(out, 'site');
   if (!isInside(path.join(ROOT, 'output/deploy'), out) || directoryTarget(out) !== out) throw new Error('Deployment artifacts must be in a plain output/deploy/<run> directory.');
   if (site === source.source || isInside(source.source, site) || isInside(site, source.source)) throw new Error('Static output must be separate from the source game.');
   if (fs.existsSync(site) || fs.existsSync(path.join(out, 'deployment.json'))) throw new Error('Static site artifacts already exist; choose a fresh deployment folder.');
@@ -36,7 +45,7 @@ function prepareStaticSite({ game, out } = {}) {
   const publicFiles = files.map(({ source: ignored, ...file }) => file);
   const report = { schema: 'comfy-fighter-static-deployment/v1', preparedAt: new Date().toISOString(), title: source.manifest.title,
     repository: 'https://github.com/dhaakon/comfy-fight-z', site: path.relative(ROOT, site).split(path.sep).join('/'),
-    sourceExport: path.relative(ROOT, source.source).split(path.sep).join('/'),
+    sourceExport: path.relative(ROOT, source.source).split(path.sep).join('/'), sourceKind: source.record ? 'crossover slot' : 'verified export',
     files: publicFiles, fileCount: files.length, bytes: files.reduce((sum, file) => sum + file.bytes, 0),
     artifactSha256: digest(publicFiles.map(file => `${file.path}\0${file.sha256}\n`).join('')),
     fighters: source.manifest.fighters.length, stages: source.manifest.stages.length, poses: source.poseCount,

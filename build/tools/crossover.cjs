@@ -26,7 +26,9 @@ const DEFAULT_DEFINITION = 'build/crossovers/ultra.json';
 // The browser runtime a game slot serves (the server's public file list), copied from build/public.
 const RUNTIME_FILES = ['index.html', 'game.js', 'engine.js', 'anim.js', 'render/arena.js', 'render/scenery.js', 'render/canvas-renderer.js',
   'render/pixi-renderer.js', 'vendor/pixi.min.js', 'style.css', 'session-client.js', 'multiplayer.js', 'network.css', 'controller.html',
-  'controller.js', 'runtime-config.js', 'LICENSE', 'THIRD-PARTY-NOTICES.txt', 'fonts/PressStart2P-Regular.ttf', 'fonts/OFL-PressStart2P.txt'];
+  'controller.js', 'runtime-config.js', 'LICENSE', 'THIRD-PARTY-NOTICES.txt', 'fonts/PressStart2P-Regular.ttf', 'fonts/OFL-PressStart2P.txt',
+  // The original cast's static title art ships with every export and the static-site packer expects it, so a slot has it too.
+  'arcade/title-backdrop.webp', 'arcade/title-ensemble.webp', 'arcade/select-backdrop.webp', 'arcade/menu-frame.webp', 'arcade/title-logo.webp'];
 const OPTIONAL_RUNTIME = new Set(['LICENSE', 'THIRD-PARTY-NOTICES.txt']);
 const FIGHTER_ART = ['portrait', 'hero', 'cutin', 'endingArt', 'sourceImage'];
 const FIGHTER_CLIPS = ['introVideo', 'selectVideo'];
@@ -265,6 +267,17 @@ function verify(game, manifest) {
   return sources.size;
 }
 
+// An installed crossover slot, re-verified the way an export's game/ is: every mapped file inside the slot, the clip
+// digests intact and the runtime files present. The static-site packer takes it in place of an export.
+function verifiedCrossover(game) {
+  const source = fs.realpathSync(game), recordFile = path.join(source, 'installation.json');
+  const record = fs.existsSync(recordFile) ? read(recordFile) : null;
+  if (record?.source !== 'crossover') throw new Error(`${game} is not an installed crossover slot.`);
+  const manifest = read(path.join(source, 'assets/manifest.json'));
+  verify(source, manifest);
+  return { source, manifest, record, sources: runtimeSources(manifest), poseCount: manifest.fighters.reduce((sum, fighter) => sum + Object.keys(fighter.poses).length, 0) };
+}
+
 async function buildCrossover({ definitionPath = path.join(ROOT, DEFAULT_DEFINITION), out = null, install = true, log = console.log } = {}) {
   definitionPath = path.resolve(definitionPath);
   const definition = loadDefinition(definitionPath), series = loadSeries(definition);
@@ -362,4 +375,4 @@ if (require.main === module) {
   buildCrossover(options).catch(error => { console.error(error.message); process.exitCode = 1; });
 }
 
-module.exports = { buildCrossover, loadDefinition, loadSeries, compose, ensembleArt, SCHEMA };
+module.exports = { buildCrossover, loadDefinition, loadSeries, compose, ensembleArt, verifiedCrossover, SCHEMA };

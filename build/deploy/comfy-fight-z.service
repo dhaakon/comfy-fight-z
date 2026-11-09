@@ -13,7 +13,7 @@ Environment=PORT=8095
 Environment=PUBLIC_URL=https://comfy-fight-z.dhaakon.com/
 Environment=PUBLIC_ORIGINS=https://comfy-fight-z.dhaakon.com
 Environment=GAME_ROOT=/var/www/comfy-fight-z.dhaakon.com/current
-Environment="GAME_MOUNTS={\"/\":\".\",\"/phone-photo-demo/\":\"phone-photo-demo\"}"
+Environment="GAME_MOUNTS={\"/\":\".\",\"/phone-photo-demo/\":\"phone-photo-demo\",\"/billionaires-brawl/\":\"billionaires-brawl\",\"/midterm-2026/\":\"midterm-2026\",\"/rogue-ai/\":\"rogue-ai\",\"/ultra/\":\"ultra\"}"
 Environment=SERVE_STATIC=0
 Environment=TRUST_PROXY=1
 ExecStart=/usr/bin/node /opt/comfy-fight-z/current/start-server.cjs
