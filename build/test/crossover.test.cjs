@@ -122,7 +122,11 @@ test('the title montage and key-art composite come from the listed images and cl
   const made = spawnSync('ffmpeg', ['-hide_banner', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=320x180:rate=24', '-t', '1.5', '-pix_fmt', 'yuv420p', clip], { windowsHide: true });
   assert.equal(made.status, 0, String(made.stderr));
   const images = ['alpha/assets/ui/ensemble.png', 'beta/assets/ui/ensemble.png', 'alpha/assets/stages/dock.png', 'beta/assets/stages/lab.png'].map(file => relative(path.join(base, file)));
-  const { manifest } = await buildCrossover({ definitionPath: write({ ...definition, ensemble: images, titleMontage: [{ image: images[0], seconds: 2 }, { video: relative(clip) }] }), out: path.join(base, 'out'), log: () => {} });
+  const { manifest } = await buildCrossover({ definitionPath: write({ ...definition, ensemble: images, titleMontage: [{ image: images[0], seconds: 2 }, { video: relative(clip) }], selectVideo: relative(clip) }), out: path.join(base, 'out'), log: () => {} });
+  // A borrowed select loop is copied and mapped with its own digest and duration.
+  assert.equal(manifest.selectVideo.src, 'assets/video/select.mp4');
+  assert.ok(Math.abs(manifest.selectVideo.duration - 1.5) < 0.1, String(manifest.selectVideo.duration));
+  assert.equal(manifest.selectVideo.sha256, digest(clip));
   assert.equal(manifest.ui.ensemble, 'assets/ui/ensemble.webp');
   assert.ok(fs.statSync(path.join(base, 'out/assets/ui/ensemble.webp')).size > 0);
   assert.equal(manifest.titleVideo.src, 'assets/video/title.mp4');

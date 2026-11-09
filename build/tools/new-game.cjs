@@ -1,10 +1,14 @@
 // The new-game pipeline, one command per step so a person or an agent can reproduce a whole game from a cast file:
-//   node build/tools/new-game.cjs prepare --cast comfyui/casts/<name>.json --out output/test-runs/<fresh-name> [--seed 42] [--no-media] [--no-audio]
+//   node build/tools/new-game.cjs prepare --cast comfyui/casts/<name>.json --out output/test-runs/<fresh-name> [--seed 42] [--no-media] [--no-audio] [--accepted <bundle>]
+//     (--accepted copies an accepted bundle, such as example/bundle with --cast comfyui/config/factory.json, into the run for
+//     add-on steps only; such a run refuses the full generation)
 //   node build/tools/new-game.cjs run     --run output/test-runs/<name> --approve-usd <amount> [--server http://127.0.0.1:8188] [--resume]
 //   node build/tools/new-game.cjs review  --run output/test-runs/<name>
 //   node build/tools/new-game.cjs reroll  --run output/test-runs/<name> --node <id or title> --approve-usd <amount>
-//   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle>|title_video|select_video --approve-usd <amount> [--video-model <name>] [--video-resolution 720p|1080p]
+//   node build/tools/new-game.cjs reroll-art --run output/test-runs/<name> --asset <fighter>_<portrait|hero|cutin|ending|intro|idle>|title_video|select_video --approve-usd <amount> [--video-model <name>] [--video-resolution 720p|1080p] [--title-image <file>] [--select-image <file>]
 //   node build/tools/new-game.cjs add-sheets --run output/test-runs/<name> --approve-usd <amount> [--sheets sheetF,sheetG] [--fighters a,b] [--reference-sheet sheetF]
+//   node build/tools/new-game.cjs add-media --run output/test-runs/<name> --approve-usd <amount> [--clips intro,idle,title,select] [--fighters a,b] [--title-image <file>] [--select-image <file>]
+//     (the startup and select clips a run lacks, drawn like reroll-art from the bundle's accepted images; mapped clips are skipped)
 //     (--reference-sheet picks the accepted sheet sent as the style reference, default sheet A; use a clean one when sheet A has an extra figure)
 //   node build/tools/new-game.cjs title-card (--run output/test-runs/<name> | --example | --crossover build/crossovers/<name>.json) --approve-usd 0.08 [--title <text>] [--tagline <text>]
 //     (one 2K image: the game's key art lettered with its own name, the game-select title card; see titleCard below)
@@ -27,7 +31,7 @@ const now = () => new Date().toISOString();
 
 function parse(argv) {
   const [command, ...rest] = argv, options = {};
-  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters', '--reference-sheet', '--stages', '--direction', '--elements', '--director-model', '--reroll', '--title', '--tagline', '--crossover'];
+  const valued = ['--cast', '--out', '--seed', '--run', '--approve-usd', '--server', '--slot', '--node', '--asset', '--video-model', '--video-resolution', '--sheets', '--fighters', '--reference-sheet', '--stages', '--direction', '--elements', '--director-model', '--reroll', '--title', '--tagline', '--crossover', '--accepted', '--clips', '--title-image', '--select-image'];
   for (let i = 0; i < rest.length; i++) {
     if (rest[i] === '--no-media') options.media = false;
     else if (rest[i] === '--no-audio') options.audio = false;
@@ -38,7 +42,7 @@ function parse(argv) {
   }
   return { command, options };
 }
-const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|add-sheets|add-scenery|title-card|pack-media|export|install|status> ... (see the header of this file).';
+const USAGE = 'Usage: node build/tools/new-game.cjs <prepare|run|review|reroll|reroll-art|add-sheets|add-scenery|add-media|title-card|pack-media|export|install|status> ... (see the header of this file).';
 
 function runDirectory(options) {
   if (!options.run) throw new Error('Supply --run output/test-runs/<name>.');
@@ -64,12 +68,36 @@ function prepare(options) {
   const { directory, plan } = prepareCast({ cast: options.cast, out: options.out, seed: options.seed ?? 42, media: options.media !== false, audio: options.audio !== false });
   const cast = read(path.join(directory, 'cast.json'));
   const state = pipeline(directory); state.cast = { file: options.cast, id: cast.id || null, title: cast.title, subtitle: cast.subtitle || '', fighters: plan.fighters, stages: plan.stages };
+  if (options.accepted) state.accepted = acceptBundle(directory, options.accepted, plan);
   fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
   record(directory, 'prepared', { estimatedUSD: plan.total.estimatedUSD, images: plan.images.paidImages, clips: plan.videos?.clips || 0, audio: plan.audio?.clips || 0, seed: Number(options.seed ?? 42) });
+  if (state.accepted) {
+    console.log(`Prepared ${plan.title}${plan.subtitle ? ' / ' + plan.subtitle : ''} over the accepted ${state.accepted.bundle} (${state.accepted.images} images, ${state.accepted.audio} sounds, ${state.accepted.videos} clips).`);
+    console.log('  Add-on steps only (add-media, add-scenery, add-sheets, reroll-art, title-card); the full generation is refused so the accepted art is never redrawn.');
+    return { directory, plan };
+  }
   console.log(`Prepared ${plan.title}${plan.subtitle ? ' / ' + plan.subtitle : ''}: ${plan.fighters.length} fighters, ${plan.stages.length} arena(s).`);
   console.log(`  images ${plan.images.paidImages} ($${plan.images.estimatedUSD})` + (plan.videos ? `, clips ${plan.videos.clips} / ${plan.videos.seconds} s ($${plan.videos.estimatedUSD})` : '') + (plan.audio ? `, audio ${plan.audio.clips} ($${plan.audio.estimatedUSD})` : ''));
   console.log(`  estimated total $${plan.total.estimatedUSD} — nothing submitted. Next: node build/tools/new-game.cjs run --run ${path.relative(ROOT, directory).replace(/\\/g, '/')} --approve-usd ${Math.ceil(plan.total.estimatedUSD * 100) / 100}`);
   return { directory, plan };
+}
+
+// Copy an accepted bundle (its manifests and every mapped file) into a prepared run, so add-on steps can extend it: the
+// original game's example/bundle with --cast comfyui/config/factory.json. Its cast must match the run's.
+function acceptBundle(directory, source, plan) {
+  const from = path.resolve(ROOT, source), assets = read(path.join(from, 'assets.json'));
+  if (!['comfy-fighter-assets/v1', 'dad-fighter-assets/v1'].includes(assets.schema) || assets.partial || !Array.isArray(assets.assets)) throw new Error(`${source} is not a complete accepted assets.json bundle.`);
+  const same = (a, b) => a.length === b.length && a.every(id => b.includes(id));
+  if (!same(assets.game.fighters.map(f => f.id), plan.fighters) || !same(assets.game.stages.map(s => s.id), plan.stages)) throw new Error(`${source} holds a different cast than the run (${plan.fighters.join(', ')} in ${plan.stages.join(', ')}).`);
+  const bundle = path.join(directory, 'bundle'), { sourceFile } = require('./lib/runtime-validation.cjs'), records = [...assets.assets];
+  const manifests = ['assets.json', 'audio.json', 'video.json'].filter(name => fs.existsSync(path.join(from, name)));
+  const audio = manifests.includes('audio.json') ? read(path.join(from, 'audio.json')).assets || [] : [], video = manifests.includes('video.json') ? read(path.join(from, 'video.json')) : {};
+  const clips = [video.openingVideo, video.titleVideo, video.selectVideo, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean);
+  for (const record of [...records, ...audio, ...clips]) {
+    const target = path.join(bundle, record.src); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.copyFileSync(sourceFile(from, record.src), target);
+  }
+  for (const name of manifests) fs.copyFileSync(path.join(from, name), path.join(bundle, name));
+  return { bundle: path.relative(ROOT, from).split(path.sep).join('/'), at: now(), images: records.length, audio: audio.length, videos: clips.length };
 }
 
 async function missingNodes(workflow, server) {
@@ -81,6 +109,7 @@ async function missingNodes(workflow, server) {
 
 async function run(options) {
   const directory = runDirectory(options), plan = read(path.join(directory, 'plan.json')), state = pipeline(directory);
+  if (state.accepted) throw new Error(`This run extends the accepted ${state.accepted.bundle}; the full generation would redraw it. Use add-media, add-scenery, add-sheets, reroll-art or title-card.`);
   const approved = Number(options.approveUsd);
   if (!Number.isFinite(approved) || approved < plan.total.estimatedUSD) throw new Error(`This run is estimated at $${plan.total.estimatedUSD}; pass --approve-usd ${Math.ceil(plan.total.estimatedUSD * 100) / 100} (or more) only after the spend is authorized.`);
   if (state.steps.ran && !options.resume) throw new Error('This run already executed; pass --resume to let the sequential runner continue from its cache, or prepare a fresh run.');
@@ -372,9 +401,11 @@ async function rerollArt(options) {
     prompt.reference = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.id === `${planned.fighter}_reference`)) }, _meta: { title: 'Accepted identity reference' } };
     inputs.character = ['character', 0]; inputs.reference = ['reference', 0];
   } else {
-    // The menu loops animate the accepted interface art: the cast ensemble or the select backdrop.
-    const source = planned.kind === 'title' ? 'ensemble' : 'select';
-    prompt.image = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.kind === 'ui' && item.id === source)) }, _meta: { title: `Accepted ${source} art` } };
+    // The menu loops animate the accepted interface art: the cast ensemble or the select backdrop, or the art a game
+    // keeps outside its bundle (the original game's arcade title and select art) named by --title-image/--select-image.
+    const source = planned.kind === 'title' ? 'ensemble' : 'select', art = options.sourceImage || (planned.kind === 'title' ? options.titleImage : options.selectImage);
+    const image = art ? await uploadInput(server, path.resolve(ROOT, art), 'cfz-redraw') : await upload(assets.assets.find(item => item.kind === 'ui' && item.id === source));
+    prompt.image = { class_type: 'LoadImage', inputs: { image }, _meta: { title: art ? `Accepted ${path.basename(art)}` : `Accepted ${source} art` } };
     inputs[planned.kind === 'title' ? 'title_image' : 'select_image'] = ['image', 0];
   }
   if (planned.kind === 'intro') { prompt.stage = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.kind === 'stage')) }, _meta: { title: 'Accepted stage' } }; inputs.stage_reference = ['stage', 0]; }
@@ -388,7 +419,7 @@ async function rerollArt(options) {
   const before = new Set(fs.readdirSync(path.join(bundle, 'raw')));
   const entry = { at: now(), asset: options.asset, attempt: count, estimatedUSD: planned.estimatedUSD, approvedUSD: approved, prompt: path.basename(file), ...(planned.clip ? { video: planned.video } : {}) };
   state.artRerolls = [...(state.artRerolls || []), entry]; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
-  console.log(`Redrawing ${options.asset} (attempt ${count}, about $${planned.estimatedUSD}) from the bundle's accepted identity; nothing else is touched.`);
+  console.log(`${options.create ? 'Drawing' : 'Redrawing'} ${options.asset} (attempt ${count}, about $${planned.estimatedUSD}) from the bundle's accepted art; nothing else is touched.`);
   const promptId = submit(file), result = await outcome(server, promptId, 30 * 60000);
   entry.promptId = promptId; entry.ok = result.ok;
   if (!result.ok) { fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n'); throw new Error(`Redraw failed: ${result.error?.exception_type || ''}: ${result.error?.exception_message || 'unknown error'}`); }
@@ -398,9 +429,17 @@ async function rerollArt(options) {
   if (produced.length !== 1) throw new Error(`Expected one new ${prefix}* file, found ${produced.length}.`);
   const target = path.join(bundle, 'raw', produced[0]), digest = require('node:crypto').createHash('sha256').update(fs.readFileSync(target)).digest('hex');
   if (planned.clip) {
-    const videoFile = path.join(bundle, 'video.json'), video = read(videoFile);
-    const record = planned.kind === 'title' ? video.titleVideo : planned.kind === 'select' ? video.selectVideo : (planned.kind === 'intro' ? video.fighterIntros : video.selectIdles)?.find(item => item.fighter === planned.fighter);
+    const videoFile = path.join(bundle, 'video.json'), video = fs.existsSync(videoFile) ? read(videoFile) : { schema: 'comfy-fighter-video/v1', root: '.' };
+    let record = planned.kind === 'title' ? video.titleVideo : planned.kind === 'select' ? video.selectVideo : (planned.kind === 'intro' ? video.fighterIntros : video.selectIdles)?.find(item => item.fighter === planned.fighter);
+    // add-media draws clips a run never had: the record is created here, in the shape CFZExportVideos writes.
+    if (!record && options.create) {
+      record = planned.fighter ? { id: `${planned.kind}-${planned.fighter}`, fighter: planned.fighter } : { id: planned.kind };
+      if (planned.kind === 'title') video.titleVideo = record;
+      else if (planned.kind === 'select') video.selectVideo = record;
+      else (planned.kind === 'intro' ? (video.fighterIntros ||= []) : (video.selectIdles ||= [])).push(record);
+    }
     if (!record) throw new Error(`video.json has no ${planned.kind} record${planned.fighter ? ' for ' + planned.fighter : ''}.`);
+    record.hasAudio = false;
     const probe = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', target], { encoding: 'utf8', windowsHide: true });
     const duration = Number(probe.stdout); if (Number.isFinite(duration) && duration > 0) record.duration = Number(duration.toFixed(3));
     Object.assign(record, { src: `raw/${produced[0]}`, sha256: digest }); fs.writeFileSync(videoFile, JSON.stringify(video, null, 2) + '\n');
@@ -411,7 +450,48 @@ async function rerollArt(options) {
     Object.assign(record, { src: `raw/${produced[0]}`, sha256: digest, width: image.width, height: image.height }); fs.writeFileSync(assetsFile, JSON.stringify(assets, null, 2) + '\n');
   }
   entry.file = `raw/${produced[0]}`; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
-  console.log(`Redrew ${options.asset} → ${entry.file}. Review again, then export to a fresh folder.`);
+  console.log(`${options.create ? 'Drew' : 'Redrew'} ${options.asset} → ${entry.file}. Review again, then export to a fresh folder.`);
+}
+
+// Add the startup and select media a run lacks: one fight introduction and one select idle loop per fighter, the title
+// loop and the select loop. Each clip is drawn like reroll-art (accepted images uploaded from the bundle, the character
+// rebuilt from the cast text) and recorded in video.json; clips already mapped are skipped, so a rerun resumes after a
+// failure. --title-image and --select-image animate interface art kept outside the bundle.
+const MEDIA_CLIPS = ['intro', 'idle', 'title', 'select'];
+function mediaPlan(workflow, bundle, options = {}) {
+  const clips = (options.clips || MEDIA_CLIPS.join(',')).split(',').map(item => item.trim()).filter(Boolean);
+  for (const clip of clips) if (!MEDIA_CLIPS.includes(clip)) throw new Error(`--clips takes ${MEDIA_CLIPS.join(', ')}.`);
+  const assets = read(path.join(bundle, 'assets.json')), fighters = options.fighters ? options.fighters.split(',').map(item => item.trim()) : assets.game.fighters.map(f => f.id);
+  const videoFile = path.join(bundle, 'video.json'), video = fs.existsSync(videoFile) ? read(videoFile) : {};
+  const mapped = new Set([video.titleVideo && 'title_video', video.selectVideo && 'select_video', ...(video.fighterIntros || []).map(item => `${item.fighter}_intro`),
+    ...(video.selectIdles || []).map(item => `${item.fighter}_idle`)].filter(Boolean));
+  const wanted = [...fighters.flatMap(id => ['intro', 'idle'].filter(kind => clips.includes(kind)).map(kind => `${id}_${kind}`)),
+    ...['title', 'select'].filter(kind => clips.includes(kind)).map(kind => `${kind}_video`)];
+  const overrides = { videoModel: options.videoModel, videoResolution: options.videoResolution };
+  const todo = wanted.filter(asset => !mapped.has(asset)).map(asset => ({ asset, plan: artPlan(workflow, asset, overrides) }));
+  for (const [kind, file] of [['title', options.titleImage], ['select', options.selectImage]]) {
+    if (file) { if (!fs.existsSync(path.resolve(ROOT, file))) throw new Error(`--${kind}-image ${file} does not exist.`); continue; }
+    const source = kind === 'title' ? 'ensemble' : 'select';
+    if (todo.some(item => item.asset === `${kind}_video`) && !assets.assets.some(item => item.kind === 'ui' && item.id === source)) throw new Error(`The ${kind} loop animates ui/${source}, which the bundle lacks; pass --${kind}-image <file>.`);
+  }
+  return { todo, skipped: wanted.filter(asset => mapped.has(asset)), estimatedUSD: Number(todo.reduce((sum, item) => sum + item.plan.estimatedUSD, 0).toFixed(6)) };
+}
+async function addMedia(options) {
+  const directory = runDirectory(options), bundle = path.join(directory, 'bundle'), workflow = read(path.join(directory, 'workflow.api.json'));
+  if (!fs.existsSync(path.join(bundle, 'assets.json'))) throw new Error('No bundle/assets.json yet; generate or accept the art first.');
+  const planned = mediaPlan(workflow, bundle, options), approved = Number(options.approveUsd);
+  if (!planned.todo.length) { console.log(`Every requested clip is already mapped (${planned.skipped.length}).`); return planned; }
+  if (!Number.isFinite(approved) || approved < planned.estimatedUSD) throw new Error(`Adding ${planned.todo.length} clips costs about $${planned.estimatedUSD}; pass --approve-usd ${Math.ceil(planned.estimatedUSD * 100) / 100} (or more) once authorized.`);
+  const state = pipeline(directory), entry = { at: now(), clips: planned.todo.map(item => item.asset), skipped: planned.skipped, estimatedUSD: planned.estimatedUSD, approvedUSD: approved };
+  state.addedMedia = [...(state.addedMedia || []), entry]; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
+  console.log(`Adding ${planned.todo.length} clips (about $${planned.estimatedUSD})${planned.skipped.length ? `, ${planned.skipped.length} already mapped` : ''}, one paid clip at a time.`);
+  for (const { asset, plan } of planned.todo) {
+    const sourceImage = asset === 'title_video' ? options.titleImage : asset === 'select_video' ? options.selectImage : undefined;
+    await rerollArt({ ...options, asset, create: true, sourceImage, approveUsd: String(plan.estimatedUSD) });
+  }
+  const done = pipeline(directory); done.addedMedia[done.addedMedia.length - 1].ok = true; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(done, null, 2) + '\n');
+  console.log(`Added ${planned.todo.length} clips to video.json. Review them (node build/tools/new-game.cjs review --run ${path.relative(ROOT, directory).replace(/\\/g, '/')}), then export to a fresh folder.`);
+  return planned;
 }
 
 // Add the optional motion sheets (sheetF: strike transitions; sheetG: breathing loop and air cels) to a run that was
@@ -663,10 +743,10 @@ async function titleCard(options) {
 
 async function main(argv) {
   const { command, options } = parse(argv);
-  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, 'add-sheets': addSheets, 'add-scenery': addScenery, 'title-card': titleCard, review, 'pack-media': packMedia, export: exportGame, install, status };
+  const commands = { prepare, run, reroll, 'reroll-art': rerollArt, 'add-sheets': addSheets, 'add-scenery': addScenery, 'add-media': addMedia, 'title-card': titleCard, review, 'pack-media': packMedia, export: exportGame, install, status };
   if (!commands[command]) throw new Error(USAGE);
   await commands[command](options);
 }
 
 if (require.main === module) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
-module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, titleCard, titleCardSource, TITLE_CARD_USD, packMedia, packageFloor, exportGame, install, pipeline, missingNodes };
+module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, addMedia, mediaPlan, acceptBundle, titleCard, titleCardSource, TITLE_CARD_USD, packMedia, packageFloor, exportGame, install, pipeline, missingNodes };

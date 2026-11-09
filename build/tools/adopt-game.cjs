@@ -70,6 +70,8 @@ async function adopt(game) {
     for (const level of manifest.stages) {
       if (level.src) level.src = await media(level.src);
       if (level.sourceImage) level.sourceImage = await media(level.sourceImage, true);
+      // Living-scenery elements are cut-outs with alpha, converted like the sprites.
+      for (const layer of level.scenery?.layers || []) layer.src = await media(layer.src);
     }
     for (const [id, value] of Object.entries(manifest.ui)) manifest.ui[id] = await media(typeof value === 'string' ? value : value.src);
     for (const effect of Object.values(manifest.effects)) effect.src = await media(effect.src);
@@ -78,7 +80,8 @@ async function adopt(game) {
     }
     if (manifest.openingVideo) manifest.openingVideo.src = await media(manifest.openingVideo.src);
     if (manifest.titleVideo) manifest.titleVideo.src = await media(manifest.titleVideo.src);
-    for (const fighter of manifest.fighters) if (fighter.introVideo) fighter.introVideo.src = await media(fighter.introVideo.src);
+    if (manifest.selectVideo) manifest.selectVideo.src = await media(manifest.selectVideo.src);
+    for (const fighter of manifest.fighters) for (const kind of ['introVideo', 'selectVideo']) if (fighter[kind]) fighter[kind].src = await media(fighter[kind].src);
     fs.writeFileSync(path.join(assets, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
     fs.writeFileSync(path.join(assets, 'production.json'), JSON.stringify({ title: manifest.title, source: 'Verified ComfyUI bundle export', generatedWith: ['Gemini Nano Banana 2.1', 'Sonilo', 'ElevenLabs', ...(manifest.openingVideo ? ['Seedance 2.5'] : [])], openingVideo: manifest.openingVideo ? { duration: manifest.openingVideo.duration, format: 'H.264/AAC MP4' } : null, fighters: manifest.fighters.length, stages: manifest.stages.length, poses: manifest.fighters.reduce((n, f) => n + Object.keys(f.poses).length, 0), audio: Object.keys(manifest.audio || {}).length, files: converted.size, sourceBytes, outputBytes, formats: 'WebP quality 94, MP3 VBR quality 2, accepted MP4 copied unchanged; source reference previews limited to 1200px' }, null, 2) + '\n');
     // Keep the prior accepted runtime for recovery, then publish atomically.

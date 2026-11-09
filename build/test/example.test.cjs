@@ -54,6 +54,27 @@ test('example CLI has free-build defaults and explicit output/install choices', 
   for (const args of [['--generate'], ['--out'], ['--out', 'a', '--out', 'b'], ['--out', '--no-install']]) assert.throws(() => parseArgs(args), /Usage/);
 });
 
+test('an example may carry startup clips and living-scenery layers outside its contract, each mapped and proven', async t => {
+  const item = fixture(t), clip = Buffer.from('fixture clip bytes, not a real video');
+  write(path.join(item.bundle, 'raw/title-0123456789abcdef.mp4'), clip);
+  write(path.join(item.bundle, 'video.json'), { schema: 'comfy-fighter-video/v1', root: '.', titleVideo: { id: 'title', src: 'raw/title-0123456789abcdef.mp4', duration: 8, sha256: hash(clip), hasAudio: false } });
+  await assert.rejects(verifyBundle(item.bundle), /Packaging evidence does not match title/);
+  write(path.join(item.bundle, 'provenance.json'), { ...item.provenance, videos: [{ id: 'title', sha256: hash(clip), bytes: clip.length, duration: 8 }] });
+  const withClip = await verifyBundle(item.bundle);
+  assert.deepEqual(withClip.videos.map(entry => entry.record.id), ['title']);
+  // A cut-out layer for an arena joins the images without counting against the contract.
+  const layer = Buffer.from('fixture layer'), record = { id: 'yard_el1', kind: 'layer', stage: 'yard', key: false, place: { x: .1, y: .4, w: .08, h: .3 }, motion: 'idle', order: 1, label: 'Neighbor', src: 'raw/yard_el1.webp', sha256: hash(layer), width: 40, height: 80 };
+  write(path.join(item.bundle, record.src), layer);
+  const assets = { ...item.manifest, assets: [...item.manifest.assets, record], game: { ...item.manifest.game, stages: item.manifest.game.stages.map(stage => stage.id === 'yard' ? { ...stage, scenery: { weather: 'none', effects: [] } } : stage) } };
+  write(path.join(item.bundle, 'assets.json'), assets);
+  write(path.join(item.bundle, 'provenance.json'), { ...item.provenance, images: [...item.provenance.images, { id: 'yard_el1', packagedSha256: record.sha256, pixelsIdentical: true }], videos: [{ id: 'title', sha256: hash(clip) }] });
+  const withLayer = await verifyBundle(item.bundle);
+  assert.equal(withLayer.manifest.assets.length, item.manifest.assets.length + 1);
+  // A clip that video.json does not map is refused.
+  write(path.join(item.bundle, 'raw/stray.mp4'), clip);
+  await assert.rejects(verifyBundle(item.bundle), /Unmapped files in the shipped example: raw\/stray\.mp4/);
+});
+
 test('bundled example verifies every image/audio digest and all seven complete pose maps', async t => {
   const item = fixture(t), result = await verifyBundle(item.bundle);
   assert.equal(result.contract.name, 'arcade');
@@ -82,7 +103,11 @@ test('the shipped generated example is complete, portable and contains no unmapp
   // The menu frame and the game-select title card are later optional interface art on top of the contract.
   const laterUi = ['frame', 'card'].filter(id => result.manifest.assets.some(a => a.kind === 'ui' && a.id === id)).length;
   assert.equal(result.manifest.assets.some(a => a.kind === 'ui' && a.id === 'card'), true, 'The example carries its game-select title card');
-  assert.equal(result.entries.length, contract.images + laterUi + withMotion * motionIds.size + detailSheets + contract.audio);
+  // Living-scenery layers and the startup and select clips ride on top of the contract too.
+  const sceneryLayers = result.manifest.assets.filter(a => ['scene', 'layer'].includes(a.kind)).length;
+  assert.deepEqual(result.manifest.game.stages.filter(stage => stage.scenery).map(stage => stage.id), ['yard', 'rooftop', 'arcade'], 'Every arena carries living scenery');
+  assert.equal(result.videos.length, 2 + result.manifest.game.fighters.length * 2, 'A title loop, a select loop and an intro and idle loop per fighter');
+  assert.equal(result.entries.length, contract.images + laterUi + withMotion * motionIds.size + detailSheets + sceneryLayers + contract.audio);
   assert.equal(result.poseCount, contract.fighters * contract.poses + withMotion * Object.values(motion).flat().length + detailSheets * 9);
   for (const filename of ['assets.json', 'audio.json', 'provenance.json']) {
     const json = fs.readFileSync(path.join(bundle, filename), 'utf8');
@@ -151,6 +176,18 @@ test('lossless WebP packaging preserves saturated chroma and alpha pixels exactl
   assert.equal(result.pixelsIdentical, true); assert.equal(result.width, 96); assert.equal(result.height, 96);
   assert.ok((await pixels(source)).rgba.equals((await pixels(destination)).rgba));
   assert.ok(fs.readFileSync(source).equals(original), 'Original raw file must not be changed');
+});
+
+test('lossless WebP packaging keeps soft-edged scenery cut-outs exact, translucent pixels included', async t => {
+  if (spawnSync('ffmpeg', ['-version'], { windowsHide: true }).status !== 0) return t.skip('FFmpeg is only required for maintainer packaging');
+  const root = temporary(t), source = path.join(root, 'layer.png'), destination = path.join(root, 'layer.webp');
+  // An alpha ramp of dark, saturated colour: the pixels a canvas round trip rounds differently for PNG and WebP.
+  const canvas = createCanvas(64, 48), context = canvas.getContext('2d');
+  for (let x = 0; x < 64; x++) { context.fillStyle = `rgba(${16 + x}, ${x % 7}, 0, ${(x + 1) / 64})`; context.fillRect(x, 4, 1, 40); }
+  fs.writeFileSync(source, canvas.toBuffer('image/png'));
+  const result = await losslessImage(source, destination);
+  assert.equal(result.pixelsIdentical, true);
+  assert.deepEqual([result.width, result.height], [64, 48]);
 });
 
 function patchFixture(item) {

@@ -23,9 +23,22 @@ const ID = /^[a-z][a-z0-9_]{1,23}$/;
 const round = value => Number(value.toFixed(6));
 const text = (value, min = 1, max = 4000) => typeof value === 'string' && value.trim().length >= min && value.length <= max;
 
+// The canonical factory configuration (comfyui/config/factory.json) is the original game's cast: its fighters and arenas
+// are invented from text too. A run prepared from it carries the original cast's definitions for add-on steps over the
+// accepted example art (new-game.cjs prepare --accepted example/bundle), with Seedance 1080p clips like the reference casts.
+const UPLOAD_FIELDS = ['sourceImage', 'sourceInput', 'sampleSourceImage', 'sampleSourceInput', 'sourceMode', 'referencePrompt'];
+function factoryCast(factory) {
+  // The final boss speaks with a stock voice outside the cast-run list; add-on steps never regenerate audio.
+  const plain = item => Object.fromEntries(Object.entries(item).filter(([key, value]) => !UPLOAD_FIELDS.includes(key) && !(key === 'introVoice' && !INTRO_VOICES.includes(value))));
+  return { castSchema: CAST_SCHEMA, id: 'comfy-fighter-z', title: factory.title, subtitle: factory.subtitle, assetRoot: factory.assetRoot, videoModel: 'Seedance 1.5 Pro', videoResolution: '1080p',
+    ...Object.fromEntries(INHERITED.filter(key => factory[key] !== undefined).map(key => [key, factory[key]])),
+    fighters: factory.fighters.map(plain), stages: factory.stages.map(plain) };
+}
+
 // Cast files keep only what is specific to the game; the art direction and the sheet layout come from the base.
 function loadCast(file) {
-  const cast = JSON.parse(fs.readFileSync(path.resolve(ROOT, file), 'utf8'));
+  const raw = JSON.parse(fs.readFileSync(path.resolve(ROOT, file), 'utf8'));
+  const cast = raw.factorySchema && !raw.castSchema ? factoryCast(raw) : raw;
   if (cast.castSchema !== CAST_SCHEMA) throw new Error(`Cast files use "castSchema": "${CAST_SCHEMA}".`);
   const base = cast.extends ? read(cast.extends) : {};
   const config = { ...Object.fromEntries(INHERITED.filter(key => base[key] !== undefined).map(key => [key, base[key]])), ...cast };

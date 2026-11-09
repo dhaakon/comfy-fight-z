@@ -1360,6 +1360,402 @@
       "height": 1536,
       "pixelsIdentical": true,
       "rgbaSha256": "113f04a360ead993db192be488160b667c7804642b9c4e8e4b385cac9934bfdf"
+    },
+    {
+      "id": "yard_el1",
+      "sourceSha256": "d9def1b9e288f25392678fbdda8fdb8df7cbeec17593dcad60b478cf6ace5c2d",
+      "packagedSha256": "b7813de287ef577ed3c450fed7eb4871dd11aee5873593e22b47d2373b7d3f58",
+      "sourceBytes": 76595,
+      "bytes": 28292,
+      "width": 189,
+      "height": 171,
+      "pixelsIdentical": true,
+      "rgbaSha256": "361559e758d6a4696cd5ead87892b0c6dcc5679a77cc622627ae6b2703ba48db"
+    },
+    {
+      "id": "yard_el2",
+      "sourceSha256": "96d9d9922a558472ba20f172cfd9af2e0bcbeff5d1dc656faf71d4f3f9946c0c",
+      "packagedSha256": "4c5e7177fe752d7c256251df4346491549bb771de77b197f18fab0dba838a57e",
+      "sourceBytes": 266961,
+      "bytes": 73260,
+      "width": 291,
+      "height": 406,
+      "pixelsIdentical": true,
+      "rgbaSha256": "d2beee4cbf4323645e17c1c6ff38d3027ec7993788809e0f5b2094081e330e5a"
+    },
+    {
+      "id": "yard_el3",
+      "sourceSha256": "99fa35591b57e507b19fa826b0a0eabe0fbd53803d6f817d8f0974a8aa13311a",
+      "packagedSha256": "76de4fa5477c35a148dfff2c6431b6b4e8c61cd119686c103fcd07c68438efc5",
+      "sourceBytes": 519472,
+      "bytes": 105338,
+      "width": 486,
+      "height": 497,
+      "pixelsIdentical": true,
+      "rgbaSha256": "604524e5865991b59d42c76d6356e8374a026ba4e44e7178c4baaa81c8bfb446"
+    },
+    {
+      "id": "yard_el4",
+      "sourceSha256": "5fda2245a9da9a07b523e5f4b98326e16768005e5977d24d86908acee05b85a7",
+      "packagedSha256": "48d2679618c5753de0a758b1fe04623da7c3293420ddf1d5be847527f0dcfcfb",
+      "sourceBytes": 73674,
+      "bytes": 23454,
+      "width": 252,
+      "height": 134,
+      "pixelsIdentical": true,
+      "rgbaSha256": "58522dc118ef60822f4263eede0973fc08dabcdedc4df32cb7db19fa8b4d0e85"
+    },
+    {
+      "id": "yard_el5",
+      "sourceSha256": "b9dd019a0ad0d1c033b8a1a7dd612b0d424b05446fadd12c2ce445724e3cc25a",
+      "packagedSha256": "868664ecb044f2714c1319ae677a0933599be45aa77bbf70e4d88f72379279c7",
+      "sourceBytes": 80053,
+      "bytes": 31050,
+      "width": 154,
+      "height": 228,
+      "pixelsIdentical": true,
+      "rgbaSha256": "be896325ed8221d33949f2bcf10a42e4066acf455e1063a6d172e99032fe5e83"
+    },
+    {
+      "id": "yard_el6",
+      "sourceSha256": "b838bfc3fd83e7439878c52243c7f43e7cd2cd711b7d4b0fe1fab5e133a8910f",
+      "packagedSha256": "a22a8154a3db6b7dc0221d4276acb0c6a341e9bf25406f0f63d2a54e76bfaacb",
+      "sourceBytes": 89704,
+      "bytes": 40590,
+      "width": 253,
+      "height": 159,
+      "pixelsIdentical": true,
+      "rgbaSha256": "ed32d0a6bc4e6b298994e887005ebc6abf258faaeec30bbd66982041307d64d3"
+    },
+    {
+      "id": "yard_el7",
+      "sourceSha256": "463d8747cdb5924fda0be8b87e630eaf4993d7eb20e7959ecf76c2cc12e7862f",
+      "packagedSha256": "0c9ae9b204cfc4e4da04637c4b22302ed2d9c660750b7a01480dfe0313057807",
+      "sourceBytes": 19320,
+      "bytes": 6484,
+      "width": 86,
+      "height": 86,
+      "pixelsIdentical": true,
+      "rgbaSha256": "35307e3f87ec35ba449c8683930bfba5332a7a86748931ad8570b99f8fa75a7b"
+    },
+    {
+      "id": "yard_el8",
+      "sourceSha256": "ba5698c92a205bdea84d4f3a81301b8d67f31585bed785002e97940e7675e260",
+      "packagedSha256": "f60cf7469a1e499aa5885dd1051d1aa1ad0c59791d586a5308f96e1af2c5cb40",
+      "sourceBytes": 86012,
+      "bytes": 33116,
+      "width": 179,
+      "height": 234,
+      "pixelsIdentical": true,
+      "rgbaSha256": "40be1e65e33c7c930b67c457f22ce77da7dece77e1d715bb8737fa9ff90726d8"
+    },
+    {
+      "id": "yard_el9",
+      "sourceSha256": "01a9627a62f2c2066a06c1fa34a756d415e3cd4b6c1730467387edc00aabac7a",
+      "packagedSha256": "7fa075dcbd1f78f4f12bbca224fff395b18b9e46a37a9d0f260d47e27edecd9d",
+      "sourceBytes": 198109,
+      "bytes": 54842,
+      "width": 294,
+      "height": 314,
+      "pixelsIdentical": true,
+      "rgbaSha256": "67687f31f46e019b8ccf3b71a8b345261e327d3166d00fdf5b7de18f81c5f572"
+    },
+    {
+      "id": "yard_el11",
+      "sourceSha256": "3cfe619ba39218d517d9f805db0e0cee3ef117a883a65e856c20b5112a3dda93",
+      "packagedSha256": "9100184d068c5721a7a9061aed083c4afce0a766d604b2a70a406f19c5d83aed",
+      "sourceBytes": 71968,
+      "bytes": 25926,
+      "width": 113,
+      "height": 294,
+      "pixelsIdentical": true,
+      "rgbaSha256": "da34a9ba1cacc80564d6b0f89d9cfec50092ca68fcee41b48a35e77a36ca4118"
+    },
+    {
+      "id": "yard_el12",
+      "sourceSha256": "5aaee45866c610cbc2f77c530e195ad1dca39c5cdee4833cd6e29a41cd005ecc",
+      "packagedSha256": "7fed6ff49d98266850d1aa91d8336d9d01d6b0bb861634ed87d569c81db46b0d",
+      "sourceBytes": 86127,
+      "bytes": 32398,
+      "width": 201,
+      "height": 181,
+      "pixelsIdentical": true,
+      "rgbaSha256": "4c911b9aeb6d679859c59b7250aa8a6767e6cf5c3cb98dc2961d3ebf05f81fef"
+    },
+    {
+      "id": "rooftop_el1",
+      "sourceSha256": "d630806c4761d8751f8cf1b1fbc50bdadd98fc2883b0c20bd74728589ad99785",
+      "packagedSha256": "281d75d2ed429ff80260cf5d240ef1df66778ea361a08d670b655cd4fa7668db",
+      "sourceBytes": 201914,
+      "bytes": 67934,
+      "width": 271,
+      "height": 354,
+      "pixelsIdentical": true,
+      "rgbaSha256": "9766fdadb6d0654c7faf37731dc7e77782df6638990d03a3f658e4db098686ff"
+    },
+    {
+      "id": "rooftop_el2",
+      "sourceSha256": "276ad02c4860c34603c6d4832cf2f42ed4aa9889efcaa317c1e10cc15aed2879",
+      "packagedSha256": "5fa6f6ebfddab29baa8028191894479e65472e397773740934d0017a783b0584",
+      "sourceBytes": 18415,
+      "bytes": 6994,
+      "width": 76,
+      "height": 117,
+      "pixelsIdentical": true,
+      "rgbaSha256": "36ba432a48e1b4d884b717fa7848f2c98e43155d17075b4cb9eba9f22b236291"
+    },
+    {
+      "id": "rooftop_el3",
+      "sourceSha256": "22ac22c95b9bb0f3e9a97b81d66dc12d335e109ac1a71806cb88a934fedc8796",
+      "packagedSha256": "f406ad0348a6e1b8e0dcb83a1bf827d60670d3383ee505fd2aec17e41064803b",
+      "sourceBytes": 40449,
+      "bytes": 13070,
+      "width": 151,
+      "height": 129,
+      "pixelsIdentical": true,
+      "rgbaSha256": "cfdbd36cee6becfcdc272fdcee341016a8b3e4b48af8debc259a8561fb534fb7"
+    },
+    {
+      "id": "rooftop_el4",
+      "sourceSha256": "dfac450aa507d587e019ae3862360b2d95813cb08d039c88b8896efe0ae1c0ac",
+      "packagedSha256": "63521e419696c5249f2104afed5678e56113533b1fefd8a104e017054b7cf9f3",
+      "sourceBytes": 55202,
+      "bytes": 17304,
+      "width": 143,
+      "height": 171,
+      "pixelsIdentical": true,
+      "rgbaSha256": "aa41c5d55cc41a855f098fbe1cb728eb1c14cb4b4d6521529389818da794f6b7"
+    },
+    {
+      "id": "rooftop_el5",
+      "sourceSha256": "8f95150a8231d3bded7721ddc98ff1f624cf8441e6d0f76b7c776b452e344ac6",
+      "packagedSha256": "b39223464789770c82d8aaf9ee94f89269deea410619ae84031de66fc85df6ce",
+      "sourceBytes": 17567,
+      "bytes": 5298,
+      "width": 86,
+      "height": 86,
+      "pixelsIdentical": true,
+      "rgbaSha256": "295dcbfd3c60fbbd26dbb38e387820db5a66beed0b247e9aa5ca5fddaf0c4150"
+    },
+    {
+      "id": "rooftop_el6",
+      "sourceSha256": "172a836d69b8a073b8eba734675efc402b2abaa718f160328fc9b04cd3d86d4e",
+      "packagedSha256": "f3610437cce5f57183c7ea6e19977b012b0581b1d05f818d5320ae1a5218cb1a",
+      "sourceBytes": 49300,
+      "bytes": 17844,
+      "width": 166,
+      "height": 127,
+      "pixelsIdentical": true,
+      "rgbaSha256": "c45bfacfc4d52afeb0eac80d65f80fdf868279b37fd7da785b6ae8b68c9012ba"
+    },
+    {
+      "id": "rooftop_el7",
+      "sourceSha256": "7c4ba073b654387be6986d02e2923c045b57f63b4d6661508bb94f0b09aa4642",
+      "packagedSha256": "62d5fbbda76c0199ac6082fd165176065e669164d3a99e69d8b3b76bbf4c1f61",
+      "sourceBytes": 59539,
+      "bytes": 19522,
+      "width": 111,
+      "height": 239,
+      "pixelsIdentical": true,
+      "rgbaSha256": "a0ff3a143e450eb0c5e999867f52304880ed9502b84563a70ff3511321ceab8b"
+    },
+    {
+      "id": "rooftop_el8",
+      "sourceSha256": "6349af919cbc55ed542a490acbd9b0e3f81cd0570a8582cb1b61f8fa43bb04e9",
+      "packagedSha256": "bbfe14c39bcac42567be27a95f26955420ffc20e933d9349feac38aef2b592c8",
+      "sourceBytes": 77878,
+      "bytes": 29950,
+      "width": 301,
+      "height": 131,
+      "pixelsIdentical": true,
+      "rgbaSha256": "f86331a50098f6095292b14a828554a730e412f1904082fdc011413943f48553"
+    },
+    {
+      "id": "rooftop_el9",
+      "sourceSha256": "72756f0ccbcc7824ce735c702c9b407826c158db949ec973e92364643bf67426",
+      "packagedSha256": "0194d253103a6ff3ae6e2af0d1e371200c9c9ba631c6d821c17c819b89cc7b97",
+      "sourceBytes": 46330,
+      "bytes": 17420,
+      "width": 141,
+      "height": 139,
+      "pixelsIdentical": true,
+      "rgbaSha256": "befe16a1fca812568aeaa5683efd5980d09bf2d61d6494490b471f350e4887cc"
+    },
+    {
+      "id": "rooftop_el10",
+      "sourceSha256": "c0ab7b2b3c3a7405dc2bfb7899e294c338f93a8f28df97210fa946a204931ecb",
+      "packagedSha256": "842d8f393e689d5151667921033ea1b87142bfce8763cc528dd17cf1be941ec8",
+      "sourceBytes": 37481,
+      "bytes": 15276,
+      "width": 143,
+      "height": 131,
+      "pixelsIdentical": true,
+      "rgbaSha256": "5ceb895036e9cc6d010b26fe2242f6fa78c5b82eb06ea83ad19ab4bf06eb39a9"
+    },
+    {
+      "id": "rooftop_el11",
+      "sourceSha256": "2df199cf1e553b4f008722d99ba0943dddb0d5e68893c5da97fe02a924199ec5",
+      "packagedSha256": "35bff9acb87527e0d2ee29fbd64ce2e1cff473a11d15c7b787ffc14ae347609a",
+      "sourceBytes": 31368,
+      "bytes": 10686,
+      "width": 124,
+      "height": 116,
+      "pixelsIdentical": true,
+      "rgbaSha256": "a75f7805186a4b54656ffc7dd274f5723c629823cc16b7b8a33468895c70cc36"
+    },
+    {
+      "id": "rooftop_el12",
+      "sourceSha256": "fd4b3db8658cb4630dda4648714d25d095fbe1cda30d21d9d2b4e46e96e8a958",
+      "packagedSha256": "ec4cb580a6ce49da41c3ff2b93275588a45f2d51b265ccb2c1c93182ee0962fa",
+      "sourceBytes": 86971,
+      "bytes": 33684,
+      "width": 136,
+      "height": 311,
+      "pixelsIdentical": true,
+      "rgbaSha256": "ddc8c4fee5bf72950a49a0aed890814e2690453ae8ce2be96be6619a5e01998d"
+    },
+    {
+      "id": "rooftop_el13",
+      "sourceSha256": "ea3c91cad2efda9cf127abbf5ac8fb9573a3934f912115b32a5c894111b9abdb",
+      "packagedSha256": "3f2e6964eb8c4818b6d976514aaf6d17b721adbd8c1138ad815809b05d145216",
+      "sourceBytes": 7056,
+      "bytes": 2398,
+      "width": 64,
+      "height": 49,
+      "pixelsIdentical": true,
+      "rgbaSha256": "31466b703a231c96ecb8d0398b3ccdc474460706be0fb1301f079116fb425de4"
+    },
+    {
+      "id": "rooftop_el14",
+      "sourceSha256": "8834374e08c3e2e5511717023161f4470cea3b4fe2de91e8cadf6baf174f5451",
+      "packagedSha256": "f28b42df895ba9da2006e3b41f213aeb3a9f7b69a082527f9f6b5443a79b3d41",
+      "sourceBytes": 6514,
+      "bytes": 2464,
+      "width": 56,
+      "height": 51,
+      "pixelsIdentical": true,
+      "rgbaSha256": "99ee865e3c700e14e979abb5a72c4265b80b3f84167b2cf933e996d951179fff"
+    },
+    {
+      "id": "arcade_el1",
+      "sourceSha256": "6fff08ea77756c6d94d5295b5ef079a345586f6efa0d9f9d64b2c25d5459f03f",
+      "packagedSha256": "d931c9b45c998baaa1bede485c66d35ca46af6d45aa5926345d197ff7ad842d9",
+      "sourceBytes": 88884,
+      "bytes": 20072,
+      "width": 113,
+      "height": 414,
+      "pixelsIdentical": true,
+      "rgbaSha256": "2962fc265275ca2c1ce89066093fc7312acf2074a6c0753e733869d50f4a03a7"
+    },
+    {
+      "id": "arcade_el2",
+      "sourceSha256": "6f78159b0490c4841c30bc71d0a9626033de0f604c98ffea9a8c59802f172433",
+      "packagedSha256": "0a3416b4370080131533903dff18eb618e65f2207123274f5816e7588a0c8a4a",
+      "sourceBytes": 88268,
+      "bytes": 38110,
+      "width": 106,
+      "height": 422,
+      "pixelsIdentical": true,
+      "rgbaSha256": "6b1ccceac4ca36c06816791d0832c10b3e7615d40ea027b23f053d0717c67511"
+    },
+    {
+      "id": "arcade_el5",
+      "sourceSha256": "4cc586700aec46916d239f5ac642fe391d0bf1a63867bf4c22cef268066f17f0",
+      "packagedSha256": "8bbd9ab57c7ac1aac2b627c874514cf1f8c24b69b752d0d848af0773190e0fca",
+      "sourceBytes": 40841,
+      "bytes": 12520,
+      "width": 143,
+      "height": 134,
+      "pixelsIdentical": true,
+      "rgbaSha256": "11497977a6c73a88b512a1ee355db18259d0f0361dcf48a3db8651638d3d5df1"
+    },
+    {
+      "id": "arcade_el6",
+      "sourceSha256": "ea071fcc5c1ac75966c7077263338a8b1f9c722c848b7923fdf1a5361a1b1f62",
+      "packagedSha256": "555ca06c96bec62fe3a955e5b5b5b8cb6f8e3c01cc47212fce35cef92ab2938a",
+      "sourceBytes": 226041,
+      "bytes": 102284,
+      "width": 386,
+      "height": 351,
+      "pixelsIdentical": true,
+      "rgbaSha256": "1e8ab2bc9766e10858ec0477be0fe0e41994122f196dd83da6da7ef3eca0ae7f"
+    },
+    {
+      "id": "arcade_el7",
+      "sourceSha256": "c5d523f6afb859f4f02c3d7204519afb61abd85d56380284fde374da80da2f08",
+      "packagedSha256": "339e6288f9f18b79724dc250d68ef860ef4d17adf655f48a7096935ff01ef8bc",
+      "sourceBytes": 95799,
+      "bytes": 32682,
+      "width": 193,
+      "height": 254,
+      "pixelsIdentical": true,
+      "rgbaSha256": "3c0bcba323e4e5460931bc96b3d990f247f630a024e3eaba4e761dab2f8c3379"
+    },
+    {
+      "id": "arcade_el8",
+      "sourceSha256": "cd086d72e5fa49dba6a35f6ca8791739698e94a850041ed63f3aeb967950ba3f",
+      "packagedSha256": "a7a7c4de3d72e0c844320f3a7254f6d3fa18f6037016ca8746c910e55e013838",
+      "sourceBytes": 119998,
+      "bytes": 48572,
+      "width": 359,
+      "height": 181,
+      "pixelsIdentical": true,
+      "rgbaSha256": "bc9c467e96fe9bfec0cfc4cf737b8fc27fceaabb47c0f769969ece80700975bb"
+    },
+    {
+      "id": "arcade_el9",
+      "sourceSha256": "55ebd8fd013b7ab8991f9e7a5728c76ea1475d4cc8fa4b1e606e1460ab15228a",
+      "packagedSha256": "b63412c704278af6bef7dde67e0bc5feb2c25a12c1fbae1d2d971a9a6c154b48",
+      "sourceBytes": 125315,
+      "bytes": 37052,
+      "width": 194,
+      "height": 371,
+      "pixelsIdentical": true,
+      "rgbaSha256": "9dc4816bd93acc0fc36561c97305c261e939b293f36d7745cc219c865451f560"
+    },
+    {
+      "id": "arcade_el10",
+      "sourceSha256": "2703e23b8f482e4c21e2a3693e5b8864c8944754dc40ec5a121b548aefec15b0",
+      "packagedSha256": "e60c5bb28dfffed967f43581c386e93afd3e8c5d4879a4ffb47b76aa64168932",
+      "sourceBytes": 46426,
+      "bytes": 13500,
+      "width": 179,
+      "height": 153,
+      "pixelsIdentical": true,
+      "rgbaSha256": "9a0d871641950599f383198f80a0a1ad1ea81cf5b8246dfa475976d90dbddd93"
+    },
+    {
+      "id": "arcade_el11",
+      "sourceSha256": "28137ae11a910ba88054d439e2ad169d4481fdc490d603d8dbd63bb9119161da",
+      "packagedSha256": "2fcaf76d564c7b8d03628fb6ea32e4a8a20266c3b91042d7a400daae6629d347",
+      "sourceBytes": 104974,
+      "bytes": 46802,
+      "width": 224,
+      "height": 251,
+      "pixelsIdentical": true,
+      "rgbaSha256": "9f6570e207b99496cfd93d4c6a8c642a6d4b68a75c924f06d2641914a3cb8bf6"
+    },
+    {
+      "id": "arcade_el12",
+      "sourceSha256": "43e3e25ba8ceddd3babb48a5ffa233698a4214fc84e82fc96ba1438f5e189c6c",
+      "packagedSha256": "c5b83c7f35ae3f5d24889812e6d8bf2f4d2e6d9695e71d968b1ed8713624d818",
+      "sourceBytes": 79815,
+      "bytes": 30364,
+      "width": 206,
+      "height": 196,
+      "pixelsIdentical": true,
+      "rgbaSha256": "5e215780760400f2cc1ed5804a81604c4ba8488769551cb9486b6dd64271d289"
+    },
+    {
+      "id": "arcade_el13",
+      "sourceSha256": "ecf7a8722c71f46eca470bea0d4c5cf75fec88e73b9e2b0b0306e6d94a249c50",
+      "packagedSha256": "84bc4acc5ab658b83e13de05e1c92fd65549799f3da1dfdf8bda94abeded7274",
+      "sourceBytes": 100508,
+      "bytes": 42362,
+      "width": 233,
+      "height": 246,
+      "pixelsIdentical": true,
+      "rgbaSha256": "485a178461ac633b551d72f41ebd2c25b0851c4ec43c3f3a8299c5025d6e58ec"
     }
   ],
   "audio": [
@@ -3550,5 +3946,127 @@
     "title": "Comfy Fighter Z",
     "tagline": "Higgsfield Open Source Saga",
     "note": "CFZTitleCard lettering over build/public/arcade/title-ensemble.webp (the original cast's title art), for the game-select menu."
+  },
+  "scenery": {
+    "addedAt": "2026-11-09",
+    "run": "output/test-runs/canonical-20261109",
+    "stages": [
+      "yard",
+      "rooftop",
+      "arcade"
+    ],
+    "layers": 36,
+    "patches": [
+      "output\\test-runs\\canonical-20261109\\scenery\\yard-1794199898995",
+      "output\\test-runs\\canonical-20261109\\scenery\\yard-1794199972454",
+      "output\\test-runs\\canonical-20261109\\scenery\\rooftop-1794200064119",
+      "output\\test-runs\\canonical-20261109\\scenery\\arcade-1794200157482"
+    ],
+    "note": "CFZSceneDirector, CFZStageScenery and CFZSceneIsolate over each accepted arena painting, cut by CFZExtractScenery; the populated scene renders stay in the run."
+  },
+  "videos": [
+    {
+      "id": "title",
+      "sha256": "a60c23c4eb5891eb075ae23a4491120b6b210a842d9c33a25d7098fe1ab00244",
+      "bytes": 16778728,
+      "duration": 8.042
+    },
+    {
+      "id": "select",
+      "sha256": "82c91e28bdd5b51239813e53c132a47ddddd6988eb05ea785566f25723271c1a",
+      "bytes": 14581074,
+      "duration": 8.042
+    },
+    {
+      "id": "intro-griddle",
+      "sha256": "f28154da7421d0ca90036be9d8a92adf79626e70d39c3c0ee7df21f49af1aab1",
+      "bytes": 7239266,
+      "duration": 4.042
+    },
+    {
+      "id": "intro-rivet",
+      "sha256": "97f78c9b9a4ec3d4fbfcfb6a5739ad0d265982b6a514e5cae0397647ed8df775",
+      "bytes": 7170380,
+      "duration": 4.042
+    },
+    {
+      "id": "intro-tempo",
+      "sha256": "43c25e79cc2dc2630a1d6526d9ececc930a8022764b05041d7b1ac559b8cbbbe",
+      "bytes": 7805229,
+      "duration": 4.042
+    },
+    {
+      "id": "intro-nimbus",
+      "sha256": "3ad5907122a00b90c9842b110b4b1149e644da5903c8c3608d6e3198dd4965d8",
+      "bytes": 6921800,
+      "duration": 4.042
+    },
+    {
+      "id": "intro-switchback",
+      "sha256": "5ea8b26f4d862e29728625f59a5643c5414e12b365aed0b4d34c5f29bbef5da9",
+      "bytes": 8502942,
+      "duration": 4.042
+    },
+    {
+      "id": "intro-brick",
+      "sha256": "90b5659a86fefde39c93ecc262dab3514b656c7641e178deadda77217d6f3c88",
+      "bytes": 7926586,
+      "duration": 4.042
+    },
+    {
+      "id": "intro-bylaw",
+      "sha256": "a20fa6a20e8e160646b0a06a13da58f108cad3cffde9d47f547f19b7768259ea",
+      "bytes": 7789185,
+      "duration": 4.042
+    },
+    {
+      "id": "idle-griddle",
+      "sha256": "db8d8240783c7ea42b4aef42f54a4c4624dee6c38e8d971ed17da31cffa3211e",
+      "bytes": 6455122,
+      "duration": 6.042
+    },
+    {
+      "id": "idle-rivet",
+      "sha256": "0d53075d9c2dccfce390107f0f39f604bf6b8a127d02ac54121b6160dff4290b",
+      "bytes": 6198146,
+      "duration": 6.042
+    },
+    {
+      "id": "idle-tempo",
+      "sha256": "b52b73a426a8e962320f6184878cf0ba5b37083ad173b7f8ee0864ac4ddd6ab8",
+      "bytes": 5317335,
+      "duration": 6.042
+    },
+    {
+      "id": "idle-nimbus",
+      "sha256": "724af15dab64666cac2d5b779afbeccf3b8ed2de3648fe6ed2ef7982c6f4e4df",
+      "bytes": 6684908,
+      "duration": 6.042
+    },
+    {
+      "id": "idle-switchback",
+      "sha256": "e232dcbe2ab06e8f3fa6a10aa5b8ac2f5570ffe10e29d523897f821a3e99aa2e",
+      "bytes": 6025864,
+      "duration": 6.042
+    },
+    {
+      "id": "idle-brick",
+      "sha256": "536c894ff3e8de0e9afb144bf2193cc497767834a8ec4d0978c2e66d7c355b2a",
+      "bytes": 5772462,
+      "duration": 6.042
+    },
+    {
+      "id": "idle-bylaw",
+      "sha256": "46b56af02c1042943b04b6aa592abc52c1ca74f6c58aa8e1515f805cc2fdea72",
+      "bytes": 5810149,
+      "duration": 6.042
+    }
+  ],
+  "media": {
+    "addedAt": "2026-11-09",
+    "run": "output/test-runs/canonical-20261109",
+    "clips": 16,
+    "packed": true,
+    "note": "CFZIntroVideo, CFZSelectIdleVideo, CFZTitleVideo and CFZSelectVideo (Seedance 1.5 Pro, 1080p) drawn by new-game.cjs add-media from the accepted identities, The Yard and the arcade title and select art."
   }
 }

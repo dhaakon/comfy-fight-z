@@ -1,0 +1,134 @@
+{
+  "schema": "comfy-fighter-video/v1",
+  "root": ".",
+  "fighterIntros": [
+    {
+      "id": "intro-griddle",
+      "fighter": "griddle",
+      "hasAudio": false,
+      "duration": 4.042,
+      "src": "raw/intro-griddle-f28154da7421d0ca.mp4",
+      "sha256": "f28154da7421d0ca90036be9d8a92adf79626e70d39c3c0ee7df21f49af1aab1"
+    },
+    {
+      "id": "intro-rivet",
+      "fighter": "rivet",
+      "hasAudio": false,
+      "duration": 4.042,
+      "src": "raw/intro-rivet-97f78c9b9a4ec3d4.mp4",
+      "sha256": "97f78c9b9a4ec3d4fbfcfb6a5739ad0d265982b6a514e5cae0397647ed8df775"
+    },
+    {
+      "id": "intro-tempo",
+      "fighter": "tempo",
+      "hasAudio": false,
+      "duration": 4.042,
+      "src": "raw/intro-tempo-43c25e79cc2dc263.mp4",
+      "sha256": "43c25e79cc2dc2630a1d6526d9ececc930a8022764b05041d7b1ac559b8cbbbe"
+    },
+    {
+      "id": "intro-nimbus",
+      "fighter": "nimbus",
+      "hasAudio": false,
+      "duration": 4.042,
+      "src": "raw/intro-nimbus-3ad5907122a00b90.mp4",
+      "sha256": "3ad5907122a00b90c9842b110b4b1149e644da5903c8c3608d6e3198dd4965d8"
+    },
+    {
+      "id": "intro-switchback",
+      "fighter": "switchback",
+      "hasAudio": false,
+      "duration": 4.042,
+      "src": "raw/intro-switchback-5ea8b26f4d862e29.mp4",
+      "sha256": "5ea8b26f4d862e29728625f59a5643c5414e12b365aed0b4d34c5f29bbef5da9"
+    },
+    {
+      "id": "intro-brick",
+      "fighter": "brick",
+      "hasAudio": false,
+      "duration": 4.042,
+      "src": "raw/intro-brick-90b5659a86fefde3.mp4",
+      "sha256": "90b5659a86fefde39c93ecc262dab3514b656c7641e178deadda77217d6f3c88"
+    },
+    {
+      "id": "intro-bylaw",
+      "fighter": "bylaw",
+      "hasAudio": false,
+      "duration": 4.042,
+      "src": "raw/intro-bylaw-a20fa6a20e8e1606.mp4",
+      "sha256": "a20fa6a20e8e160646b0a06a13da58f108cad3cffde9d47f547f19b7768259ea"
+    }
+  ],
+  "selectIdles": [
+    {
+      "id": "idle-griddle",
+      "fighter": "griddle",
+      "hasAudio": false,
+      "duration": 6.042,
+      "src": "raw/idle-griddle-db8d8240783c7ea4.mp4",
+      "sha256": "db8d8240783c7ea42b4aef42f54a4c4624dee6c38e8d971ed17da31cffa3211e"
+    },
+    {
+      "id": "idle-rivet",
+      "fighter": "rivet",
+      "hasAudio": false,
+      "duration": 6.042,
+      "src": "raw/idle-rivet-0d53075d9c2dccfc.mp4",
+      "sha256": "0d53075d9c2dccfce390107f0f39f604bf6b8a127d02ac54121b6160dff4290b"
+    },
+    {
+      "id": "idle-tempo",
+      "fighter": "tempo",
+      "hasAudio": false,
+      "duration": 6.042,
+      "src": "raw/idle-tempo-b52b73a426a8e962.mp4",
+      "sha256": "b52b73a426a8e962320f6184878cf0ba5b37083ad173b7f8ee0864ac4ddd6ab8"
+    },
+    {
+      "id": "idle-nimbus",
+      "fighter": "nimbus",
+      "hasAudio": false,
+      "duration": 6.042,
+      "src": "raw/idle-nimbus-724af15dab64666c.mp4",
+      "sha256": "724af15dab64666cac2d5b779afbeccf3b8ed2de3648fe6ed2ef7982c6f4e4df"
+    },
+    {
+      "id": "idle-switchback",
+      "fighter": "switchback",
+      "hasAudio": false,
+      "duration": 6.042,
+      "src": "raw/idle-switchback-e232dcbe2ab06e8f.mp4",
+      "sha256": "e232dcbe2ab06e8f3fa6a10aa5b8ac2f5570ffe10e29d523897f821a3e99aa2e"
+    },
+    {
+      "id": "idle-brick",
+      "fighter": "brick",
+      "hasAudio": false,
+      "duration": 6.042,
+      "src": "raw/idle-brick-536c894ff3e8de0e.mp4",
+      "sha256": "536c894ff3e8de0e9afb144bf2193cc497767834a8ec4d0978c2e66d7c355b2a"
+    },
+    {
+      "id": "idle-bylaw",
+      "fighter": "bylaw",
+      "hasAudio": false,
+      "duration": 6.042,
+      "src": "raw/idle-bylaw-46b56af02c104294.mp4",
+      "sha256": "46b56af02c1042943b04b6aa592abc52c1ca74f6c58aa8e1515f805cc2fdea72"
+    }
+  ],
+  "titleVideo": {
+    "id": "title",
+    "hasAudio": false,
+    "duration": 8.042,
+    "src": "raw/title-a60c23c4eb5891eb.mp4",
+    "sha256": "a60c23c4eb5891eb075ae23a4491120b6b210a842d9c33a25d7098fe1ab00244"
+  },
+  "selectVideo": {
+    "id": "select",
+    "hasAudio": false,
+    "duration": 8.042,
+    "src": "raw/select-82c91e28bdd5b512.mp4",
+    "sha256": "82c91e28bdd5b51239813e53c132a47ddddd6988eb05ea785566f25723271c1a"
+  }
+}

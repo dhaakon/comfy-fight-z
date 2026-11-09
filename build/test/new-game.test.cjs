@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createCanvas } = require('@napi-rs/canvas');
-const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, titleCard, titleCardSource, TITLE_CARD_USD, packMedia, packageFloor, exportGame, install, pipeline } = require('../tools/new-game.cjs');
+const { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, addMedia, mediaPlan, titleCard, titleCardSource, TITLE_CARD_USD, packMedia, packageFloor, exportGame, install, pipeline } = require('../tools/new-game.cjs');
 const ROOT = path.resolve(__dirname, '../..');
 const CAST = 'comfyui/casts/blue-wave-2026.json';
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -110,6 +110,36 @@ test('adding motion sheets to an existing run prices two 2K sheets per fighter a
   fs.writeFileSync(path.join(directory, 'bundle/assets.json'), JSON.stringify({ schema: 'comfy-fighter-assets/v1', root: '.', game: cast, assets: [] }));
   await assert.rejects(addSheets({ run: out, approveUsd: '0.5' }), /about \$0\.864864; pass --approve-usd 0\.87/);
   assert.equal(pipeline(directory).addedSheets, undefined, 'a refused request records nothing');
+});
+
+test('a run over accepted art copies it, refuses the full generation and adds only the clips it lacks', async t => {
+  const out = freshRun(t), accepted = path.join(ROOT, `${out}-accepted`), bytes = Buffer.from('accepted fixture art');
+  t.after(() => fs.rmSync(accepted, { recursive: true, force: true }));
+  const cast = read(path.join(ROOT, CAST)), fighters = cast.fighters.filter(f => f.enabled !== false).map(f => f.id), stages = cast.stages.filter(s => s.enabled !== false).map(s => s.id);
+  const records = [...fighters.map(id => ({ id: `${id}_reference`, kind: 'reference', fighter: id, src: `raw/${id}_reference.webp` })), ...stages.map(id => ({ id, kind: 'stage', stage: id, src: `raw/${id}.webp` })), { id: 'select', kind: 'ui', src: 'raw/select.webp' }];
+  for (const record of records) { fs.mkdirSync(path.join(accepted, 'raw'), { recursive: true }); fs.writeFileSync(path.join(accepted, record.src), bytes); }
+  const game = { title: cast.title, subtitle: cast.subtitle, fighters: fighters.map(id => ({ id })), stages: stages.map(id => ({ id })) };
+  fs.writeFileSync(path.join(accepted, 'assets.json'), JSON.stringify({ schema: 'comfy-fighter-assets/v1', root: '.', game, assets: records }));
+  // A bundle of another cast is refused.
+  assert.throws(() => prepare({ cast: 'comfyui/config/factory.json', out: `${out}-other`, accepted: path.relative(ROOT, accepted) }), /different cast/);
+  fs.rmSync(path.join(ROOT, `${out}-other`), { recursive: true, force: true });
+  const { directory } = prepare({ cast: CAST, out, accepted: path.relative(ROOT, accepted) });
+  assert.deepEqual(pipeline(directory).accepted.images, records.length);
+  for (const record of records) assert.ok(fs.existsSync(path.join(directory, 'bundle', record.src)), record.src);
+  await assert.rejects(run({ run: out, approveUsd: '999' }), /extends the accepted .*add-media/);
+  const workflow = read(path.join(directory, 'workflow.api.json')), bundle = path.join(directory, 'bundle');
+  // The title loop animates ui/ensemble, which this bundle lacks unless --title-image names the art.
+  assert.throws(() => mediaPlan(workflow, bundle, {}), /The title loop animates ui\/ensemble.*--title-image/);
+  const fighterClips = mediaPlan(workflow, bundle, { clips: 'intro,idle' });
+  assert.equal(fighterClips.todo.length, fighters.length * 2);
+  assert.equal(fighterClips.estimatedUSD, Number((fighters.length * (0.284048 + 0.402048)).toFixed(6)));
+  fs.writeFileSync(path.join(bundle, 'video.json'), JSON.stringify({ schema: 'comfy-fighter-video/v1', root: '.', fighterIntros: [{ id: `intro-${fighters[0]}`, fighter: fighters[0], src: 'raw/x.mp4', duration: 4, sha256: '0'.repeat(64) }] }));
+  const resumed = mediaPlan(workflow, bundle, { clips: 'intro,idle,title,select', titleImage: 'build/public/arcade/title-ensemble.webp' });
+  assert.deepEqual(resumed.skipped, [`${fighters[0]}_intro`]);
+  assert.equal(resumed.todo.length, fighters.length * 2 - 1 + 2);
+  assert.throws(() => mediaPlan(workflow, bundle, { clips: 'outro' }), /--clips takes intro, idle, title, select/);
+  await assert.rejects(addMedia({ run: out, approveUsd: '0.01', clips: 'intro' }), /Adding \d+ clips costs about/);
+  assert.equal(pipeline(directory).addedMedia, undefined);
 });
 
 test('a title card letters each kind of game with its own name and refuses without approval', async t => {

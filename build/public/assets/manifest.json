@@ -751,6 +751,22 @@
           "bh": 404
         }
       },
+      "introVideo": {
+        "id": "intro-griddle",
+        "fighter": "griddle",
+        "hasAudio": false,
+        "duration": 4.042,
+        "src": "assets/video/intro-griddle.mp4",
+        "sha256": "f28154da7421d0ca90036be9d8a92adf79626e70d39c3c0ee7df21f49af1aab1"
+      },
+      "selectVideo": {
+        "id": "idle-griddle",
+        "fighter": "griddle",
+        "hasAudio": false,
+        "duration": 6.042,
+        "src": "assets/video/idle-griddle.mp4",
+        "sha256": "db8d8240783c7ea42b4aef42f54a4c4624dee6c38e8d971ed17da31cffa3211e"
+      },
       "sourceImage": "assets/references/griddle_source.webp",
       "portrait": "assets/portraits/griddle_portrait.webp",
       "hero": "assets/heroes/griddle_hero.webp",
@@ -1504,6 +1520,22 @@
           "top": 1,
           "bh": 368
         }
+      },
+      "introVideo": {
+        "id": "intro-rivet",
+        "fighter": "rivet",
+        "hasAudio": false,
+        "duration": 4.042,
+        "src": "assets/video/intro-rivet.mp4",
+        "sha256": "97f78c9b9a4ec3d4fbfcfb6a5739ad0d265982b6a514e5cae0397647ed8df775"
+      },
+      "selectVideo": {
+        "id": "idle-rivet",
+        "fighter": "rivet",
+        "hasAudio": false,
+        "duration": 6.042,
+        "src": "assets/video/idle-rivet.mp4",
+        "sha256": "0d53075d9c2dccfce390107f0f39f604bf6b8a127d02ac54121b6160dff4290b"
       },
       "sourceImage": "assets/references/rivet_source.webp",
       "portrait": "assets/portraits/rivet_portrait.webp",
@@ -2259,6 +2291,22 @@
           "bh": 338
         }
       },
+      "introVideo": {
+        "id": "intro-tempo",
+        "fighter": "tempo",
+        "hasAudio": false,
+        "duration": 4.042,
+        "src": "assets/video/intro-tempo.mp4",
+        "sha256": "43c25e79cc2dc2630a1d6526d9ececc930a8022764b05041d7b1ac559b8cbbbe"
+      },
+      "selectVideo": {
+        "id": "idle-tempo",
+        "fighter": "tempo",
+        "hasAudio": false,
+        "duration": 6.042,
+        "src": "assets/video/idle-tempo.mp4",
+        "sha256": "b52b73a426a8e962320f6184878cf0ba5b37083ad173b7f8ee0864ac4ddd6ab8"
+      },
       "sourceImage": "assets/references/tempo_source.webp",
       "portrait": "assets/portraits/tempo_portrait.webp",
       "hero": "assets/heroes/tempo_hero.webp",
@@ -3012,6 +3060,22 @@
           "top": 1,
           "bh": 336
         }
+      },
+      "introVideo": {
+        "id": "intro-nimbus",
+        "fighter": "nimbus",
+        "hasAudio": false,
+        "duration": 4.042,
+        "src": "assets/video/intro-nimbus.mp4",
+        "sha256": "3ad5907122a00b90c9842b110b4b1149e644da5903c8c3608d6e3198dd4965d8"
+      },
+      "selectVideo": {
+        "id": "idle-nimbus",
+        "fighter": "nimbus",
+        "hasAudio": false,
+        "duration": 6.042,
+        "src": "assets/video/idle-nimbus.mp4",
+        "sha256": "724af15dab64666cac2d5b779afbeccf3b8ed2de3648fe6ed2ef7982c6f4e4df"
       },
       "sourceImage": "assets/references/nimbus_source.webp",
       "portrait": "assets/portraits/nimbus_portrait.webp",
@@ -3767,6 +3831,22 @@
           "bh": 341
         }
       },
+      "introVideo": {
+        "id": "intro-switchback",
+        "fighter": "switchback",
+        "hasAudio": false,
+        "duration": 4.042,
+        "src": "assets/video/intro-switchback.mp4",
+        "sha256": "5ea8b26f4d862e29728625f59a5643c5414e12b365aed0b4d34c5f29bbef5da9"
+      },
+      "selectVideo": {
+        "id": "idle-switchback",
+        "fighter": "switchback",
+        "hasAudio": false,
+        "duration": 6.042,
+        "src": "assets/video/idle-switchback.mp4",
+        "sha256": "e232dcbe2ab06e8f3fa6a10aa5b8ac2f5570ffe10e29d523897f821a3e99aa2e"
+      },
       "sourceImage": "assets/references/switchback_source.webp",
       "portrait": "assets/portraits/switchback_portrait.webp",
       "hero": "assets/heroes/switchback_hero.webp",
@@ -4520,6 +4600,22 @@
           "top": 1,
           "bh": 353
         }
+      },
+      "introVideo": {
+        "id": "intro-brick",
+        "fighter": "brick",
+        "hasAudio": false,
+        "duration": 4.042,
+        "src": "assets/video/intro-brick.mp4",
+        "sha256": "90b5659a86fefde39c93ecc262dab3514b656c7641e178deadda77217d6f3c88"
+      },
+      "selectVideo": {
+        "id": "idle-brick",
+        "fighter": "brick",
+        "hasAudio": false,
+        "duration": 6.042,
+        "src": "assets/video/idle-brick.mp4",
+        "sha256": "536c894ff3e8de0e9afb144bf2193cc497767834a8ec4d0978c2e66d7c355b2a"
       },
       "sourceImage": "assets/references/brick_source.webp",
       "portrait": "assets/portraits/brick_portrait.webp",
@@ -5276,6 +5372,22 @@
           "bh": 356
         }
       },
+      "introVideo": {
+        "id": "intro-bylaw",
+        "fighter": "bylaw",
+        "hasAudio": false,
+        "duration": 4.042,
+        "src": "assets/video/intro-bylaw.mp4",
+        "sha256": "a20fa6a20e8e160646b0a06a13da58f108cad3cffde9d47f547f19b7768259ea"
+      },
+      "selectVideo": {
+        "id": "idle-bylaw",
+        "fighter": "bylaw",
+        "hasAudio": false,
+        "duration": 6.042,
+        "src": "assets/video/idle-bylaw.mp4",
+        "sha256": "46b56af02c1042943b04b6aa592abc52c1ca74f6c58aa8e1515f805cc2fdea72"
+      },
       "sourceImage": "assets/references/bylaw_source.webp",
       "portrait": "assets/portraits/bylaw_portrait.webp",
       "hero": "assets/heroes/bylaw_hero.webp",
@@ -5288,6 +5400,301 @@
       "id": "yard",
       "name": "The Yard",
       "description": "A wholly fictional neighborhood backyard tournament arena at golden hour. A broad warm terracotta patio forms an empty level fighting plane; behind it sit a low cream picket fence, a red garden shed, distant soft rounded hills, a small barbecue far behind the action and simple string lights. The setting is an invented suburban garden, unrelated to any actual venue or photograph. No people, identifying signs, logos or floor emblems. Keep foreground furniture out of the arena and all image edges free of graphic speed lines.",
+      "scenery": {
+        "weather": "leaves",
+        "effects": [
+          {
+            "id": "fx1",
+            "type": "smoke",
+            "point": {
+              "x": 0.74,
+              "y": 0.478
+            },
+            "label": "wisp of aromatic charcoal smoke curling from the barbecue grill lid"
+          },
+          {
+            "id": "fx2",
+            "type": "embers",
+            "box": {
+              "x": 0.712,
+              "y": 0.43,
+              "w": 0.055,
+              "h": 0.052
+            },
+            "label": "glowing embers floating upward from the barbecue chimney slits"
+          },
+          {
+            "id": "fx3",
+            "type": "glow",
+            "box": {
+              "x": 0.175,
+              "y": 0.332,
+              "w": 0.062,
+              "h": 0.135
+            },
+            "color": "#ffaa44",
+            "label": "warm golden interior shed window illumination"
+          },
+          {
+            "id": "fx4",
+            "type": "glow",
+            "box": {
+              "x": 0.32,
+              "y": 0.225,
+              "w": 0.1,
+              "h": 0.06
+            },
+            "color": "#ffec8b",
+            "label": "warm incandescent bulbs along left wire"
+          },
+          {
+            "id": "fx5",
+            "type": "glow",
+            "box": {
+              "x": 0.44,
+              "y": 0.245,
+              "w": 0.155,
+              "h": 0.05
+            },
+            "color": "#ffec8b",
+            "label": "center garden party string lights glowing softly"
+          },
+          {
+            "id": "fx6",
+            "type": "glow",
+            "box": {
+              "x": 0.755,
+              "y": 0.135,
+              "w": 0.24,
+              "h": 0.095
+            },
+            "color": "#ffec8b",
+            "label": "tree branch party light bulbs glowing amber"
+          },
+          {
+            "id": "fx7",
+            "type": "wave",
+            "box": {
+              "x": 0.714,
+              "y": 0,
+              "w": 0.281,
+              "h": 0.305
+            },
+            "label": "leafy canopy of the backyard shade tree swaying in breeze"
+          },
+          {
+            "id": "fx8",
+            "type": "wave",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "w": 0.275,
+              "h": 0.345
+            },
+            "label": "dense foliage canopy over shed swaying softly"
+          },
+          {
+            "id": "fx9",
+            "type": "wave",
+            "box": {
+              "x": 0.335,
+              "y": 0.455,
+              "w": 0.095,
+              "h": 0.135
+            },
+            "label": "shrubs and tall grass beside fence rustling in wind"
+          },
+          {
+            "id": "fx10",
+            "type": "clouds",
+            "box": {
+              "x": 0.28,
+              "y": 0.04,
+              "w": 0.4,
+              "h": 0.18
+            },
+            "label": "soft golden-pink sunset clouds slowly drifting eastward"
+          },
+          {
+            "id": "fx11",
+            "type": "birds",
+            "box": {
+              "x": 0.42,
+              "y": 0.07,
+              "w": 0.17,
+              "h": 0.09
+            },
+            "label": "small silhouette birds winging across the twilight sky"
+          },
+          {
+            "id": "fx12",
+            "type": "shimmer",
+            "box": {
+              "x": 0,
+              "y": 0.635,
+              "w": 0.99,
+              "h": 0.28
+            },
+            "label": "golden hour sunlight sheen glistening across terracotta pavers"
+          },
+          {
+            "id": "fx-camerakid",
+            "type": "flash",
+            "box": {
+              "x": 0.9398,
+              "y": 0.3221,
+              "w": 0.0219,
+              "h": 0.0259
+            },
+            "label": "camera kid flash at the lens"
+          }
+        ],
+        "layers": [
+          {
+            "id": "yard_el1",
+            "src": "assets/scenery/yard_el1.webp",
+            "place": {
+              "x": 0.00073,
+              "y": 0.28776,
+              "w": 0.06868,
+              "h": 0.11133
+            },
+            "motion": "idle",
+            "order": 1,
+            "label": "Sleeping Tabby Cat"
+          },
+          {
+            "id": "yard_el2",
+            "src": "assets/scenery/yard_el2.webp",
+            "place": {
+              "x": 0.26344,
+              "y": 0.10221,
+              "w": 0.10574,
+              "h": 0.26432
+            },
+            "motion": "cheer",
+            "order": 2,
+            "label": "Shed Roof Watcher"
+          },
+          {
+            "id": "yard_el3",
+            "src": "assets/scenery/yard_el3.webp",
+            "place": {
+              "x": 0.31613,
+              "y": 0.30729,
+              "w": 0.1766,
+              "h": 0.32357
+            },
+            "motion": "idle",
+            "order": 3,
+            "label": "Fence Peeker And Cooler"
+          },
+          {
+            "id": "yard_el4",
+            "src": "assets/scenery/yard_el4.webp",
+            "place": {
+              "x": 0.42515,
+              "y": 0.0957,
+              "w": 0.09157,
+              "h": 0.08724
+            },
+            "motion": "drift",
+            "order": 4,
+            "label": "RC Model Aeroplane"
+          },
+          {
+            "id": "yard_el5",
+            "src": "assets/scenery/yard_el5.webp",
+            "place": {
+              "x": 0.49237,
+              "y": 0.44792,
+              "w": 0.05596,
+              "h": 0.14844
+            },
+            "motion": "cheer",
+            "order": 5,
+            "label": "Golden Retriever"
+          },
+          {
+            "id": "yard_el6",
+            "src": "assets/scenery/yard_el6.webp",
+            "place": {
+              "x": 0.55996,
+              "y": 0.50781,
+              "w": 0.09193,
+              "h": 0.10352
+            },
+            "motion": "pulse",
+            "order": 6,
+            "label": "Backyard Boombox"
+          },
+          {
+            "id": "yard_el7",
+            "src": "assets/scenery/yard_el7.webp",
+            "place": {
+              "x": 0.57086,
+              "y": 0.33659,
+              "w": 0.03125,
+              "h": 0.05599
+            },
+            "motion": "hover",
+            "order": 7,
+            "label": "Monarch Butterfly"
+          },
+          {
+            "id": "yard_el8",
+            "src": "assets/scenery/yard_el8.webp",
+            "place": {
+              "x": 0.60974,
+              "y": 0.04362,
+              "w": 0.06504,
+              "h": 0.15234
+            },
+            "motion": "drift",
+            "order": 8,
+            "label": "Distant Hot Air Balloon"
+          },
+          {
+            "id": "yard_el9",
+            "src": "assets/scenery/yard_el9.webp",
+            "place": {
+              "x": 0.64898,
+              "y": 0.28971,
+              "w": 0.10683,
+              "h": 0.20443
+            },
+            "motion": "cheer",
+            "order": 9,
+            "label": "Neighbor Dad Waving"
+          },
+          {
+            "id": "yard_el11",
+            "src": "assets/scenery/yard_el11.webp",
+            "place": {
+              "x": 0.80451,
+              "y": 0.29948,
+              "w": 0.04106,
+              "h": 0.19141
+            },
+            "motion": "sway",
+            "order": 11,
+            "label": "Wind Chime"
+          },
+          {
+            "id": "yard_el12",
+            "src": "assets/scenery/yard_el12.webp",
+            "place": {
+              "x": 0.91788,
+              "y": 0.29622,
+              "w": 0.07304,
+              "h": 0.11784
+            },
+            "motion": "cheer",
+            "order": 12,
+            "label": "Camera Kid"
+          }
+        ]
+      },
       "sourceImage": "assets/references/yard_source.webp",
       "src": "assets/stages/yard.webp"
     },
@@ -5295,6 +5702,364 @@
       "id": "rooftop",
       "name": "Sunset Rooftop",
       "description": "A wholly fictional community-center rooftop at sunset. A wide flat blue-gray rooftop deck forms the fighting plane, with a low coral parapet, two small solar-panel arrays and a round water tank set far behind it. An invented low-rise skyline and peach clouds provide depth. No actual city landmarks, people, readable signs, logos, floor symbols or foreground obstructions. Natural architecture reaches the frame edges without speed-line borders.",
+      "scenery": {
+        "weather": "none",
+        "effects": [
+          {
+            "id": "fx1",
+            "type": "spin",
+            "box": {
+              "x": 0.863,
+              "y": 0.555,
+              "w": 0.03,
+              "h": 0.075
+            },
+            "label": "AC compressor unit exhaust fan"
+          },
+          {
+            "id": "fx2",
+            "type": "shimmer",
+            "box": {
+              "x": 0.284,
+              "y": 0.54,
+              "w": 0.081,
+              "h": 0.06
+            },
+            "label": "Left solar panel glass reflection"
+          },
+          {
+            "id": "fx3",
+            "type": "shimmer",
+            "box": {
+              "x": 0.37,
+              "y": 0.54,
+              "w": 0.077,
+              "h": 0.06
+            },
+            "label": "Right solar panel glass reflection"
+          },
+          {
+            "id": "fx4",
+            "type": "blink",
+            "points": [
+              {
+                "x": 0.208,
+                "y": 0.295
+              }
+            ],
+            "color": "#ff3322",
+            "label": "Warning light on left utility pole"
+          },
+          {
+            "id": "fx5",
+            "type": "blink",
+            "points": [
+              {
+                "x": 0.755,
+                "y": 0.358
+              }
+            ],
+            "color": "#ff2222",
+            "label": "Antenna beacon on right midground building"
+          },
+          {
+            "id": "fx6",
+            "type": "blink",
+            "points": [
+              {
+                "x": 0.506,
+                "y": 0.422
+              }
+            ],
+            "color": "#ff4433",
+            "label": "Distant skyline tower beacon"
+          },
+          {
+            "id": "fx7",
+            "type": "glow",
+            "box": {
+              "x": 0.122,
+              "y": 0.44,
+              "w": 0.023,
+              "h": 0.033
+            },
+            "color": "#ffaa44",
+            "label": "Lit window on lower-left residential building"
+          },
+          {
+            "id": "fx8",
+            "type": "glow",
+            "box": {
+              "x": 0.273,
+              "y": 0.38,
+              "w": 0.052,
+              "h": 0.035
+            },
+            "color": "#ffcc66",
+            "label": "Apartment windows on center building"
+          },
+          {
+            "id": "fx9",
+            "type": "glow",
+            "box": {
+              "x": 0.626,
+              "y": 0.412,
+              "w": 0.039,
+              "h": 0.053
+            },
+            "color": "#ff9933",
+            "label": "Warm window grid on distant low-rise block"
+          },
+          {
+            "id": "fx10",
+            "type": "clouds",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "w": 0.45,
+              "h": 0.28
+            },
+            "label": "Upper-left sunset cloud bank"
+          },
+          {
+            "id": "fx11",
+            "type": "clouds",
+            "box": {
+              "x": 0.55,
+              "y": 0,
+              "w": 0.4,
+              "h": 0.26
+            },
+            "label": "Upper-right peach sunset clouds"
+          },
+          {
+            "id": "fx12",
+            "type": "wave",
+            "box": {
+              "x": 0.085,
+              "y": 0.472,
+              "w": 0.041,
+              "h": 0.035
+            },
+            "label": "Tree canopy behind left parapet"
+          },
+          {
+            "id": "fx13",
+            "type": "wave",
+            "box": {
+              "x": 0.413,
+              "y": 0.468,
+              "w": 0.026,
+              "h": 0.033
+            },
+            "label": "Tree foliage peeking over center parapet"
+          },
+          {
+            "id": "fx14",
+            "type": "steam",
+            "point": {
+              "x": 0.758,
+              "y": 0.482
+            },
+            "label": "Plumbing vent pipe elbow beside water tank"
+          },
+          {
+            "id": "fx-camerakid",
+            "type": "flash",
+            "box": {
+              "x": 0.5895,
+              "y": 0.4589,
+              "w": 0.0154,
+              "h": 0.0199
+            },
+            "label": "camera kid flash at the lens"
+          }
+        ],
+        "layers": [
+          {
+            "id": "rooftop_el3",
+            "src": "assets/scenery/rooftop_el3.webp",
+            "place": {
+              "x": 0.13808,
+              "y": 0.41016,
+              "w": 0.05487,
+              "h": 0.08398
+            },
+            "motion": "sway",
+            "order": 0,
+            "label": "Laundry Line Towels"
+          },
+          {
+            "id": "rooftop_el10",
+            "src": "assets/scenery/rooftop_el10.webp",
+            "place": {
+              "x": 0.59448,
+              "y": 0.55339,
+              "w": 0.05196,
+              "h": 0.08529
+            },
+            "motion": "still",
+            "order": 0,
+            "label": "Retro Drinks Cooler"
+          },
+          {
+            "id": "rooftop_el13",
+            "src": "assets/scenery/rooftop_el13.webp",
+            "place": {
+              "x": 0.2907,
+              "y": 0.13477,
+              "w": 0.02326,
+              "h": 0.0319
+            },
+            "motion": "still",
+            "order": 0,
+            "label": "Distant Bird"
+          },
+          {
+            "id": "rooftop_el14",
+            "src": "assets/scenery/rooftop_el14.webp",
+            "place": {
+              "x": 0.31904,
+              "y": 0.14779,
+              "w": 0.02035,
+              "h": 0.0332
+            },
+            "motion": "still",
+            "order": 0,
+            "label": "Distant Bird"
+          },
+          {
+            "id": "rooftop_el1",
+            "src": "assets/scenery/rooftop_el1.webp",
+            "place": {
+              "x": 0.01453,
+              "y": 0.27474,
+              "w": 0.09847,
+              "h": 0.23047
+            },
+            "motion": "cheer",
+            "order": 1,
+            "label": "Balcony Observer"
+          },
+          {
+            "id": "rooftop_el2",
+            "src": "assets/scenery/rooftop_el2.webp",
+            "place": {
+              "x": 0.11265,
+              "y": 0.42448,
+              "w": 0.02762,
+              "h": 0.07617
+            },
+            "motion": "sway",
+            "order": 2,
+            "label": "Laundry Line"
+          },
+          {
+            "id": "rooftop_el4",
+            "src": "assets/scenery/rooftop_el4.webp",
+            "place": {
+              "x": 0.17805,
+              "y": 0.50781,
+              "w": 0.05196,
+              "h": 0.11133
+            },
+            "motion": "sway",
+            "order": 4,
+            "label": "Potted Bonsai"
+          },
+          {
+            "id": "rooftop_el5",
+            "src": "assets/scenery/rooftop_el5.webp",
+            "place": {
+              "x": 0.20967,
+              "y": 0.30078,
+              "w": 0.03125,
+              "h": 0.05599
+            },
+            "motion": "idle",
+            "order": 5,
+            "label": "Perched Wire Pigeon"
+          },
+          {
+            "id": "rooftop_el6",
+            "src": "assets/scenery/rooftop_el6.webp",
+            "place": {
+              "x": 0.26453,
+              "y": 0.42773,
+              "w": 0.06032,
+              "h": 0.08268
+            },
+            "motion": "cheer",
+            "order": 6,
+            "label": "Parapet Spectator Left"
+          },
+          {
+            "id": "rooftop_el7",
+            "src": "assets/scenery/rooftop_el7.webp",
+            "place": {
+              "x": 0.35174,
+              "y": 0.30729,
+              "w": 0.04033,
+              "h": 0.1556
+            },
+            "motion": "cheer",
+            "order": 7,
+            "label": "Rooftop Teenager"
+          },
+          {
+            "id": "rooftop_el8",
+            "src": "assets/scenery/rooftop_el8.webp",
+            "place": {
+              "x": 0.49164,
+              "y": 0.07812,
+              "w": 0.10938,
+              "h": 0.08529
+            },
+            "motion": "drift",
+            "order": 8,
+            "label": "Skyline Advertising Blimp"
+          },
+          {
+            "id": "rooftop_el9",
+            "src": "assets/scenery/rooftop_el9.webp",
+            "place": {
+              "x": 0.57158,
+              "y": 0.42448,
+              "w": 0.05124,
+              "h": 0.09049
+            },
+            "motion": "cheer",
+            "order": 9,
+            "label": "Parapet Spectator Right"
+          },
+          {
+            "id": "rooftop_el11",
+            "src": "assets/scenery/rooftop_el11.webp",
+            "place": {
+              "x": 0.65879,
+              "y": 0.35156,
+              "w": 0.04506,
+              "h": 0.07552
+            },
+            "motion": "idle",
+            "order": 11,
+            "label": "Water Tank Calico Cat"
+          },
+          {
+            "id": "rooftop_el12",
+            "src": "assets/scenery/rooftop_el12.webp",
+            "place": {
+              "x": 0.93532,
+              "y": 0.06641,
+              "w": 0.04942,
+              "h": 0.20247
+            },
+            "motion": "idle",
+            "order": 12,
+            "label": "Rooftop Onlooker"
+          }
+        ]
+      },
       "sourceImage": "assets/references/rooftop_source.webp",
       "src": "assets/stages/rooftop.webp"
     },
@@ -5302,6 +6067,385 @@
       "id": "arcade",
       "name": "Midnight Arcade",
       "description": "A wholly fictional neighborhood arcade after closing. An empty wide dark-plum rubber floor provides the fighting plane. Rows of chunky generic arcade cabinets glow cyan and pink against the rear wall, with simple square acoustic ceiling tiles and a rounded purple ticket counter behind the action. All screens show abstract colored shapes with no words or recognizable game imagery. No people, brand marks, real shop details, floor emblems or speed-line borders.",
+      "scenery": {
+        "weather": "dust",
+        "effects": [
+          {
+            "id": "fx1",
+            "type": "screen",
+            "box": {
+              "x": 0.227,
+              "y": 0.45,
+              "w": 0.033,
+              "h": 0.082
+            },
+            "label": "far-left arcade monitor screen"
+          },
+          {
+            "id": "fx2",
+            "type": "screen",
+            "box": {
+              "x": 0.266,
+              "y": 0.455,
+              "w": 0.028,
+              "h": 0.073
+            },
+            "label": "second cabinet pink monitor screen"
+          },
+          {
+            "id": "fx3",
+            "type": "screen",
+            "box": {
+              "x": 0.308,
+              "y": 0.46,
+              "w": 0.026,
+              "h": 0.06
+            },
+            "label": "third cabinet cyan monitor screen"
+          },
+          {
+            "id": "fx4",
+            "type": "screen",
+            "box": {
+              "x": 0.355,
+              "y": 0.46,
+              "w": 0.041,
+              "h": 0.062
+            },
+            "label": "fourth cabinet wide blue screen"
+          },
+          {
+            "id": "fx5",
+            "type": "screen",
+            "box": {
+              "x": 0.404,
+              "y": 0.46,
+              "w": 0.041,
+              "h": 0.06
+            },
+            "label": "fifth cabinet purple monitor screen"
+          },
+          {
+            "id": "fx6",
+            "type": "screen",
+            "box": {
+              "x": 0.513,
+              "y": 0.452,
+              "w": 0.054,
+              "h": 0.08
+            },
+            "label": "central featured cabinet pixel screen"
+          },
+          {
+            "id": "fx7",
+            "type": "screen",
+            "box": {
+              "x": 0.599,
+              "y": 0.462,
+              "w": 0.041,
+              "h": 0.058
+            },
+            "label": "amber glow monitor screen"
+          },
+          {
+            "id": "fx8",
+            "type": "screen",
+            "box": {
+              "x": 0.652,
+              "y": 0.462,
+              "w": 0.046,
+              "h": 0.063
+            },
+            "label": "cyan CRT monitor screen"
+          },
+          {
+            "id": "fx9",
+            "type": "screen",
+            "box": {
+              "x": 0.709,
+              "y": 0.462,
+              "w": 0.041,
+              "h": 0.058
+            },
+            "label": "pink-yellow abstract monitor screen"
+          },
+          {
+            "id": "fx10",
+            "type": "glow",
+            "box": {
+              "x": 0.924,
+              "y": 0.41,
+              "w": 0.036,
+              "h": 0.152
+            },
+            "color": "#e8d0ff",
+            "label": "claw machine interior prize chamber light"
+          },
+          {
+            "id": "fx11",
+            "type": "glow",
+            "box": {
+              "x": 0.962,
+              "y": 0.405,
+              "w": 0.037,
+              "h": 0.165
+            },
+            "color": "#ffe0b0",
+            "label": "far right claw game showcase illumination"
+          },
+          {
+            "id": "fx12",
+            "type": "glow",
+            "box": {
+              "x": 0.51,
+              "y": 0.39,
+              "w": 0.063,
+              "h": 0.04
+            },
+            "color": "#ffebaa",
+            "label": "center cabinet marquee light panel"
+          },
+          {
+            "id": "fx13",
+            "type": "glow",
+            "box": {
+              "x": 0.077,
+              "y": 0.348,
+              "w": 0.025,
+              "h": 0.082
+            },
+            "color": "#ff3388",
+            "label": "exterior street pink neon signage"
+          },
+          {
+            "id": "fx14",
+            "type": "glow",
+            "box": {
+              "x": 0.112,
+              "y": 0.36,
+              "w": 0.031,
+              "h": 0.068
+            },
+            "color": "#22eedd",
+            "label": "exterior street turquoise neon sign"
+          },
+          {
+            "id": "fx15",
+            "type": "glow",
+            "box": {
+              "x": 0.195,
+              "y": 0.3,
+              "w": 0.029,
+              "h": 0.098
+            },
+            "color": "#ff2277",
+            "label": "exterior window upper neon reflection"
+          },
+          {
+            "id": "fx16",
+            "type": "glow",
+            "box": {
+              "x": 0.321,
+              "y": 0.192,
+              "w": 0.159,
+              "h": 0.036
+            },
+            "color": "#d0e8ff",
+            "label": "overhead fluorescent light tube bank left"
+          },
+          {
+            "id": "fx17",
+            "type": "glow",
+            "box": {
+              "x": 0.567,
+              "y": 0.192,
+              "w": 0.158,
+              "h": 0.036
+            },
+            "color": "#d0e8ff",
+            "label": "overhead fluorescent light tube bank right"
+          },
+          {
+            "id": "fx18",
+            "type": "traffic",
+            "box": {
+              "x": 0,
+              "y": 0.45,
+              "w": 0.142,
+              "h": 0.11
+            },
+            "label": "nighttime street traffic visible outside glass storefront"
+          },
+          {
+            "id": "fx19",
+            "type": "shimmer",
+            "box": {
+              "x": 0.2,
+              "y": 0.63,
+              "w": 0.55,
+              "h": 0.05
+            },
+            "label": "glossy plum rubber floor neon reflection band"
+          },
+          {
+            "id": "fx-scrubber",
+            "type": "blink",
+            "points": [
+              {
+                "x": 0.3712,
+                "y": 0.6443
+              }
+            ],
+            "color": "#ff9a1f",
+            "label": "floor-scrubber robot amber beacon"
+          }
+        ],
+        "layers": [
+          {
+            "id": "arcade_el9",
+            "src": "assets/scenery/arcade_el9.webp",
+            "place": {
+              "x": 0.69259,
+              "y": 0.41667,
+              "w": 0.07049,
+              "h": 0.24154
+            },
+            "motion": "idle",
+            "order": 0,
+            "label": "Janitor With Dustpan"
+          },
+          {
+            "id": "arcade_el13",
+            "src": "assets/scenery/arcade_el13.webp",
+            "place": {
+              "x": 0.91533,
+              "y": 0.23438,
+              "w": 0.08467,
+              "h": 0.16016
+            },
+            "motion": "still",
+            "order": 0,
+            "label": "Giant Plush Monster"
+          },
+          {
+            "id": "arcade_el1",
+            "src": "assets/scenery/arcade_el1.webp",
+            "place": {
+              "x": 0,
+              "y": 0.41146,
+              "w": 0.04106,
+              "h": 0.26953
+            },
+            "motion": "idle",
+            "order": 1,
+            "label": "Night Bicyclist Outside"
+          },
+          {
+            "id": "arcade_el2",
+            "src": "assets/scenery/arcade_el2.webp",
+            "place": {
+              "x": 0.06177,
+              "y": 0.39518,
+              "w": 0.03852,
+              "h": 0.27474
+            },
+            "motion": "idle",
+            "order": 2,
+            "label": "Spectator Punk Outside"
+          },
+          {
+            "id": "arcade_el5",
+            "src": "assets/scenery/arcade_el5.webp",
+            "place": {
+              "x": 0.27725,
+              "y": 0.11198,
+              "w": 0.05196,
+              "h": 0.08724
+            },
+            "motion": "drift",
+            "order": 5,
+            "label": "Ceiling Dust Moth"
+          },
+          {
+            "id": "arcade_el6",
+            "src": "assets/scenery/arcade_el6.webp",
+            "place": {
+              "x": 0.31795,
+              "y": 0.62826,
+              "w": 0.14026,
+              "h": 0.22852
+            },
+            "motion": "drift",
+            "order": 6,
+            "label": "Floor-Scrubber Robot"
+          },
+          {
+            "id": "arcade_el7",
+            "src": "assets/scenery/arcade_el7.webp",
+            "place": {
+              "x": 0.56904,
+              "y": 0.53711,
+              "w": 0.07013,
+              "h": 0.16536
+            },
+            "motion": "cheer",
+            "order": 7,
+            "label": "Sneaking Tournament Fan"
+          },
+          {
+            "id": "arcade_el8",
+            "src": "assets/scenery/arcade_el8.webp",
+            "place": {
+              "x": 0.59702,
+              "y": 0.09896,
+              "w": 0.13045,
+              "h": 0.11784
+            },
+            "motion": "drift",
+            "order": 8,
+            "label": "RC Promo Blimp"
+          },
+          {
+            "id": "arcade_el10",
+            "src": "assets/scenery/arcade_el10.webp",
+            "place": {
+              "x": 0.76344,
+              "y": 0.25716,
+              "w": 0.06504,
+              "h": 0.09961
+            },
+            "motion": "idle",
+            "order": 10,
+            "label": "Black Cat On The Ledge"
+          },
+          {
+            "id": "arcade_el11",
+            "src": "assets/scenery/arcade_el11.webp",
+            "place": {
+              "x": 0.84339,
+              "y": 0.61523,
+              "w": 0.0814,
+              "h": 0.16341
+            },
+            "motion": "still",
+            "order": 11,
+            "label": "Yellow Mop Bucket"
+          },
+          {
+            "id": "arcade_el12",
+            "src": "assets/scenery/arcade_el12.webp",
+            "place": {
+              "x": 0.85429,
+              "y": 0.41341,
+              "w": 0.07485,
+              "h": 0.1276
+            },
+            "motion": "idle",
+            "order": 12,
+            "label": "Prize Counter Clerk"
+          }
+        ]
+      },
       "sourceImage": "assets/references/arcade_source.webp",
       "src": "assets/stages/arcade.webp"
     }
@@ -6635,6 +7779,20 @@
       "codec": "mp3",
       "bytes": 52092
     }
+  },
+  "titleVideo": {
+    "id": "title",
+    "hasAudio": false,
+    "duration": 8.042,
+    "src": "assets/video/title.mp4",
+    "sha256": "a60c23c4eb5891eb075ae23a4491120b6b210a842d9c33a25d7098fe1ab00244"
+  },
+  "selectVideo": {
+    "id": "select",
+    "hasAudio": false,
+    "duration": 8.042,
+    "src": "assets/video/select.mp4",
+    "sha256": "82c91e28bdd5b51239813e53c132a47ddddd6988eb05ea785566f25723271c1a"
   },
   "name": "Comfy Fighter Z"
 }

@@ -28,15 +28,20 @@ function filesIn(root, relative = '') {
 
 async function verifyBundle(directory, { packaged = true } = {}) {
   directory = fs.realpathSync(directory);
-  const { validateManifest, validateAudioManifest } = await import(pathToFileURL(path.join(__dirname, '../../public/builder/pack.js')).href);
+  const { validateManifest, validateAudioManifest, validateVideoManifest } = await import(pathToFileURL(path.join(__dirname, '../../public/builder/pack.js')).href);
   const manifest = validateManifest(read(sourceFile(directory, 'assets.json')));
   const audio = validateAudioManifest(read(sourceFile(directory, 'audio.json')), manifest.game);
+  // Startup and select clips are optional (the classic example has none); each one is mapped and digest-checked.
+  const video = fs.existsSync(path.join(directory, 'video.json')) ? validateVideoManifest(read(sourceFile(directory, 'video.json')), manifest.game) : null;
+  const clips = video ? [video.openingVideo, video.titleVideo, video.selectVideo, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean) : [];
   const contract = contractFor(manifest.game);
   // The generated menu frame (ui/frame) and game-select title card (ui/card) are later additions; a release may carry
   // them on top of its contract.
   const motionSheets = manifest.assets.filter(asset => asset.kind === 'sprites' && (Object.hasOwn(manifest.game.motionSheets || {}, asset.sheet) || Object.hasOwn(manifest.game.detailSheets || {}, asset.sheet))).length;
   const later = ['frame', 'card'].filter(id => manifest.assets.some(asset => asset.kind === 'ui' && asset.id === id)).length;
-  const images = manifest.assets.length - later - motionSheets;
+  // Living-scenery records (populated scenes and cut-out layers) are optional per arena, outside the contract.
+  const scenery = manifest.assets.filter(asset => ['scene', 'layer'].includes(asset.kind)).length;
+  const images = manifest.assets.length - later - motionSheets - scenery;
   if (manifest.cloudOnly !== true || manifest.game.fighters.length !== contract.fighters || manifest.game.stages.length !== contract.stages || images !== contract.images || audio.assets.length !== contract.audio)
     throw new Error(`The complete ${contract.name} example requires ${contract.fighters} fictional fighters, ${contract.stages} arena(s), ${contract.images} generated images and ${contract.audio} audio clips.`);
   if (manifest.game.fighters.filter(fighter => fighter.boss).length !== contract.bosses) throw new Error(`The complete ${contract.name} example requires ${contract.bosses} final boss(es).`);
@@ -67,6 +72,16 @@ async function verifyBundle(directory, { packaged = true } = {}) {
     if (record.kind !== 'audio' && (!Number.isInteger(record.width) || !Number.isInteger(record.height))) throw new Error(`Image dimensions are missing: ${record.id}`);
     bytes += data.length; entries.push({ record, file, bytes: data.length });
   }
+  if (video) allowed.add('video.json');
+  const videos = [];
+  for (const clip of clips) {
+    if (allowed.has(clip.src)) throw new Error(`Colliding example source path: ${clip.src}`);
+    allowed.add(clip.src);
+    const file = sourceFile(directory, clip.src), data = fs.readFileSync(file);
+    if (hash(data) !== clip.sha256.toLowerCase()) throw new Error(`Source integrity check failed: ${clip.id}`);
+    if (!data.length || data.length > 64 * 1024 * 1024) throw new Error(`Source exceeds the supported file size: ${clip.id}`);
+    bytes += data.length; videos.push({ record: clip, file, bytes: data.length });
+  }
   let provenance;
   if (packaged) {
     provenance = read(sourceFile(directory, 'provenance.json'));
@@ -76,12 +91,16 @@ async function verifyBundle(directory, { packaged = true } = {}) {
       const evidence = records.find(item => item.id === entry.record.id);
       if (!evidence || evidence.packagedSha256 !== entry.record.sha256 || entry.record.kind !== 'audio' && evidence.pixelsIdentical !== true) throw new Error(`Packaging evidence does not match ${entry.record.id}`);
     }
+    for (const entry of videos) {
+      const evidence = (provenance.videos || []).find(item => item.id === entry.record.id);
+      if (!evidence || evidence.sha256 !== entry.record.sha256) throw new Error(`Packaging evidence does not match ${entry.record.id}`);
+    }
     const unknown = filesIn(directory).filter(name => !allowed.has(name));
     if (unknown.length) throw new Error(`Unmapped files in the shipped example: ${unknown.join(', ')}`);
   }
   // Mapped cels, so a bundle without the optional motion sheets reports its real count.
   const poseCount = manifest.assets.filter(asset => asset.kind === 'sprites').reduce((sum, asset) => sum + asset.poses.length, 0);
-  return { directory, manifest, audio, entries, bytes, provenance, contract, poseCount };
+  return { directory, manifest, audio, video, videos, entries, bytes, provenance, contract, poseCount };
 }
 
 module.exports = { CONTRACTS, contractFor, hash, read, filesIn, verifyBundle };

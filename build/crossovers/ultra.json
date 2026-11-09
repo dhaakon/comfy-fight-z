@@ -19,11 +19,12 @@
     "output/games/billionaires-brawl/assets/ui/ensemble.png"
   ],
   "titleMontage": [
-    { "image": "build/public/arcade/title-ensemble.webp", "seconds": 6 },
+    { "video": "build/public/assets/video/title.mp4" },
     { "video": "output/games/rogue-ai/assets/video/title.mp4" },
     { "video": "output/games/midterm-2026/assets/video/title.mp4" },
     { "video": "output/games/billionaires-brawl/assets/video/title.mp4" }
   ],
+  "selectVideo": "build/public/assets/video/select.mp4",
   "finalBoss": "bylaw",
   "bossStage": "arcade",
   "arcade": { "perSeries": 2 },

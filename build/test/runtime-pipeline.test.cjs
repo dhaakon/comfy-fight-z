@@ -136,6 +136,17 @@ test('merge rejects source junction escapes and output aliases to the base', t =
   assert.throws(() => merge({ saga: true, base: fixture.base, patches: [fixture.patch], out: path.join(fixture.folder, 'base-alias/nested') }), /separate from source/);
 });
 
+test('runtime sources include the select loops, idle clips and living-scenery layers a game ships', () => {
+  const manifest = runtime();
+  manifest.selectVideo = { id: 'select', src: 'assets/video/select.mp4', duration: 8 };
+  manifest.fighters[0].selectVideo = { id: `idle-${manifest.fighters[0].id}`, src: `assets/video/idle-${manifest.fighters[0].id}.mp4`, duration: 6 };
+  manifest.stages[0].scenery = { weather: 'none', effects: [], layers: [{ id: 'yard_el1', src: 'assets/scenery/yard_el1.png', motion: 'idle' }] };
+  const sources = runtimeSources(manifest);
+  for (const src of ['assets/video/select.mp4', `assets/video/idle-${manifest.fighters[0].id}.mp4`, 'assets/scenery/yard_el1.png']) assert.ok(sources.includes(src), src);
+  manifest.fighters[0].selectVideo.duration = 45;
+  assert.throws(() => runtimeSources(manifest), /Invalid select idle video mapping/);
+});
+
 test('runtime validation requires exact configured poses and all mapped artwork', () => {
   const manifest = runtime(); runtimeSources(manifest, { config, plan: imagePlan, strict: true });
   delete manifest.fighters[0].poses.idle; manifest.fighters[0].poses.invented = { src: 'assets/shared.webp' };

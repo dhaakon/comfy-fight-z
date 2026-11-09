@@ -22,10 +22,23 @@ async function pixels(file) {
   return { width: image.width, height: image.height, rgba: Buffer.from(context.getImageData(0, 0, image.width, image.height).data) };
 }
 
+// The RGBA a file stores, decoded by FFmpeg. A canvas premultiplies alpha, and PNG and WebP decoders round translucent
+// pixels differently on that path, so a cut-out with soft edges could not be compared exactly through it.
+function storedRgba(file) {
+  const probe = spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', file], { windowsHide: true, encoding: 'utf8' });
+  const [width, height] = String(probe.stdout || '').trim().split(',').map(Number);
+  const decoded = spawnSync('ffmpeg', ['-v', 'error', '-nostdin', '-i', file, '-frames:v', '1', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-'], { windowsHide: true, maxBuffer: 1 << 30 });
+  if (decoded.status !== 0 || !width || !height || decoded.stdout.length !== width * height * 4) throw new Error(`Cannot decode ${path.basename(file)} for verification.`);
+  const rgba = Buffer.from(decoded.stdout);
+  // The colour under a fully transparent pixel is invisible, and lossless WebP may drop it: compare and hash it as zero.
+  for (let i = 0; i < rgba.length; i += 4) if (rgba[i + 3] === 0) rgba[i] = rgba[i + 1] = rgba[i + 2] = 0;
+  return { width, height, rgba };
+}
+
 async function losslessImage(input, output) {
-  const original = await pixels(input);
+  const original = storedRgba(input);
   await command(['-i', input, '-frames:v', '1', '-vf', 'format=bgra', '-c:v', 'libwebp', '-lossless', '1', '-quality', '100', '-compression_level', '6', '-map_metadata', '-1', '-y', output]);
-  const encoded = await pixels(output);
+  const encoded = storedRgba(output);
   if (original.width !== encoded.width || original.height !== encoded.height || !original.rgba.equals(encoded.rgba)) throw new Error(`Lossless image verification failed: ${path.basename(input)}`);
   return { width: encoded.width, height: encoded.height, pixelsIdentical: true, rgbaSha256: hash(encoded.rgba) };
 }

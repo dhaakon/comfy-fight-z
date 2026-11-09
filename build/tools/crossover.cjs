@@ -72,6 +72,7 @@ function loadDefinition(file) {
   if (definition.interface !== undefined && (typeof definition.interface !== 'object' || Array.isArray(definition.interface))) fail('interface maps ui ids to image files.');
   for (const key of Object.keys(definition.interface || {})) if (!ID.test(key)) fail(`interface key ${key} is not a ui id.`);
   if (definition.ensemble !== undefined && (!Array.isArray(definition.ensemble) || definition.ensemble.length !== 4)) fail('ensemble lists four key-art images for a 2 x 2 composite.');
+  if (definition.selectVideo !== undefined && (typeof definition.selectVideo !== 'string' || !/\.mp4$/i.test(definition.selectVideo))) fail('selectVideo is a repository MP4 that loops the select backdrop.');
   if (definition.titleMontage !== undefined) {
     if (!Array.isArray(definition.titleMontage) || definition.titleMontage.length < 2) fail('titleMontage lists at least two segments.');
     for (const segment of definition.titleMontage) {
@@ -305,6 +306,12 @@ async function buildCrossover({ definitionPath = path.join(ROOT, DEFAULT_DEFINIT
       const facts = await titleMontage(segments, output, path.join(staging, '.montage'));
       fs.rmSync(path.join(staging, '.montage'), { recursive: true, force: true });
       manifest.titleVideo = { id: 'title', src: 'assets/video/title.mp4', duration: facts.duration, sha256: sha256(output), hasAudio: false };
+    }
+    // The select loop of the interface art the crossover borrows (Ultra: the original game's arcade select backdrop).
+    if (definition.selectVideo) {
+      const src = 'assets/video/select.mp4', output = path.join(staging, src);
+      place(repoFile(definition.selectVideo, 'selectVideo'), output, true);
+      manifest.selectVideo = { id: 'select', src, duration: Number(probe(output).duration.toFixed(3)), sha256: sha256(output), hasAudio: false };
     }
     fs.writeFileSync(path.join(staging, 'assets/manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
     const mapped = verify(staging, manifest);

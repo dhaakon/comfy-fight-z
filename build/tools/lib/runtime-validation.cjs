@@ -34,6 +34,8 @@ function runtimeSources(manifest, { config, plan, strict = false } = {}) {
     Object.values(fighter.poses).forEach(add);
     for (const kind of ['portrait', 'hero', 'cutin', 'endingArt', 'sourceImage']) if (fighter[kind]) add(fighter[kind]);
     if (fighter.introVideo) { if (!Number.isFinite(fighter.introVideo.duration) || fighter.introVideo.duration <= 0 || fighter.introVideo.duration > 30 || !/\.mp4$/i.test(fighter.introVideo.src)) throw new Error(`Invalid introduction video mapping: ${fighter.id}`); add(fighter.introVideo); }
+    // The select-screen idle loop (selectVideo on a fighter) ships like the introduction.
+    if (fighter.selectVideo) { if (!Number.isFinite(fighter.selectVideo.duration) || fighter.selectVideo.duration <= 0 || fighter.selectVideo.duration > 30 || !/\.mp4$/i.test(fighter.selectVideo.src)) throw new Error(`Invalid select idle video mapping: ${fighter.id}`); add(fighter.selectVideo); }
   }
   for (const stage of manifest.stages) { if (stage.src) add(stage.src); if (stage.sourceImage) add(stage.sourceImage); (stage.scenery?.layers || []).forEach(add); }
   for (const group of ['ui', 'effects', 'audio']) Object.values(manifest[group] || {}).forEach(add);
@@ -41,9 +43,9 @@ function runtimeSources(manifest, { config, plan, strict = false } = {}) {
     if (!Number.isFinite(manifest.openingVideo.duration) || manifest.openingVideo.duration <= 0 || !/\.mp4$/i.test(manifest.openingVideo.src)) throw new Error('Invalid opening video mapping.');
     add(manifest.openingVideo);
   }
-  if (manifest.titleVideo) {
-    if (!Number.isFinite(manifest.titleVideo.duration) || manifest.titleVideo.duration <= 0 || !/\.mp4$/i.test(manifest.titleVideo.src)) throw new Error('Invalid title video mapping.');
-    add(manifest.titleVideo);
+  for (const [key, label] of [['titleVideo', 'title'], ['selectVideo', 'select']]) if (manifest[key]) {
+    if (!Number.isFinite(manifest[key].duration) || manifest[key].duration <= 0 || !/\.mp4$/i.test(manifest[key].src)) throw new Error(`Invalid ${label} video mapping.`);
+    add(manifest[key]);
   }
   if (strict) {
     const sameIds = (actual, expected) => actual.length === expected.length && new Set(actual).size === actual.length && expected.every(id => actual.includes(id));

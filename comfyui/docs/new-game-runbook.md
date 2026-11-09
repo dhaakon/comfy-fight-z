@@ -134,6 +134,33 @@ The package carries every source and a runtime copy of each clip and sound, and 
 
 Omit `--slot` to make the new game the main one (`output/game`). `node build/tools/new-game.cjs status --run <run>` prints the step log. The exported `game/` folder is self-contained (`npm start` inside it serves one game; `GAME_MOUNTS='{"/":".","/other/":"../other/game"}'` serves several).
 
+### Startup and select clips for a run without them (add-media)
+
+A run prepared with `--no-media`, or one over accepted art, gets its clips afterwards: one fight introduction and one select idle loop per fighter, the title loop (animating `ui/ensemble`) and the select loop (animating `ui/select`).
+
+```
+node build/tools/new-game.cjs add-media --run output/test-runs/<name>-<date> --approve-usd <estimate> [--clips intro,idle,title,select] [--fighters a,b] [--title-image <file>] [--select-image <file>]
+```
+
+Each clip is drawn like `reroll-art` (the accepted identity, The Yard or the run's first arena, and the interface art uploaded from disk) and recorded in `video.json`. Clips already mapped are skipped, so a rerun after a failure resumes. On Seedance 1.5 Pro at 1080p a fighter costs about $0.686 (intro $0.284, idle $0.402) and each menu loop $0.472. `--title-image`/`--select-image` animate art kept outside the bundle.
+
+### The original game over its accepted example art
+
+The original cast lives in `comfyui/config/factory.json` and its reviewed art in `example/bundle`. To give it what newer casts have (clips, living scenery, a title card), prepare a run over that art and use the add-on steps; the full generation is refused on such a run, so the accepted art is never redrawn:
+
+```
+node build/tools/new-game.cjs prepare --cast comfyui/config/factory.json --out output/test-runs/canonical-<date> --accepted example/bundle   # free: copies the accepted bundle
+node build/tools/new-game.cjs add-media --run output/test-runs/canonical-<date> --approve-usd 5.75 --title-image build/public/arcade/title-ensemble.webp --select-image build/public/arcade/select-backdrop.webp
+node build/tools/new-game.cjs add-scenery --run output/test-runs/canonical-<date> --approve-usd 1.00                              # The Yard, Sunset Rooftop, Midnight Arcade
+node build/tools/new-game.cjs review --run output/test-runs/canonical-<date>                                                        # read every clip and scenery sheet
+node build/tools/new-game.cjs pack-media --run output/test-runs/canonical-<date>                                                    # web-encode the clips before they are versioned
+node build/tools/merge-into-example.cjs --run output/test-runs/canonical-<date> --scenery --videos                                 # layers as lossless WebP, clips with digests, provenance
+npm run example -- --out output/example/<fresh> --no-install                                                                         # strict build + gameplay checks
+node build/tools/adopt-game.cjs --game output/example/<fresh>/game && npm run build                                                  # the main game's versioned runtime
+```
+
+The original game's menus show its arcade art (`build/public/arcade/`), so its title loop animates `title-ensemble.webp` and its select loop `select-backdrop.webp`. The example verifier accepts `video.json` and scenery layers on top of its image contract, each digest-checked with provenance; the populated scene renders stay in the run. `adopt-game` converts the layers to WebP and copies every clip, idle loops and the select loop included.
+
 ## 6. Crossover: every installed game in one roster (free)
 
 ```
