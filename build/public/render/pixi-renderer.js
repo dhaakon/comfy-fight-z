@@ -38,14 +38,51 @@
     world.addChild(auraLayer, trailLayer, fighterLayer, dustLayer, motionLines, projectileLayer, effectLayer, fxLines, burstLines, sparks);
     const flash = new PIXI.Graphics(); flash.rect(0, 0, 960, 540).fill(0xffffff); flash.alpha = 0; flash.blendMode = 'add';
     const sparkLayer = new PIXI.Container(); world.addChild(sparkLayer);
-    // Living scenery: the shared scenery module paints two offscreen canvases. The first holds the stage elements in the
-    // painting's 960x540 space and lives inside stageLayer (same parallax and scale); the second is front weather.
-    const sceneryScale = root.CFZ_LITE ? 1 : 2, sceneryEvery = root.CFZ_LITE ? 4 : 2;
-    const sceneryCanvas = [0, 1].map(() => { const c = document.createElement('canvas'); c.width = 960 * sceneryScale; c.height = 540 * sceneryScale; return c; });
-    const sceneryTextures = sceneryCanvas.map(c => PIXI.Texture.from(c)), scenerySprites = sceneryTextures.map(t => { const sprite = new PIXI.Sprite(t); sprite.scale.set(1 / sceneryScale); return sprite; });
-    stageLayer.addChild(scenerySprites[0]);
-    let sceneryFrame = 0; const sceneryDrawn = [false, false];
-    app.stage.addChild(stageLayer, titleTint, shaker, scenerySprites[1], flash);
+    // Living scenery, from the shared scenery module's poses and particles. The placed elements are sprites inside
+    // stageLayer (uploaded once, moved by transforms), the ambient effects paint one offscreen canvas in the painting's
+    // space that is uploaded every few frames (a quarter-size canvas at 7.5 frames a second on lite devices, where a
+    // canvas upload is the slow path), and the weather in front of the fighters is drawn as shapes each frame.
+    const sceneryScale = root.CFZ_LITE ? .5 : 1, sceneryEvery = root.CFZ_LITE ? 8 : 2;
+    const effectsCanvas = document.createElement('canvas'); effectsCanvas.width = 960 * sceneryScale; effectsCanvas.height = 540 * sceneryScale;
+    const effectsTexture = PIXI.Texture.from(effectsCanvas), effectsSprite = new PIXI.Sprite(effectsTexture); effectsSprite.scale.set(1 / sceneryScale);
+    const layerLayer = new PIXI.Container(), weather = new PIXI.Graphics(), layerPool = [];
+    stageLayer.addChild(effectsSprite, layerLayer);
+    let sceneryFrame = 0, effectsDrawn = false, layerStage = null;
+    app.stage.addChild(stageLayer, titleTint, shaker, weather, flash);
+    function drawLayers(scenery, info, stageData, plate) {
+      const S = screen.scenery, m = S.mapper(plate), seed = S.stageSeed(stageData), layers = scenery.layers || [];
+      if (layerStage !== stageData) { layerStage = stageData; for (const entry of layerPool) entry.holder.visible = false; }
+      layers.forEach((item, i) => {
+        let entry = layerPool[i];
+        if (!entry) {
+          const holder = new PIXI.Container(), inner = new PIXI.Container(), sprite = new PIXI.Sprite(), glow = new PIXI.Sprite();
+          glow.blendMode = 'add'; inner.addChild(sprite, glow); holder.addChild(inner); layerLayer.addChild(holder);
+          entry = { holder, inner, sprite, glow }; layerPool.push(entry);
+        }
+        const tex = texture(art(item.src));
+        if (!tex) { entry.holder.visible = false; return; }
+        const p = S.layerPose(item, m, info.time, S.hash(i, seed) * 6.283);
+        entry.holder.visible = true;
+        for (const sprite of [entry.sprite, entry.glow]) { sprite.texture = tex; sprite.anchor.set(.5, p.centre ? .5 : 1); sprite.width = p.w; sprite.height = p.h; }
+        entry.holder.position.set(p.x + p.w / 2 + p.dx, (p.centre ? p.y + p.h / 2 : p.y + p.h) + p.dy); entry.holder.rotation = p.rot;
+        entry.inner.scale.set(p.sx, p.sy); entry.inner.skew.set(p.skew, 0);
+        entry.sprite.alpha = p.alpha; entry.glow.visible = p.glow > 0; entry.glow.alpha = p.glow * p.alpha;
+      });
+      for (let i = layers.length; i < layerPool.length; i++) layerPool[i].holder.visible = false;
+    }
+    function drawWeather(info) {
+      weather.clear();
+      const p = screen.scenery.frontParticles(info); if (!p) return;
+      const color = value => PIXI.Color.shared.setValue(value);
+      if (p.lines.length) { for (const [x1, y1, x2, y2] of p.lines) weather.moveTo(x1, y1).lineTo(x2, y2); const c = color(p.lineColor); weather.stroke({ width: p.lineWidth, color: c.toNumber(), alpha: c.alpha }); }
+      if (p.splashes.length) { const c = color(p.splashColor).toNumber(), a = color(p.splashColor).alpha; for (const s of p.splashes) weather.rect(s.x, s.y, s.w, s.h).fill({ color: c, alpha: a * s.alpha }); }
+      for (const d of p.dots) {
+        const c = color(d.color), fill = { color: c.toNumber(), alpha: c.alpha * d.alpha };
+        // A tumbling leaf or petal: the drawing context carries the transform (Graphics itself only proxies the shapes).
+        if (d.flutter) { const g = weather.context; g.save(); g.translate(d.x, d.y); g.rotate(d.rot); g.ellipse(0, 0, d.rx, d.ry).fill(fill); g.restore(); }
+        else weather.circle(d.x, d.y, d.rx).fill(fill);
+      }
+    }
     // Impact shader on the world: chromatic aberration, radial blur, a shockwave ring and a negative flash,
     // driven per frame and attached only while something is happening. Filter space is the full screen.
     shaker.filterArea = new PIXI.Rectangle(0, 0, 960, 540);
@@ -115,11 +152,13 @@ void main() {
     // Fighters: one holder per slot; afterimages are pooled sprites drawn behind the body.
     const slots = [0, 1].map(() => {
       const holder = new PIXI.Container(), trails = new PIXI.Container(), shadow = new PIXI.Graphics(), stick = new PIXI.Graphics();
-      const spinner = new PIXI.Container(), body = new PIXI.Container(), sprite = new PIXI.Sprite();
-      body.addChild(sprite); spinner.addChild(body); holder.addChild(spinner);
+      const spinner = new PIXI.Container(), body = new PIXI.Container(), sprite = new PIXI.Sprite(), glow = new PIXI.Sprite();
+      // Lite devices brighten a hit cel with an additive copy of itself instead of a colour-matrix filter pass.
+      glow.blendMode = 'add'; glow.visible = false;
+      body.addChild(sprite, glow); spinner.addChild(body); holder.addChild(spinner);
       const filter = new PIXI.ColorMatrixFilter();
       fighterLayer.addChild(shadow, trails, stick, holder);
-      return { holder, trails, shadow, stick, spinner, body, sprite, filter, pool: [], history: null, clock: -1 };
+      return { holder, trails, shadow, stick, spinner, body, sprite, glow, filter, pool: [], history: null, clock: -1 };
     });
     function placeSprite(target, sprite, name, x, y, facing, transform, poses, ground, scale) {
       const meta = poses[name], image = meta && art(meta.src), tex = texture(image);
@@ -161,8 +200,12 @@ void main() {
       placeSprite(entry, entry.sprite, pose, f.x, f.y, f.facing, current, poses, E.GROUND, scale);
       // Capcom hit shake through the impact freeze (the Canvas path's rule).
       entry.holder.x += shake;
-      // Hit flashes brighten the cel; mirror matches recolour the second fighter.
-      if (current.flash > 0 || palette) {
+      // Hit flashes brighten the cel; mirror matches recolour the second fighter. Lite devices flash with an additive
+      // copy of the cel (no filter pass) unless the palette filter is on anyway.
+      const additive = root.CFZ_LITE && !palette && current.flash > 0;
+      entry.glow.visible = additive;
+      if (additive) { entry.glow.texture = entry.sprite.texture; entry.glow.anchor.copyFrom(entry.sprite.anchor); entry.glow.alpha = current.flash * .55; }
+      if ((current.flash > 0 && !additive) || palette) {
         entry.filter.reset();
         if (palette) { entry.filter.hue(palette, false); entry.filter.saturate(.15, true); }
         if (current.flash > 0) { entry.filter.brightness(1 + current.flash * .8, true); entry.filter.saturate(-current.flash * .4, true); }
@@ -310,15 +353,22 @@ void main() {
       if (background) { if (background !== lastStage) { coverSprite(stageSprite, background, 0, 0, 960, 540); lastStage = background; } stageFallback.visible = false; stageSprite.visible = true; }
       else { if (!fallbackDrawn) { drawFallbackStage(); fallbackDrawn = true; } stageFallback.visible = true; stageSprite.visible = false; lastStage = null; }
       if (screen.scenery) {
-        const info = screen.sceneryInfo(), live = !!state;
-        // Background life redraws at 30 frames a second, as arcade stages animated; an empty canvas is not re-uploaded.
-        if (live && (sceneryFrame++ % sceneryEvery) === 0) sceneryCanvas.forEach((c, i) => {
-          const g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, c.width, c.height); g.setTransform(sceneryScale, 0, 0, sceneryScale, 0, 0);
-          const drawn = (i ? screen.scenery.drawFront : screen.scenery.drawStage)(g, info);
-          if (drawn || sceneryDrawn[i]) sceneryTextures[i].source.update();
-          sceneryDrawn[i] = drawn;
-        });
-        scenerySprites.forEach(sprite => { sprite.visible = live; });
+        const info = screen.sceneryInfo(), plate = stage && art(stage.src), living = !!state && !!stage?.scenery && !!plate;
+        effectsSprite.visible = living; layerLayer.visible = living; weather.visible = !!state;
+        if (state) {
+          screen.scenery.tick(info);
+          if (living) {
+            // Ambient effects redraw at 30 frames a second, as arcade stages animated; an empty canvas is not re-uploaded.
+            if ((sceneryFrame++ % sceneryEvery) === 0) {
+              const g = effectsCanvas.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, effectsCanvas.width, effectsCanvas.height); g.setTransform(sceneryScale, 0, 0, sceneryScale, 0, 0);
+              const drawn = screen.scenery.drawEffects(g, info);
+              if (drawn || effectsDrawn) effectsTexture.source.update();
+              effectsDrawn = drawn;
+            }
+            drawLayers(stage.scenery, info, stage, plate);
+          }
+          drawWeather(info);
+        } else weather.clear();
       }
       const title = !state && ui('title'); titleTint.visible = !!title; if (title) coverSprite(titleTint, title, 0, 0, 960, 540);
       world.position.set(-view.x * view.zoom + (view.shakeX || 0), FLOOR * (1 - view.zoom) + view.lift + (view.shakeY || 0)); world.scale.set(view.zoom);
@@ -378,7 +428,31 @@ void main() {
       screen.drawScreen(fighters);
     }
     function reset() { screen.reset(); for (const entry of slots) { entry.history = null; entry.clock = -1; } motion.particles.length = 0; motion.bursts.length = 0; motion.flashAlpha = 0; flash.alpha = 0; shaker.rotation = 0; Object.assign(impact, { aberration: 0, blur: 0, ring: -1, ringStrength: 0, invert: 0, desaturate: 0 }); shaker.filters = null; stageLayer.filters = null; }
-    return { kind: 'pixi', draw, reset, pixel, view, app, stats: () => ({ resizes, textures: textures.size, resolution: app.renderer.resolution }) };
+    // Before a match: upload every cel, effect, stage and scenery texture the fight can show and compile the filter
+    // programs, so the first use of a pose or the first hit costs no GPU stall mid-fight. Repeats are free.
+    const warmed = new WeakSet(); let compiled = false, prepared = 0;
+    function prepare(frame) {
+      const manifest = frame.manifest, stage = manifest.stages[frame.stageIndex];
+      const upload = image => {
+        const tex = texture(image); if (!tex || warmed.has(tex)) return; warmed.add(tex);
+        try { app.renderer.texture.initSource(tex.source); prepared++; } catch (_) { /* Uploaded on first draw instead. */ }
+      };
+      for (const slot of [0, 1]) for (const meta of Object.values(fighterData(slot)?.poses || {})) upload(art(meta.src));
+      for (const meta of Object.values(manifest.effects || {})) upload(art(assetSource(meta)));
+      if (stage) { upload(art(stage.src) || art(assetSource(stage.sourceImage))); for (const layer of stage.scenery?.layers || []) upload(art(layer.src)); }
+      if (compiled) return;
+      compiled = true;
+      // One hidden render with every filter attached links their programs now rather than on the first hit or K.O.
+      const idle = texture(art(fighterData(0)?.poses?.idle?.src));
+      try {
+        for (const entry of slots) { if (idle) { entry.sprite.texture = idle; entry.holder.visible = true; } entry.filter.reset(); entry.sprite.filters = [entry.filter]; }
+        stageTone.reset(); stageLayer.filters = [stageTone]; if (shock && !root.CFZ_LITE) shaker.filters = [shock];
+        app.renderer.render(app.stage);
+      } catch (_) { /* The programs compile on first use instead. */ }
+      for (const entry of slots) { entry.sprite.filters = null; entry.holder.visible = false; }
+      stageLayer.filters = null; shaker.filters = null;
+    }
+    return { kind: 'pixi', draw, reset, prepare, pixel, view, app, stats: () => ({ resizes, textures: textures.size, prepared, resolution: app.renderer.resolution }) };
   }
   root.CFZPixiRenderer = { create };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

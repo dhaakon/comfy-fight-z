@@ -31,6 +31,8 @@ async function tab(page, name) {
 }
 async function skipOptionalOpening(page) {
   await page.waitForFunction(() => !document.querySelector('#title-start').disabled);
+  // Phones (a coarse pointer) end the boot screen on an ENTER THE GAME gate; one tap lifts it.
+  if (await page.locator('#boot-enter').isVisible()) { await page.click('#boot-enter'); await page.waitForFunction(() => document.querySelector('#boot-screen').hidden); }
   if (await page.locator('#opening-screen').isVisible()) await page.keyboard.press('Space');
   await page.waitForFunction(() => window.FighterDebug.presentation().screen === 'title');
 }

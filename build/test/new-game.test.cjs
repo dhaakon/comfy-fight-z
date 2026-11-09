@@ -91,6 +91,11 @@ test('a single-image redraw prices one derived image or clip and refuses without
   assert.deepEqual([title.type, title.fighter, title.duration, title.estimatedUSD], ['CFZTitleVideo', null, 8, 0.472]);
   assert.deepEqual([select.type, select.estimatedUSD, select.video.model, select.video.resolution], ['CFZSelectVideo', 1.0296, 'LTX-2.5 (Fast)', '1080p'], 'LTX renders 720p whatever the resolution says, at its own rate');
   assert.throws(() => artPlan(workflow, 'title_video', { videoResolution: '4k' }), /Unsupported video model or resolution/);
+  // The phone cuts of the menu loops add one 2K recomposition of the art to the clip.
+  const phoneTitle = artPlan(workflow, 'title_portrait_video'), phoneSelect = artPlan(workflow, 'select_portrait_video');
+  assert.deepEqual([phoneTitle.type, phoneTitle.kind, phoneTitle.portraitCut, phoneTitle.duration, phoneTitle.estimatedUSD], ['CFZTitleVideo', 'title', true, 8, 0.544072]);
+  assert.deepEqual([phoneSelect.type, phoneSelect.kind, phoneSelect.portraitCut, phoneSelect.estimatedUSD], ['CFZSelectVideo', 'select', true, 0.544072]);
+  assert.equal(title.portraitCut, false);
   assert.equal(workflow[cutin.factory].inputs.character_id, 'keystone'); assert.ok(intro.environment);
   assert.throws(() => artPlan(workflow, 'keystone_sheet'), /--asset must be/);
   assert.throws(() => artPlan(workflow, 'nobody_cutin'), /No character factory/);
@@ -137,7 +142,14 @@ test('a run over accepted art copies it, refuses the full generation and adds on
   const resumed = mediaPlan(workflow, bundle, { clips: 'intro,idle,title,select', titleImage: 'build/public/arcade/title-ensemble.webp' });
   assert.deepEqual(resumed.skipped, [`${fighters[0]}_intro`]);
   assert.equal(resumed.todo.length, fighters.length * 2 - 1 + 2);
-  assert.throws(() => mediaPlan(workflow, bundle, { clips: 'outro' }), /--clips takes intro, idle, title, select/);
+  assert.throws(() => mediaPlan(workflow, bundle, { clips: 'outro' }), /--clips takes intro, idle, title, select, title-portrait, select-portrait/);
+  // The phone cuts are asked for by name, need the same source art as the wide loops, and skip once mapped.
+  assert.throws(() => mediaPlan(workflow, bundle, { clips: 'title-portrait' }), /The title loop animates ui\/ensemble.*--title-image/);
+  const phone = mediaPlan(workflow, bundle, { clips: 'title-portrait,select-portrait', titleImage: 'build/public/arcade/title-ensemble.webp' });
+  assert.deepEqual(phone.todo.map(item => item.asset), ['title_portrait_video', 'select_portrait_video']);
+  assert.equal(phone.estimatedUSD, Number((2 * 0.544072).toFixed(6)));
+  fs.writeFileSync(path.join(bundle, 'video.json'), JSON.stringify({ schema: 'comfy-fighter-video/v1', root: '.', titleVideoPortrait: { id: 'title-portrait', src: 'raw/tp.mp4', duration: 8, sha256: '0'.repeat(64) } }));
+  assert.deepEqual(mediaPlan(workflow, bundle, { clips: 'title-portrait,select-portrait', titleImage: 'build/public/arcade/title-ensemble.webp' }).skipped, ['title_portrait_video']);
   await assert.rejects(addMedia({ run: out, approveUsd: '0.01', clips: 'intro' }), /Adding \d+ clips costs about/);
   assert.equal(pipeline(directory).addedMedia, undefined);
 });

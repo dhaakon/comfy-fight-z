@@ -209,6 +209,24 @@ check("Seedance intro uses the 1.5 Pro image-to-video node at 1080p 16:9 for 4 s
 sd_idle = expanded(fx.CFZSelectIdleVideo.execute(seedance_project, plain, ["5", 1], "6"))
 (_, sd_loop), = of(sd_idle, "ByteDanceFirstLastFrameNode")
 check("Seedance idle loop uses first-last-frame at 9:16", sd_loop["inputs"]["aspect_ratio"] == "9:16" and sd_loop["inputs"]["first_frame"] == sd_loop["inputs"]["last_frame"] and sd_loop["inputs"]["duration"] == 6)
+# The phone cut of a menu loop: a 2K 9:16 recomposition of the wide art, animated as first and last frame.
+phone_menu = expanded(fx.CFZTitleVideo.execute(seedance_project, ["15", 1], "8", portrait=True))
+(phone_key_id, phone_key), = of(phone_menu, "GeminiNanoBanana2V2")
+(_, phone_loop), = of(phone_menu, "ByteDanceFirstLastFrameNode")
+(_, phone_saved), = of(phone_menu, "CFZSaveVideo")
+check("portrait menu loop recomposes the ensemble at 2K 9:16 from the wide art", phone_key["inputs"]["model.images.image_1"] == ["15", 1] and phone_key["inputs"]["model.aspect_ratio"] == "9:16"
+      and phone_key["inputs"]["model.resolution"] == "2K" and "9:16 phone key visual" in phone_key["inputs"]["prompt"])
+check("portrait menu loop animates that cut at 9:16 as first and last frame and is saved as title-portrait", phone_loop["inputs"]["first_frame"] == [phone_key_id, 0]
+      and phone_loop["inputs"]["last_frame"] == [phone_key_id, 0] and phone_loop["inputs"]["aspect_ratio"] == "9:16" and phone_loop["inputs"]["duration"] == 8
+      and json.loads(phone_saved["inputs"]["asset_json"]) == {"id": "title-portrait"})
+phone_select = expanded(fx.CFZSelectVideo.execute(project, ["16", 1], "8", portrait=True))
+(_, phone_select_saved), = of(phone_select, "CFZSaveVideo")
+(_, phone_select_ltx), = of(phone_select, "LtxApi25ImageToVideo")
+check("portrait select loop is saved as select-portrait and rendered at 720x1280 on LTX", json.loads(phone_select_saved["inputs"]["asset_json"]) == {"id": "select-portrait"}
+      and phone_select_ltx["inputs"]["model.resolution"] == "720x1280" and len(of(phone_select, "GeminiNanoBanana2V2")) == 1)
+check("the wide menu loop is unchanged without the portrait option", not of(menu, "GeminiNanoBanana2V2") and json.loads(of(menu, "CFZSaveVideo")[0][1]["inputs"]["asset_json"]) == {"id": "title"})
+check("video.json keys name the portrait cuts", fx.VIDEO_KEYS["title-portrait"] == "titleVideoPortrait" and fx.VIDEO_KEYS["select-portrait"] == "selectVideoPortrait"
+      and fx._video_record({"id": "select-portrait"}) == {"id": "select-portrait"})
 # Every other node that passes one reference through _cloud keeps exactly that one image.
 for label, output in (("sprite sheet", fx.CFZSpriteSheet.execute(project, plain, ["5", 1], "sheetD")),
                       ("character art", fx.CFZCharacterArt.execute(project, plain, ["5", 1], "ending"))):

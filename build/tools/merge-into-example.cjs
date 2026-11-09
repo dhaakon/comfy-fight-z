@@ -47,11 +47,11 @@ async function mergeIntoExample({ run, scenery = false, videos = false, example 
     log(`Scenery: ${added.length} layers for ${stages.map(stage => stage.id).join(', ')} as lossless WebP (identical pixels).`);
   }
   if (videos) {
-    const video = read(path.join(bundle, 'video.json'));
-    const clips = [video.openingVideo, video.titleVideo, video.selectVideo, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean);
+    const { videoClips } = require('./new-game.cjs');
+    const video = read(path.join(bundle, 'video.json')), clips = videoClips(video);
     if (!clips.length) throw new Error('The run has no clips to merge; run add-media first.');
     const previous = fs.existsSync(path.join(example, 'video.json')) ? read(path.join(example, 'video.json')) : null;
-    const previousFiles = previous ? [previous.openingVideo, previous.titleVideo, previous.selectVideo, ...(previous.fighterIntros || []), ...(previous.selectIdles || [])].filter(Boolean).map(clip => clip.src) : [];
+    const previousFiles = previous ? videoClips(previous).map(clip => clip.src) : [];
     for (const clip of clips) {
       const data = fs.readFileSync(sourceFile(bundle, clip.src));
       if (hash(data) !== clip.sha256) throw new Error(`Clip digest mismatch in the run: ${clip.id}`);
@@ -62,7 +62,7 @@ async function mergeIntoExample({ run, scenery = false, videos = false, example 
     const runState = read(path.join(directory, 'pipeline.json'));
     provenance.videos = clips.map(clip => ({ id: clip.id, sha256: clip.sha256, bytes: fs.statSync(path.join(example, clip.src)).size, duration: clip.duration }));
     provenance.media = { addedAt: today, run: runPath, clips: clips.length, packed: (runState.packedMedia || []).length > 0,
-      note: 'CFZIntroVideo, CFZSelectIdleVideo, CFZTitleVideo and CFZSelectVideo (Seedance 1.5 Pro, 1080p) drawn by new-game.cjs add-media from the accepted identities, The Yard and the arcade title and select art.' };
+      note: 'CFZIntroVideo, CFZSelectIdleVideo, CFZTitleVideo and CFZSelectVideo (Seedance 1.5 Pro, 1080p) drawn by new-game.cjs add-media from the accepted identities, The Yard and the arcade title and select art; the portrait cuts (title-portrait, select-portrait) recompose that art tall for phones and are packed 720 wide.' };
     summary.videos = clips.length;
     log(`Clips: ${clips.length} copied with their digests.`);
   }

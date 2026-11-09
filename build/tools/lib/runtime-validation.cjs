@@ -43,7 +43,7 @@ function runtimeSources(manifest, { config, plan, strict = false } = {}) {
     if (!Number.isFinite(manifest.openingVideo.duration) || manifest.openingVideo.duration <= 0 || !/\.mp4$/i.test(manifest.openingVideo.src)) throw new Error('Invalid opening video mapping.');
     add(manifest.openingVideo);
   }
-  for (const [key, label] of [['titleVideo', 'title'], ['selectVideo', 'select']]) if (manifest[key]) {
+  for (const [key, label] of [['titleVideo', 'title'], ['selectVideo', 'select'], ['titleVideoPortrait', 'portrait title'], ['selectVideoPortrait', 'portrait select']]) if (manifest[key]) {
     if (!Number.isFinite(manifest[key].duration) || manifest[key].duration <= 0 || !/\.mp4$/i.test(manifest[key].src)) throw new Error(`Invalid ${label} video mapping.`);
     add(manifest[key]);
   }

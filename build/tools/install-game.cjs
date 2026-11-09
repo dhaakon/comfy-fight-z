@@ -41,7 +41,7 @@ function verifiedExport(game) {
     if (filename === 'audio.json') {
       if (!Array.isArray(map.assets)) throw new Error('Invalid exported audio map.');
       records.push(...map.assets);
-    } else { if (map.openingVideo) records.push(map.openingVideo); if (map.titleVideo) records.push(map.titleVideo); records.push(...(map.fighterIntros || [])); }
+    } else { for (const key of ['openingVideo', 'titleVideo', 'selectVideo', 'titleVideoPortrait', 'selectVideoPortrait']) if (map[key]) records.push(map[key]); records.push(...(map.fighterIntros || []), ...(map.selectIdles || [])); }
   }
   for (const record of records) {
     if (!record) throw new Error('Missing source media mapping.');

@@ -8266,7 +8266,7 @@ var require_server2 = __commonJS({
     var INPUTS = ["left", "right", "jump", "down", "punch", "kick", "heavy", "special", "taunt"];
     var UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
     var MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".cjs": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json", ".txt": "text/plain; charset=utf-8", ".ttf": "font/ttf", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".mp3": "audio/mpeg", ".wav": "audio/wav", ".flac": "audio/flac", ".ogg": "audio/ogg", ".m4a": "audio/mp4", ".mp4": "video/mp4", ".webm": "video/webm", ".woff2": "font/woff2" };
-    var PUBLIC_FILES = /* @__PURE__ */ new Set(["index.html", "game.js", "engine.js", "anim.js", "render/arena.js", "render/canvas-renderer.js", "render/pixi-renderer.js", "vendor/pixi.min.js", "style.css", "session-client.js", "multiplayer.js", "network.css", "controller.html", "controller.js", "favicon.ico", "LICENSE", "THIRD-PARTY-NOTICES.txt", "fonts/PressStart2P-Regular.ttf", "fonts/OFL-PressStart2P.txt"]);
+    var PUBLIC_FILES = /* @__PURE__ */ new Set(["index.html", "game.js", "engine.js", "anim.js", "render/arena.js", "render/scenery.js", "render/canvas-renderer.js", "render/pixi-renderer.js", "vendor/pixi.min.js", "style.css", "session-client.js", "multiplayer.js", "network.css", "controller.html", "controller.js", "favicon.ico", "LICENSE", "THIRD-PARTY-NOTICES.txt", "fonts/PressStart2P-Regular.ttf", "fonts/OFL-PressStart2P.txt"]);
     function browserURL(value) {
       const url = new URL(value);
       if (!["http:", "https:"].includes(url.protocol) || url.username || url.password)
@@ -8302,12 +8302,15 @@ var require_server2 = __commonJS({
           const src = typeof value === "string" ? value : value?.src;
           return typeof src === "string" && /^assets\/ui\/[A-Za-z0-9_-]+\.(?:png|webp|jpg)$/.test(src) ? src : void 0;
         };
+        const text = (value) => typeof value === "string" ? value.trim() : "";
+        const title = text(manifest.title) || "Comfy Fighter Z", subtitle = text(manifest.subtitle);
         const listing = {
-          title: typeof manifest.title === "string" ? manifest.title : "Comfy Fighter Z",
-          subtitle: typeof manifest.subtitle === "string" ? manifest.subtitle : "",
+          title,
+          subtitle,
+          name: text(manifest.name) || subtitle || title,
           fighters: fighters.length,
           stages: stages.length,
-          art: Object.fromEntries(["title", "ensemble", "logo"].map((key) => [key, artSource(manifest.ui?.[key])]).filter(([, src]) => src))
+          art: Object.fromEntries(["card", "title", "ensemble", "logo"].map((key) => [key, artSource(manifest.ui?.[key])]).filter(([, src]) => src))
         };
         return { basePath: basePath(mount), root: gameRoot, engine, profiles, catalog: { fighters, stages }, listing, fighters: new Set(fighters.map((f) => f.id)), stages: new Set(stages.map((s) => s.id)) };
       }).sort((a, b) => b.basePath.length - a.basePath.length);

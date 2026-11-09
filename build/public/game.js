@@ -31,7 +31,24 @@
     nimbus: 'I raised a garden. I can handle a little thunder.', switchback: 'School run complete. Express knockout incoming.', brick: 'I built this block. Now hold your ground.'
   };
   const activeSounds = new Set();
-  const keys = new Set(), pendingKeys = new Set(), touch = {};
+  // Touch controls hold their inputs in touch; pendingTouch latches a press until the next simulated frame has read it,
+  // so a tap shorter than one tick (or one landing during a slow frame) still registers, as pendingKeys does for keys.
+  const keys = new Set(), pendingKeys = new Set(), touch = {}, pendingTouch = new Set(), touchHolds = new Map();
+  function pressTouch(names, down) {
+    for (const name of names) {
+      const count = Math.max(0, (touchHolds.get(name) || 0) + (down ? 1 : -1));
+      touchHolds.set(name, count);
+      if (down) { touch[name] = true; pendingTouch.add(name); } else if (!count) delete touch[name];
+    }
+  }
+  function clearTouch() {
+    for (const key of Object.keys(touch)) delete touch[key];
+    pendingTouch.clear(); touchHolds.clear();
+    document.querySelectorAll('#touch-panel .held').forEach(element => element.classList.remove('held'));
+  }
+  // Draw pacing on lite devices: a phone that cannot hold sixty drawn frames a second settles at thirty (a steady half
+  // rate beats a jittery full one) and tries sixty again later, at most twice a match.
+  const pace = { gap: 15.5, ema: 16.7, since: 0, drops: 0 };
   // Options and high scores persist per browser; the game works when storage is unavailable.
   const storage = {
     get(key, fallbackValue) { try { const value = JSON.parse(localStorage.getItem(key)); return value ?? fallbackValue; } catch (_) { return fallbackValue; } },
@@ -64,7 +81,7 @@
     ...debugHooks,
     snapshot: () => state ? JSON.parse(JSON.stringify(state)) : null,
     renderer: () => arena.kind, pixel: (x, y) => arena.pixel(x, y), rendererStats: () => arena.stats(), reducedMotion: () => reducedMotion.matches,
-    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : !$('games-screen').hidden ? 'games' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', games: games.map(entry => entry.basePath), titleMedia: $('title-screen').classList.contains('title-video-ready') ? 'video' : 'image', introSlot: introScene ? 0 : null, introMedia: introMedia(), introHalves: introScene?.halves.map(half => half.media) || null, controls: 'arrows-asdf', lite, mode, overlay: overlay?.type || null, arcade: arcade ? { index: arcade.index, ladder: arcade.ladder.map(i => manifest.fighters[i].id), score: arcade.score, continues: arcade.continues } : null, gamepads: gamepads().length, humanPlayers: network?.active && !state?.cpu || mode === 'versus' && state && !state.cpu ? 2 : 1, stageId: manifest.stages[stageIndex]?.id, network: network?.active ? { role: networkRole, side: networkSide, matchId: networkMatchId, phase: network.room.phase, connected: network.client.ready, paused: !!network.room.paused } : null })
+    presentation: () => ({ screen: openingActive ? 'opening' : selectedTab === 'lab' ? 'lab' : !$('title-screen').hidden ? 'title' : !$('games-screen').hidden ? 'games' : introScene ? 'intro' : !$('selection-screen').hidden ? 'selection' : 'fight', games: games.map(entry => entry.basePath), titleMedia: $('title-screen').classList.contains('title-video-ready') ? 'video' : 'image', introSlot: introScene ? 0 : null, introMedia: introMedia(), introHalves: introScene?.halves.map(half => half.media) || null, controls: 'arrows-asdf', lite, drawRate: Math.round(1000 / pace.gap), touch: { held: Object.keys(touch), pending: [...pendingTouch] }, mode, overlay: overlay?.type || null, arcade: arcade ? { index: arcade.index, ladder: arcade.ladder.map(i => manifest.fighters[i].id), score: arcade.score, continues: arcade.continues } : null, gamepads: gamepads().length, humanPlayers: network?.active && !state?.cpu || mode === 'versus' && state && !state.cpu ? 2 : 1, stageId: manifest.stages[stageIndex]?.id, network: network?.active ? { role: networkRole, side: networkSide, matchId: networkMatchId, phase: network.room.phase, connected: network.client.ready, paused: !!network.room.paused } : null })
   });
   const controls = [
     { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'jump', ArrowDown: 'down', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyF: 'special', KeyG: 'taunt' }, {}
@@ -97,16 +114,28 @@
     if (fx && previous && previous !== scene && scene !== 'opening' && scene !== 'lab') { fx.classList.remove('flash', 'wipe'); void fx.offsetWidth; fx.classList.add(scene === 'fight' ? 'wipe' : 'flash'); }
     document.body.dataset.scene = scene;
     document.querySelectorAll('.card-motion').forEach(clip => { if (scene === 'selection') clip.play().catch(() => {}); else clip.pause(); });
+    // Phones fight in landscape: lock the orientation for the fight (browsers allow it in fullscreen) and free it for
+    // the menus, which have portrait layouts and portrait loops of their own.
+    if (lite && screen.orientation?.lock) {
+      if (scene === 'fight' || scene === 'intro') { if (previous !== 'fight' && previous !== 'intro') screen.orientation.lock('landscape').catch(() => {}); }
+      else if (previous === 'fight' || previous === 'intro') { try { screen.orientation.unlock(); } catch (_) { /* Not locked. */ } }
+    }
   }
   function art(src) { return typeof src === 'string' ? images.get(src) : null; }
   function assetSource(value) { return typeof value === 'string' ? value : value?.src; }
-  const menuMotionWanted = screenId => !openingActive && selectedTab === 'arena' && !$(screenId).hidden && !document.hidden && !reducedMotion.matches && !$('settings-dialog').open && !network?.dialog?.open && !(lite && screenId === 'selection-screen');
+  // Phones held upright play the portrait (9:16) cut of a menu loop when the game has one (titleVideoPortrait,
+  // selectVideoPortrait: phone-encoded clips made for them); everything else plays the wide loop.
+  const portraitViewport = () => matchMedia('(orientation: portrait)').matches;
+  const menuClip = key => lite && portraitViewport() && manifest[`${key}Portrait`] || manifest[key];
+  // Lite devices decode one video at a time: the select screen's wide loop and idle loops stay stills there, but its
+  // phone cut plays.
+  const menuMotionWanted = screenId => !openingActive && selectedTab === 'arena' && !$(screenId).hidden && !document.hidden && !reducedMotion.matches && !$('settings-dialog').open && !network?.dialog?.open && !(lite && screenId === 'selection-screen' && menuClip('selectVideo') === manifest.selectVideo);
   const titleMotionWanted = () => menuMotionWanted('title-screen');
   // A silent looping video plate behind a menu screen. The still artwork stays underneath as the fallback
   // and comes back whenever the clip stalls, fails, or motion is not wanted.
   function createMotionPlate(videoId, screenId, key, wanted) {
     const video = $(videoId), screen = $(screenId), readyClass = `${videoId}-ready`;
-    let failed = false, pending = false, attempt = 0, timer = null;
+    let failed = false, pending = false, attempt = 0, timer = null, loaded = null;
     const stop = () => { attempt++; pending = false; clearTimeout(timer); timer = null; video.pause(); video.hidden = true; screen.classList.remove(readyClass); };
     const fail = () => { failed = true; stop(); };
     const watch = () => { clearTimeout(timer); const current = attempt; timer = setTimeout(() => { if (current === attempt && wanted() && !screen.classList.contains(readyClass)) fail(); }, 4000); };
@@ -114,16 +143,18 @@
     video.addEventListener('error', () => { if (wanted()) fail(); });
     video.addEventListener('waiting', () => { if (wanted()) watch(); });
     function sync() {
-      const src = assetSource(manifest[key]);
+      const clip = menuClip(key), src = assetSource(clip);
       if (!wanted()) { if (!video.paused || !video.hidden || pending) stop(); return; }
-      if (failed || !src || !/^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(src) || !video.canPlayType('video/mp4')) return;
-      if (!video.hasAttribute('src')) { video.muted = true; video.playsInline = true; video.loop = true; video.src = src; }
+      if (!src || !/^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(src) || !video.canPlayType('video/mp4')) return;
+      // The phone turned: the other cut takes over, with a fresh chance to play.
+      if (loaded !== src) { if (loaded !== null) stop(); failed = false; loaded = src; video.muted = true; video.playsInline = true; video.loop = true; video.src = src; video.classList.toggle('portrait-clip', clip !== manifest[key]); }
+      if (failed) return;
       if (pending || !video.paused) return;
       video.hidden = false; pending = true; ++attempt; watch();
       const current = attempt;
       video.play().then(() => { if (current === attempt) pending = false; }).catch(() => { if (current === attempt && wanted()) fail(); });
     }
-    return { sync, stop };
+    return { sync, stop, adopt: src => { loaded = src; } };
   }
   const titleMotion = createMotionPlate('title-video', 'title-screen', 'titleVideo', titleMotionWanted);
   const selectMotion = createMotionPlate('select-video', 'selection-screen', 'selectVideo', () => menuMotionWanted('selection-screen'));
@@ -371,7 +402,7 @@
   }
   function finishIntroduction(skip = true) {
     if (!introScene) return;
-    clearIntro(); keys.clear(); pendingKeys.clear(); Object.keys(touch).forEach(key => delete touch[key]); accumulator = 0;
+    clearIntro(); keys.clear(); pendingKeys.clear(); clearTouch(); accumulator = 0;
     setScene('fight');
     $('versus-overlay').hidden = false; $('pause-button').hidden = !!network?.active; $('touch-panel').hidden = network?.active && networkRole === 'projection';
     if (network?.active) network.introDone(!!skip);
@@ -447,6 +478,7 @@
     // Generated clips: the menu loop, an optional opening and each fighter's introduction.
     const clip = (name, video, info) => { if (assetSource(video)) entries.push({ group: 'video', name, src: assetSource(video), info: `${info} · ${Math.round(video.duration || 0)} s` }); };
     clip('Menu loop', manifest.titleVideo, 'Title and menu animation'); clip('Select loop', manifest.selectVideo, 'Character-select animation'); clip('Opening', manifest.openingVideo, 'Startup film');
+    clip('Menu loop / phone', manifest.titleVideoPortrait, 'Portrait title animation for phones'); clip('Select loop / phone', manifest.selectVideoPortrait, 'Portrait character-select animation for phones');
     manifest.fighters.forEach(f => { clip(`${f.name} / introduction`, f.introVideo, 'Fight introduction'); clip(`${f.name} / select idle`, f.selectVideo, 'Select-screen idle loop'); });
     return entries;
   }
@@ -631,7 +663,10 @@
     engageAudio();
     clearIntro(); closeOverlay();
     state = nextState; lastIntroCall = null; goFrames = 0;
-    paused = false; keys.clear(); pendingKeys.clear(); cutin = null; accumulator = 0; resetView();
+    paused = false; keys.clear(); pendingKeys.clear(); clearTouch(); cutin = null; accumulator = 0; resetView();
+    Object.assign(pace, { gap: 15.5, ema: 16.7, since: performance.now(), drops: 0 });
+    // Upload every texture and compile every filter this match can use while the introduction plays.
+    arena.prepare({ manifest, stageIndex });
     $('title-screen').hidden = true; $('selection-screen').hidden = true; $('fight-screen').hidden = false; $('touch-panel').hidden = true;
     $('match-overlay').hidden = true; $('pause-overlay').hidden = true; $('pause-button').hidden = true;
     $('versus-overlay').hidden = true; $('versus-one').textContent = fighterData(0).name; $('versus-two').textContent = fighterData(1).name;
@@ -913,7 +948,7 @@
   function pause(value = !paused) {
     if (!state || state.phase === 'matchover') return;
     if (network?.active) { if (value) network.open(); else network.close(); return; }
-    paused = value; keys.clear(); pendingKeys.clear(); Object.keys(touch).forEach(k => delete touch[k]);
+    paused = value; keys.clear(); pendingKeys.clear(); clearTouch();
     $('pause-overlay').hidden = !paused;
     if (paused) { music?.pause(); introVoice?.pause(); } else refreshAudio();
     if (selectedTab === 'arena') (paused ? $('resume-button') : introScene ? $('intro-skip') : canvas).focus({ preventScroll: true });
@@ -931,6 +966,7 @@
     if (slot === 0) {
       for (const key of new Set([...keys, ...pendingKeys])) if (controls[0][key]) input[controls[0][key]] = true;
       Object.assign(input, touch);
+      for (const name of pendingTouch) input[name] = true;
     }
     return Object.assign(input, padInput(padFor(slot)));
   }
@@ -960,7 +996,7 @@
       if (edge(15) || dirEdge(3)) menuKey('ArrowRight');
     }
   }
-  function clearInput() { keys.clear(); pendingKeys.clear(); Object.keys(touch).forEach(key => delete touch[key]); }
+  function clearInput() { keys.clear(); pendingKeys.clear(); clearTouch(); }
   // Throttled one-shots keep simultaneous hits from stacking the same sample.
   const lastPlayed = new Map();
   function cue(ids, volume = .6, gap = 90) {
@@ -1079,7 +1115,7 @@
     while (accumulator >= 1000 / 60) {
       if (network?.active) {
         network.input(!introScene && !paused && selectedTab === 'arena' ? readInput() : {});
-        pendingKeys.clear();
+        pendingKeys.clear(); pendingTouch.clear();
       }
       if (state && !introScene && !paused && selectedTab === 'arena') {
         // Network matches only render server snapshots; no client prediction or CPU tick.
@@ -1089,15 +1125,23 @@
           const inputs = [mode === 'demo' ? {} : readInput(0), mode === 'versus' ? readInput(1) : mode === 'training' && !state.cpu ? dummyInput() : {}];
           E.tick(state, inputs);
           if (mode === 'training') recordTraining(inputs[0]);
-          presentState(previousPhase, previousMoves, previousHealth); pendingKeys.clear();
+          presentState(previousPhase, previousMoves, previousHealth); pendingKeys.clear(); pendingTouch.clear();
         }
         if (cutin) cutin.life--;
         if (goFrames > 0) goFrames--;
       }
       accumulator -= 1000 / 60;
     }
-    // Drawn at most 60 times a second: a 120 Hz phone would otherwise render every refresh.
-    if (selectedTab === 'arena' && !$('fight-screen').hidden && now - lastRender >= 15.5) { lastRender = now; render(); }
+    // Drawn at most 60 times a second: a 120 Hz phone would otherwise render every refresh. A lite device whose frames
+    // keep arriving late draws every other one instead (see pace).
+    if (selectedTab === 'arena' && !$('fight-screen').hidden) {
+      if (lite && state) {
+        pace.ema = pace.ema * .9 + elapsed * .1;
+        if (pace.gap < 16 && pace.ema > 24 && now - pace.since > 2000) { pace.gap = 31.5; pace.since = now; pace.drops++; }
+        else if (pace.gap > 16 && pace.drops < 2 && pace.ema < 17.5 && now - pace.since > 10000) { pace.gap = 15.5; pace.since = now; }
+      }
+      if (now - lastRender >= pace.gap) { lastRender = now; render(); }
+    }
     requestAnimationFrame(frame);
   }
   // Boot screen: NOW LOADING with progress over every image and the menu loop's first frames.
@@ -1108,13 +1152,14 @@
   // Downloads the menu loop during the boot so the title opens on moving art. Resolves on its first frames, on an
   // error, or after four seconds; the still art underneath is this game's own either way.
   function bootClip() {
-    const video = $('title-video'), src = assetSource(manifest.titleVideo);
+    const video = $('title-video'), clip = menuClip('titleVideo'), src = assetSource(clip);
     if (!src || !/^assets\/video\/[A-Za-z0-9_-]+\.mp4$/.test(src) || !video.canPlayType('video/mp4')) return null;
     return new Promise(resolve => {
       const finish = () => { clearTimeout(timer); video.removeEventListener('loadeddata', finish); video.removeEventListener('error', finish); resolve(); };
       const timer = setTimeout(finish, 4000);
       video.addEventListener('loadeddata', finish); video.addEventListener('error', finish);
-      video.muted = true; video.playsInline = true; video.loop = true; video.preload = 'auto'; video.src = src; video.load();
+      video.muted = true; video.playsInline = true; video.loop = true; video.preload = 'auto'; video.src = src; video.classList.toggle('portrait-clip', clip !== manifest.titleVideo); video.load();
+      titleMotion.adopt(src);
     });
   }
   // Lifts the boot screen once the title is ready: as the menu loop starts playing (at most 0.8 s more), else at once.
@@ -1130,8 +1175,9 @@
       check();
     };
     if (!lite) return settle();
-    // Phones: one tap to enter. Inside that gesture the menu loop starts and audio unlocks, so the videos and music
-    // that follow are allowed to play.
+    // Phones: one tap to enter. Inside that gesture (a completed tap or key, which browsers count as activation) the
+    // menu loop starts, audio unlocks and the page goes fullscreen where it can, so the videos and music that follow
+    // are allowed to play.
     const button = $('boot-enter'); boot.querySelector('.boot-now').textContent = 'READY'; $('boot-count').hidden = true; button.hidden = false;
     let entered = false;
     const enter = event => {
@@ -1139,10 +1185,11 @@
       entered = true; event?.preventDefault?.(); button.disabled = true;
       engageAudio();
       const video = $('title-video');
-      if (assetSource(manifest.titleVideo) && video.hasAttribute('src')) { video.hidden = false; video.play().catch(() => {}); }
+      if (assetSource(menuClip('titleVideo')) && video.hasAttribute('src')) { video.hidden = false; video.play().catch(() => {}); }
+      if (event?.type !== 'keydown' && !document.fullscreenElement) document.documentElement.requestFullscreen?.({ navigationUI: 'hide' })?.catch?.(() => {});
       settle();
     };
-    button.addEventListener('click', enter); boot.addEventListener('pointerdown', enter); window.addEventListener('keydown', enter);
+    button.addEventListener('click', enter); boot.addEventListener('pointerup', enter); window.addEventListener('keydown', enter);
   }
   async function init() {
     try {
@@ -1353,33 +1400,56 @@
       if (document.hidden) { clearInput(); if (!network?.active) pause(true); titleMotion.stop(); selectMotion.stop(); if (openingActive) $('opening-video').pause(); }
       else if (openingActive) $('opening-video').play().catch(() => { if (openingActive) $('opening-gate').hidden = false; });
     });
-    // Touch controls: buttons hold one control (or a combo, pressed together), and a thumb stick moves. Each pointer is
-    // captured by what it pressed, so several fingers work at once.
-    const press = (names, down) => { for (const name of names) { if (down) touch[name] = true; else delete touch[name]; } };
-    document.querySelectorAll('#touch-panel [data-control], #touch-panel [data-combo]').forEach(button => {
-      const names = (button.dataset.control || button.dataset.combo).split('+');
-      button.addEventListener('pointerdown', event => { event.preventDefault(); button.setPointerCapture(event.pointerId); button.classList.add('held'); press(names, true); });
-      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => button.addEventListener(type, () => { button.classList.remove('held'); press(names, false); }));
-    });
-    // The stick: a drag from where the thumb landed; past a dead zone left and right walk, up jumps, down crouches, and
-    // diagonals combine, so down-forward and a button give the crouching normals.
-    const stick = $('touch-stick'), knob = $('touch-knob'); let stickPointer = null, stickOrigin = null;
-    const stickSet = (dx, dy) => {
-      const dead = 14, limit = 46, nx = Math.max(-limit, Math.min(limit, dx)), ny = Math.max(-limit, Math.min(limit, dy));
-      if (knob) knob.style.transform = `translate(${nx}px, ${ny}px)`;
-      press(['left'], dx < -dead); press(['right'], dx > dead); press(['jump'], dy < -dead * 1.6); press(['down'], dy > dead * 1.3);
+    // Touch controls. The button cluster is one touch surface: a finger presses the button it lands on (a control, or
+    // a combo pressed together), slides onto another to chain without lifting, and releases on lift; several fingers
+    // work at once and a button held by two of them stays down until both lift.
+    const buttons = $('touch-buttons'), heldButtons = new Map();
+    const namesOf = button => (button.dataset.control || button.dataset.combo).split('+');
+    const buttonAt = (x, y) => document.elementFromPoint(x, y)?.closest?.('#touch-buttons button') || null;
+    const holdButton = (pointerId, button) => {
+      const previous = heldButtons.get(pointerId) || null;
+      if (previous === button) return;
+      if (previous) pressTouch(namesOf(previous), false);
+      if (button) { pressTouch(namesOf(button), true); heldButtons.set(pointerId, button); navigator.vibrate?.(8); }
+      else heldButtons.delete(pointerId);
+      // A button looks pressed while any finger holds it.
+      const down = new Set(heldButtons.values());
+      for (const each of buttons.querySelectorAll('button')) each.classList.toggle('held', down.has(each));
     };
+    if (buttons) {
+      buttons.addEventListener('pointerdown', event => { event.preventDefault(); buttons.setPointerCapture(event.pointerId); holdButton(event.pointerId, event.target.closest?.('button') || buttonAt(event.clientX, event.clientY)); });
+      buttons.addEventListener('pointermove', event => { if (!heldButtons.has(event.pointerId) && !buttons.hasPointerCapture?.(event.pointerId)) return; const button = buttonAt(event.clientX, event.clientY); if (button) holdButton(event.pointerId, button); });
+      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => buttons.addEventListener(type, event => holdButton(event.pointerId, null)));
+    }
+    // The stick: the whole left side of the screen. A drag from where the thumb landed (the ring appears there); past a
+    // dead zone left and right walk, a clear push up jumps, down crouches, and diagonals combine, so down-forward and
+    // a button give the crouching normals.
+    const stick = $('touch-stick'), ring = $('touch-stick-ring'), knob = $('touch-knob'); let stickPointer = null, stickOrigin = null; const stickHeld = new Set();
+    const placeRing = () => { if (!ring) return; const box = stick.getBoundingClientRect(); ring.style.left = `${Math.round(stickOrigin[0] - box.left)}px`; ring.style.top = `${Math.round(stickOrigin[1] - box.top)}px`; };
+    const stickSet = (x, y) => {
+      // The origin follows a thumb that travels past the ring, so reversing direction registers at once instead of
+      // after sliding all the way back.
+      const dead = 14, limit = 48, length = Math.hypot(x - stickOrigin[0], y - stickOrigin[1]);
+      if (length > limit) { const k = 1 - limit / length; stickOrigin = [stickOrigin[0] + (x - stickOrigin[0]) * k, stickOrigin[1] + (y - stickOrigin[1]) * k]; placeRing(); }
+      const dx = x - stickOrigin[0], dy = y - stickOrigin[1];
+      if (knob) knob.style.transform = `translate(${Math.round(dx)}px, ${Math.round(dy)}px)`;
+      const wanted = new Set([dx < -dead && 'left', dx > dead && 'right', dy < -dead * 2.1 && 'jump', dy > dead * 1.5 && 'down'].filter(Boolean));
+      for (const name of stickHeld) if (!wanted.has(name)) { stickHeld.delete(name); pressTouch([name], false); }
+      for (const name of wanted) if (!stickHeld.has(name)) { stickHeld.add(name); pressTouch([name], true); }
+    };
+    const stickRelease = () => { stickPointer = null; stick.classList.remove('held'); if (ring) { ring.style.left = ''; ring.style.top = ''; } if (knob) knob.style.transform = ''; for (const name of stickHeld) pressTouch([name], false); stickHeld.clear(); };
     if (stick) {
       stick.addEventListener('pointerdown', event => {
         event.preventDefault(); if (stickPointer !== null) return;
-        stickPointer = event.pointerId; stick.setPointerCapture(event.pointerId); stickOrigin = [event.clientX, event.clientY]; stick.classList.add('held'); stickSet(0, 0);
+        stickPointer = event.pointerId; stick.setPointerCapture(event.pointerId); stickOrigin = [event.clientX, event.clientY]; stick.classList.add('held');
+        placeRing(); stickSet(event.clientX, event.clientY);
       });
-      stick.addEventListener('pointermove', event => { if (event.pointerId !== stickPointer) return; event.preventDefault(); stickSet(event.clientX - stickOrigin[0], event.clientY - stickOrigin[1]); });
-      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => stick.addEventListener(type, event => {
-        if (event.pointerId !== stickPointer) return;
-        stickPointer = null; stick.classList.remove('held'); if (knob) knob.style.transform = ''; press(['left', 'right', 'jump', 'down'], false);
-      }));
+      stick.addEventListener('pointermove', event => { if (event.pointerId !== stickPointer) return; event.preventDefault(); stickSet(event.clientX, event.clientY); });
+      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => stick.addEventListener(type, event => { if (event.pointerId === stickPointer) stickRelease(); }));
     }
+    // Pinch zoom breaks the fixed arcade layout and some browsers ignore user-scalable=no: refuse the gesture itself.
+    for (const type of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(type, event => event.preventDefault(), { passive: false });
+    document.addEventListener('touchmove', event => { if (event.scale !== undefined && event.scale !== 1) event.preventDefault(); }, { passive: false });
     if (window.FighterMultiplayer) {
       network = new window.FighterMultiplayer(manifest, {
         unlock: engageAudio, clearInput,

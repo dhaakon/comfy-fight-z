@@ -139,10 +139,12 @@ Omit `--slot` to make the new game the main one (`output/game`). `node build/too
 A run prepared with `--no-media`, or one over accepted art, gets its clips afterwards: one fight introduction and one select idle loop per fighter, the title loop (animating `ui/ensemble`) and the select loop (animating `ui/select`).
 
 ```
-node build/tools/new-game.cjs add-media --run output/test-runs/<name>-<date> --approve-usd <estimate> [--clips intro,idle,title,select] [--fighters a,b] [--title-image <file>] [--select-image <file>]
+node build/tools/new-game.cjs add-media --run output/test-runs/<name>-<date> --approve-usd <estimate> [--clips intro,idle,title,select,title-portrait,select-portrait] [--fighters a,b] [--title-image <file>] [--select-image <file>]
 ```
 
 Each clip is drawn like `reroll-art` (the accepted identity, The Yard or the run's first arena, and the interface art uploaded from disk) and recorded in `video.json`. Clips already mapped are skipped, so a rerun after a failure resumes. On Seedance 1.5 Pro at 1080p a fighter costs about $0.686 (intro $0.284, idle $0.402) and each menu loop $0.472. `--title-image`/`--select-image` animate art kept outside the bundle.
+
+The portrait cuts (`title-portrait`, `select-portrait`; not in the default set, so name them in `--clips`) are the phone versions of the two menu loops: `CFZTitleVideo`/`CFZSelectVideo` with `portrait` on first recompose the same art as a tall 9:16 key visual (one 2K image call, $0.072) and animate that cut as first and last frame, so each costs about $0.544 on Seedance 1.5 Pro at 1080p. They are recorded as `titleVideoPortrait`/`selectVideoPortrait`, flow through the builder, the example verifier, `adopt-game` and `install` like the wide loops, and `pack-media` always re-encodes them 720 wide (H.264 Main, CRF 22, at most 3.5 Mbit/s) because a phone downloads and decodes them. The game plays them only on an upright lite device (a phone held portrait); everywhere else the wide loops play, and the lite select screen animates only with the portrait cut.
 
 ### The original game over its accepted example art
 
@@ -151,6 +153,7 @@ The original cast lives in `comfyui/config/factory.json` and its reviewed art in
 ```
 node build/tools/new-game.cjs prepare --cast comfyui/config/factory.json --out output/test-runs/canonical-<date> --accepted example/bundle   # free: copies the accepted bundle
 node build/tools/new-game.cjs add-media --run output/test-runs/canonical-<date> --approve-usd 5.75 --title-image build/public/arcade/title-ensemble.webp --select-image build/public/arcade/select-backdrop.webp
+node build/tools/new-game.cjs add-media --run output/test-runs/canonical-<date> --approve-usd 1.09 --clips title-portrait,select-portrait --title-image build/public/arcade/title-ensemble.webp --select-image build/public/arcade/select-backdrop.webp   # the phone cuts
 node build/tools/new-game.cjs add-scenery --run output/test-runs/canonical-<date> --approve-usd 1.00                              # The Yard, Sunset Rooftop, Midnight Arcade
 node build/tools/new-game.cjs review --run output/test-runs/canonical-<date>                                                        # read every clip and scenery sheet
 node build/tools/new-game.cjs pack-media --run output/test-runs/canonical-<date>                                                    # web-encode the clips before they are versioned

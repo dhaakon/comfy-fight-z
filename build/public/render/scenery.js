@@ -285,71 +285,96 @@
       const draw = e.type === 'flash' ? flash : EFFECTS[e.type]; if (!draw) return;
       ctx.save(); try { draw(ctx, e, m, t, seed); } finally { ctx.restore(); }
     }
-    function layer(ctx, item, m, t, phase, img) {
-      const x = m.X(item.place.x), y = m.Y(item.place.y), w = m.W(item.place.w), h = m.H(item.place.h), motion = item.motion || 'idle';
-      if (motion === 'still') { ctx.drawImage(img, x, y, w, h); return; }
-      // Motions pivot on the element's bottom centre, where it stands, so feet stay planted on the painting.
-      let dx = 0, dy = 0, sx = 1, sy = 1, skew = 0, rot = 0, alpha = 1, glow = 0, centre = false;
+    // Where a placed element is this instant: its cover-space box and the motion's offset, scale, skew, rotation,
+    // alpha and glow. Motions pivot on the element's bottom centre, where it stands, so feet stay planted on the
+    // painting (a spinning element pivots on its centre). Both renderers draw from this one pose.
+    function layerPose(item, m, t, phase) {
+      const pose = { x: m.X(item.place.x), y: m.Y(item.place.y), w: m.W(item.place.w), h: m.H(item.place.h), motion: item.motion || 'idle', dx: 0, dy: 0, sx: 1, sy: 1, skew: 0, rot: 0, alpha: 1, glow: 0, centre: false };
+      const { motion, w, h } = pose;
+      if (motion === 'still') return pose;
       if (motion === 'idle' || motion === 'cheer') {
-        sy = 1 + .014 * Math.sin(t * 1.9 + phase); sx = 1 - .005 * Math.sin(t * 1.9 + phase); skew = .012 * Math.sin(t * .8 + phase);
-        if (motion === 'cheer' && excitement > .15) { const k = Math.min(1, excitement * 1.3); dy = -Math.abs(Math.sin(t * 8.5 + phase)) * h * .05 * k; skew += .03 * k * Math.sin(t * 4.2 + phase); sy += .02 * k; }
-      } else if (motion === 'hover') { dx = Math.sin(t * .45 + phase) * w * .35; dy = Math.sin(t * 1.7 + phase) * h * .08; rot = .05 * Math.sin(t * .9 + phase); }
-      else if (motion === 'drift') { dx = Math.sin(t * .16 + phase) * Math.max(w * 1.5, 40 * m.u); dy = Math.sin(t * .9 + phase) * h * .04; }
-      else if (motion === 'bob') { dy = Math.sin(t * 1.3 + phase) * h * .035; rot = .025 * Math.sin(t * 1.1 + phase); }
-      else if (motion === 'sway') skew = .035 * Math.sin(t * 1.1 + phase);
-      else if (motion === 'pulse') { const k = 1 + .03 * Math.sin(t * 2.4 + phase); sx = sy = k; glow = .12 + .1 * Math.sin(t * 2.4 + phase); }
-      else if (motion === 'spin') { rot = t * 1.6; centre = true; }
-      else if (motion === 'flicker') { const n = Math.sin(t * 11 + phase) + Math.sin(t * 23.7) + Math.sin(t * 3.1 + phase); alpha = n < -1.8 ? .25 : .8 + .2 * Math.sin(t * 7 + phase); glow = .35 + .25 * Math.sin(t * 3 + phase); dy = Math.sin(t * 1.3 + phase) * h * .03; }
-      const top = centre ? -h / 2 : -h;
-      ctx.save(); ctx.translate(x + w / 2 + dx, (centre ? y + h / 2 : y + h) + dy); ctx.rotate(rot); ctx.transform(sx, 0, skew, sy, 0, 0);
-      ctx.globalAlpha = alpha; ctx.drawImage(img, -w / 2, top, w, h);
-      if (glow > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = glow * alpha; ctx.drawImage(img, -w / 2, top, w, h); }
+        pose.sy = 1 + .014 * Math.sin(t * 1.9 + phase); pose.sx = 1 - .005 * Math.sin(t * 1.9 + phase); pose.skew = .012 * Math.sin(t * .8 + phase);
+        if (motion === 'cheer' && excitement > .15) { const k = Math.min(1, excitement * 1.3); pose.dy = -Math.abs(Math.sin(t * 8.5 + phase)) * h * .05 * k; pose.skew += .03 * k * Math.sin(t * 4.2 + phase); pose.sy += .02 * k; }
+      } else if (motion === 'hover') { pose.dx = Math.sin(t * .45 + phase) * w * .35; pose.dy = Math.sin(t * 1.7 + phase) * h * .08; pose.rot = .05 * Math.sin(t * .9 + phase); }
+      else if (motion === 'drift') { pose.dx = Math.sin(t * .16 + phase) * Math.max(w * 1.5, 40 * m.u); pose.dy = Math.sin(t * .9 + phase) * h * .04; }
+      else if (motion === 'bob') { pose.dy = Math.sin(t * 1.3 + phase) * h * .035; pose.rot = .025 * Math.sin(t * 1.1 + phase); }
+      else if (motion === 'sway') pose.skew = .035 * Math.sin(t * 1.1 + phase);
+      else if (motion === 'pulse') { const k = 1 + .03 * Math.sin(t * 2.4 + phase); pose.sx = pose.sy = k; pose.glow = .12 + .1 * Math.sin(t * 2.4 + phase); }
+      else if (motion === 'spin') { pose.rot = t * 1.6; pose.centre = true; }
+      else if (motion === 'flicker') { const n = Math.sin(t * 11 + phase) + Math.sin(t * 23.7) + Math.sin(t * 3.1 + phase); pose.alpha = n < -1.8 ? .25 : .8 + .2 * Math.sin(t * 7 + phase); pose.glow = .35 + .25 * Math.sin(t * 3 + phase); pose.dy = Math.sin(t * 1.3 + phase) * h * .03; }
+      return pose;
+    }
+    function layer(ctx, item, m, t, phase, img) {
+      const p = layerPose(item, m, t, phase);
+      if (p.motion === 'still') { ctx.drawImage(img, p.x, p.y, p.w, p.h); return; }
+      const top = p.centre ? -p.h / 2 : -p.h;
+      ctx.save(); ctx.translate(p.x + p.w / 2 + p.dx, (p.centre ? p.y + p.h / 2 : p.y + p.h) + p.dy); ctx.rotate(p.rot); ctx.transform(p.sx, 0, p.skew, p.sy, 0, 0);
+      ctx.globalAlpha = p.alpha; ctx.drawImage(img, -p.w / 2, top, p.w, p.h);
+      if (p.glow > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = p.glow * p.alpha; ctx.drawImage(img, -p.w / 2, top, p.w, p.h); }
       ctx.restore();
+    }
+    const living = info => { const stage = info.stage, scenery = stage?.scenery, plate = stage && info.getImage(stage.src); return scenery && plate ? { stage, scenery, plate, m: mapper(plate), seed: stageSeed(stage) } : null; };
+    // The ambient effects alone, in cover space: those on the painting, or (over) the fog and camera flashes that sit in
+    // front of the elements. A renderer that draws the elements itself paints these to a texture at its own rate.
+    function drawEffects(ctx, info, which = 'all') {
+      const scene = living(info); if (!scene) return false;
+      const effects = scene.scenery.effects || [], t = info.time;
+      effects.forEach((e, i) => { if (which === 'all' || (which === 'over') === OVER.has(e.type)) effect(ctx, e, scene.m, t, scene.seed + i * 101); });
+      return effects.length > 0;
+    }
+    function drawLayers(ctx, info) {
+      const scene = living(info); if (!scene) return false;
+      (scene.scenery.layers || []).forEach((item, i) => { const img = info.getImage(item.src); if (img) layer(ctx, item, scene.m, info.time, hash(i, scene.seed) * 6.283, img); });
+      return true;
     }
     // The painting's living layer: effects on the painting, the placed elements, then fog and flashes in front.
     function drawStage(ctx, info) {
-      const stage = info.stage, scenery = stage?.scenery, plate = stage && info.getImage(stage.src);
-      if (!scenery || !plate) return false;
+      if (!living(info)) return false;
       tick(info);
-      const m = mapper(plate), t = info.time, seed = stageSeed(stage), effects = scenery.effects || [];
-      effects.forEach((e, i) => { if (!OVER.has(e.type)) effect(ctx, e, m, t, seed + i * 101); });
-      (scenery.layers || []).forEach((item, i) => { const img = info.getImage(item.src); if (img) layer(ctx, item, m, t, hash(i, seed) * 6.283, img); });
-      effects.forEach((e, i) => { if (OVER.has(e.type)) effect(ctx, e, m, t, seed + i * 101); });
+      drawEffects(ctx, info, 'behind'); drawLayers(ctx, info); drawEffects(ctx, info, 'over');
       return true;
     }
-    // Weather over the fighters, at a faster parallax than the stage.
-    function drawFront(ctx, info) {
-      const kind = weather(info.stage); if (kind === 'none') return false;
+    // Weather over the fighters, at a faster parallax than the stage: the drops, splashes and drifting flakes of this
+    // instant in screen space, for either renderer to draw.
+    function frontParticles(info) {
+      const kind = weather(info.stage); if (kind === 'none') return null;
       const t = info.time, view = info.view || {}, drift = -(view.x || 0) * 1.25 * (view.zoom || 1), seed = stageSeed(info.stage);
-      ctx.save();
       if (kind === 'rain' || kind === 'storm') {
-        const storm = kind === 'storm', n = storm ? 150 : 90, slant = storm ? 9 : 4, fall = storm ? 920 : 700;
-        ctx.strokeStyle = `rgba(190,220,255,${storm ? .42 : .35})`; ctx.lineWidth = storm ? 1.4 : 1.2; ctx.beginPath();
+        const storm = kind === 'storm', n = storm ? 150 : 90, slant = storm ? 9 : 4, fall = storm ? 920 : 700, lines = [], splashes = [];
         for (let i = 0; i < n; i++) {
           const x = wrap(hash(i, seed) * 1200 + drift - t * (storm ? 260 : 140), 1200) - 120, y = wrap(hash(i, seed + 1) * 560 + t * (fall + hash(i, seed + 2) * 240), 600) - 30;
-          ctx.moveTo(x, y); ctx.lineTo(x - slant, y + (storm ? 22 : 18));
+          lines.push([x, y, x - slant, y + (storm ? 22 : 18)]);
         }
-        ctx.stroke(); ctx.fillStyle = 'rgba(200,230,255,.35)';
         // Splashes on the deck.
-        for (let i = 0; i < 14; i++) { const life = wrap(t * 3 + hash(i, seed + 3), 1), x = hash(Math.floor(t * 3 + hash(i, seed + 3)) + i * 7, seed) * 1000 - 20; ctx.globalAlpha = (1 - life) * .5; ctx.fillRect(x - life * 6, info.floor - 1, 2 + life * 12, 1.5); }
-      } else {
-        const colors = { snow: ['#f2f6ff'], leaves: ['#c96a2b', '#e0a43a', '#9c4a1f'], petals: ['#ffc2d6', '#ff9fbf'], dust: ['rgba(255,236,190,.55)'], ash: ['rgba(170,170,175,.7)'], embers: ['#ff9a3c', '#ffd27a'] }[kind];
-        const n = kind === 'snow' ? 70 : kind === 'dust' ? 32 : 40, flutter = kind === 'leaves' || kind === 'petals';
-        for (let i = 0; i < n; i++) {
-          const speed = (kind === 'snow' ? 34 : kind === 'ash' ? 22 : kind === 'dust' ? 14 : 40) + hash(i, seed + 2) * 30;
-          const x = wrap(hash(i, seed) * 1100 + drift * .6 + t * (flutter ? 34 : 12), 1100) - 70 + Math.sin(t * 1.5 + i) * 14;
-          const y = kind === 'embers' ? 540 - wrap(hash(i, seed + 1) * 560 + t * speed, 560) : wrap(hash(i, seed + 1) * 560 + t * speed, 560);
-          ctx.fillStyle = colors[i % colors.length]; ctx.globalAlpha = kind === 'embers' ? .6 + .4 * Math.sin(t * 9 + i) : .8;
-          ctx.save(); ctx.translate(x, y); ctx.rotate(t * (flutter ? 2 : .5) + i); ctx.beginPath();
-          if (flutter) ctx.ellipse(0, 0, kind === 'leaves' ? 4.5 : 3.2, kind === 'leaves' ? 2.2 : 1.8, 0, 0, 6.283);
-          else ctx.arc(0, 0, kind === 'snow' ? 1.2 + hash(i, seed + 4) * 1.6 : kind === 'dust' ? 1.2 : 1.6, 0, 6.283);
-          ctx.fill(); ctx.restore();
-        }
+        for (let i = 0; i < 14; i++) { const life = wrap(t * 3 + hash(i, seed + 3), 1), x = hash(Math.floor(t * 3 + hash(i, seed + 3)) + i * 7, seed) * 1000 - 20; splashes.push({ x: x - life * 6, y: info.floor - 1, w: 2 + life * 12, h: 1.5, alpha: (1 - life) * .5 }); }
+        return { kind, lines, lineColor: `rgba(190,220,255,${storm ? .42 : .35})`, lineWidth: storm ? 1.4 : 1.2, splashes, splashColor: 'rgba(200,230,255,.35)', dots: [] };
+      }
+      const colors = { snow: ['#f2f6ff'], leaves: ['#c96a2b', '#e0a43a', '#9c4a1f'], petals: ['#ffc2d6', '#ff9fbf'], dust: ['rgba(255,236,190,.55)'], ash: ['rgba(170,170,175,.7)'], embers: ['#ff9a3c', '#ffd27a'] }[kind];
+      const n = kind === 'snow' ? 70 : kind === 'dust' ? 32 : 40, flutter = kind === 'leaves' || kind === 'petals', dots = [];
+      for (let i = 0; i < n; i++) {
+        const speed = (kind === 'snow' ? 34 : kind === 'ash' ? 22 : kind === 'dust' ? 14 : 40) + hash(i, seed + 2) * 30;
+        const x = wrap(hash(i, seed) * 1100 + drift * .6 + t * (flutter ? 34 : 12), 1100) - 70 + Math.sin(t * 1.5 + i) * 14;
+        const y = kind === 'embers' ? 540 - wrap(hash(i, seed + 1) * 560 + t * speed, 560) : wrap(hash(i, seed + 1) * 560 + t * speed, 560);
+        dots.push({ x, y, color: colors[i % colors.length], alpha: kind === 'embers' ? .6 + .4 * Math.sin(t * 9 + i) : .8, rot: t * (flutter ? 2 : .5) + i, flutter,
+          rx: flutter ? (kind === 'leaves' ? 4.5 : 3.2) : kind === 'snow' ? 1.2 + hash(i, seed + 4) * 1.6 : kind === 'dust' ? 1.2 : 1.6, ry: flutter ? (kind === 'leaves' ? 2.2 : 1.8) : null });
+      }
+      return { kind, lines: [], splashes: [], dots };
+    }
+    function drawFront(ctx, info) {
+      const p = frontParticles(info); if (!p) return false;
+      ctx.save();
+      if (p.lines.length) { ctx.strokeStyle = p.lineColor; ctx.lineWidth = p.lineWidth; ctx.beginPath(); for (const [x1, y1, x2, y2] of p.lines) { ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); } ctx.stroke(); }
+      if (p.splashes.length) { ctx.fillStyle = p.splashColor; for (const s of p.splashes) { ctx.globalAlpha = s.alpha; ctx.fillRect(s.x, s.y, s.w, s.h); } }
+      for (const d of p.dots) {
+        ctx.fillStyle = d.color; ctx.globalAlpha = d.alpha;
+        ctx.save(); ctx.translate(d.x, d.y); ctx.rotate(d.rot); ctx.beginPath();
+        if (d.flutter) ctx.ellipse(0, 0, d.rx, d.ry, 0, 0, 6.283); else ctx.arc(0, 0, d.rx, 0, 6.283);
+        ctx.fill(); ctx.restore();
       }
       ctx.restore();
       return true;
     }
-    return { drawStage, drawFront, weather, get excitement() { return excitement; } };
+    return { drawStage, drawFront, drawEffects, drawLayers, frontParticles, layerPose, tick, mapper, stageSeed, hash, weather, get excitement() { return excitement; } };
   }
   const api = { create, weather, WEATHER, EFFECT_TYPES: [...Object.keys(EFFECTS), 'flash'].sort() };
   if (typeof module === 'object' && module.exports) module.exports = api; else root.CFZScenery = api;

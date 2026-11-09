@@ -138,7 +138,7 @@ export function validateVideoManifest(input, game = null) {
   catch { throw new Error('The video manifest is not valid JSON.'); }
   if (manifest?.schema !== 'comfy-fighter-video/v1' || manifest.root !== '.') throw new Error('Expected a comfy-fighter-video/v1 video.json with root ".".');
   const intros = manifest.fighterIntros ?? [];
-  if (!Array.isArray(intros) || intros.length > 64 || (!manifest.openingVideo && !manifest.titleVideo && !manifest.selectVideo && !intros.length)) throw new Error('Video manifest needs an opening, animated title, select-screen or fighter introduction videos.');
+  if (!Array.isArray(intros) || intros.length > 64 || (!manifest.openingVideo && !manifest.titleVideo && !manifest.selectVideo && !manifest.titleVideoPortrait && !manifest.selectVideoPortrait && !intros.length)) throw new Error('Video manifest needs an opening, animated title, select-screen or fighter introduction videos.');
   const paths = new Set(), fighters = new Set();
   const check = (video, label, limit) => {
     if (!video || typeof video !== 'object') throw new Error(`Invalid ${label}.`);
@@ -152,6 +152,9 @@ export function validateVideoManifest(input, game = null) {
   if (manifest.openingVideo) { if (manifest.openingVideo.id !== 'opening') throw new Error('Invalid opening video ID.'); check(manifest.openingVideo, 'Opening video', 300); }
   if (manifest.titleVideo) { if (manifest.titleVideo.id !== 'title') throw new Error('Invalid title video ID.'); check(manifest.titleVideo, 'Title video', 300); }
   if (manifest.selectVideo) { if (manifest.selectVideo.id !== 'select') throw new Error('Invalid select video ID.'); check(manifest.selectVideo, 'Select video', 300); }
+  // The portrait cuts of the menu loops: the phone versions an upright phone plays instead of the wide loops.
+  if (manifest.titleVideoPortrait) { if (manifest.titleVideoPortrait.id !== 'title-portrait') throw new Error('Invalid portrait title video ID.'); check(manifest.titleVideoPortrait, 'Portrait title video', 300); }
+  if (manifest.selectVideoPortrait) { if (manifest.selectVideoPortrait.id !== 'select-portrait') throw new Error('Invalid portrait select video ID.'); check(manifest.selectVideoPortrait, 'Portrait select video', 300); }
   for (const video of intros) {
     if (!ID.test(video?.fighter || '') || video.id !== `intro-${video.fighter}` || fighters.has(video.fighter.toLowerCase())) throw new Error('Invalid or duplicate fighter intro.');
     if (game && !game.fighters.some(f => f.id === video.fighter)) throw new Error(`Unknown intro fighter: ${video.fighter}`);
@@ -311,7 +314,9 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
   const allow = customization.allowPlaceholders === true, missing = jobs.filter(job => !files.has(job.src)), warnings = [], output = new Map(), built = [];
   if (missing.length && !allow) throw new Error(`Missing ${missing.length} source image(s): ${missing.map(j => j.src).join(', ')}. Select the full asset root or explicitly allow placeholders.`);
   if (missing.length) warnings.push(`Missing artwork: ${missing.map(j => j.id).join(', ')}. The game uses labeled placeholders.`);
-  const videoJobs = [...(videoSource?.openingVideo ? [videoSource.openingVideo] : []), ...(videoSource?.titleVideo ? [videoSource.titleVideo] : []), ...(videoSource?.selectVideo ? [videoSource.selectVideo] : []), ...(videoSource?.fighterIntros || []).filter(video => selectedFighters.has(video.fighter)), ...(videoSource?.selectIdles || []).filter(video => selectedFighters.has(video.fighter))];
+  // Game-wide clips by their video.json key; the fighters' clips follow the chosen roster.
+  const GAME_CLIPS = { opening: 'openingVideo', title: 'titleVideo', select: 'selectVideo', 'title-portrait': 'titleVideoPortrait', 'select-portrait': 'selectVideoPortrait' };
+  const videoJobs = [...Object.values(GAME_CLIPS).map(key => videoSource?.[key]).filter(Boolean), ...(videoSource?.fighterIntros || []).filter(video => selectedFighters.has(video.fighter)), ...(videoSource?.selectIdles || []).filter(video => selectedFighters.has(video.fighter))];
   for (const video of videoJobs) if (!files.has(video.src)) throw new Error(`Missing video file: ${video.src}. Select the complete asset root.`);
   const unmapped = [];
   for (const fighter of runtime.fighters) {
@@ -339,9 +344,7 @@ export async function buildGame({ manifest: input, audioManifest: audioInput = n
     if (actual !== video.sha256.toLowerCase()) throw new Error(`Video SHA-256 mismatch: ${video.id}`);
     const src = `assets/video/${video.id}.mp4`;
     if (video.fighter) selectedFighters.get(video.fighter)[video.id.startsWith('idle-') ? 'selectVideo' : 'introVideo'] = { ...video, src };
-    else if (video.id === 'title') runtime.titleVideo = { ...video, src };
-    else if (video.id === 'select') runtime.selectVideo = { ...video, src };
-    else runtime.openingVideo = { ...video, src };
+    else runtime[GAME_CLIPS[video.id]] = { ...video, src };
     output.set(src, blob); output.set(`sources/${video.src}`, blob);
     done++;
   }

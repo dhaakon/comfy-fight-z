@@ -234,6 +234,12 @@ async function main(options) {
       assert.deepEqual(archiveFiles.get(runtime.selectVideo.src), archiveFiles.get(`sources/${video.selectVideo.src}`), 'Select-screen video bytes are preserved');
       report.selectVideo = runtime.selectVideo; report.checks.push('select-screen video manifest and original media retained');
     }
+    // The portrait cuts phones play upright, when the bundle has them.
+    for (const [key, label] of [['titleVideoPortrait', 'portrait title'], ['selectVideoPortrait', 'portrait select']]) if (video?.[key]) {
+      assert.ok(runtime[key]?.src && archiveFiles.has(runtime[key].src), `The ${label} video is mapped into the standalone game`);
+      assert.deepEqual(archiveFiles.get(runtime[key].src), archiveFiles.get(`sources/${video[key].src}`), `The ${label} video bytes are preserved`);
+      report[key] = runtime[key]; report.checks.push(`${label} video manifest and original media retained`);
+    }
     for (const intro of video?.fighterIntros || []) {
       const target = runtime.fighters.find(fighter => fighter.id === intro.fighter)?.introVideo;
       assert.ok(target?.src && archiveFiles.has(target.src), `Introduction video is mapped: ${intro.fighter}`);
@@ -359,7 +365,7 @@ async function main(options) {
     await game.click('#settings-open'); await game.click('[data-tab="lab"]'); await game.click('#settings-open'); await game.selectOption('#lab-filter', 'fighters'); await game.click('#settings-close');
     assert.equal(await game.locator('.asset-card img').count(), poseCount);
     await game.screenshot({ path: path.join(output, 'sprite-gallery.png'), fullPage: true }); report.screenshots.push('sprite-gallery.png');
-    const clipCount = [video?.titleVideo, video?.selectVideo, video?.openingVideo].filter(Boolean).length + (video?.fighterIntros?.length || 0) + (video?.selectIdles?.length || 0);
+    const clipCount = [video?.titleVideo, video?.selectVideo, video?.openingVideo, video?.titleVideoPortrait, video?.selectVideoPortrait].filter(Boolean).length + (video?.fighterIntros?.length || 0) + (video?.selectIdles?.length || 0);
     if (clipCount) {
       await game.click('#settings-open'); await game.selectOption('#lab-filter', 'video'); await game.click('#settings-close');
       assert.equal(await game.locator('.asset-card video').count(), clipCount, 'Asset lab lists every generated video');

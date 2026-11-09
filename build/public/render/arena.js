@@ -11,6 +11,8 @@
       // Draw time is a running average for FighterDebug.rendererStats().
       draw: frame => { const started = performance.now(); active.draw(frame); const spent = performance.now() - started; arena.avgDrawMs = arena.avgDrawMs === undefined ? spent : arena.avgDrawMs * .9 + spent * .1; },
       reset: () => active.reset(),
+      // Uploads and compiles what a match will draw; the Canvas path has nothing to warm.
+      prepare: frame => { try { active.prepare?.(frame); } catch (error) { console.warn('[CFZ arena] prepare skipped:', error); } },
       pixel: (x, y) => active.pixel(x, y),
       stats: () => ({ ...(active.stats?.() || {}), avgDrawMs: Number((arena.avgDrawMs || 0).toFixed(2)) })
     };

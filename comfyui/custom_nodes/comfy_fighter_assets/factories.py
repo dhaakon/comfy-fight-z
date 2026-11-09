@@ -583,14 +583,19 @@ def _animate(graph, project, prompt, first_frame, duration, seed, last_frame=Non
     return graph.node("LtxApi25ImageToVideo", **inputs)
 
 
+# The game-wide clips and their video.json keys. The portrait (9:16) cuts of the menu loops are the phone versions the
+# runtime plays on an upright phone; the wide loops stay the default everywhere else.
+VIDEO_KEYS = {"title": "titleVideo", "select": "selectVideo", "opening": "openingVideo", "title-portrait": "titleVideoPortrait", "select-portrait": "selectVideoPortrait"}
+
+
 def _video_record(value):
     identity = _slug(value.get("id"), "Video id"); record = {"id": identity}
     if "fighter" in value:
         record["fighter"] = _slug(value["fighter"], "Video fighter")
         if identity not in {f"intro-{record['fighter']}", f"idle-{record['fighter']}"}:
             raise ValueError("Fighter videos use the ID intro-<fighter id> (introduction) or idle-<fighter id> (select-screen idle loop)")
-    elif identity not in {"title", "select", "opening"}:
-        raise ValueError("A video is the title loop, the select loop, the opening, intro-<fighter id> or idle-<fighter id>")
+    elif identity not in VIDEO_KEYS:
+        raise ValueError("A video is the title loop, the select loop, their portrait cuts (title-portrait, select-portrait), the opening, intro-<fighter id> or idle-<fighter id>")
     return record
 
 
@@ -675,16 +680,38 @@ class CFZTitleCard(io.ComfyNode):
         return io.NodeOutput(_collect(graph, project, members, [asset]), generated.out(0), expand=graph.finalize())
 
 
+# The phone cut of a menu loop: one 2K 9:16 re-staging of the accepted wide art (the same cast, arena and palette,
+# recomposed up a tall frame), then the loop animated from it as first and last frame, so the still and the clip match.
+PORTRAIT_INPUT = io.Boolean.Input("portrait", default=False, optional=True, advanced=True,
+                                  tooltip="Also recompose the art as a tall 9:16 phone key visual (one 2K image call) and animate that cut instead; saved as the portrait loop the game plays on upright phones.")
+PORTRAIT_TITLE_PROMPT = ("Recompose this exact arcade title-screen illustration as a tall 9:16 phone key visual. Keep every fighter with the same face, hair, body, "
+                         "outfit, accessories and colors, the same arena, lighting and style, and the same clash of energy between them, now gathered closer together "
+                         "up the tall frame with the camera pulled in so each fighter stays large and readable. Keep the lower third calm and uncluttered for the game "
+                         "logo and menu. No other people, no text, letters, logos, borders or interface.")
+PORTRAIT_SELECT_PROMPT = ("Recompose this exact character-select backdrop as a tall 9:16 phone backdrop: the same arena, materials, lights, banners, colors and style, "
+                          "re-framed vertically with its horizon in the upper half and a clear, uncluttered floor across the lower half where the roster will sit. "
+                          "No people, no new objects, no text, letters, logos, borders or interface.")
+
+
+def _menu_loop(graph, project, image, prompt, duration, offset, portrait, identity, portrait_prompt):
+    if not portrait:
+        video = _animate(graph, project, prompt, image, duration, project["seed"] + offset, last_frame=image)
+        return _save_video(graph, project, video.out(0), {"id": identity})
+    keyframe = _cloud(graph, project, project["ui_style"] + "\n" + portrait_prompt, image, "9:16", "2K", offset=offset + 2)
+    video = _animate(graph, project, prompt + " Vertical 9:16 phone framing.", keyframe.out(0), duration, project["seed"] + offset + 1, last_frame=keyframe.out(0), portrait=True)
+    return _save_video(graph, project, video.out(0), {"id": f"{identity}-portrait"})
+
+
 class CFZTitleVideo(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(node_id="CFZTitleVideo", display_name="CFZ Menu Video", category="Comfy Fighter Z",
-            description="PAID cloud generation: one silent 720p LTX clip that loops the title ensemble behind the game menu; the same image is its first and last frame. Still art remains when motion is unavailable or reduced.",
-            inputs=[Project.Input("project"), io.Image.Input("title_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8"), _reroll_input()],
+            description="PAID cloud generation: one silent 720p LTX clip that loops the title ensemble behind the game menu; the same image is its first and last frame. Still art remains when motion is unavailable or reduced. With portrait on, one 2K image call recomposes the ensemble as a tall phone key visual and the loop animates that cut (saved as the title-portrait loop phones play upright).",
+            inputs=[Project.Input("project"), io.Image.Input("title_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8"), _reroll_input(), PORTRAIT_INPUT],
             outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, title_image, duration="8", reroll=0):
+    def execute(cls, project, title_image, duration="8", reroll=0, portrait=False):
         project = _rerolled(project, reroll)
         _project(project)
         if title_image is None:
@@ -694,20 +721,19 @@ class CFZTitleVideo(io.ComfyNode):
                   "The fighters break apart and trade a lightning-fast flurry of punches and kicks with afterimages and radial speed lines, "
                   "energy shockwaves ripple outward, sparks and debris fly, the camera shakes, then they slam back together into the exact opening clash. "
                   "Fast dynamic camera with a brief impact freeze, no cuts to other scenes. Keep every face, body, outfit and color unchanged. No new people, text or logos.")
-        video = _animate(graph, project, prompt, title_image, duration, project["seed"] + 90, last_frame=title_image)
-        return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": "title"}), expand=graph.finalize())
+        return io.NodeOutput(_menu_loop(graph, project, title_image, prompt, duration, 90, bool(portrait), "title", PORTRAIT_TITLE_PROMPT), expand=graph.finalize())
 
 
 class CFZSelectVideo(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(node_id="CFZSelectVideo", display_name="CFZ Select Video", category="Comfy Fighter Z",
-            description="PAID cloud generation: one silent 720p LTX loop of the character-select backdrop (lights, embers, camera drift), played behind the roster. The still backdrop stays as the fallback.",
-            inputs=[Project.Input("project"), io.Image.Input("select_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8"), _reroll_input()],
+            description="PAID cloud generation: one silent 720p LTX loop of the character-select backdrop (lights, embers, camera drift), played behind the roster. The still backdrop stays as the fallback. With portrait on, one 2K image call recomposes the backdrop as a tall phone backdrop and the loop animates that cut (saved as the select-portrait loop phones play upright).",
+            inputs=[Project.Input("project"), io.Image.Input("select_image", raw_link=True), io.Combo.Input("duration", options=["6", "8", "10"], default="8"), _reroll_input(), PORTRAIT_INPUT],
             outputs=[VideoRecord.Output(display_name="video_asset")], enable_expand=True, is_api_node=True)
 
     @classmethod
-    def execute(cls, project, select_image, duration="8", reroll=0):
+    def execute(cls, project, select_image, duration="8", reroll=0, portrait=False):
         project = _rerolled(project, reroll)
         _project(project)
         if select_image is None:
@@ -716,8 +742,7 @@ class CFZSelectVideo(io.ComfyNode):
         prompt = (ANIMATION_STYLE + " Seamless looping character-select backdrop animation. Use the supplied image as the exact first and last frame. "
                   "Arena lights flicker and sweep, embers and sparks drift upward, banners and loose debris stir in a hot wind, heat shimmer rises from the floor "
                   "and the camera drifts slowly with gentle parallax before returning to the opening framing. No people, no new objects, no text or logos.")
-        video = _animate(graph, project, prompt, select_image, duration, project["seed"] + 95, last_frame=select_image)
-        return io.NodeOutput(_save_video(graph, project, video.out(0), {"id": "select"}), expand=graph.finalize())
+        return io.NodeOutput(_menu_loop(graph, project, select_image, prompt, duration, 95, bool(portrait), "select", PORTRAIT_SELECT_PROMPT), expand=graph.finalize())
 
 
 class CFZSelectIdleVideo(io.ComfyNode):
@@ -846,7 +871,7 @@ def _export_videos(directory, items):
         if "fighter" in record:
             (idles if record["id"].startswith("idle-") else intros).append(record)
         else:
-            manifest[f"{record['id']}Video"] = record
+            manifest[VIDEO_KEYS[record["id"]]] = record
     if intros:
         manifest["fighterIntros"] = intros
     if idles:

@@ -33,7 +33,7 @@ async function verifyBundle(directory, { packaged = true } = {}) {
   const audio = validateAudioManifest(read(sourceFile(directory, 'audio.json')), manifest.game);
   // Startup and select clips are optional (the classic example has none); each one is mapped and digest-checked.
   const video = fs.existsSync(path.join(directory, 'video.json')) ? validateVideoManifest(read(sourceFile(directory, 'video.json')), manifest.game) : null;
-  const clips = video ? [video.openingVideo, video.titleVideo, video.selectVideo, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean) : [];
+  const clips = video ? [video.openingVideo, video.titleVideo, video.selectVideo, video.titleVideoPortrait, video.selectVideoPortrait, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean) : [];
   const contract = contractFor(manifest.game);
   // The generated menu frame (ui/frame) and game-select title card (ui/card) are later additions; a release may carry
   // them on top of its contract.

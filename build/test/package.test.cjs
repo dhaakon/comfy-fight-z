@@ -31,6 +31,14 @@ test('animated title can stand alone or accompany the opening and fighter intros
     { ...title, sha256: 'bad' }, { ...title, duration: 0 }
   ]) assert.throws(() => validateVideoManifest({ ...base, titleVideo: invalid }));
   assert.throws(() => validateVideoManifest({ ...base, titleVideo: title, openingVideo: { ...opening, src: title.src } }), /unique/);
+  // The portrait cuts phones play upright carry their own ids and may stand alone.
+  const phoneTitle = { id: 'title-portrait', src: 'raw/title-portrait.mp4', duration: 8, sha256: 'd'.repeat(64), hasAudio: false };
+  const phoneSelect = { id: 'select-portrait', src: 'raw/select-portrait.mp4', duration: 8, sha256: 'e'.repeat(64), hasAudio: false };
+  assert.deepEqual(validateVideoManifest({ ...base, titleVideo: title, titleVideoPortrait: phoneTitle, selectVideoPortrait: phoneSelect }), { ...base, titleVideo: title, titleVideoPortrait: phoneTitle, selectVideoPortrait: phoneSelect });
+  assert.deepEqual(validateVideoManifest({ ...base, titleVideoPortrait: phoneTitle }), { ...base, titleVideoPortrait: phoneTitle });
+  assert.throws(() => validateVideoManifest({ ...base, titleVideoPortrait: { ...phoneTitle, id: 'title' } }), /portrait title video ID/);
+  assert.throws(() => validateVideoManifest({ ...base, selectVideoPortrait: { ...phoneSelect, id: 'select' } }), /portrait select video ID/);
+  assert.throws(() => validateVideoManifest({ ...base, titleVideo: title, titleVideoPortrait: { ...phoneTitle, src: title.src } }), /unique/);
 });
 test('intro-only video maps validate fighter identities, paths and integrity', async () => {
   const { validateVideoManifest } = await api;

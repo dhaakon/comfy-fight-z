@@ -92,7 +92,7 @@ function acceptBundle(directory, source, plan) {
   const bundle = path.join(directory, 'bundle'), { sourceFile } = require('./lib/runtime-validation.cjs'), records = [...assets.assets];
   const manifests = ['assets.json', 'audio.json', 'video.json'].filter(name => fs.existsSync(path.join(from, name)));
   const audio = manifests.includes('audio.json') ? read(path.join(from, 'audio.json')).assets || [] : [], video = manifests.includes('video.json') ? read(path.join(from, 'video.json')) : {};
-  const clips = [video.openingVideo, video.titleVideo, video.selectVideo, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean);
+  const clips = videoClips(video);
   for (const record of [...records, ...audio, ...clips]) {
     const target = path.join(bundle, record.src); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.copyFileSync(sourceFile(from, record.src), target);
   }
@@ -173,10 +173,7 @@ async function review(options) {
     report.fighters[fighter.id] = { name: fighter.name, grid: path.relative(directory, file).replace(/\\/g, '/'), cells: cells.length, poses };
   }
   report.images = assets.assets.filter(asset => asset.kind !== 'sprites').map(asset => ({ id: asset.id, kind: asset.kind, src: asset.src, width: asset.width, height: asset.height }));
-  if (fs.existsSync(path.join(bundle, 'video.json'))) {
-    const video = read(path.join(bundle, 'video.json'));
-    report.videos = [video.titleVideo, video.selectVideo, video.openingVideo, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean).map(clip => ({ id: clip.id, src: clip.src, duration: clip.duration }));
-  }
+  if (fs.existsSync(path.join(bundle, 'video.json'))) report.videos = videoClips(read(path.join(bundle, 'video.json'))).map(clip => ({ id: clip.id, src: clip.src, duration: clip.duration }));
   if (fs.existsSync(path.join(bundle, 'audio.json'))) {
     const audio = read(path.join(bundle, 'audio.json')), by = {};
     for (const clip of audio.assets) by[clip.category] = (by[clip.category] || 0) + 1;
@@ -194,12 +191,15 @@ async function review(options) {
   return report;
 }
 
+// Every clip a video.json maps: the game-wide loops (the opening, the title and select loops and their portrait cuts
+// for phones) and the per-fighter introductions and idle loops.
+const VIDEO_KEYS = ['openingVideo', 'titleVideo', 'selectVideo', 'titleVideoPortrait', 'selectVideoPortrait'];
+const videoClips = video => [...VIDEO_KEYS.map(key => video?.[key]), ...(video?.fighterIntros || []), ...(video?.selectIdles || [])].filter(Boolean);
 // The media records of a bundle: every clip in video.json and every sound in audio.json.
 function mediaRecords(bundle) {
   const video = fs.existsSync(path.join(bundle, 'video.json')) ? read(path.join(bundle, 'video.json')) : {};
   const audio = fs.existsSync(path.join(bundle, 'audio.json')) ? read(path.join(bundle, 'audio.json')) : { assets: [] };
-  const clips = [video.openingVideo, video.titleVideo, video.selectVideo, ...(video.fighterIntros || []), ...(video.selectIdles || [])].filter(Boolean);
-  return { video, audio, clips, sounds: audio.assets || [] };
+  return { video, audio, clips: videoClips(video), sounds: audio.assets || [] };
 }
 const PACKAGE_LIMIT = 1024 * 1024 * 1024;
 // The package holds every referenced source plus a byte-identical runtime copy of each clip and sound, so that sum is a
@@ -228,9 +228,11 @@ function exportGame(options) {
 // Web-ready media before export, free and local. Seedance 1080p clips arrive at 17-33 Mbit/s and the package ships
 // each clip and sound twice (runtime and sources), which pushed a seven-fighter cast past the 1 GiB browser limit.
 // Clips above WEB_VIDEO_BITRATE become H.264 CRF 18 (visually lossless, +faststart, same size, rate and frame count)
-// and WAV sounds become MP3 VBR q2 like the shipped example. Originals move to <run>/originals/; pipeline.json lists
-// every conversion. Running it again skips what is already packed.
-const WEB_VIDEO_BITRATE = 12e6;
+// and WAV sounds become MP3 VBR q2 like the shipped example. The portrait cuts of the menu loops are made for phones:
+// they always become 720-wide H.264 Main CRF 22 capped at 3.5 Mbit/s (same rate, frame count and duration), the size
+// a phone decodes and downloads comfortably. Originals move to <run>/originals/; pipeline.json lists every
+// conversion. Running it again skips what is already packed.
+const WEB_VIDEO_BITRATE = 12e6, PHONE_CLIP = /^(title|select)-portrait$/, PHONE_WIDTH = 720;
 function probeMedia(file) {
   const result = spawnSync('ffprobe', ['-v', 'error', '-count_packets', '-show_streams', '-show_format', '-of', 'json', file], { windowsHide: true, encoding: 'utf8' });
   if (result.status !== 0) throw new Error(`Cannot inspect ${path.basename(file)}: ${result.stderr || result.error?.message}`);
@@ -254,18 +256,22 @@ async function packMedia(options) {
     return entry;
   };
   for (const record of clips) {
-    const input = path.join(bundle, record.src), source = probeMedia(input);
-    if (!(source.bitRate > WEB_VIDEO_BITRATE)) continue;
+    const input = path.join(bundle, record.src), source = probeMedia(input), phone = PHONE_CLIP.test(record.id || '');
+    // A phone cut is packed once: a 720-wide encode at or under the cap is already the phone file.
+    if (phone ? source.video.width <= PHONE_WIDTH && source.bitRate <= 3.6e6 : !(source.bitRate > WEB_VIDEO_BITRATE)) continue;
     const temp = path.join(bundle, 'raw', `.packing-${stem(record.src)}.mp4`);
-    const result = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-i', input, '-map', '0:v:0', ...(source.audio ? ['-map', '0:a:0', '-c:a', 'copy'] : ['-an']),
-      '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-map_metadata', '-1', '-y', temp], { windowsHide: true, encoding: 'utf8' });
+    const scale = phone && source.video.width > PHONE_WIDTH ? ['-vf', `scale=${PHONE_WIDTH}:-2:flags=lanczos`] : [];
+    const quality = phone ? ['-crf', '22', '-maxrate', '3.5M', '-bufsize', '7M', '-profile:v', 'main', '-level', '4.0'] : ['-crf', '18'];
+    const result = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-i', input, '-map', '0:v:0', ...(source.audio ? ['-map', '0:a:0', '-c:a', 'copy'] : ['-an']), ...scale,
+      '-c:v', 'libx264', '-preset', 'slow', ...quality, '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-map_metadata', '-1', '-y', temp], { windowsHide: true, encoding: 'utf8' });
     if (result.status !== 0) throw new Error(`FFmpeg failed on ${record.src}: ${result.stderr || result.error?.message}`);
     const encoded = probeMedia(temp);
-    if (encoded.video.width !== source.video.width || encoded.video.height !== source.video.height || encoded.video.r_frame_rate !== source.video.r_frame_rate
+    const expectedWidth = scale.length ? PHONE_WIDTH : source.video.width, expectedHeight = scale.length ? Math.round(source.video.height * PHONE_WIDTH / source.video.width / 2) * 2 : source.video.height;
+    if (encoded.video.width !== expectedWidth || encoded.video.height !== expectedHeight || encoded.video.r_frame_rate !== source.video.r_frame_rate
       || encoded.frames !== source.frames || Math.abs(encoded.duration - source.duration) > .05 || !!encoded.audio !== !!source.audio) {
       fs.rmSync(temp, { force: true }); throw new Error(`The web encode of ${record.src} changed its size, rate, frames or duration; nothing was replaced.`);
     }
-    Object.assign(adopt(temp, record, 'mp4'), { kind: 'video', crf: 18, bitRateBefore: source.bitRate, bitRateAfter: encoded.bitRate });
+    Object.assign(adopt(temp, record, 'mp4'), { kind: 'video', crf: phone ? 22 : 18, phone, bitRateBefore: source.bitRate, bitRateAfter: encoded.bitRate, width: encoded.video.width, height: encoded.video.height });
     record.duration = Number(encoded.duration.toFixed(3));
   }
   for (const record of sounds) {
@@ -274,12 +280,12 @@ async function packMedia(options) {
     const entry = adopt(temp, record, 'mp3'); entry.kind = 'audio';
     Object.assign(record, { duration: verified.duration, sampleRate: verified.sampleRate, channels: verified.channels, codec: 'mp3', bytes: entry.bytesAfter });
   }
-  if (!conversions.length) { console.log('Nothing to pack: every clip is at most 12 Mbit/s and every sound is already compressed.'); return; }
+  if (!conversions.length) { console.log('Nothing to pack: every clip is at most 12 Mbit/s (phone cuts 720 wide), and every sound is already compressed.'); return; }
   if (conversions.some(entry => entry.kind === 'video')) fs.writeFileSync(path.join(bundle, 'video.json'), JSON.stringify(video, null, 2) + '\n');
   if (conversions.some(entry => entry.kind === 'audio')) fs.writeFileSync(path.join(bundle, 'audio.json'), JSON.stringify(audio, null, 2) + '\n');
   const before = conversions.reduce((sum, entry) => sum + entry.bytesBefore, 0), after = conversions.reduce((sum, entry) => sum + entry.bytesAfter, 0);
   const state = pipeline(directory);
-  state.packedMedia = [...(state.packedMedia || []), { at: now(), video: 'H.264 CRF 18, preset slow, yuv420p, +faststart; size, frame rate, frame count and duration verified', audio: 'MP3 VBR quality 2; sample rate, channels and duration verified', originals: path.relative(ROOT, originals).replace(/\\/g, '/'), bytesBefore: before, bytesAfter: after, conversions }];
+  state.packedMedia = [...(state.packedMedia || []), { at: now(), video: 'H.264 CRF 18, preset slow, yuv420p, +faststart; size, frame rate, frame count and duration verified', phone: 'portrait menu loops: 720 wide, H.264 Main CRF 22 capped at 3.5 Mbit/s; frame rate, frame count and duration verified', audio: 'MP3 VBR quality 2; sample rate, channels and duration verified', originals: path.relative(ROOT, originals).replace(/\\/g, '/'), bytesBefore: before, bytesAfter: after, conversions }];
   fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
   const mib = bytes => `${(bytes / 1048576).toFixed(1)} MiB`;
   console.log(`Packed ${conversions.filter(e => e.kind === 'video').length} clip(s) and ${conversions.filter(e => e.kind === 'audio').length} sound(s): ${mib(before)} -> ${mib(after)}. Originals in ${path.relative(ROOT, originals)}. Next: export to a fresh folder.`);
@@ -361,9 +367,10 @@ async function reroll(options) {
 // factory (same node ids and inputs), gives the new node a project copy with an offset seed, and patches the record.
 const ART_KINDS = { portrait: 'CFZCharacterArt', hero: 'CFZCharacterArt', cutin: 'CFZCharacterArt', ending: 'CFZCharacterArt', intro: 'CFZIntroVideo', idle: 'CFZSelectIdleVideo', title: 'CFZTitleVideo', select: 'CFZSelectVideo' };
 function artPlan(workflow, asset, overrides = {}) {
-  const match = /^(?:([a-z][a-z0-9_]*)_(portrait|hero|cutin|ending|intro|idle)|(title|select)_video)$/.exec(asset || '');
-  if (!match) throw new Error('--asset must be <fighter>_<portrait|hero|cutin|ending|intro|idle>, title_video or select_video.');
-  const fighter = match[1] || null, kind = match[2] || match[3], video = videoSettings(workflow, overrides);
+  const match = /^(?:([a-z][a-z0-9_]*)_(portrait|hero|cutin|ending|intro|idle)|(title|select)(_portrait)?_video)$/.exec(asset || '');
+  if (!match) throw new Error('--asset must be <fighter>_<portrait|hero|cutin|ending|intro|idle>, title_video, select_video, title_portrait_video or select_portrait_video.');
+  // The phone cut of a menu loop (title_portrait_video, select_portrait_video) adds one 2K recomposition of the art.
+  const fighter = match[1] || null, kind = match[2] || match[3], portraitCut = !!match[4], video = videoSettings(workflow, overrides);
   const project = Object.keys(workflow).find(id => workflow[id].class_type === 'CFZProjectSettings');
   const environment = Object.keys(workflow).find(id => workflow[id].class_type === 'CFZEnvironmentFactory');
   const factory = fighter ? Object.keys(workflow).find(id => workflow[id].class_type === 'CFZCharacterFactory' && workflow[id].inputs.character_id === fighter) : null;
@@ -371,9 +378,12 @@ function artPlan(workflow, asset, overrides = {}) {
   const original = Object.keys(workflow).find(id => workflow[id].class_type === ART_KINDS[kind] && (!fighter || workflow[id].inputs.character?.[0] === factory));
   const duration = Number(original ? workflow[original].inputs.duration : kind === 'intro' ? 4 : kind === 'idle' ? 6 : 8);
   const clip = ['intro', 'idle', 'title', 'select'].includes(kind);
-  const estimatedUSD = Number((clip ? (fighter ? RATES.image1K : 0) + duration * video.rate : RATES.image1K).toFixed(6));
-  return { fighter, kind, type: ART_KINDS[kind], factory, project, environment, duration, clip, video, estimatedUSD };
+  const estimatedUSD = Number((clip ? (fighter ? RATES.image1K : 0) + (portraitCut ? RATES.image2K : 0) + duration * video.rate : RATES.image1K).toFixed(6));
+  return { fighter, kind, portraitCut, type: ART_KINDS[kind], factory, project, environment, duration, clip, video, estimatedUSD };
 }
+// Where a game-wide clip lives in video.json, and its id.
+const clipKey = planned => planned.fighter ? null : `${planned.kind}Video${planned.portraitCut ? 'Portrait' : ''}`;
+const clipId = planned => planned.fighter ? `${planned.kind}-${planned.fighter}` : `${planned.kind}${planned.portraitCut ? '-portrait' : ''}`;
 async function rerollArt(options) {
   const directory = runDirectory(options), bundle = path.join(directory, 'bundle'), workflow = read(path.join(directory, 'workflow.api.json'));
   const planned = artPlan(workflow, options.asset, { videoModel: options.videoModel, videoResolution: options.videoResolution }), approved = Number(options.approveUsd);
@@ -410,6 +420,7 @@ async function rerollArt(options) {
   }
   if (planned.kind === 'intro') { prompt.stage = { class_type: 'LoadImage', inputs: { image: await upload(assets.assets.find(item => item.kind === 'stage')) }, _meta: { title: 'Accepted stage' } }; inputs.stage_reference = ['stage', 0]; }
   if (planned.clip) inputs.duration = String(planned.duration); else inputs.kind = planned.kind;
+  if (planned.portraitCut) inputs.portrait = true;
   prompt.redraw = { class_type: planned.type, inputs, _meta: { title: `Redraw ${options.asset} #${count}` } };
   prompt.keep = { class_type: 'PreviewAny', inputs: { source: ['redraw', 0] }, _meta: { title: 'keep' } };
   const missing = await missingNodes(prompt, server);
@@ -424,18 +435,17 @@ async function rerollArt(options) {
   entry.promptId = promptId; entry.ok = result.ok;
   if (!result.ok) { fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n'); throw new Error(`Redraw failed: ${result.error?.exception_type || ''}: ${result.error?.exception_message || 'unknown error'}`); }
   // Point the manifest at the new file; the exporter is not rerun, so nothing else in the bundle changes.
-  const prefix = !planned.fighter ? `${planned.kind}-` : planned.clip ? `${planned.kind}-${planned.fighter}-` : `${planned.fighter}_${planned.kind}-`;
+  const prefix = planned.clip ? `${clipId(planned)}-` : `${planned.fighter}_${planned.kind}-`;
   const produced = fs.readdirSync(path.join(bundle, 'raw')).filter(name => name.startsWith(prefix) && !before.has(name));
   if (produced.length !== 1) throw new Error(`Expected one new ${prefix}* file, found ${produced.length}.`);
   const target = path.join(bundle, 'raw', produced[0]), digest = require('node:crypto').createHash('sha256').update(fs.readFileSync(target)).digest('hex');
   if (planned.clip) {
     const videoFile = path.join(bundle, 'video.json'), video = fs.existsSync(videoFile) ? read(videoFile) : { schema: 'comfy-fighter-video/v1', root: '.' };
-    let record = planned.kind === 'title' ? video.titleVideo : planned.kind === 'select' ? video.selectVideo : (planned.kind === 'intro' ? video.fighterIntros : video.selectIdles)?.find(item => item.fighter === planned.fighter);
+    let record = !planned.fighter ? video[clipKey(planned)] : (planned.kind === 'intro' ? video.fighterIntros : video.selectIdles)?.find(item => item.fighter === planned.fighter);
     // add-media draws clips a run never had: the record is created here, in the shape CFZExportVideos writes.
     if (!record && options.create) {
-      record = planned.fighter ? { id: `${planned.kind}-${planned.fighter}`, fighter: planned.fighter } : { id: planned.kind };
-      if (planned.kind === 'title') video.titleVideo = record;
-      else if (planned.kind === 'select') video.selectVideo = record;
+      record = planned.fighter ? { id: clipId(planned), fighter: planned.fighter } : { id: clipId(planned) };
+      if (!planned.fighter) video[clipKey(planned)] = record;
       else (planned.kind === 'intro' ? (video.fighterIntros ||= []) : (video.selectIdles ||= [])).push(record);
     }
     if (!record) throw new Error(`video.json has no ${planned.kind} record${planned.fighter ? ' for ' + planned.fighter : ''}.`);
@@ -454,25 +464,28 @@ async function rerollArt(options) {
 }
 
 // Add the startup and select media a run lacks: one fight introduction and one select idle loop per fighter, the title
-// loop and the select loop. Each clip is drawn like reroll-art (accepted images uploaded from the bundle, the character
-// rebuilt from the cast text) and recorded in video.json; clips already mapped are skipped, so a rerun resumes after a
-// failure. --title-image and --select-image animate interface art kept outside the bundle.
-const MEDIA_CLIPS = ['intro', 'idle', 'title', 'select'];
+// loop and the select loop, and their portrait cuts for phones (title-portrait, select-portrait: the art recomposed
+// tall, animated, and packed 720 wide by pack-media). Each clip is drawn like reroll-art (accepted images uploaded
+// from the bundle, the character rebuilt from the cast text) and recorded in video.json; clips already mapped are
+// skipped, so a rerun resumes after a failure. --title-image and --select-image animate interface art kept outside
+// the bundle. The default set is the wide clips; name the portrait cuts in --clips to add them.
+const MEDIA_CLIPS = ['intro', 'idle', 'title', 'select', 'title-portrait', 'select-portrait'], DEFAULT_CLIPS = ['intro', 'idle', 'title', 'select'];
+const MENU_CLIPS = { title: 'title_video', select: 'select_video', 'title-portrait': 'title_portrait_video', 'select-portrait': 'select_portrait_video' };
 function mediaPlan(workflow, bundle, options = {}) {
-  const clips = (options.clips || MEDIA_CLIPS.join(',')).split(',').map(item => item.trim()).filter(Boolean);
+  const clips = (options.clips || DEFAULT_CLIPS.join(',')).split(',').map(item => item.trim()).filter(Boolean);
   for (const clip of clips) if (!MEDIA_CLIPS.includes(clip)) throw new Error(`--clips takes ${MEDIA_CLIPS.join(', ')}.`);
   const assets = read(path.join(bundle, 'assets.json')), fighters = options.fighters ? options.fighters.split(',').map(item => item.trim()) : assets.game.fighters.map(f => f.id);
   const videoFile = path.join(bundle, 'video.json'), video = fs.existsSync(videoFile) ? read(videoFile) : {};
-  const mapped = new Set([video.titleVideo && 'title_video', video.selectVideo && 'select_video', ...(video.fighterIntros || []).map(item => `${item.fighter}_intro`),
-    ...(video.selectIdles || []).map(item => `${item.fighter}_idle`)].filter(Boolean));
+  const mapped = new Set([video.titleVideo && 'title_video', video.selectVideo && 'select_video', video.titleVideoPortrait && 'title_portrait_video', video.selectVideoPortrait && 'select_portrait_video',
+    ...(video.fighterIntros || []).map(item => `${item.fighter}_intro`), ...(video.selectIdles || []).map(item => `${item.fighter}_idle`)].filter(Boolean));
   const wanted = [...fighters.flatMap(id => ['intro', 'idle'].filter(kind => clips.includes(kind)).map(kind => `${id}_${kind}`)),
-    ...['title', 'select'].filter(kind => clips.includes(kind)).map(kind => `${kind}_video`)];
+    ...Object.keys(MENU_CLIPS).filter(kind => clips.includes(kind)).map(kind => MENU_CLIPS[kind])];
   const overrides = { videoModel: options.videoModel, videoResolution: options.videoResolution };
   const todo = wanted.filter(asset => !mapped.has(asset)).map(asset => ({ asset, plan: artPlan(workflow, asset, overrides) }));
   for (const [kind, file] of [['title', options.titleImage], ['select', options.selectImage]]) {
     if (file) { if (!fs.existsSync(path.resolve(ROOT, file))) throw new Error(`--${kind}-image ${file} does not exist.`); continue; }
     const source = kind === 'title' ? 'ensemble' : 'select';
-    if (todo.some(item => item.asset === `${kind}_video`) && !assets.assets.some(item => item.kind === 'ui' && item.id === source)) throw new Error(`The ${kind} loop animates ui/${source}, which the bundle lacks; pass --${kind}-image <file>.`);
+    if (todo.some(item => item.asset === `${kind}_video` || item.asset === `${kind}_portrait_video`) && !assets.assets.some(item => item.kind === 'ui' && item.id === source)) throw new Error(`The ${kind} loop animates ui/${source}, which the bundle lacks; pass --${kind}-image <file>.`);
   }
   return { todo, skipped: wanted.filter(asset => mapped.has(asset)), estimatedUSD: Number(todo.reduce((sum, item) => sum + item.plan.estimatedUSD, 0).toFixed(6)) };
 }
@@ -486,7 +499,7 @@ async function addMedia(options) {
   state.addedMedia = [...(state.addedMedia || []), entry]; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(state, null, 2) + '\n');
   console.log(`Adding ${planned.todo.length} clips (about $${planned.estimatedUSD})${planned.skipped.length ? `, ${planned.skipped.length} already mapped` : ''}, one paid clip at a time.`);
   for (const { asset, plan } of planned.todo) {
-    const sourceImage = asset === 'title_video' ? options.titleImage : asset === 'select_video' ? options.selectImage : undefined;
+    const sourceImage = asset.startsWith('title_') ? options.titleImage : asset.startsWith('select_') ? options.selectImage : undefined;
     await rerollArt({ ...options, asset, create: true, sourceImage, approveUsd: String(plan.estimatedUSD) });
   }
   const done = pipeline(directory); done.addedMedia[done.addedMedia.length - 1].ok = true; fs.writeFileSync(path.join(directory, 'pipeline.json'), JSON.stringify(done, null, 2) + '\n');
@@ -749,4 +762,4 @@ async function main(argv) {
 }
 
 if (require.main === module) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
-module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, addMedia, mediaPlan, acceptBundle, titleCard, titleCardSource, TITLE_CARD_USD, packMedia, packageFloor, exportGame, install, pipeline, missingNodes };
+module.exports = { parse, prepare, run, review, reroll, rerollPlan, rerollArt, artPlan, addSheets, sheetPlan, addMedia, mediaPlan, acceptBundle, titleCard, titleCardSource, TITLE_CARD_USD, packMedia, packageFloor, exportGame, install, pipeline, missingNodes, videoClips, VIDEO_KEYS };
